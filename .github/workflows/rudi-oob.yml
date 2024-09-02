@@ -20,7 +20,7 @@ jobs:
           java-version: '11'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests -T 1C --update-snapshots --activate-profiles prod --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true -Dmaven.compiler.useIncrementalCompilation=false --projects rudi-tools,rudi-common,rudi-facet,rudi-microservice --also-make --also-make-dependents 
+        run: mvn clean package -DskipTests -T 1C --update-snapshots --activate-profiles prod --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true -Dmaven.compiler.useIncrementalCompilation=false --projects rudi-common,rudi-facet,rudi-microservice --also-make --also-make-dependents 
 
       # Login à DockerHub (Nécessite de renseigner les secrets DOCKERHUB_USERNAME et DOCKERHUB_TOKEN dans l'interface github)
       - name: Log in to DockerHub
