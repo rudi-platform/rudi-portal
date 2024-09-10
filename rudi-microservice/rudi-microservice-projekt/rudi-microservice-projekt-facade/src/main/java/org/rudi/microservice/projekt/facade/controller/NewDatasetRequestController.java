@@ -3,9 +3,13 @@
  */
 package org.rudi.microservice.projekt.facade.controller;
 
+import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.rudi.bpmn.core.bean.Form;
+import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
@@ -71,4 +75,11 @@ public class NewDatasetRequestController implements NewDatasetRequestApi {
 	public ResponseEntity<Project> findProjectByNewDatasetRequest(UUID newDatasetRequestUuid) throws Exception {
 		return ResponseEntity.ok(newDatasetRequestService.findProjectByNewDatasetRequest(newDatasetRequestUuid));
 	}
+
+	@Override
+	public ResponseEntity<List<HistoricInformation>> getNewDatasetRequestTaskHistoryByTaskId(String taskId,
+			@Valid Boolean asAdmin) throws Exception {
+		return ResponseEntity.ok(newDatasetRequestTaskService.getTaskHistoryByTaskId(taskId, asAdmin));
+	}
+
 }

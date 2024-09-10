@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.0.2</version>
+	<version>3.0.3</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -30,7 +30,7 @@
 
 		<commons.io.version>2.16.1</commons.io.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
-		<commons.lang3.version>3.14.0</commons.lang3.version>
+		<commons.lang3.version>3.16.0</commons.lang3.version>
 		<commons.text.version>1.12.0</commons.text.version>
 		<common.validator.version>1.9.0</common.validator.version>
 
@@ -42,21 +42,21 @@
 		<openapi.plugin.version>7.6.0</openapi.plugin.version>
 		<openapi.jackson.version>0.2.6</openapi.jackson.version>
 		<jackson-datatype.version>2.15.2</jackson-datatype.version>
-		<jackson-core.version>2.17.1</jackson-core.version>
-		<apache.directory.api.version>2.1.6</apache.directory.api.version>
+		<jackson-core.version>2.17.2</jackson-core.version>
+		<apache.directory.api.version>2.1.7</apache.directory.api.version>
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
-		<mapstruct.version>1.5.5.Final</mapstruct.version>
+		<mapstruct.version>1.6.0</mapstruct.version>
 		<lombok.version>1.18.20</lombok.version>
 		<swagger.codegen.version>3.0.21</swagger.codegen.version>
-		<swagger.version>2.2.22</swagger.version>
+		<swagger.version>2.2.23</swagger.version>
 		<flyway.version>9.19.4</flyway.version>
 		<freemarker.version>2.3.33</freemarker.version>
 		<jetbrains.annotations.version>24.1.0</jetbrains.annotations.version>
 		<mockwebserver.version>4.12.0</mockwebserver.version>
 		<nimbus.jose.jwt.version>9.40</nimbus.jose.jwt.version>
 		<freemarker.version>2.3.31</freemarker.version>
-		<jsoup.version>1.17.2</jsoup.version>
+		<jsoup.version>1.18.1</jsoup.version>
 		<activiti.version>7.1.0.M6</activiti.version>
 		<log4j.version>2.23.1</log4j.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
@@ -66,8 +66,8 @@
 		<gson.version>2.8.9</gson.version>
 		<xdocreport.version>2.0.6</xdocreport.version>
 		<apache.poi.version>5.3.0</apache.poi.version>
-		<pdf.box.version>3.0.2</pdf.box.version>
-		<xmpbox.version>3.0.2</xmpbox.version>
+		<pdf.box.version>3.0.3</pdf.box.version>
+		<xmpbox.version>3.0.3</xmpbox.version>
 		<ghost4j.version>1.0.1</ghost4j.version>
 		<guice.version>5.0.1</guice.version>
 		<servlet.api.version>2.5</servlet.api.version>
@@ -75,22 +75,20 @@
 		<jsonassert.version>1.5.3</jsonassert.version>
 		<boucycastle.version>1.78.1</boucycastle.version>
 		<activation.version>1.1.1</activation.version>
-		<reactor-test.version>3.6.7</reactor-test.version>
-		<h2.version>2.2.224</h2.version>
-
+		<reactor-test.version>3.6.9</reactor-test.version>
+		<h2.version>2.3.232</h2.version>
 		<maven-replacer-plugin.version>1.4.1</maven-replacer-plugin.version>
 		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
 		<compiler.plugin.version>3.13.0</compiler.plugin.version>
-		<version-maven-plugin.version>2.17.0</version-maven-plugin.version>
+		<version-maven-plugin.version>2.17.1</version-maven-plugin.version>
 		<!-- avec surefire 2.12.4, le test du microservice provider n'est pas
 		lancé -->
-		<maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.10.0</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 		<frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
 		<ant.plugin.version>3.1.0</ant.plugin.version>
-		<flyway-plugin.version>9.22.3</flyway-plugin.version>
 		<maven-scr-plugin.version>1.0.10</maven-scr-plugin.version>
 		<build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
 		<jaxb2-maven-plugin.version>2.4</jaxb2-maven-plugin.version>
@@ -159,16 +157,6 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>rudi-facet-apigateway</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>rudi-facet-apimaccess</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>rudi-facet-apimremote</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -860,19 +848,6 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>wso2-nexus</id>
-			<name>WSO2 internal Repository</name>
-			<url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-		</repository>
-	</repositories>
-
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -997,19 +972,6 @@
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco-maven-plugin.version}</version>
-				</plugin>
-
-				<plugin>
-					<groupId>org.flywaydb</groupId>
-					<artifactId>flyway-maven-plugin</artifactId>
-					<version>${flyway-plugin.version}</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.postgresql</groupId>
-							<artifactId>postgresql</artifactId>
-							<version>42.7.3</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 
 				<plugin>

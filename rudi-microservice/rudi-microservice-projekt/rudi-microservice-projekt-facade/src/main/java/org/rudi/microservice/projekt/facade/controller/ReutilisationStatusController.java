@@ -2,11 +2,10 @@ package org.rudi.microservice.projekt.facade.controller;
 
 import java.util.UUID;
 
-
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.projekt.core.bean.PagedReutilisationStatusList;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
-import org.rudi.microservice.projekt.core.bean.ReutilisationStatusSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ReutilisationStatusSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.ReutilisationStatusApi;
 import org.rudi.microservice.projekt.service.reutilisationstatus.ReutilisationStatusService;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +33,21 @@ public class ReutilisationStatusController implements ReutilisationStatusApi {
 		return ResponseEntity.ok(reutilisationStatusService.getReutilisationStatus(uuid));
 	}
 
+	/**
+	 * GET /reutilisation-status : Recherche de statut de réutilisation
+	 * Recherche de statut de réutilisation
+	 *
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @param active (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedReutilisationStatusList> searchReutilisationStatus(ReutilisationStatusSearchCriteria criteria) {
-		val pageable = utilPageable.getPageable(criteria.getOffset(), criteria.getLimit(), criteria.getOrder());
+	public ResponseEntity<PagedReutilisationStatusList> searchReutilisationStatus(Boolean active, Integer limit, Integer offset, String order) throws Exception {
+		val pageable = utilPageable.getPageable(offset, limit, order);
+		ReutilisationStatusSearchCriteria criteria = ReutilisationStatusSearchCriteria.builder().active(active).build();
 		val pages =  reutilisationStatusService.searchReutilisationStatus(criteria, pageable);
 		return ResponseEntity.ok(new PagedReutilisationStatusList()
 				.total(pages.getTotalElements())

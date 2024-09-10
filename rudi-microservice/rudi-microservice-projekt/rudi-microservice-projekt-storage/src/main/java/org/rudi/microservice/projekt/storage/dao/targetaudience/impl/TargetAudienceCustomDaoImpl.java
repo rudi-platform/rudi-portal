@@ -1,17 +1,17 @@
 package org.rudi.microservice.projekt.storage.dao.targetaudience.impl;
 
-import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.projekt.core.bean.TargetAudienceSearchCriteria;
+import javax.persistence.EntityManager;
+
+import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
+import org.rudi.microservice.projekt.core.bean.criteria.TargetAudienceSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.targetaudience.TargetAudienceCustomDao;
 import org.rudi.microservice.projekt.storage.entity.TargetAudienceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-
 @Repository
-public class TargetAudienceCustomDaoImpl extends AbstractCustomDaoImpl<TargetAudienceEntity, TargetAudienceSearchCriteria> implements TargetAudienceCustomDao {
+public class TargetAudienceCustomDaoImpl extends AbstractStampedCustomDaoImpl<TargetAudienceEntity, TargetAudienceSearchCriteria> implements TargetAudienceCustomDao {
 	public TargetAudienceCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, TargetAudienceEntity.class);
 	}

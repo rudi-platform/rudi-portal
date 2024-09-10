@@ -6,7 +6,7 @@
 		"title": "rudi-projekt-api",
 		"termsOfService": "https://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -146,6 +146,9 @@
 				"description": "Recherche de type de projet",
 				"operationId": "searchProjectTypes",
 				"parameters": [
+					{
+						"$ref": "#/components/parameters/ActiveParam"
+					},
 					{
 						"$ref": "#/components/parameters/LimitParam"
 					},
@@ -377,6 +380,17 @@
 				"operationId": "searchConfidentialities",
 				"parameters": [
 					{
+						"in": "query",
+						"name": "isPrivate",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/ActiveParam"
+					},
+					{
 						"$ref": "#/components/parameters/LimitParam"
 					},
 					{
@@ -385,6 +399,7 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
+
 				],
 				"responses": {
 					"200": {
@@ -904,6 +919,36 @@
 						}
 					},
 					{
+						"in": "query",
+						"name": "themes",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "keywords",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "targetAudiennces",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/TargetAudience"
+							}
+						}
+					},
+					{
 						"$ref": "#/components/parameters/OffsetParam"
 					},
 					{
@@ -1052,6 +1097,9 @@
 								}
 							}
 						}
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
@@ -2274,6 +2322,9 @@
 				"operationId": "searchSupports",
 				"parameters": [
 					{
+						"$ref": "#/components/parameters/ActiveParam"
+					},
+					{
 						"$ref": "#/components/parameters/LimitParam"
 					},
 					{
@@ -2504,6 +2555,9 @@
 				"operationId": "searchTerritorialScales",
 				"parameters": [
 					{
+						"$ref": "#/components/parameters/ActiveParam"
+					},
+					{
 						"$ref": "#/components/parameters/LimitParam"
 					},
 					{
@@ -2512,6 +2566,7 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
+
 				],
 				"responses": {
 					"200": {
@@ -2734,6 +2789,9 @@
 				"operationId": "searchTargetAudiences",
 				"parameters": [
 					{
+						"$ref": "#/components/parameters/ActiveParam"
+					},
+					{
 						"$ref": "#/components/parameters/LimitParam"
 					},
 					{
@@ -2742,6 +2800,7 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
+
 				],
 				"responses": {
 					"200": {
@@ -3917,13 +3976,101 @@
 				"operationId": "getNumberOfProjectsPerOwners",
 				"parameters": [
 					{
-						"name": "criteria",
 						"in": "query",
-						"description": "critères de recherches",
-						"required": true,
+						"name": "datasetUuids",
+						"description": "UUIDs des jeux de données liés aux projets recherchés",
 						"schema": {
-							"$ref": "./rudi-projekt-model.json#/components/schemas/ProjectSearchCriteria"
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
 						}
+					},
+					{
+						"in": "query",
+						"name": "linkedDatasetUuids",
+						"description": "UUIDs des LinkedDatasetEntity (des demandes d'accès) liées aux projets recherchés",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "ownerUuids",
+						"description": "UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "projectUuids",
+						"description": "UUIDs des projets",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/ProjectStatus"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "themes",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "keywords",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "targetAudiennces",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/TargetAudience"
+							}
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
 					}
 				],
 				"responses": {
@@ -4400,6 +4547,52 @@
 				}
 			}
 		},
+		"/linked-dataset/tasks/{task-id}/historic": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"description": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"operationId": "getLinkedDatasetTaskHistoryByTaskId",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}, {
+						"in": "query",
+						"name": "asAdmin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
 		"/new-dataset-request/tasks/draft-form": {
 			"get": {
 				"tags": [
@@ -4786,6 +4979,52 @@
 				}
 			}
 		},
+		"/new-dataset-request/tasks/{task-id}/historic": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"description": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"operationId": "getNewDatasetRequestTaskHistoryByTaskId",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}, {
+						"in": "query",
+						"name": "asAdmin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
 		"/my-linked-datasets": {
 			"get": {
 				"tags": [
@@ -4963,14 +5202,18 @@
 				"operationId": "searchReutilisationStatus",
 				"parameters": [
 					{
-						"name": "criteria",
-						"in": "query",
-						"description": "critères de recherches",
-						"required": true,
-						"schema": {
-							"$ref": "./rudi-projekt-model.json#/components/schemas/ReutilisationStatusSearchCriteria"
-						}
+						"$ref": "#/components/parameters/ActiveParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
 					}
+
 				],
 				"responses": {
 					"200": {
@@ -5148,7 +5391,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "./../../../rudi-facet/rudi-facet-acl/openapi/rudi-acl-model.json#/components/schemas/ProjectKey"
+								"$ref": "./../../../rudi-facet/rudi-facet-acl/openapi/rudi-acl-model.json#/components/schemas/ProjectKeyCredential"
 							}
 						}
 					}
@@ -5237,6 +5480,14 @@
 				"required": false,
 				"schema": {
 					"type": "string"
+				}
+			},
+			"ActiveParam": {
+				"in": "query",
+				"name": "active",
+				"required": false,
+				"schema": {
+					"type": "boolean"
 				}
 			},
 			"OwnerUuidParam": {

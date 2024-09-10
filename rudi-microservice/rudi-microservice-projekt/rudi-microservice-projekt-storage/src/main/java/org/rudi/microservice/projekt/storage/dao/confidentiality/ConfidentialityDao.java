@@ -1,14 +1,15 @@
 package org.rudi.microservice.projekt.storage.dao.confidentiality;
 
-import org.rudi.microservice.projekt.storage.entity.ConfidentialityEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import javax.annotation.Nonnull;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
+import org.rudi.common.storage.dao.StampedRepository;
+import org.rudi.microservice.projekt.storage.entity.ConfidentialityEntity;
+import org.springframework.stereotype.Repository;
+
 @Repository
-public interface ConfidentialityDao extends JpaRepository<ConfidentialityEntity, Long> {
+public interface ConfidentialityDao extends StampedRepository<ConfidentialityEntity> {
 
 	/**
 	 * @throws org.springframework.dao.EmptyResultDataAccessException si l'entité demandée n'a pas été trouvée

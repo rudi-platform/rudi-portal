@@ -1,37 +1,43 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute} from '@angular/router';
 import {FormProjectDependencies, ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
 import {FiltersService} from '@core/services/filters.service';
-import {SnackBarService} from '@core/services/snack-bar.service';
-import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
-import {ReuseProjectCommonComponent} from '@features/project/components/reuse-project-common/reuse-project-common.component';
 import {UpdateAction} from '@features/project/model/upate-action';
-import {TranslateService} from '@ngx-translate/core';
 import {RadioListItem} from '@shared/radio-list/radio-list-item';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Project, ProjektService, ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
-import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
-import {Confidentiality, ProjectStatus, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
+import {
+    Confidentiality,
+    ProjectStatus,
+    ProjectType,
+    Support,
+    TargetAudience,
+    TerritorialScale
+} from 'micro_service_modules/projekt/projekt-model';
 import * as moment from 'moment';
-import {forkJoin, of} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-project-main-informations',
     templateUrl: './project-main-informations.component.html',
     styleUrls: ['./project-main-informations.component.scss']
 })
-export class ProjectMainInformationsComponent extends ReuseProjectCommonComponent implements OnInit {
+export class ProjectMainInformationsComponent implements OnInit {
     @Input() project: Project;
-    @Output() updateInProgressEvent = new EventEmitter<boolean>();
-    @Output() updateCurrentTaskEvent = new EventEmitter<Task>();
+    @Input() isProjectUpdatable = false;
+    @Input() isUpdating = false;
+    @Input() dialogDescription: string;
+    @Input() isLoading: boolean;
+    @Input() showTitle: boolean = true;
 
-    isUpdating = false;
-
+    @Output() updateForm = new EventEmitter<{ confidentialities: Confidentiality[], form: FormGroup, messageToModerator?: string }>();
+    public  step1FormGroup: FormGroup;
+    public messageToModeratorFormGroup: FormGroup;
+    public projectType: ProjectType[];
     public suggestions: RadioListItem[];
     public publicCible: TargetAudience[];
     public reuseStatus: ReutilisationStatus[];
@@ -41,8 +47,6 @@ export class ProjectMainInformationsComponent extends ReuseProjectCommonComponen
     public isRefusedProject: boolean;
     public user: User;
     public taskId = '';
-    public currentTask: Task;
-    @Input() isProjectUpdatable = false;
 
     /**
      * L'action de mise à jour d'image à apppliquer pour un projet
@@ -62,33 +66,26 @@ export class ProjectMainInformationsComponent extends ReuseProjectCommonComponen
         readonly projectSubmissionService: ProjectSubmissionService,
         public dialog: MatDialog,
         readonly projektService: ProjektService,
-        readonly projektTaskMetierService: ProjectTaskMetierService,
         private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
-        private route: ActivatedRoute,
-        private readonly snackBarService: SnackBarService,
-        private readonly translateService: TranslateService
+        public formBuilder: FormBuilder
     ) {
-        super(projektMetierService, filtersService, projectSubmissionService);
     }
 
     ngOnInit(): void {
         this.isRefusedProject = this.project?.project_status === ProjectStatus.Rejected;
-        // Récupération de l'uuid du task
-        this.taskId = this.route.snapshot.paramMap.get('taskId') || '0';
+        this.messageToModeratorFormGroup = this.formBuilder.group({
+            messageToModerator: new FormControl('')
+        });
     }
 
     // Chargement des infos de la réutilisation
     loadProjectInformations(): void {
-        this.projektTaskMetierService.getTask(this.taskId).subscribe(task => {
-            this.currentTask = task;
-        });
         this.suggestions = [];
         this.step1FormGroup = this.projectSubmissionService.initStep1ProjectFormGroup();
         this.isLoading = true;
-        this.projectSubmissionService.loadDependenciesProject().subscribe(
-            (dependencies: FormProjectDependencies) => {
-                this.isLoading = false;
-                this.suggestions = this.projectSubmissionService.getConfidentialitiesRadio(dependencies.confidentialities);
+        // start
+        this.projectSubmissionService.loadDependenciesProject().pipe(
+            switchMap((dependencies: FormProjectDependencies) => {
                 this.confidentialities = dependencies.confidentialities;
                 this.publicCible = dependencies.projectPublicCible;
                 this.territorialScales = dependencies.territorialScales;
@@ -96,8 +93,21 @@ export class ProjectMainInformationsComponent extends ReuseProjectCommonComponen
                 this.supports = dependencies.supports;
                 this.user = dependencies.user;
                 this.reuseStatus = dependencies.reuseStatus;
-            }
-        );
+
+                this.isLoading = false;
+                this.suggestions = [];
+
+
+                return this.projektMetierService.searchProjectConfidentialities({active: true});
+            })
+        ).subscribe(values => {
+            this.suggestions = values.map(value => ({
+                code: value.code,
+                label: value.label,
+                description: value.description
+            } as RadioListItem));
+        });
+
         this.step1FormGroup.patchValue({
             title: this.project.title,
             description: this.project.description,
@@ -118,7 +128,6 @@ export class ProjectMainInformationsComponent extends ReuseProjectCommonComponen
     updateProjectTaskInfo(): void {
         this.loadProjectInformations();
         this.isUpdating = !this.isUpdating;
-        this.updateInProgressEvent.emit(this.isUpdating);
     }
 
     /**
@@ -142,52 +151,15 @@ export class ProjectMainInformationsComponent extends ReuseProjectCommonComponen
      * Ouverture d'une dialog permettant de confirmer la modification de la réutilisation
      */
     public updateConfirmation(): void {
-        this.personalSpaceProjectService.openDialogUpdateConfirmation()
+        this.personalSpaceProjectService.openDialogUpdateConfirmation(this.dialogDescription)
             .subscribe(item => {
                 if (item && item.closeEvent === CloseEvent.VALIDATION) {
-                    this.updateProjectTask();
+                    this.updateForm.emit({
+                        confidentialities: this.confidentialities,
+                        form: this.step1FormGroup,
+                        messageToModerator: this.messageToModeratorFormGroup.controls['messageToModerator'].value
+                    });
                 }
             });
-    }
-
-    public updateProjectTask(): void {
-        this.updateTaskFromForm();
-        this.isLoading = true;
-        this.projektTaskMetierService.claimTask(this.taskId).pipe(
-            switchMap(item => {
-                return forkJoin([
-                    this.projektTaskMetierService.updateTask(this.currentTask),
-                    of(item) // Utilisation de of pour conserver la valeur du premier switchMap
-                ]);
-            }),
-            tap(([updatedTask, item]) => {
-                this.project = updatedTask.asset as Project;
-                this.projektMetierService.uploadLogo(this.project.uuid, this.step1FormGroup.get('image').value.file).subscribe();
-            }),
-            switchMap(() => {
-                return this.projektTaskMetierService.unclaimTask(this.taskId);
-            })
-        ).subscribe({
-            next: () => {
-                this.isUpdating = false;
-                this.updateInProgressEvent.emit(this.isUpdating);
-                this.updateCurrentTaskEvent.emit(this.currentTask);
-                this.isLoading = false;
-                this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.success'));
-            },
-            error: (e) => {
-                console.error(e);
-                this.snackBarService.add(this.translateService.instant('personalSpace.project.tabs.update.error'));
-                this.isLoading = false;
-            }
-        });
-    }
-
-    /**
-     * MAJ de l'objet Project à partir de l'état du formulaire de saisie
-     * @private
-     */
-    private updateTaskFromForm(): void {
-        this.projectSubmissionService.updateProjectTaskField(this.currentTask, this.step1FormGroup, this.confidentialities);
     }
 }

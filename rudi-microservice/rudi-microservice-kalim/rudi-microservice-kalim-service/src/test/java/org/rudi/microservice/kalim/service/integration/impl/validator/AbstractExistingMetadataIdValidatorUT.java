@@ -1,13 +1,14 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rudi.microservice.kalim.service.integration.impl.handlers.PostIntegrationRequestTreatmentHandler;
 import org.rudi.microservice.kalim.service.integration.impl.handlers.PutIntegrationRequestTreatmentHandler;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractExistingMetadataIdValidator;
 
 class AbstractExistingMetadataIdValidatorUT {
 
@@ -21,16 +22,12 @@ class AbstractExistingMetadataIdValidatorUT {
 	@Test
 	void canBeUsedByPostHandler() {
 		final PostIntegrationRequestTreatmentHandler postHandler = mock(PostIntegrationRequestTreatmentHandler.class);
-		assertThat(validator.canBeUsedBy(postHandler))
-				.as("This validator cannot be used by POST handler")
-				.isFalse();
+		assertThat(validator.canBeUsedBy(postHandler)).as("This validator cannot be used by POST handler").isFalse();
 	}
 
 	@Test
 	void canBeUsedByPutHandler() {
 		final PutIntegrationRequestTreatmentHandler putHandler = mock(PutIntegrationRequestTreatmentHandler.class);
-		assertThat(validator.canBeUsedBy(putHandler))
-				.as("This validator can be used by PUT handler")
-				.isTrue();
+		assertThat(validator.canBeUsedBy(putHandler)).as("This validator can be used by PUT handler").isTrue();
 	}
 }

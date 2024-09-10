@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-selfdata</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-selfdata-service</artifactId>
@@ -130,16 +130,13 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>rudi-facet-apimaccess</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-dataset</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>rudi-facet-apimremote</artifactId>
+			<artifactId>rudi-facet-apigateway</artifactId>
 		</dependency>
 	</dependencies>
 

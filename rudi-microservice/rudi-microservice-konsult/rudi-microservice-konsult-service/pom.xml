@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-konsult</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-konsult-service</artifactId>
@@ -115,6 +115,10 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>rudi-facet-acl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-projekt</artifactId>
 		</dependency>
 		<dependency>
@@ -124,10 +128,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-organization</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>rudi-facet-apimremote</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

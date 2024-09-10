@@ -1,14 +1,12 @@
 package org.rudi.microservice.projekt.service.replacer;
 
-import io.netty.util.internal.StringUtil;
-import lombok.RequiredArgsConstructor;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.Confidentiality;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.service.confidentiality.ConfidentialityService;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

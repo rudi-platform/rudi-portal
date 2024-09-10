@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -11,6 +12,20 @@ import org.rudi.common.service.exception.AppServiceBadRequestException;
 public abstract class AbstractValidator<T> {
 
 	protected static final String GET_UUID_METHOD = "getUUID";
+
+	protected void validatedUuidField(T dto, String methodName, String errorMessage)
+			throws AppServiceBadRequestException {
+		try {
+			Method m = dto.getClass().getMethod(methodName);
+			UUID uuid = (UUID) m.invoke(dto);
+			if (uuid == null) {
+				throw new AppServiceBadRequestException(errorMessage);
+			}
+		} catch (IllegalArgumentException | NoSuchMethodException | SecurityException | IllegalAccessException
+				 | InvocationTargetException e) {
+			// nothing to do
+		}
+	}
 
 	protected void validateStringField(T dto, String methodName, String errorMessage)
 			throws AppServiceBadRequestException {

@@ -1,7 +1,4 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {SelfdataApiAccessService} from '@core/services/api-access/selfdata/selfdata-api-access-service';
-import {SubscriptionRequestReport} from '@core/services/api-access/subscription-request-report';
-import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {GdataDataInterface} from '@core/services/selfdata-dataset/gdataData.interface';
 import {SelfdataDatasetService} from '@core/services/selfdata-dataset/selfdata-dataset.service';
@@ -12,9 +9,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {Metadata} from 'micro_service_modules/api-kaccess';
-import {OwnerType} from 'micro_service_modules/projekt/projekt-api';
 import {forkJoin, Observable, of} from 'rxjs';
-import {catchError, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-selfdata-dataset-data-tab',
@@ -44,12 +40,10 @@ export class SelfdataDatasetDataTabComponent implements OnInit {
 
 
     constructor(private readonly userService: UserService,
-                private readonly selfdataApiAccessService: SelfdataApiAccessService,
                 private readonly snackBarService: SnackBarService,
                 private readonly translateService: TranslateService,
-                private readonly logService: LogService,
                 private readonly selfdataService: SelfdataDatasetService,
-                private readonly propertiesMetierService: PropertiesMetierService,) {
+                private readonly propertiesMetierService: PropertiesMetierService) {
     }
 
     ngOnInit(): void {
@@ -66,7 +60,7 @@ export class SelfdataDatasetDataTabComponent implements OnInit {
                 }
             }
         );
-        this.propertiesMetierService.get('rudidatarennes.docRudiBzh').subscribe({
+        this.propertiesMetierService.get('front.docRudi').subscribe({
             next: (rudiDocLink: string) => {
                 this.rudiDocLink = rudiDocLink;
             }
@@ -88,9 +82,7 @@ export class SelfdataDatasetDataTabComponent implements OnInit {
         this.subscriptionErrorMessage = null;
         this.gdataError = null;
         this.tpbcError = null;
-        this.accessData().pipe(
-            switchMap(() => this.loadSelfdataData())
-        ).subscribe({
+        this.loadSelfdataData().subscribe({
             next: () => {
                 this.loading = false;
                 this.hideDataCard = false;
@@ -109,20 +101,6 @@ export class SelfdataDatasetDataTabComponent implements OnInit {
                 this.loading = false;
             }
         });
-    }
-
-    accessData(): Observable<void> {
-        return this.selfdataApiAccessService.doSubscriptionProcessToDatasets(
-            this.password, [{metadata: this.metadata}], OwnerType.User, this.ownerUuid)
-            .pipe(
-                tap((result: SubscriptionRequestReport) => {
-                    if (result.failed.length > 0) {
-                        throw new ErrorWithCause('La souscription à l\'API du JDD a échoué');
-                    }
-                }),
-
-                map(() => null)
-            );
     }
 
     loadSelfdataData(): Observable<unknown> {

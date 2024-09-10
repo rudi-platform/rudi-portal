@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-facet-doks</artifactId>
@@ -51,7 +51,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF-8</argLine>
 				</configuration>

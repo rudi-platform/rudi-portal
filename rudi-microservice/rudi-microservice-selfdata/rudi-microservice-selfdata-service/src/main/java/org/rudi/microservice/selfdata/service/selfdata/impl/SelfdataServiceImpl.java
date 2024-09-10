@@ -18,10 +18,6 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.apimaccess.bean.Application;
-import org.rudi.facet.apimaccess.exception.ApplicationOperationException;
-import org.rudi.facet.apimaccess.exception.GetClientRegistrationException;
-import org.rudi.facet.apimaccess.helper.registration.RegistrationHelper;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -63,8 +59,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
@@ -84,7 +80,6 @@ public class SelfdataServiceImpl implements SelfdataService {
 	private final UtilContextHelper utilContextHelper;
 	private final DatasetService datasetService;
 	private final SelfdataDatasetApisHelper selfdataDatasetApisHelper;
-	private final RegistrationHelper registrationHelper;
 	private final SelfdataMatchingDataHelper selfdataMatchingDataHelper;
 
 	@Value("${rudi.selfdata.recrypt.pageSize:20}")
@@ -168,7 +163,7 @@ public class SelfdataServiceImpl implements SelfdataService {
 	}
 
 	@Override
-	public GenericDataObject getGdataData(UUID datasetUuid) throws AppServiceException, GetClientRegistrationException {
+	public GenericDataObject getGdataData(UUID datasetUuid) throws AppServiceException {
 
 		SelfdataApiParameters parameters = getApiParameters(datasetUuid);
 		return selfdataDatasetApisHelper.getGdataData(parameters);
@@ -176,7 +171,7 @@ public class SelfdataServiceImpl implements SelfdataService {
 
 	@Override
 	public BarChartData getTpbcData(UUID datasetUuid, OffsetDateTime minDate, OffsetDateTime maxDate)
-			throws AppServiceException, GetClientRegistrationException {
+			throws AppServiceException {
 
 		SelfdataApiParameters parameters = getApiParameters(datasetUuid);
 		parameters.setMinDate(minDate);
@@ -185,10 +180,10 @@ public class SelfdataServiceImpl implements SelfdataService {
 	}
 
 	/**
-	 * Récupération des pré-requis pour effectuer des appels vers WSO2 en mode selfdata
+	 * Récupération des pré-requis pour effectuer des appels vers API Gateway en mode selfdata
 	 *
 	 * @param datasetUuid l'UUID du JDD concerné par l'appel selfdata
-	 * @return les éléments requis pour faire l'appel WSO2
+	 * @return les éléments requis pour faire l'appel API Gateway
 	 * @throws AppServiceException si problème de récupération des paramètres
 	 */
 	private SelfdataApiParameters getApiParameters(UUID datasetUuid) throws AppServiceException {
@@ -208,17 +203,8 @@ public class SelfdataServiceImpl implements SelfdataService {
 			throw new AppServiceUnauthorizedException("Impossible de récupérer les données TPBC sans être authentifié");
 		}
 
-		Application application;
-		try {
-			application = registrationHelper.getOrCreateApplicationForUser(user.getLogin());
-		} catch (ApplicationOperationException e) {
-			throw new AppServiceException(
-					"Erreur lors de la récupération de l'application WSO2 de l'utilisateur connecté", e);
-		}
-
 		parameters.setMetadata(metadata);
 		parameters.setUser(user);
-		parameters.setApplication(application);
 		return parameters;
 	}
 

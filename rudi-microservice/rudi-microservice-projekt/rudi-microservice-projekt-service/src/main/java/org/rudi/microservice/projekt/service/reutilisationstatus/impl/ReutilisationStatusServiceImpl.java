@@ -3,7 +3,7 @@ package org.rudi.microservice.projekt.service.reutilisationstatus.impl;
 import java.util.UUID;
 
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
-import org.rudi.microservice.projekt.core.bean.ReutilisationStatusSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ReutilisationStatusSearchCriteria;
 import org.rudi.microservice.projekt.service.mapper.ReutilisationStatusMapper;
 import org.rudi.microservice.projekt.service.reutilisationstatus.ReutilisationStatusService;
 import org.rudi.microservice.projekt.storage.dao.reutilisationstatus.ReutilisationStatusCustomDao;

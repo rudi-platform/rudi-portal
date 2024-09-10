@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.ProjectType;
-import org.rudi.microservice.projekt.core.bean.ProjectTypeSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectTypeSearchCriteria;
 import org.rudi.microservice.projekt.service.mapper.ProjectTypeMapper;
 import org.rudi.microservice.projekt.service.type.ProjectTypeService;
 import org.rudi.microservice.projekt.service.type.impl.validator.ProjectTypeValidator;

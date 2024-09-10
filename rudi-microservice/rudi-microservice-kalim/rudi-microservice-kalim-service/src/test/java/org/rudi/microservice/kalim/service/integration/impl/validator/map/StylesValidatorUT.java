@@ -6,12 +6,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.microservice.kalim.service.KalimSpringBootTest;
+import org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.map.parameter.StylesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.rudi.microservice.kalim.service.integration.impl.validator.map.ConnectorParametersConstants.STYLES_PARAMETER;
+import static org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.map.parameter.MapConnectorParametersConstants.STYLES_PARAMETER;
 
 @KalimSpringBootTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

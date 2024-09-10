@@ -22,6 +22,7 @@ public final class ACLConstants {
 	public static final String ROLE_UUIDS_PARAMETER = "role-uuids";
 
 	public static final String PROJECT_KEY_STORE_UUID_PARAMETER = "project-key-store-uuid";
+	public static final String PROJECT_UUID_PARAMETER = "project-uuid";
 	public static final String PROJECT_KEY_UUID_PARAMETER = "project-key-uuid";
 
 	public static final String LIMIT_PARAMETER = "limit";

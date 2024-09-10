@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.Confidentiality;
-import org.rudi.microservice.projekt.core.bean.ConfidentialitySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.PagedConfidentialityList;
+import org.rudi.microservice.projekt.core.bean.criteria.ConfidentialitySearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.ConfidentialitiesApi;
 import org.rudi.microservice.projekt.service.confidentiality.ConfidentialityService;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +44,22 @@ public class ConfidentialityController implements ConfidentialitiesApi {
 		return ResponseEntity.ok(confidentialityService.getConfidentiality(uuid));
 	}
 
+	/**
+	 * GET /confidentialities : Liste tous les niveaux de confidentialité
+	 * Liste tous les niveaux de confidentialité
+	 *
+	 * @param isPrivate (optional)
+	 * @param active    (optional)
+	 * @param limit     Le nombre de résultats à retourner par page (optional)
+	 * @param offset    Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order     (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedConfidentialityList> searchConfidentialities(Integer limit, Integer offset, String order) throws Exception {
-		val searchCriteria = new ConfidentialitySearchCriteria();
+	public ResponseEntity<PagedConfidentialityList> searchConfidentialities(Boolean isPrivate, Boolean active, Integer limit, Integer offset, String order) throws Exception {
+		val searchCriteria = ConfidentialitySearchCriteria.builder().active(active).isPrivate(isPrivate).build();
+
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = confidentialityService.searchConfidentialities(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedConfidentialityList()

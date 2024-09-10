@@ -1,5 +1,8 @@
 package org.rudi.microservice.kalim.service.integration;
 
+import static org.mockito.Mockito.when;
+import static org.rudi.microservice.kalim.service.KalimTestConfigurer.initMetadata;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -20,7 +23,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.exceptions.DeleteApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Connector;
 import org.rudi.facet.kaccess.bean.Media;
@@ -38,7 +41,7 @@ import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.KalimSpringBootTest;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
+import org.rudi.microservice.kalim.service.helper.apigateway.ApiGatewayManagerHelper;
 import org.rudi.microservice.kalim.service.helper.provider.KalimProviderHelper;
 import org.rudi.microservice.kalim.service.integration.impl.handlers.PostIntegrationRequestTreatmentHandler;
 import org.rudi.microservice.kalim.service.integration.impl.handlers.PutIntegrationRequestTreatmentHandler;
@@ -48,9 +51,6 @@ import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequest
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.mockito.Mockito.when;
-import static org.rudi.microservice.kalim.service.KalimTestConfigurer.initMetadata;
 
 /**
  * Class de test du service IntegrationRequest
@@ -90,7 +90,7 @@ class IntegrationRequestServiceIT {
 	private PutIntegrationRequestTreatmentHandler putHandler;
 
 	@Autowired
-	private APIManagerHelper apiManagerHelper;
+	ApiGatewayManagerHelper apiGatewayManagerHelper;
 
 	@Autowired
 	private IntegrationRequestMapper integrationRequestMapper;
@@ -139,7 +139,8 @@ class IntegrationRequestServiceIT {
 	@Test
 	@Order(1)
 	@Disabled("Contrôle désactivé par la RUDI-1459")
-	void testCreateIntegrationRequestFromAnotherProvider() throws IntegrationException, AppServiceException, DataverseAPIException {
+	void testCreateIntegrationRequestFromAnotherProvider()
+			throws IntegrationException, AppServiceException, DataverseAPIException {
 
 		final NodeProvider anotherNodeProvider = initNodeProvider();
 		when(mockedKalimProviderHelper.getAuthenticatedNodeProvider()).thenReturn(anotherNodeProvider);
@@ -152,7 +153,8 @@ class IntegrationRequestServiceIT {
 		when(datasetService.getDataset((String) Mockito.any())).thenReturn(metadata);
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.KO, integrationRequest.getIntegrationStatus());
 
@@ -160,7 +162,7 @@ class IntegrationRequestServiceIT {
 
 	@Test
 	@Order(2)
-	@Disabled("Contrôle désactivé - Problème WSO2 Anonymous")
+	@Disabled("Contrôle désactivé - Problème API Gateway Anonymous")
 	void testCreateIntegrationRequest() throws IntegrationException, AppServiceException, DataverseAPIException {
 
 		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
@@ -171,7 +173,8 @@ class IntegrationRequestServiceIT {
 		when(datasetService.getDataset((String) Mockito.any())).thenReturn(metadata);
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.OK, integrationRequest.getIntegrationStatus());
 
@@ -180,16 +183,17 @@ class IntegrationRequestServiceIT {
 	@Test
 	@Order(3)
 	@Disabled("Contrôle désactivé par la RUDI-1459")
-	void testUpdateIntegrationRequestFromAnotherProvider() throws IntegrationException, AppServiceException, DataverseAPIException {
+	void testUpdateIntegrationRequestFromAnotherProvider()
+			throws IntegrationException, AppServiceException, DataverseAPIException {
 
 		final NodeProvider anotherNodeProvider = initNodeProvider();
 		when(mockedKalimProviderHelper.getAuthenticatedNodeProvider()).thenReturn(anotherNodeProvider);
 
-
 		for (Media media : metadata.getAvailableFormats()) {
 			media.getConnector().setUrl(media.getConnector().getUrl() + "/test");
 		}
-		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.PUT);
+		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+				Method.PUT);
 		Assertions.assertNotNull(integrationRequestResult);
 
 		when(datasetService.datasetExists((UUID) Mockito.any())).thenReturn(true);
@@ -197,7 +201,8 @@ class IntegrationRequestServiceIT {
 		when(datasetService.updateDataset(Mockito.any())).thenReturn(metadata);
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.KO, integrationRequest.getIntegrationStatus());
 	}
@@ -205,7 +210,8 @@ class IntegrationRequestServiceIT {
 	@Test
 	@Order(4)
 	@Disabled("Contrôle désactivé par la RUDI-1459")
-	void testUpdateIntegrationRequestFromAnotherProviderThanTheCreator() throws IntegrationException, AppServiceException, DataverseAPIException, IOException {
+	void testUpdateIntegrationRequestFromAnotherProviderThanTheCreator()
+			throws IntegrationException, AppServiceException, DataverseAPIException, IOException {
 
 		final NodeProvider anotherNodeProvider = initNodeProvider();
 		final Metadata metadataToUpdate = initMetadata();
@@ -215,7 +221,8 @@ class IntegrationRequestServiceIT {
 		for (Media media : metadata.getAvailableFormats()) {
 			media.getConnector().setUrl(media.getConnector().getUrl() + "/test");
 		}
-		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.PUT);
+		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+				Method.PUT);
 		Assertions.assertNotNull(integrationRequestResult);
 
 		when(datasetService.datasetExists(metadata.getGlobalId())).thenReturn(true);
@@ -223,20 +230,22 @@ class IntegrationRequestServiceIT {
 		when(datasetService.updateDataset(Mockito.any())).thenReturn(metadata);
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.KO, integrationRequest.getIntegrationStatus());
 	}
 
 	@Test
 	@Order(5)
-	@Disabled("Contrôle désactivé - Problème WSO2 Anonymous")
+	@Disabled("Contrôle désactivé - Problème API Gateway Anonymous")
 	void testUpdateIntegrationRequest() throws IntegrationException, AppServiceException, DataverseAPIException {
 
 		for (Media media : metadata.getAvailableFormats()) {
 			media.getConnector().setUrl(media.getConnector().getUrl() + "/test");
 		}
-		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.PUT);
+		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+				Method.PUT);
 		Assertions.assertNotNull(integrationRequestResult);
 
 		when(datasetService.datasetExists((UUID) Mockito.any())).thenReturn(true);
@@ -244,7 +253,8 @@ class IntegrationRequestServiceIT {
 		when(datasetService.updateDataset(Mockito.any())).thenReturn(metadata);
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.OK, integrationRequest.getIntegrationStatus());
 	}
@@ -252,37 +262,42 @@ class IntegrationRequestServiceIT {
 	@Test
 	@Order(6)
 	@Disabled("Contrôle désactivé par la RUDI-1459")
-	void testDeleteIntegrationRequestFromAnotherProvider() throws IntegrationException, AppServiceException, DataverseAPIException {
+	void testDeleteIntegrationRequestFromAnotherProvider()
+			throws IntegrationException, AppServiceException, DataverseAPIException {
 
 		final NodeProvider anotherNodeProvider = initNodeProvider();
 		when(mockedKalimProviderHelper.getAuthenticatedNodeProvider()).thenReturn(anotherNodeProvider);
 
-		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.DELETE);
+		IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+				Method.DELETE);
 		Assertions.assertNotNull(integrationRequestResult);
 
 		when(datasetService.getDataset((UUID) Mockito.any())).thenReturn(metadata);
 		when(datasetService.archiveDataset(Mockito.any())).thenReturn("");
 
 		integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-		IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+		IntegrationRequestEntity integrationRequest = integrationRequestdao
+				.findByUuid(integrationRequestResult.getUuid());
 		Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 		Assertions.assertEquals(IntegrationStatus.KO, integrationRequest.getIntegrationStatus());
 	}
 
 	@Test
 	@Order(7)
-	@Disabled("Contrôle désactivé - Problème WSO2 Anonymous")
-	void testDeleteIntegrationRequest() throws IntegrationException, AppServiceException, DataverseAPIException, APIManagerException {
+	@Disabled("Contrôle désactivé - Problème API Gateway Anonymous")
+	void testDeleteIntegrationRequest() throws IntegrationException, AppServiceException, DataverseAPIException {
 		try {
 
-			IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.DELETE);
+			IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+					Method.DELETE);
 			Assertions.assertNotNull(integrationRequestResult);
 
 			when(datasetService.getDataset((UUID) Mockito.any())).thenReturn(metadata);
 			when(datasetService.archiveDataset(Mockito.any())).thenReturn("");
 
 			integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-			IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+			IntegrationRequestEntity integrationRequest = integrationRequestdao
+					.findByUuid(integrationRequestResult.getUuid());
 			Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 			Assertions.assertEquals(IntegrationStatus.OK, integrationRequest.getIntegrationStatus());
 
@@ -292,39 +307,29 @@ class IntegrationRequestServiceIT {
 	}
 
 	@ParameterizedTest(name = "Media service with interface_contract = {0}")
-	@CsvSource({
-			"wms",
-			"wfs",
-			"wmts",
-			"generic-data",
-			"temporal-bar-chart",
-	})
-	@Disabled("Contrôle désactivé - Problème WSO2 Anonymous")
-	void testCreateIntegrationRequestMediaService(final String interfaceContract) throws IntegrationException, AppServiceException, DataverseAPIException, APIManagerException {
+	@CsvSource({ "wms", "wfs", "wmts", "generic-data", "temporal-bar-chart", })
+	@Disabled("Contrôle désactivé - Problème API Gateway Anonymous")
+	void testCreateIntegrationRequestMediaService(final String interfaceContract)
+			throws IntegrationException, AppServiceException, DataverseAPIException {
 		try {
 
 			metadata.availableFormats(Collections.singletonList(new MediaService()
-					.mediaType(Media.MediaTypeEnum.SERVICE)
-					.mediaId(UUID.randomUUID())
-					.connector(new Connector()
-							.interfaceContract(interfaceContract)
-							.url("https://data.explore.star.fr/explore/dataset/tco-metro-equipements-etat-tr/download/?format=json&timezone=Europe/Berlin&lang=fr")
-					)
-					.mediaDates(new ReferenceDates()
-							.created(OffsetDateTime.now())
-							.updated(OffsetDateTime.now())
-					)
-			));
+					.mediaType(Media.MediaTypeEnum.SERVICE).mediaId(UUID.randomUUID())
+					.connector(new Connector().interfaceContract(interfaceContract).url(
+							"https://data.explore.star.fr/explore/dataset/tco-metro-equipements-etat-tr/download/?format=json&timezone=Europe/Berlin&lang=fr"))
+					.mediaDates(new ReferenceDates().created(OffsetDateTime.now()).updated(OffsetDateTime.now()))));
 
 			final var doi = UUID.randomUUID().toString();
 			when(datasetService.createDataset(Mockito.any())).thenReturn(doi);
 			when(datasetService.getDataset(doi)).thenReturn(metadata);
 
-			IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata, Method.POST);
+			IntegrationRequest integrationRequestResult = integrationRequestService.createIntegrationRequest(metadata,
+					Method.POST);
 			Assertions.assertNotNull(integrationRequestResult);
 
 			integrationRequestService.handleIntegrationRequest(integrationRequestResult.getUuid());
-			IntegrationRequestEntity integrationRequest = integrationRequestdao.findByUuid(integrationRequestResult.getUuid());
+			IntegrationRequestEntity integrationRequest = integrationRequestdao
+					.findByUuid(integrationRequestResult.getUuid());
 			Assertions.assertEquals(ProgressStatus.INTEGRATION_HANDLED, integrationRequest.getProgressStatus());
 			Assertions.assertEquals(IntegrationStatus.OK, integrationRequest.getIntegrationStatus());
 
@@ -333,11 +338,11 @@ class IntegrationRequestServiceIT {
 		}
 	}
 
-	private void deleteAllAPI() throws IntegrationException, AppServiceUnauthorizedException, APIManagerException {
+	private void deleteAllAPI() throws IntegrationException, AppServiceUnauthorizedException, DeleteApiException {
 		if (metadata != null) {
 			final var integrationRequest = integrationRequestService.createIntegrationRequest(metadata, Method.POST);
 			final var integrationRequestEntity = integrationRequestMapper.dtoToEntity(integrationRequest);
-			apiManagerHelper.deleteAllAPI(integrationRequestEntity);
+			apiGatewayManagerHelper.deleteApis(integrationRequestEntity);
 			metadata = null;
 		}
 	}

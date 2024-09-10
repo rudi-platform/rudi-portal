@@ -72,6 +72,13 @@ export class MonthYearDatepickerComponent implements OnInit {
     public startDate: Moment | null;
 
     /**
+     * Date à partir de laquelle on peut sélectionner une date
+     * (grise les dates antérieures) | null par défaut
+     */
+    @Input()
+    public isDisable: boolean = false;
+
+    /**
      * Accesseur au datepicker popup pour sélectionner la date au clic
      */
     @ViewChild('datepicker')

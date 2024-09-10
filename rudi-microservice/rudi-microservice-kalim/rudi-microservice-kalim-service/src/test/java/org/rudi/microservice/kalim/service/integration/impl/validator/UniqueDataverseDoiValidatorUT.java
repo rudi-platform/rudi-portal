@@ -1,5 +1,11 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,13 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.DataverseDoiExtractor;
+import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.UniqueDataverseDoiValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
-
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UniqueDataverseDoiValidatorUT {
@@ -30,8 +32,7 @@ class UniqueDataverseDoiValidatorUT {
 
 	@Test
 	void validateNotAlreadyUsed() throws DataverseAPIException {
-		final Metadata metadata = new Metadata()
-				.dataverseDoi("doi:10.5072/FK2/OFKEB1");
+		final Metadata metadata = new Metadata().dataverseDoi("doi:10.5072/FK2/OFKEB1");
 
 		when(datasetService.datasetExists(metadata.getDataverseDoi())).thenReturn(false);
 
@@ -42,8 +43,7 @@ class UniqueDataverseDoiValidatorUT {
 
 	@Test
 	void validateAlreadyUsed() throws DataverseAPIException {
-		final Metadata metadata = new Metadata()
-				.dataverseDoi("doi:10.5072/FK2/OFKEB1");
+		final Metadata metadata = new Metadata().dataverseDoi("doi:10.5072/FK2/OFKEB1");
 
 		when(datasetService.datasetExists(metadata.getDataverseDoi())).thenReturn(true);
 
@@ -51,9 +51,9 @@ class UniqueDataverseDoiValidatorUT {
 
 		assertThat(errors).hasOnlyOneElementSatisfying(error -> assertThat(error)
 				.hasFieldOrPropertyWithValue("code", "ERR-304")
-				.hasFieldOrPropertyWithValue("message", "La valeur saisie 'doi:10.5072/FK2/OFKEB1' pour le champ 'dataverse_doi' est déjà utilisée")
-				.hasFieldOrPropertyWithValue("fieldName", "dataverse_doi")
-		);
+				.hasFieldOrPropertyWithValue("message",
+						"La valeur saisie 'doi:10.5072/FK2/OFKEB1' pour le champ 'dataverse_doi' est déjà utilisée")
+				.hasFieldOrPropertyWithValue("fieldName", "dataverse_doi"));
 	}
 
 	@Test

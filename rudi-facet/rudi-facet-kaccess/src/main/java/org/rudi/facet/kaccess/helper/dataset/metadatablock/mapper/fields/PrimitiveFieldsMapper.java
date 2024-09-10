@@ -12,8 +12,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.validation.Valid;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseMappingException;
 import org.rudi.facet.dataverse.bean.DatasetMetadataBlockElementField;
 import org.rudi.facet.dataverse.fields.FieldSpec;
@@ -25,6 +23,9 @@ import org.rudi.facet.kaccess.bean.Organization;
 import org.rudi.facet.kaccess.bean.OrganizationOrganizationCoordinates;
 import org.rudi.facet.kaccess.bean.ReferenceDates;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -33,11 +34,8 @@ abstract class PrimitiveFieldsMapper<T> {
 	/**
 	 * Types whose values will not be mapped using JSON serialisation
 	 */
-	private static final List<Class<?>> TYPES_NOT_MAPPED_TO_JSON_STRING = Arrays.asList(
-			BigDecimal.class,
-			Boolean.class,
-			String.class
-	);
+	private static final List<Class<?>> TYPES_NOT_MAPPED_TO_JSON_STRING = Arrays.asList(BigDecimal.class, Boolean.class,
+			String.class);
 	private final FieldGenerator fieldGenerator;
 	protected final ObjectMapper objectMapper;
 	final DateTimeMapper dateTimeMapper;
@@ -48,12 +46,14 @@ abstract class PrimitiveFieldsMapper<T> {
 		return fields;
 	}
 
-	public abstract void metadataToFields(T metadataElement, Map<String, Object> fields) throws DataverseMappingException;
+	public abstract void metadataToFields(T metadataElement, Map<String, Object> fields)
+			throws DataverseMappingException;
 
 	public void createField(FieldSpec spec, Object value, Map<String, Object> fields) throws DataverseMappingException {
 		if (value != null) {
 			final Object fieldValue;
 			if (spec.isMultiple()) {
+				@SuppressWarnings("unchecked")
 				final List<Object> valueAsList = (List<Object>) value;
 				final List<String> stringValues = new ArrayList<>();
 				for (final var itemValue : valueAsList) {
@@ -72,7 +72,8 @@ abstract class PrimitiveFieldsMapper<T> {
 		}
 	}
 
-	public void createField(FieldSpec spec, OffsetDateTime offsetDateTime, Map<String, Object> fields) throws DataverseMappingException {
+	public void createField(FieldSpec spec, OffsetDateTime offsetDateTime, Map<String, Object> fields)
+			throws DataverseMappingException {
 		if (offsetDateTime != null) {
 			final var value = dateTimeMapper.toDataverseTimestamp(offsetDateTime);
 			createField(spec, value, fields);
@@ -118,7 +119,8 @@ abstract class PrimitiveFieldsMapper<T> {
 	public abstract T fieldsToMetadata(@Nonnull MapOfFields fields) throws DataverseMappingException;
 
 	/**
-	 * Injecte les métadonnées par défaut (avec toutes les propriétés requises par le Swagger) dans le cas où aucun champ (Field) n'existe pas côté Dataverse
+	 * Injecte les métadonnées par défaut (avec toutes les propriétés requises par le Swagger) dans le cas où aucun champ (Field) n'existe pas côté
+	 * Dataverse
 	 *
 	 * @return la valeur par défaut ou null si la métadonnée n'est pas obligatoire
 	 * @see #fieldsToMetadata(MapOfFields) dans le cas où le champ existe côté Dataverse
@@ -126,14 +128,9 @@ abstract class PrimitiveFieldsMapper<T> {
 	@Nullable
 	public abstract T defaultMetadata();
 
-	protected void createDatesFields(@Nullable ReferenceDates dates, Map<String, Object> fields,
-			FieldSpec createdField,
-			FieldSpec validatedField,
-			FieldSpec publishedField,
-			FieldSpec updatedField,
-			FieldSpec expiresField,
-			FieldSpec deletedField
-	) throws DataverseMappingException {
+	protected void createDatesFields(@Nullable ReferenceDates dates, Map<String, Object> fields, FieldSpec createdField,
+			FieldSpec validatedField, FieldSpec publishedField, FieldSpec updatedField, FieldSpec expiresField,
+			FieldSpec deletedField) throws DataverseMappingException {
 		if (dates != null) {
 			createField(createdField, dates.getCreated(), fields);
 			createField(validatedField, dates.getValidated(), fields);
@@ -144,29 +141,18 @@ abstract class PrimitiveFieldsMapper<T> {
 		}
 	}
 
-	protected ReferenceDates buildDates(MapOfFields fields,
-			FieldSpec createdField,
-			FieldSpec validatedField,
-			FieldSpec publishedField,
-			FieldSpec updatedField,
-			FieldSpec expiresField,
-			FieldSpec deletedField) {
-		return new ReferenceDates()
-				.created(fields.get(createdField).getValueAsOffsetDateTime(dateTimeMapper))
+	protected ReferenceDates buildDates(MapOfFields fields, FieldSpec createdField, FieldSpec validatedField,
+			FieldSpec publishedField, FieldSpec updatedField, FieldSpec expiresField, FieldSpec deletedField) {
+		return new ReferenceDates().created(fields.get(createdField).getValueAsOffsetDateTime(dateTimeMapper))
 				.validated(fields.get(validatedField).getValueAsOffsetDateTime(dateTimeMapper))
 				.published(fields.get(publishedField).getValueAsOffsetDateTime(dateTimeMapper))
 				.updated(fields.get(updatedField).getValueAsOffsetDateTime(dateTimeMapper))
 				.expires(fields.get(expiresField).getValueAsOffsetDateTime(dateTimeMapper))
-				.deleted(fields.get(deletedField).getValueAsOffsetDateTime(dateTimeMapper))
-				;
+				.deleted(fields.get(deletedField).getValueAsOffsetDateTime(dateTimeMapper));
 	}
 
-	protected void createContactFields(@Nullable Contact contact, Map<String, Object> fields,
-			FieldSpec contactIdField,
-			FieldSpec contactNameField,
-			FieldSpec emailField,
-			FieldSpec organizationNameField,
-			FieldSpec roleField,
+	protected void createContactFields(@Nullable Contact contact, Map<String, Object> fields, FieldSpec contactIdField,
+			FieldSpec contactNameField, FieldSpec emailField, FieldSpec organizationNameField, FieldSpec roleField,
 			FieldSpec contactSummaryField) throws DataverseMappingException {
 		if (contact != null) {
 			createField(contactIdField, contact.getContactId().toString(), fields);
@@ -178,15 +164,9 @@ abstract class PrimitiveFieldsMapper<T> {
 		}
 	}
 
-	protected Contact buildContact(@Nonnull MapOfFields fields,
-			FieldSpec contactIdField,
-			FieldSpec contactNameField,
-			FieldSpec emailField,
-			FieldSpec organizationNameField,
-			FieldSpec roleField,
-			FieldSpec contactSummaryField) {
-		return new Contact()
-				.contactId(fields.get(contactIdField).getValueAsUUID())
+	protected Contact buildContact(@Nonnull MapOfFields fields, FieldSpec contactIdField, FieldSpec contactNameField,
+			FieldSpec emailField, FieldSpec organizationNameField, FieldSpec roleField, FieldSpec contactSummaryField) {
+		return new Contact().contactId(fields.get(contactIdField).getValueAsUUID())
 				.contactName(fields.get(contactNameField).getValueAsString())
 				.email(fields.get(emailField).getValueAsString())
 				.organizationName(fields.get(organizationNameField).getValueAsString())
@@ -195,11 +175,8 @@ abstract class PrimitiveFieldsMapper<T> {
 	}
 
 	protected void createOrganizationFields(@Nullable Organization organization, Map<String, Object> fields,
-			FieldSpec organizationNameField,
-			FieldSpec organizationAddressField,
-			FieldSpec organizationIdField,
-			FieldSpec latitudeField, FieldSpec longitudeField,
-			FieldSpec organizationCaptionField,
+			FieldSpec organizationNameField, FieldSpec organizationAddressField, FieldSpec organizationIdField,
+			FieldSpec latitudeField, FieldSpec longitudeField, FieldSpec organizationCaptionField,
 			FieldSpec organizationSummaryField) throws DataverseMappingException {
 		if (organization != null) {
 			createField(organizationIdField, organization.getOrganizationId().toString(), fields);
@@ -211,20 +188,18 @@ abstract class PrimitiveFieldsMapper<T> {
 		}
 	}
 
-	private void createCoordinatesFields(@Valid OrganizationOrganizationCoordinates organizationCoordinates, Map<String, Object> fields, FieldSpec latitudeField, FieldSpec longitudeField) throws DataverseMappingException {
+	private void createCoordinatesFields(@Valid OrganizationOrganizationCoordinates organizationCoordinates,
+			Map<String, Object> fields, FieldSpec latitudeField, FieldSpec longitudeField)
+			throws DataverseMappingException {
 		if (organizationCoordinates != null) {
 			createField(latitudeField, organizationCoordinates.getLatitude(), fields);
 			createField(longitudeField, organizationCoordinates.getLongitude(), fields);
 		}
 	}
 
-	protected Organization buildOrganization(MapOfFields fields,
-			FieldSpec organizationNameField,
-			FieldSpec organizationAddressField,
-			FieldSpec organizationIdField,
-			FieldSpec latitudeField, FieldSpec longitudeField,
-			FieldSpec organizationCaptionField,
-			FieldSpec organizationSummaryField) {
+	protected Organization buildOrganization(MapOfFields fields, FieldSpec organizationNameField,
+			FieldSpec organizationAddressField, FieldSpec organizationIdField, FieldSpec latitudeField,
+			FieldSpec longitudeField, FieldSpec organizationCaptionField, FieldSpec organizationSummaryField) {
 		final var organization = new Organization()
 				.organizationName(fields.get(organizationNameField).getValueAsString())
 				.organizationAddress(fields.get(organizationAddressField).getValueAsString())

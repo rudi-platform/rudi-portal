@@ -19,6 +19,8 @@ public final class ApiGatewayConstants {
 
 	public static final int MEDIA_ID_INDEX = 7;
 
+	public static final int CONTRACT_ID_INDEX = 9;
+
 	public static final String APIGATEWAY_UNKNOWN_LOGIN = "unknown";
 
 	public static final String APIGATEWAY_ERROR_HEADER_NAME = "X-Error-Message";

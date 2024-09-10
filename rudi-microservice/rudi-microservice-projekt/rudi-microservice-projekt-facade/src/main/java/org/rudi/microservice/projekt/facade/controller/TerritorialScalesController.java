@@ -6,7 +6,7 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.PagedTerritorialScaleList;
 import org.rudi.microservice.projekt.core.bean.TerritorialScale;
-import org.rudi.microservice.projekt.core.bean.TerritorialScaleSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TerritorialScaleSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.TerritorialScalesApi;
 import org.rudi.microservice.projekt.service.territory.TerritorialScaleService;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +44,20 @@ public class TerritorialScalesController implements TerritorialScalesApi {
 		return ResponseEntity.ok(territorialScaleService.getTerritorialScale(uuid));
 	}
 
+	/**
+	 * GET /territorial-scales : Recherche d&#39;échelles de territoires
+	 * Recherche d&#39;échelles de territoires
+	 *
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @param active (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedTerritorialScaleList> searchTerritorialScales(Integer limit, Integer offset, String order) throws Exception {
-		val searchCriteria = new TerritorialScaleSearchCriteria();
+	public ResponseEntity<PagedTerritorialScaleList> searchTerritorialScales(Boolean active, Integer limit, Integer offset, String order) throws Exception {
+		val searchCriteria = TerritorialScaleSearchCriteria.builder().active(active).build();
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = territorialScaleService.searchTerritorialScales(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedTerritorialScaleList()

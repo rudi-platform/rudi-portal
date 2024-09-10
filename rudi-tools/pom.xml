@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-parent</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 
@@ -19,8 +19,6 @@
 
 	<modules>
 		<module>rudi-tools-nodestub</module>
-		<module>rudi-tools-wso2</module>
-		<module>rudi-tools-wso2-handler</module>
 		<module>rudi-tools-cms-magnolia</module>
 	</modules>
 

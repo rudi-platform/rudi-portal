@@ -1,3 +1,4 @@
+import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {MatStepper} from '@angular/material/stepper';
@@ -24,14 +25,13 @@ import {ReuseProjectCommonComponent} from '../../components/reuse-project-common
 import {DataRequestItem} from '../../model/data-request-item';
 import {ProjectDatasetItem} from '../../model/project-dataset-item';
 import {UpdateAction} from '../../model/upate-action';
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @Component({
     selector: 'app-submission-reuse',
     templateUrl: './submission-project.component.html',
     styleUrls: ['./submission-project.component.scss'],
     providers: [{
-        provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false }
+        provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
     }]
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
@@ -94,10 +94,9 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         });
 
         this.isLoading = true;
-        this.projectSubmissionService.loadDependenciesProject().subscribe(
-            (dependencies: FormProjectDependencies) => {
-                this.isLoading = false;
-                this.suggestions = this.projectSubmissionService.getConfidentialitiesRadio(dependencies.confidentialities);
+
+        this.projectSubmissionService.loadDependenciesProject().pipe(
+            switchMap((dependencies: FormProjectDependencies) => {
                 this.confidentialities = dependencies.confidentialities;
                 this.publicCible = dependencies.projectPublicCible;
                 this.territorialScales = dependencies.territorialScales;
@@ -105,6 +104,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 this.supports = dependencies.supports;
                 this.user = dependencies.user;
                 this.reuseStatus = dependencies.reuseStatus;
+
                 if (this.user) {
                     this.step2FormGroup.setValue({
                         ownerType: OwnerType.User,
@@ -122,8 +122,18 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 } else {
                     this.organizationItems = [];
                 }
-            }
-        );
+                this.isLoading = false;
+                this.suggestions = [];
+
+                return this.projektMetierService.searchProjectConfidentialities({active: true});
+            })
+        ).subscribe(values => {
+            this.suggestions = values.map(value => ({
+                code: value.code,
+                label: value.label,
+                description: value.description
+            } as RadioListItem));
+        });
     }
 
     /**
@@ -266,7 +276,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 this.projectType
             ),
             this.projectSubmissionService.searchConfidentiality(
-                this.step1FormGroup.get('confidentiality').value, this.confidentialities
+                this.step1FormGroup.get('confidentiality').value.code, this.confidentialities
             ),
             this.projectSubmissionService.findCorrespondingReutilisationStatus(
                 this.step1FormGroup.get('reuse_status').value.code, this.reuseStatus
@@ -362,6 +372,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
     clickCancel(): Promise<boolean> {
         return this.router.navigate(['/projets']);
     }
+
     clickNext(): void {
         if (this.step1FormGroup.get('confidentiality').errors?.required) {
             this.isConfidentialityValid = false;
@@ -404,7 +415,6 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 tap(created => this.createdProject = created)
             );
         }
-
         return createOrUpdate;
     }
 

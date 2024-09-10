@@ -34,7 +34,7 @@ export class Step2ProjectComponent {
         if (ownerType === OwnerType.Organization && !this.organizationItems?.length) {
             forkJoin({
                 messageBeforeLink: this.translateService.get('project.stepper.submission.step2.ownerType.organization.userHasNoOrganization.messageBeforeLink'),
-                linkHref: this.propertiesMetierService.get('rudidatarennes.contact'),
+                linkHref: this.propertiesMetierService.get('front.contact'),
                 linkLabel: this.translateService.get('project.stepper.submission.step2.ownerType.organization.userHasNoOrganization.linkLabel'),
                 messageAfterLink: this.translateService.get('project.stepper.submission.step2.ownerType.organization.userHasNoOrganization.messageAfterLink'),
             }).subscribe(({messageBeforeLink, linkHref, linkLabel, messageAfterLink}) => {

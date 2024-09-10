@@ -1,0 +1,8 @@
+{
+	"uuid": "2ee543ea-cb94-473f-bc7a-92f176fcd7f2",
+	"code": "closingDateNull",
+	"label": "Projets dont la closing date est null",
+	"opening_date": "2021-10-29T10:36:40.614",
+	"closing_date": null,
+	"order": 1
+}

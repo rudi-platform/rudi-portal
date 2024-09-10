@@ -77,6 +77,15 @@ export abstract class TaskDetailComponent<A extends AssetDescription, D, T exten
     protected abstract goBackToList(): Promise<boolean>;
 
     private doAction(action: Action, updatedTask?: Task): void {
+        let actions: Action[];
+        actions = updatedTask.actions.map(element => {
+            if (element.name === action.name){
+                 return {...element, form: {...element.form, sections: [{...element.form.sections[0], fields: [{...element.form.sections[0].fields[0], values: action.form?.sections[0]?.fields[0].values ?? undefined}]}]}};
+            } else {
+                 return element;
+            }
+        });
+        updatedTask = {...updatedTask, actions};
         this.taskMetierService.doAction(action, updatedTask ?? this.taskWithDependencies.task).subscribe({
             complete: () => {
                 this.translateService.get('task.success').subscribe(message => {

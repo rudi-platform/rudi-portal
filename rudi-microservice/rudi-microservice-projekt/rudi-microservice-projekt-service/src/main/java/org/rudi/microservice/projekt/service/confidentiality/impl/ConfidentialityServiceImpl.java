@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.Confidentiality;
-import org.rudi.microservice.projekt.core.bean.ConfidentialitySearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ConfidentialitySearchCriteria;
 import org.rudi.microservice.projekt.service.confidentiality.ConfidentialityService;
 import org.rudi.microservice.projekt.service.confidentiality.impl.validator.ConfidentialityValidator;
 import org.rudi.microservice.projekt.service.confidentiality.impl.validator.UpdateConfidentialityValidator;

@@ -1,12 +1,12 @@
 package org.rudi.microservice.projekt.service.territory;
 
+import java.util.UUID;
+
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.TerritorialScale;
-import org.rudi.microservice.projekt.core.bean.TerritorialScaleSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TerritorialScaleSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.UUID;
 
 public interface TerritorialScaleService {
 

@@ -1,5 +1,7 @@
 package org.rudi.microservice.konsult.service.sitemap.impl;
 
+import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,18 +24,15 @@ import org.springframework.stereotype.Component;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor
 public class DatasetsUrlListComputerImpl extends AbstractUrlListComputer {
 
 	private final MetadataService metadataService;
 
 	@Getter(AccessLevel.PUBLIC)
-	@Value("${front.urlServer:http://www.rudi.bzh}")
+	@Value("${front.urlServer}")
 	private String urlServer;
 
 	@Getter(AccessLevel.PUBLIC)
@@ -46,17 +45,17 @@ public class DatasetsUrlListComputerImpl extends AbstractUrlListComputer {
 	}
 
 	@Override
-	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData) throws AppServiceException {
+	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData)
+			throws AppServiceException {
 
 		MetadataList metadataList;
 
 		try {
-			metadataList = metadataService
-					.searchMetadatas(new DatasetSearchCriteria().limit(sitemapDescriptionData.getMaxUrlCount()).offset(0));
+			metadataList = metadataService.searchMetadatas(
+					new DatasetSearchCriteria().limit(sitemapDescriptionData.getMaxUrlCount()).offset(0));
 		} catch (DataverseAPIException e) {
-			throw new AppServiceException(
-					String.format("Une erreur s'est produite lors de la récupération des datasets : %s ",
-							e.getApiResponseInfo()));
+			throw new AppServiceException(String.format(
+					"Une erreur s'est produite lors de la récupération des datasets : %s ", e.getApiResponseInfo()));
 		}
 
 		List<TUrl> datasetUrlList = new ArrayList<>();
@@ -70,8 +69,8 @@ public class DatasetsUrlListComputerImpl extends AbstractUrlListComputer {
 	}
 
 	private String buildLocation(UUID uuid, String title) {
-		return StringUtils
-				.join(Arrays.array(StringUtils.removeEnd(urlServer, "/"), catalogueUrlPrefixe, uuid, "/", normalize(title)));
+		return StringUtils.join(
+				Arrays.array(StringUtils.removeEnd(urlServer, "/"), catalogueUrlPrefixe, uuid, "/", normalize(title)));
 	}
 
 }

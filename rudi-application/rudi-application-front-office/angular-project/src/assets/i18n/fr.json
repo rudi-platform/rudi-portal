@@ -58,16 +58,6 @@
         "defaultDetail": "Détail"
     },
     "project": {
-        "confidentiality": {
-            "CONFIDENTIAL": {
-                "label": "Confidentiel",
-                "description": "Si vous cochez cette case, votre réutilisation ne sera pas visible dans le catalogue Rudi. Seuls vous et l'animateur Rudi pourront le consulter."
-            },
-            "OPEN": {
-                "label": "Visible en ligne",
-                "description": "Si vous cochez cette case, votre réutilisation sera visible dans le catalogue Rudi. Tous les visiteurs de Rudi pourront consulter : votre réutilisation, les contacts renseignés ainsi que les jeux de données mobilisés."
-            }
-        },
         "catalogue": "Catalogue",
         "reutilisations": " des réutilisations",
         "buttonPopover": {
@@ -182,7 +172,7 @@
                     "requiredInformation": "Informations obligatoires à renseigner",
                     "uuid": {
                         "title": "Uuid",
-                        "description": "L'uuid est défini dans l'url de détail d'un jdd. Pour le récupérer, veuillez accéder à l'écran de détail du jdd concerné et copier le dernier élément de l'url. (Par exemple dans https://rudi.bzh/detail/111f22c3-c888-55ab-45f9-e11azer99b11 , le uuid est 111f22c3-c888-55ab-45f9-e11azer99b11)",
+                        "description": "L'uuid est défini dans l'url de détail d'un jdd. Pour le récupérer, veuillez accéder à l'écran de détail du jdd concerné et copier le dernier élément de l'url. (Par exemple dans https://<server-rudi>/detail/111f22c3-c888-55ab-45f9-e11azer99b11 , le uuid est 111f22c3-c888-55ab-45f9-e11azer99b11)",
                         "add-open": "Ajouter un jeu de données ouvert",
                         "add-restricted": "Demander l'accès à un jeu de données"
                     },
@@ -336,7 +326,7 @@
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
-        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée. Si besoin, <a href=\"https://rudi.datarennes.fr/portail-beta-contact/\">contactez-nous</a>."
+        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée. Si besoin, <a href=\"https://rudi.fr/contact/\">contactez-nous</a>."
     },
     "common": {
         "modifier": "Modifier",
@@ -1176,9 +1166,21 @@
         },
         "projectDetails": {
             "headerTitle": "Demande de publication",
-            "projectTab": "Réutilisation",
+            "projectTab": {
+                "title": "Réutilisation",
+                "modifiedProject": "Réutilisation modifiée",
+                "currentProject": "Réutilisation actuelle"
+            },
             "projectHistorique": "Historique",
             "projectOwner": "Porteur de projet"
+        },
+        "projectTaskHistoric": {
+            "title": "Historique de la demande",
+            "addAt": "Ajouté le",
+            "initiator": "Initiateur de l'action",
+            "action": "Action",
+            "step": "Etape",
+            "noResult": "Aucun historique."
         },
         "myRequests": {
             "dateTableHeader": "Date",
@@ -1209,7 +1211,8 @@
             "ownerName": "Porteur de projet",
             "status": "Statut",
             "endDate": "Fin d’accès",
-            "unknown": "inconnu"
+            "unknown": "inconnu",
+            "modifiedProject": "Modifier la réutilisation"
         },
         "myActivity": {
             "title": "Mon activité",
@@ -1247,13 +1250,27 @@
             "annuler": "Annuler",
             "confirmer": "Confirmer",
             "re-use": "Type de réutilisation",
+            "updateMyReuse": "Modifier la réutilisation",
+            "myReuseRecap": "Récapitulatif de votre utilisation : ",
+            "msgToModeratorLabel": "Message à l'attention des équipes Rudi : ",
+            "updateMyReuseHint": "Vous vous appretez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                            être soumise à la modération auprès des équipes Rudi afin d'être publiée sur le catalogue des réutilisations.",
             "basicInfos": {
                 "projectType": "Type de réutilisation",
                 "creationDate": "Date de création",
                 "updatedDate": "Mise à jour"
             },
             "tabs": {
-                "api": "API",
+                "api": {
+                    "title": "API",
+                    "projectKeys": {
+                        "results": "Résultat(s)",
+                        "table": {
+                            "columnCreationDate": "Date de création",
+                            "columnName": "Nom",
+                            "columnExpirationDate": "Date d'expiration"
+                        }
+                    }
+                },
                 "datasets": {
                     "title": "Jeux de données",
                     "addButton": "Ajouter",
@@ -1290,6 +1307,7 @@
                 "update": {
                     "title": "Modifier les informations",
                     "text": "Vous vous apprêtez à modifier les informations de votre réutilisation. Celle-ci sera mise à jour de façon irrémédiable au clic sur “Confirmer”.",
+                    "text2": "Vos modifications vont être soumises à modération auprès des équipes Rudi afin d'être publiées sur le catalogue des réutilisations. \n Êtes-vous sûr(e) de vouloir soumettre vos modifications ?",
                     "confirmationPopup": {
                         "cancel": "Annuler",
                         "validate": "Confirmer"
@@ -1355,7 +1373,7 @@
         "projectApi": {
             "identificationKey": "Clés d'identification",
             "explainationText": "Vous trouverez ici vos clés d'identification nécessaires pour requêter des jeux de données en vous authentifiant. De plus amples informations sont disponibles sur ",
-            "explainationTextLink": "doc.rudi.bzh.",
+            "explainationTextLink": "la documentation de Rudi",
             "acces": "Accès",
             "textOwner": "Saisissez le mot de passe de votre compte pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
             "textUser": "Saisissez le mot de passe de votre organisation pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
@@ -1366,7 +1384,32 @@
             "consumerSecret": "Consumer Secret",
             "errorPassword": "Le mot de passe que vous avez saisi n'est pas valide. Veuillez re-saisir le mot de passe.",
             "textConsumerKey": "Votre Consumer Key est le login à renseigner pour vous authentifier lorsque vous requêtez des API.",
-            "textConsumerSecret": "Votre Consumer Secret est le mot de passe à renseigner pour vous authentifier lorsque vous requêtez des API."
+            "textConsumerSecret": "Votre Consumer Secret est le mot de passe à renseigner pour vous authentifier lorsque vous requêtez des API.",
+            "generateKey": "Générer une clé",
+            "clickHere": "Cliquer ici pour en savoir plus.",
+            "cancel": "Annuler",
+            "confirm": "Confirmer",
+            "noKeysFound": "Aucune clé d’identification n’a été générée pour cette réutilisation",
+            "generateKeyDialog": {
+                "title": "Générer mes clés d'identification",
+                "description1": "Vous vous apprêtez à générer vos clés d’identification (Consumer Key et Consumer Secret). Celles-ci vous permettront d’accéder aux jeux de données mobilisés dans le cadre de votre réutilisation par le biais d’API.",
+                "description2": "Attention, les clés d’identifications ne sont pas à divulguer à d’autres personnes que vous ou un membre de votre organisation.",
+                "form": {
+                    "nameLabel": "Nom de votre paire de clés",
+                    "nameDescription": "Celui-ci sera visible depuis votre espace personnel.",
+                    "nameError": "Le nom est obligatoire",
+                    "consumerKeyLabel": "Consumer Key",
+                    "consumerKeyDescription": "Votre Consumer Key est le login à renseigner pour vous authentifier lorsque vous requêtez des API.",
+                    "consumerSecretLabel": "Consumer Secret",
+                    "consumerSecretDescription": "Votre Consumer Secret est le mot de passe à renseigner pour vous authentifier lorsque vous requêtez des API.",
+                    "confirmDescription": "Je confirme avoir stocké ces informations dans un coffre-fort de mot de passe. Les identifiants ainsi générés ne peuvent pas être restitués après la fermeture de la présente fenêtre mais peut être révoqué à tout instant en revenant dans la présente page.",
+                    "expirationDateLabel": "Date d'expiration",
+                    "expirationDateDescription": "Le mois et l'année sélectionnés ici, correspondent à la date d’expiration de votre paire de clés. Une paire de clé est valable 1 an, vous pourrez la révoquer à tout depuis votre espace personnel.",
+                    "passwordLabel": "Mot de passe",
+                    "passwordDescription": "Veuillez renseigner votre mot de passe utilisateur.",
+                    "passwordError": "Le mot de passe est erroné. Veuillez corriger."
+                }
+            }
         },
         "projectDatasets": {
             "subscribe": "Souscrire",
@@ -1385,7 +1428,7 @@
             "title": "Souscrire",
             "description": "Veuillez sélectionner le ou les jeux de données auxquels vous souhaitez souscrire. Plus d'informations sont disponibles sur ",
             "tableTitle": "Jeux de données",
-            "link": " doc.rudi.bzh.",
+            "link": " doc.rudi.fr.",
             "textOwner": "Saisissez le mot de passe de votre compte.",
             "textUser": "Saisissez le mot de passe de votre organisation."
         },

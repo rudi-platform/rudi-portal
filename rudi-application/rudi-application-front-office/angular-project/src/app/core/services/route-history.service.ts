@@ -20,6 +20,7 @@ export class RouteHistoryService {
      * @param authenticationService service de gestion de l'authent
      */
     constructor(private router: Router,
+                // private authenticationService: AuthenticationService) {
                 private authenticationService: AuthenticationService) {
         // On observe les évènements de changement de route
         this.router.events.pipe(

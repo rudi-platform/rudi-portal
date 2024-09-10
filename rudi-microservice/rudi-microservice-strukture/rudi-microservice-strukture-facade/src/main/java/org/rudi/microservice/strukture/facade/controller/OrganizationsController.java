@@ -15,7 +15,6 @@ import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriter
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationList;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationUserMembers;
-import org.rudi.microservice.strukture.core.bean.PasswordUpdate;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.USER;
@@ -79,13 +79,15 @@ public class OrganizationsController implements OrganizationsApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", " + MODULE_KALIM + "," + USER + ")")
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", " + MODULE_KALIM + ","
+			+ USER + ")")
 	public ResponseEntity<OrganizationMember> addOrganizationMember(UUID organizationUuid,
 			OrganizationMember organizationMember) throws Exception {
 		return ResponseEntity.ok(organizationService.addOrganizationMember(organizationUuid, organizationMember));
 	}
 
 	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", " + USER + ")")
 	public ResponseEntity<List<OrganizationMember>> getOrganizationMembers(UUID organizationUuid)
 			throws AppServiceException {
 		return ResponseEntity.ok(organizationService.getOrganizationMembers(organizationUuid));
@@ -103,41 +105,28 @@ public class OrganizationsController implements OrganizationsApi {
 	public ResponseEntity<PagedOrganizationUserMembers> searchOrganizationUserMembers(UUID uuid, String searchText,
 			OrganizationMemberType memberType, Integer offset, Integer limit, String order) throws Exception {
 		val pageable = utilPageable.getPageable(offset, limit, order);
-		val criteria = OrganizationMembersSearchCriteria
-				.builder()
-				.organizationUuid(uuid)
-				.searchText(searchText)
+		val criteria = OrganizationMembersSearchCriteria.builder().organizationUuid(uuid).searchText(searchText)
 				.type(memberType)
-				//Rajout de la limit pour que les deux listes à mapper soient de la même taille
-				.limit(limit)
-				.build();
+				// Rajout de la limit pour que les deux listes à mapper soient de la même taille
+				.limit(limit).build();
 		val page = organizationService.searchOrganizationMembers(criteria, pageable);
-		return ResponseEntity.ok(
-				new PagedOrganizationUserMembers()
-						.total(page.getTotalElements())
-						.elements(page.getContent())
-		);
+		return ResponseEntity
+				.ok(new PagedOrganizationUserMembers().total(page.getTotalElements()).elements(page.getContent()));
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ")")
-	public ResponseEntity<Boolean> isAuthenticatedUserOrganizationAdministrator(UUID organizationUuid) throws Exception {
+	public ResponseEntity<Boolean> isAuthenticatedUserOrganizationAdministrator(UUID organizationUuid)
+			throws Exception {
 		return ResponseEntity.ok(organizationService.isAuthenticatedOrganizationAdministrator(organizationUuid));
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ")")
-	public ResponseEntity<OrganizationMember> updateOrganizationMember(UUID organizationUuid, UUID userUuid, OrganizationMember organizationMember) throws Exception {
-		return ResponseEntity.ok(organizationService.updateOrganizationMember(organizationUuid, userUuid, organizationMember));
+	public ResponseEntity<OrganizationMember> updateOrganizationMember(UUID organizationUuid, UUID userUuid,
+			OrganizationMember organizationMember) throws Exception {
+		return ResponseEntity
+				.ok(organizationService.updateOrganizationMember(organizationUuid, userUuid, organizationMember));
 	}
-
-
-	@Override
-	@PreAuthorize("hasAnyRole(" + USER + ")")
-	public ResponseEntity<Void> updateUserOrganizationPassword(UUID organizationUuid, PasswordUpdate passwordUpdate) throws Exception {
-		organizationService.updateUserOrganizationPassword(organizationUuid, passwordUpdate);
-		return ResponseEntity.noContent().build();
-	}
-
 
 }

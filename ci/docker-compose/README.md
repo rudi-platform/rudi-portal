@@ -4,12 +4,11 @@
 
 Le portail rudi peut-être installée de différentes manières mais étant donné le nombre élevé de microservices, une installation de type container est à privilégier (k8s ou docker-compose par exemple).
 
-L'installation est constituée de 4 étapes successives :
+L'installation est constituée de 3 étapes successives :
 
   - Installation des pre-requis,
   - Installation des *microservices RUDI*,
-  - Installation du catalogue des jeux de données *Dataverse*,
-  - Installation de l'API Manager *WSO2*
+  - Installation du catalogue des jeux de données *Dataverse*
   
 ### Prérequis
 
@@ -22,7 +21,7 @@ Installation prévue sur linux debian :
 
 ### Installation microservices RUDI
 
-  - Cloner le projet *https://github.com/sigrennesmetropole/rudi_portal*
+  - Cloner le projet *https://github.com/rudi-platform/rudi-portal*
   - Construire le projet à l'aide de la commande suivante :
 
 ```
@@ -73,44 +72,3 @@ A l'issue de cette primo-installation, il nécessaire de copier les fichiers sui
 ```
 ./updateSchemaMDB.sh -d http://localhost:{{dataverse_port}} -t {{solr_data_conf_directory}}
 ```
-
-### Installation WSO2
-
-L'installation de WSO2 s'appuie sur *https://github.com/wso2/docker-apim.git* dans la version 3.2.0.1
-
-  - Se positionner dans le répertoire <root-rudi>/ci/docker-compose/wso2
-  - Cloner le projet et se positionner sur la branche correspondante
-  - Ce positionner dans le répertoire *apim-with-analytics*
-  - Dans le répertoire conf créer la structure suivante à partir des éléments construits par le portail et les éléments fournis :
-  
-  conf/
-	apim/
-		org.rudi.wso2.handler.properties  
-		repository/
-			components/
-				dropins/  
-					org.rudi.wso2.userstore.jar  
-					postgresql-42.2.18.jar
-				lib/
-					org.rudi.wso2.handler.jar  
-					rudi-common-core.jar  
-					rudi-facet-crypto.jar
-			conf/  
-				deployment.toml
-				deployment.toml.mail  
-				encryption_key.key  
-				log4j2.properties  
-				user-mgt.xml
-			deployment/
-				server/
-					userstores/
-						RUDI.xml
-			resources/
-				api_templates/
-					velocity_template.xml  
-
-*Remarque :*
-_Les fichiers XML, toml et properties doivent être édités afin de remplacé les propriétés par les valeurs attendues_
-
-  - Démarrer WSO2 à l'aide du fichier docker-compose.yml fourni
-  

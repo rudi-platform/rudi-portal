@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.DefaultJackson2ObjectMapperBuilder;
 import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -39,12 +39,12 @@ import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
-import org.rudi.microservice.kalim.service.integration.impl.validator.AbstractMetadataValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.DatasetCreatorIsAuthenticatedValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -60,8 +60,6 @@ class PostIntegrationRequestTreatmentHandlerUT {
 	@Mock
 	private DatasetService datasetService;
 	@Mock
-	private APIManagerHelper apiManagerHelper;
-	@Mock
 	private ApiManagerHelper apigatewayManagerHelper;
 	@Mock
 	private MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator;
@@ -74,10 +72,9 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 	@BeforeEach
 	void setUp() {
-		handler = new PostIntegrationRequestTreatmentHandler(datasetService, apigatewayManagerHelper, apiManagerHelper,
-				objectMapper, Collections.singletonList(validator), error500Builder,
-				metadataInfoProviderIsAuthenticatedValidator, datasetCreatorIsAuthenticatedValidator,
-				organizationHelper);
+		handler = new PostIntegrationRequestTreatmentHandler(datasetService, apigatewayManagerHelper, objectMapper,
+				Collections.singletonList(validator), error500Builder, metadataInfoProviderIsAuthenticatedValidator,
+				datasetCreatorIsAuthenticatedValidator, organizationHelper);
 
 		when(validator.canBeUsedBy(handler)).thenReturn(true);
 	}
@@ -106,13 +103,13 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 		// If validation fails, integration request should not go any further
 		verifyNoInteractions(datasetService);
-		verifyNoInteractions(apiManagerHelper);
+		verifyNoInteractions(apigatewayManagerHelper);
 	}
 
 	@Test
 	@DisplayName("validation passed ✔ ⇒ dataset and API created \uD83E\uDD73")
 	void createIntegrationRequestNoValidationErrorInteractions()
-			throws DataverseAPIException, APIManagerException, IOException {
+			throws DataverseAPIException, IOException, ApiGatewayApiException {
 
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
@@ -133,7 +130,7 @@ class PostIntegrationRequestTreatmentHandlerUT {
 		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
 
 		// If validation succeeds, corresponding API should be created
-		verify(apiManagerHelper).createAPI(integrationRequest, createdMetadata);
+		verify(apigatewayManagerHelper).createApis(integrationRequest, createdMetadata);
 	}
 
 	@Test
@@ -162,16 +159,15 @@ class PostIntegrationRequestTreatmentHandlerUT {
 						.hasFieldOrPropertyWithValue("message", IntegrationError.ERR_500.getMessage()));
 
 		// If getDataset failed, API Manager should never but called
-		verifyNoMoreInteractions(apiManagerHelper);
+		verifyNoMoreInteractions(apigatewayManagerHelper);
 
 		// And Dataset should be deleted
 		verify(datasetService).deleteDataset(createdMetadataDoi);
 	}
 
 	@Test
-	@DisplayName("WSO2 error ❌ ⇒ dataset creation cancelled")
-	void createIntegrationRequestWso2Errors() throws DataverseAPIException, APIManagerException, IOException {
-
+	@DisplayName("API Gateway error ❌ ⇒ dataset creation cancelled")
+	void createIntegrationRequestApiGatewayErrors() throws DataverseAPIException, IOException, ApiGatewayApiException {
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
 		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.POST)
@@ -185,16 +181,16 @@ class PostIntegrationRequestTreatmentHandlerUT {
 		when(datasetService.createDataset(metadata)).thenReturn(createdMetadataDoi);
 		final Metadata createdMetadata = mock(Metadata.class);
 		when(datasetService.getDataset(createdMetadataDoi)).thenReturn(createdMetadata);
-		when(createdMetadata.getGlobalId()).thenReturn(metadata.getGlobalId());
 
-		doThrow(new APIManagerException("Erreur test")).when(apiManagerHelper).createAPI(eq(integrationRequest), any());
+		doThrow(new ApiGatewayApiException(WebClientResponseException.create(404, "not found", null, null, null)))
+				.when(apigatewayManagerHelper).createApis(eq(integrationRequest), any());
 
 		handler.handle(integrationRequest);
 
-		assertThat(integrationRequest.getIntegrationStatus()).as("L'intégration est KO car WSO a renvoyé une erreur")
-				.isEqualTo(IntegrationStatus.KO);
+		assertThat(integrationRequest.getIntegrationStatus())
+				.as("L'intégration est KO car l'API Gateway a renvoyé une erreur").isEqualTo(IntegrationStatus.KO);
 		verify(datasetService, description("Just created Dataset should be deleted at once"))
-				.deleteDataset(metadata.getGlobalId());
+				.deleteDataset(createdMetadataDoi);
 	}
 
 	@Test
@@ -216,6 +212,6 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 		// No interactions
 		verifyNoInteractions(datasetService);
-		verifyNoInteractions(apiManagerHelper);
+		verifyNoInteractions(apigatewayManagerHelper);
 	}
 }

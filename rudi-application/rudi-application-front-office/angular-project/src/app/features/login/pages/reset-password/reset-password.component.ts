@@ -124,7 +124,7 @@ export class ResetPasswordComponent implements OnInit {
                     this.routeHistoryService.resetHistory();
                     // Si on s'est bien authentifié on revient sur la page d'avant Si on peut go back on go back
                     this.router.navigate(['/login']);
-                    this.propertiesService.get('rudidatarennes.contact').subscribe(rudidatarennesContactLink => {
+                    this.propertiesService.get('front.contact').subscribe(contactLink => {
                         this.snackBarService.openSnackBar({
                             message: `${this.translateService.instant('snackbarTemplate.successResetPassword')}`,
                             keepBeforeSecondRouteChange: true

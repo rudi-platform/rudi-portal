@@ -1,0 +1,12 @@
+{
+	"sections": [
+		{
+			"name": "refused-project-modification",
+			"readOnly": true
+		},
+		{
+			"name": "project-process-draft/modified-project",
+			"readonly": false
+		}
+	]
+}

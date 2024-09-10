@@ -6,7 +6,7 @@
 		"title": "rudi-projekt-api",
 		"termsOfService": "http://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -248,6 +248,16 @@
 				"allOf": [
 					{
 						"$ref": "#/components/schemas/AbstractStampedDto"
+					},
+					{
+						"properties": {
+							"private_access": {
+								"type": "boolean"
+							},
+							"description": {
+								"type": "string"
+							}
+						}
 					}
 				]
 			},

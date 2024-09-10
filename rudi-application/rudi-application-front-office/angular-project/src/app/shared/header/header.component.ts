@@ -126,7 +126,7 @@ export class HeaderComponent implements OnInit {
     }
 
     getUrlToDoc(): void {
-        this.propertiesMetierService.get('rudidatarennes.docRudiBzh').subscribe({
+        this.propertiesMetierService.get('front.docRudi').subscribe({
             next: (link: string) => {
                 this.urlToDoc = link;
             }

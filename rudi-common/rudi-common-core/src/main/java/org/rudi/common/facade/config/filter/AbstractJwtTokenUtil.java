@@ -2,7 +2,6 @@ package org.rudi.common.facade.config.filter;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,21 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.BadJOSEException;
-import com.nimbusds.jose.proc.DefaultJOSEObjectTypeVerifier;
-import com.nimbusds.jose.proc.JWSKeySelector;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jose.util.ResourceRetriever;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -72,18 +61,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	 */
 	@Value("${security.jwt.refresh.validity:1800}")
 	private int refreshTokenValidity;
-
-	@Value("${security.jwt.apim.url:https://rudi.bzh}")
-	private String apimUrl;
-
-	@Value("${security.jwt.apim.hostVerifier:false}")
-	private boolean apimHostVerifier;
-
-	@Value("${security.jwt.apim.url.jwks:/oauth2/jwks}")
-	private String apimJwks;
-
-	@Value("${security.jwt.apim.algorithm:RS256}")
-	private String wso2TokenAlgorithm;
 
 	private final transient Map<String, Tokens> refreshTokens = new HashMap<>();
 
@@ -259,43 +236,14 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	 * @throws MalformedURLException
 	 * @throws BadJOSEException
 	 */
-	@SuppressWarnings("unchecked")
 	protected void verify(JwtTokenData token, SignedJWT jwt) throws JOSEException, MalformedURLException {
 		if (isPortailIssuer(token)) {
 			JWSVerifier signer = new MACVerifier(getSecretKey());
 			token.setHasError(!jwt.verify(signer));
 			log.debug("Verify Rudi issuer {}", token.isHasError());
 		} else {
-			// Create a JWT processor for the access tokens
-			ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-
-			// Set the required "typ" header "at+jwt" for access tokens issued by the
-			// Connect2id server, may not be set by other servers
-			jwtProcessor.setJWSTypeVerifier(DefaultJOSEObjectTypeVerifier.JWT);
-
-			// The public RSA keys to validate the signatures will be sourced from the
-			// OAuth 2.0 server's JWK set, published at a well-known URL. The RemoteJWKSet
-			// object caches the retrieved keys to speed up subsequent look-ups and can
-			// also handle key-rollover
-			ResourceRetriever resourceRetriever = new JwkResourceRetriever(RemoteJWKSet.DEFAULT_HTTP_CONNECT_TIMEOUT,
-					RemoteJWKSet.DEFAULT_HTTP_READ_TIMEOUT, RemoteJWKSet.DEFAULT_HTTP_SIZE_LIMIT, true,
-					apimHostVerifier);
-			JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(new URL(getJWKURL()), resourceRetriever);
-
-			// Configure the JWT processor with a key selector to feed matching public
-			// RSA keys sourced from the JWK set URL
-			JWSAlgorithm algorithm = JWSAlgorithm.parse(wso2TokenAlgorithm);
-			JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(algorithm, keySource);
-
-			jwtProcessor.setJWSKeySelector(keySelector);
-			try {
-				JWTClaimsSet claimsSet = jwtProcessor.process(jwt, null);
-				log.debug("Token processed {}", claimsSet);
-			} catch (BadJOSEException e) {
-				log.debug("Failed to verify token", e);
-				token.setHasError(true);
-			}
-			log.debug("Verify APIM issuer as error?{}", token.isHasError());
+			token.setHasError(true);
+			log.error("Unexpected issuer {} in provided token.", token.getIssuer());
 		}
 	}
 
@@ -471,15 +419,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 			secretKey = SecretKeyUtils.computeKeyFromPropery(secret);
 		}
 		return secretKey;
-	}
-
-	/**
-	 * L'url du JWK de controle externe
-	 *
-	 * @return
-	 */
-	protected String getJWKURL() {
-		return apimUrl + apimJwks;
 	}
 
 	/**

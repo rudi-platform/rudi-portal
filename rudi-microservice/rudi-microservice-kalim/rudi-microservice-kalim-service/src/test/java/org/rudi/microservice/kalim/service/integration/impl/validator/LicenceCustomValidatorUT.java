@@ -12,6 +12,7 @@ import org.rudi.facet.kaccess.bean.Licence;
 import org.rudi.facet.kaccess.bean.LicenceCustom;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
 import org.rudi.microservice.kalim.service.IntegrationError;
+import org.rudi.microservice.kalim.service.integration.impl.validator.licence.LicenceCustomValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 
 import java.util.Collections;

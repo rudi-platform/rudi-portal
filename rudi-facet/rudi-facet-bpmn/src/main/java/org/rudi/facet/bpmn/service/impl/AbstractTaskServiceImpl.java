@@ -22,7 +22,9 @@ import org.activiti.engine.delegate.event.ActivitiEntityEvent;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricDetail;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,6 +38,7 @@ import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.BpmnInitializationException;
@@ -79,6 +82,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, D extends AssetDescription, R extends AssetDescriptionDao<E>, A extends AssetDescriptionHelper<E, D>, H extends AssignmentHelper<E>>
 		implements TaskService<D>, ActivitiEventListener {
+
+	private static final String TASK_DOES_NO_EXISTS_OR_NOT_ACCESSIBLE_BY_YOU_MESSAGE = "Task does no exists or not accessible by you";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTaskServiceImpl.class);
 
@@ -161,10 +166,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		}
 		// s'il existe déjà on contrôle qu'on a pas démarré un workflow dessus
 		if (assetDescriptionEntity != null) {
-			if (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getId()) != null
-					&& assetDescriptionEntity.getStatus() != Status.DRAFT) {
-				throw new IllegalArgumentException("Asset is already linked to a task");
-			}
+			checkEntityStatus(assetDescriptionEntity);
 			// vérifications du droit pour l'utilisateur de créer la tache
 			checkRightsOnInitEntity(assetDescriptionEntity);
 		} else {
@@ -193,9 +195,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		}
 		// récupération du signalement draft
 		E assetDescriptionEntity = assetDescriptionDao.findByUuid(task.getAsset().getUuid());
-		if (assetDescriptionEntity == null || assetDescriptionEntity.getStatus() != Status.DRAFT) {
-			throw new IllegalArgumentException("Invalid task");
-		}
+		checkTaskValidity(assetDescriptionEntity);
 
 		// vérifications du droit pour l'utilisateur de créer la tache
 		checkRightsOnInitEntity(assetDescriptionEntity);
@@ -490,11 +490,11 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 			} else {
 				LOGGER.warn("Skip update on task {} invalid assigneee {} vrs {}", originalTask.getId(),
 						originalTask.getAssignee(), login);
-				throw new IllegalArgumentException("Task does no exists or not accessible by you");
+				throw new IllegalArgumentException(TASK_DOES_NO_EXISTS_OR_NOT_ACCESSIBLE_BY_YOU_MESSAGE);
 			}
 		} else {
 			LOGGER.warn("Skip update on task {} unknown", task.getId());
-			throw new IllegalArgumentException("Task does no exists or not accessible by you");
+			throw new IllegalArgumentException(TASK_DOES_NO_EXISTS_OR_NOT_ACCESSIBLE_BY_YOU_MESSAGE);
 		}
 		return result;
 	}
@@ -796,16 +796,155 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		// nothing to do by default
 	}
 
+	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException {
+		if (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getId()) != null
+				&& assetDescriptionEntity.getStatus() != Status.DRAFT) {
+			throw new IllegalArgumentException("Asset is already linked to a task");
+		}
+	}
+
+	protected void checkTaskValidity(E assetDescriptionEntity) throws IllegalArgumentException {
+		if (assetDescriptionEntity == null || assetDescriptionEntity.getStatus() != Status.DRAFT) {
+			throw new IllegalArgumentException("Invalid task");
+		}
+	}
+
 	@Override
 	public List<HistoricInformation> getTaskHistoryByTaskId(String taskId, Boolean asAdmin)
 			throws InvalidDataException {
 		org.activiti.engine.task.Task task = bpmnHelper.queryTaskById(taskId, asAdmin);
 
+		if (task == null) {
+			throw new IllegalArgumentException(TASK_DOES_NO_EXISTS_OR_NOT_ACCESSIBLE_BY_YOU_MESSAGE);
+		}
+		String processInstanceBusinessKey = bpmnHelper.lookupProcessInstanceBusinessKey(task);
+		UUID uuid = UUID.fromString(processInstanceBusinessKey);
+		E assetDescription = assetDescriptionDao.findByUuid(uuid);
+		if (assetDescription == null) {
+			throw new IllegalArgumentException("Asset does not exists");
+		}
+
 		// collecte des historiques de workflow
 		Page<HistoricActivityInstance> historicActivityInstances = historicHelper
 				.collectHistoricActivitiByProcessInstanceId(task.getProcessInstanceId(), Pageable.unpaged());
+		List<HistoricActivityInstance> filteredHistoricActivityInstances = historicHelper
+				.filterHistoricActivityInstances(historicActivityInstances.getContent());
 
-		return historicInformationMapper.entitiesToDto(historicActivityInstances.getContent());
+		List<HistoricInformation> result = historicInformationMapper.entitiesToDto(filteredHistoricActivityInstances);
+		convertAssignees(result, assetDescription.getInitiator());
+		convertActions(filteredHistoricActivityInstances, result);
+		return result;
+	}
+
+	@Override
+	public List<HistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException {
+		// collecte des historiques de workflow
+		Page<HistoricActivityInstance> historicActivityInstances = historicHelper
+				.collectHistoricActivitiByAssetUuid(assetUuid, Pageable.unpaged());
+		List<HistoricActivityInstance> filteredHistoricActivityInstances = historicHelper
+				.filterHistoricActivityInstances(historicActivityInstances.getContent());
+		List<HistoricInformation> result = historicInformationMapper.entitiesToDto(filteredHistoricActivityInstances);
+
+		E assetDescription = assetDescriptionDao.findByUuid(assetUuid);
+		if (assetDescription == null) {
+			throw new IllegalArgumentException("Asset does not exists");
+		}
+
+		convertAssignees(result, assetDescription.getInitiator());
+		convertActions(filteredHistoricActivityInstances, result);
+		return result;
+	}
+
+	protected void convertActions(List<HistoricActivityInstance> historicActivitiInstances,
+			List<HistoricInformation> result) {
+		if (CollectionUtils.isNotEmpty(historicActivitiInstances) && CollectionUtils.isNotEmpty(result)
+				&& result.size() == historicActivitiInstances.size()) {
+			for (int i = 0; i < result.size(); i++) {
+				HistoricActivityInstance historicActivityInstance = historicActivitiInstances.get(i);
+				HistoricInformation historicInformation = result.get(i);
+				historicInformation.setAction(convertAction(historicActivityInstance));
+			}
+		}
+	}
+
+	protected String convertAction(HistoricActivityInstance historicActivityInstance) {
+		String result = null;
+		Page<HistoricDetail> historicVariables = historicHelper
+				.collectHistoricDetailByActivitiInstanceId(historicActivityInstance.getId(), Pageable.unpaged());
+		for (HistoricDetail historicVariable : historicVariables) {
+			if (historicVariable instanceof HistoricDetailVariableInstanceUpdateEntity) {
+				HistoricDetailVariableInstanceUpdateEntity item = (HistoricDetailVariableInstanceUpdateEntity) historicVariable;
+				if (item.getName().equalsIgnoreCase(ACTION_VARIABLE_NAME)) {
+					result = translateAction(historicActivityInstance, item);
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	protected String translateAction(HistoricActivityInstance historicActivityInstance,
+			HistoricDetailVariableInstanceUpdateEntity item) {
+		String value = null;
+		List<Action> actions = bpmnHelper.extractActions(getProcessDefinitionKey(),
+				historicActivityInstance.getProcessDefinitionId(), historicActivityInstance.getActivityId());
+		if (CollectionUtils.isNotEmpty(actions)) {
+			value = actions.stream().filter(action -> action.getName().equalsIgnoreCase(item.getTextValue()))
+					.findFirst().map(Action::getLabel).orElse(null);
+		}
+		if (value == null) {
+			value = item.getValue().toString();
+		}
+		return value;
+	}
+
+	protected void convertAssignees(List<HistoricInformation> result, String initiator) {
+		if (CollectionUtils.isNotEmpty(result)) {
+			Map<String, String> userNames = new HashMap<>();
+			for (HistoricInformation historicInformation : result) {
+				if (HistoricHelper.START_EVENT_TYPE.equalsIgnoreCase(historicInformation.getActivityType())) {
+					prepareConvertAssignee(userNames, initiator);
+					historicInformation.setAssignee(userNames.get(initiator));
+				} else if (StringUtils.isNotEmpty(historicInformation.getAssignee())) {
+					prepareConvertAssignee(userNames, historicInformation);
+					historicInformation.setAssignee(userNames.get(historicInformation.getAssignee()));
+				}
+			}
+		}
+	}
+
+	protected void prepareConvertAssignee(Map<String, String> userNames, String assignee) {
+		if (!userNames.containsKey(assignee)) {
+			try {
+				User user = getAssignmentHelper().getUserByLogin(assignee);
+				if (user != null && (StringUtils.isNotEmpty(user.getFirstname())
+						|| StringUtils.isNotEmpty(user.getLastname()))) {
+					userNames.put(assignee, convertAssignee(user));
+				} else {
+					userNames.put(assignee, assignee);
+				}
+			} catch (Exception e) {
+				userNames.put(assignee, assignee);
+			}
+		}
+	}
+
+	protected void prepareConvertAssignee(Map<String, String> userNames, HistoricInformation historicInformation) {
+		prepareConvertAssignee(userNames, historicInformation.getAssignee());
+	}
+
+	protected String convertAssignee(User user) {
+		StringBuilder userName = new StringBuilder();
+		if (StringUtils.isNotEmpty(user.getFirstname())) {
+			userName.append(user.getFirstname());
+		}
+		if (StringUtils.isNotEmpty(user.getLastname())) {
+			if (userName.length() > 0) {
+				userName.append(' ');
+			}
+			userName.append(user.getLastname());
+		}
+		return userName.toString();
 	}
 
 }

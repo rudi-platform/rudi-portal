@@ -2,10 +2,10 @@ package org.rudi.microservice.projekt.service.reutilisationstatus;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Pageable;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
-import org.rudi.microservice.projekt.core.bean.ReutilisationStatusSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ReutilisationStatusSearchCriteria;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ReutilisationStatusService {
 

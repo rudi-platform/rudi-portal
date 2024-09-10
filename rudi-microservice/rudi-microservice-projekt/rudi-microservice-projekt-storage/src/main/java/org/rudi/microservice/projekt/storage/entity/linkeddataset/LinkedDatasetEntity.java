@@ -31,6 +31,7 @@ public class LinkedDatasetEntity extends AbstractAssetDescriptionEntity {
 	private static final long serialVersionUID = -7654406330206580256L;
 	public static final String FIELD_ID = "id";
 	public static final String DATASET_UUID_FIELD = "datasetUuid";
+	public static final String DATASET_ORGANIZATION_UUID_FIELD = "datasetOrganisationUuid";
 	public static final String DATASET_CONFIDENTIALITY_FIELD = "datasetConfidentiality";
 	public static final String STATUS_FIELD = "linkedDatasetStatus";
 	public static final String END_DATE_FIELD = "endDate";
@@ -39,7 +40,7 @@ public class LinkedDatasetEntity extends AbstractAssetDescriptionEntity {
 	@Column(name = "dataset_uuid", nullable = false, unique = true)
 	private UUID datasetUuid;
 
-	@Column(name = "dataset_organization_uuid", nullable = true)
+	@Column(name = "dataset_organization_uuid")
 	private UUID datasetOrganisationUuid;
 
 	/**

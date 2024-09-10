@@ -8,12 +8,6 @@ import {
 import {
     OrganizationMemberDialogData
 } from '@features/organization/components/administration-tab/organization-members-table/organization-member-dialog-data';
-import {
-    OrganizationTableDialogData
-} from '@features/organization/components/administration-tab/organization-table/organization-table-dialog-data';
-import {
-    UpdateUserPasswordPopinComponent
-} from '@features/organization/components/administration-tab/update-user-password-popin/update-user-password-popin.component';
 import {OrganizationMember} from 'micro_service_modules/strukture/strukture-model';
 import {MemberPopinComponent} from '@shared/member-popin/member-popin.component';
 import {Observable} from 'rxjs';
@@ -51,13 +45,6 @@ export class DialogMemberOrganizationService {
         organizationMemberDialogData: OrganizationMemberDialogData
     ): Observable<DialogClosedData<OrganizationMember>> {
         return this.openDialog(DeletionMemberConfirmationPopinComponent, organizationMemberDialogData);
-    }
-
-    /**
-     * Ouverture d'une dialog permettant de modifier le mot de passe d'une organisation
-     */
-    public openDialogUpdatepassword(organizationTableDialogData: OrganizationTableDialogData): Observable<DialogClosedData<void>> {
-        return this.openDialog(UpdateUserPasswordPopinComponent, organizationTableDialogData);
     }
 
     private openDialog<T, D, R>(component: ComponentType<T>, data?: D): Observable<R> {

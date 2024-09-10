@@ -19,6 +19,7 @@ import org.rudi.facet.kaccess.bean.MetadataExtMetadata;
 import org.rudi.facet.kaccess.bean.MetadataExtMetadataExtSelfdata;
 import org.rudi.facet.kaccess.bean.SelfdataContent;
 import org.rudi.facet.kaccess.helper.selfdata.SelfdataMediaHelper;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.GdprSensitiveMetadataExtMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;

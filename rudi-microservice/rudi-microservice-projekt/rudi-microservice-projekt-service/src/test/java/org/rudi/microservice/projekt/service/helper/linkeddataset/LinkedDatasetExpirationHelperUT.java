@@ -3,7 +3,6 @@ package org.rudi.microservice.projekt.service.helper.linkeddataset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 import java.io.IOException;
 
@@ -12,8 +11,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
@@ -97,23 +94,13 @@ class LinkedDatasetExpirationHelperUT {
 	}
 
 	@Test
-	void cleanLinkedDatasetExpired_without_error() throws IOException, APIManagerException, AppServiceException {
+	void cleanLinkedDatasetExpired_without_error() throws IOException {
 		doNothing().when(linkedDatasetSubscriptionHelper).handleUnlinkLinkedDataset(any());
 		createLinkedDatasetFromJson(JSON_NOT_EXPIRED);
 		createLinkedDatasetFromJson(JSON_EXPIRED);
 		val listToClean = linkedDatasetExpirationHelper.getValidatedLinkedDatasetExpired();
 		Assertions.assertThatCode(() -> linkedDatasetExpirationHelper.cleanLinkedDatasetExpired(listToClean))
 				.doesNotThrowAnyException();
-	}
-
-	@Test
-	void cleanLinkedDatasetExpired_with_error() throws IOException, APIManagerException, AppServiceException {
-		doThrow(APIManagerException.class).when(linkedDatasetSubscriptionHelper).handleUnlinkLinkedDataset(any());
-		createLinkedDatasetFromJson(JSON_NOT_EXPIRED);
-		createLinkedDatasetFromJson(JSON_EXPIRED);
-		val listToClean = linkedDatasetExpirationHelper.getValidatedLinkedDatasetExpired();
-		Assertions.assertThatCode(() -> linkedDatasetExpirationHelper.cleanLinkedDatasetExpired(listToClean))
-				.as("Le code ne throw aucune exception malgré les erreurs potentielles").doesNotThrowAnyException();
 	}
 
 	@AfterEach

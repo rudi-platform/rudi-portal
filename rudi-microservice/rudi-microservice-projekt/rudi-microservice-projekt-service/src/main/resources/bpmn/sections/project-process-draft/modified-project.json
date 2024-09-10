@@ -1,0 +1,98 @@
+{
+	"name": "modified-project",
+	"label": "Réutilisation modifiée",
+	"help": "Réutilisation modifiée",
+	"readonly": false,
+	"fieldDefinitions": [
+		{
+			"name": "title",
+			"label": "Titre de la réutilisation",
+			"type": "STRING",
+			"readonly": false,
+			"required": false
+		},
+		{
+			"name": "description",
+			"label": "Description",
+			"type": "TEXT",
+			"readonly": false,
+			"required": false
+		},
+		{
+			"name": "expectedCompletionStartDate",
+			"label": "Date de début",
+			"type": "DATE",
+			"readonly": false,
+			"required": false
+		},
+		{
+			"name": "expectedCompletionEndDate",
+			"label": "Date de fin",
+			"type": "DATE",
+			"readonly": false,
+			"required": false
+		},
+		{
+			"name": "targetAudiences",
+			"label": "Public cible",
+			"type": "LIST",
+			"readonly": false,
+			"multiple": true,
+			"required": false
+		},
+		{
+			"name": "territorialScale",
+			"label": "Echelle",
+			"type": "LIST",
+			"readonly": false,
+			"multiple": false,
+			"required": false
+		},
+		{
+			"name": "detailedTerritorialScale",
+			"label": "Territoire concerné",
+			"type": "STRING",
+			"required": false,
+			"readonly": false
+		},
+		{
+			"name": "type",
+			"label": "Type de réutilisation",
+			"type": "LIST",
+			"required": false,
+			"multiple": false,
+			"readonly": false
+		},
+		{
+			"name": "reutilisationStatus",
+			"label": "Statut du projet",
+			"type": "LIST",
+			"readonly": false,
+			"multiple": false,
+			"required": false
+		},
+		{
+			"name": "desiredSupports",
+			"label": "Accompagnement souhaité",
+			"type": "LIST",
+			"required": false,
+			"multiple": true,
+			"readonly": false
+		},
+		{
+			"name": "confidentiality",
+			"label": "Confidentialité du projet",
+			"type": "LIST",
+			"required": false,
+			"multiple": false,
+			"readonly": false
+		},
+		{
+			"name": "accessUrl",
+			"label": "URL d'accès",
+			"type": "STRING",
+			"required": false,
+			"readonly": false
+		}
+	]
+}

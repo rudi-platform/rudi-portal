@@ -1,0 +1,7 @@
+{
+	"code": "closingDatePassed",
+	"label": "Projets dont la closing date est inférieur à la date d'aujourd'hui (2000)",
+	"opening_date": "2021-10-29T10:36:40.614",
+	"closing_date": "2000-10-29T10:36:40.614",
+	"order": 1
+}

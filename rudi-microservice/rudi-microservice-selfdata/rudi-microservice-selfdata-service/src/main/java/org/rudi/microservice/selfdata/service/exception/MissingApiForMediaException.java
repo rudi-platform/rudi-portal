@@ -20,6 +20,6 @@ public class MissingApiForMediaException extends AppServiceNotFoundException {
 	@Override
 	public String getMessage() {
 		return "Le JDD d'uuid : " + this.datasetUuid + " contenant le media d'uuid : " + this.mediaUuid
-				+ " ne contient pas d'API dans WSO2";
+				+ " ne contient pas d'API dans l'API Gateway";
 	}
 }

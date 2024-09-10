@@ -12,10 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * Classe de configuration globale de l'application.
  */
 @SpringBootApplication(scanBasePackages = { "org.rudi.common.facade", "org.rudi.common.service",
-		"org.rudi.common.storage", "org.rudi.common.core", "org.rudi.facet.acl", "org.rudi.facet.apimaccess",
-		"org.rudi.facet.dataverse", "org.rudi.facet.kaccess", "org.rudi.facet.projekt", "org.rudi.facet.selfdata",
-		"org.rudi.facet.rva", "org.rudi.facet.organization", "org.rudi.facet.cms",
-		"org.rudi.microservice.konsult.facade", "org.rudi.microservice.konsult.service", "org.rudi.facet.apimremote", })
+		"org.rudi.common.storage", "org.rudi.common.core", "org.rudi.facet.acl", "org.rudi.facet.dataverse",
+		"org.rudi.facet.kaccess", "org.rudi.facet.projekt", "org.rudi.facet.selfdata", "org.rudi.facet.rva",
+		"org.rudi.facet.organization", "org.rudi.facet.cms", "org.rudi.microservice.konsult.facade",
+		"org.rudi.microservice.konsult.service", })
 @EnableEurekaClient
 @EnableScheduling
 @PropertySource(value = { "classpath:konsult/konsult-common.properties" })

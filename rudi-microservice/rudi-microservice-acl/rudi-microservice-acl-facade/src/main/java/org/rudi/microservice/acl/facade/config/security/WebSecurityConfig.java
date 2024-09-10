@@ -96,9 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					.authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().logout()
 					// et puis
-					.and().anonymous(anonymous -> {
-						anonymous.authorities(List.of(new SimpleGrantedAuthority("USER")));
-					})
+					.and().anonymous(anonymous -> anonymous.authorities(List.of(new SimpleGrantedAuthority("USER"))))
 					// installation des filtres
 					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
 					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -124,12 +122,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.passwordEncoder(passwordEncoder).and().authenticationProvider(userAuthenticationProvider).build();
 	}
 
-//	@Override
-//	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-//	public AuthenticationManager authenticationManagerBean() throws Exception {
-//		return super.authenticationManagerBean();
-//	}
-
 	@Bean
 	protected CorsConfigurationSource corsConfigurationSource() {
 		final CorsConfiguration configuration = new CorsConfiguration();
@@ -154,6 +146,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new GrantedAuthorityDefaults("");
 	}
 
+	@Override
 	@Bean(BeanIds.USER_DETAILS_SERVICE)
 	public UserDetailsService userDetailsServiceBean() throws Exception {
 		return new UserDetailServiceImpl();

@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+import {ConfidentialitySearchCriteria} from '@core/bean/projekt/confidentiality-search-criteria';
+import {ProjectSearchCriteria} from '@core/bean/projekt/project-search-criteria';
 import {DataRequestItem} from '@features/project/model/data-request-item';
 import {DataSize} from '@shared/models/data-size';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
@@ -7,12 +9,7 @@ import {DateTimeUtils} from '@shared/utils/date-time-utils';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {
-    DatasetConfidentiality,
-    OwnerInfo,
-    ProjektService,
-    ReutilisationStatusSearchCriteria
-} from 'micro_service_modules/projekt/projekt-api';
+import {DatasetConfidentiality, OwnerInfo, ProjectByOwner, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {
     Confidentiality,
     FrontOfficeProperties,
@@ -22,8 +19,8 @@ import {
     OwnerType,
     PagedProjectList,
     Project,
-    ProjectSearchCriteria,
     ProjectType,
+    ReutilisationStatus,
     Support,
     TargetAudience,
     TerritorialScale
@@ -45,6 +42,7 @@ export const DEFAULT_PROJECT_ORDER: Order = '-updatedDate';
 const DEFAULT_LINKED_DATASET_STATUS: LinkedDatasetStatus = 'VALIDATED';
 const RESTRICTED_LINKED_DATASET_STATUS: LinkedDatasetStatus = 'DRAFT';
 export const DEFAULT_ORDER: Order = 'order_';
+export const DEFAULT_LIMIT: number = 10;
 
 @Injectable({
     providedIn: 'root'
@@ -80,6 +78,9 @@ export class ProjektMetierService {
             criteria.owner_uuids,
             criteria.project_uuids,
             criteria.status,
+            criteria.themes,
+            criteria.keywords,
+            criteria.targetAudiences,
             criteria.offset,
             criteria.limit,
             order
@@ -170,54 +171,55 @@ export class ProjektMetierService {
     /**
      * Appel API : récupération de tous les types de projets (on récupère tout via plusieurs appels si besoin)
      */
-    searchProjectTypes(): Observable<ProjectType[]> {
+    searchProjectTypes(active: boolean): Observable<ProjectType[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.projektService.searchProjectTypes(null, offset, DEFAULT_ORDER));
+            this.projektService.searchProjectTypes(active, null, offset, DEFAULT_ORDER));
     }
 
     /**
      * Appel API : récupération de tous les types d'assistance (on récupère tout via plusieurs appels si besoin)
      */
-    searchSupports(): Observable<Support[]> {
+    searchSupports(active?: boolean): Observable<Support[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.projektService.searchSupports(null, offset, DEFAULT_ORDER));
+            this.projektService.searchSupports(active, null, offset, DEFAULT_ORDER));
     }
 
     /**
      * Appel API : récupération de toutes les échelles (on récupère tout via plusieurs appels si besoin)
      */
-    searchTerritorialScales(): Observable<TerritorialScale[]> {
+    searchTerritorialScales(active?: boolean): Observable<TerritorialScale[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.projektService.searchTerritorialScales(null, offset, DEFAULT_ORDER));
+            this.projektService.searchTerritorialScales(active, null, offset, DEFAULT_ORDER));
     }
 
     /**
-     * Appel API : récupération de tous les niveaux de confidentialité (on récupère tout via plusieurs appels si besoin)
+     * Appel API : récupération de tous les niveaux de confidentialité actifs (on récupère tout via plusieurs appels si besoin)
      */
-    searchProjectConfidentialities(): Observable<Confidentiality[]> {
+    searchProjectConfidentialities(criteria: ConfidentialitySearchCriteria, order = DEFAULT_ORDER): Observable<Confidentiality[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.projektService.searchConfidentialities(null, offset, DEFAULT_ORDER));
+            this.projektService.searchConfidentialities(
+                criteria.isPrivate,
+                criteria.active,
+                criteria.limit,
+                criteria.offset,
+                order));
     }
 
     /**
      * Appel API : récupération de tous les publics cible (plusieurs appels back au besoin)
      */
-    searchProjectPublicCible(): Observable<TargetAudience[]> {
+    searchProjectPublicCible(active?: boolean): Observable<TargetAudience[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.projektService.searchTargetAudiences(null, offset, DEFAULT_ORDER)
+            this.projektService.searchTargetAudiences(active, null, offset, DEFAULT_ORDER)
         );
     }
 
     /**
      * Appel API : récupération de tous les statuts (plusieurs appels back au besoin)
      */
-    searchReuseStatus(): Observable<TargetAudience[]> {
+    searchReuseStatus(active?: boolean): Observable<ReutilisationStatus[]> {
         return PageResultUtils.fetchAllElementsUsing(offset => {
-                const criteria: ReutilisationStatusSearchCriteria = {
-                    offset,
-                    order: DEFAULT_ORDER
-                };
-                return this.projektService.searchReutilisationStatus(criteria);
+                return this.projektService.searchReutilisationStatus(active, DEFAULT_LIMIT, offset, DEFAULT_ORDER);
             }
         );
     }
@@ -551,5 +553,21 @@ export class ProjektMetierService {
         return data.sort((a: NewDatasetRequest, b: NewDatasetRequest) => {
             return new Date(b.updated_date).getTime() - new Date(a.updated_date).getTime();
         });
+    }
+
+    getNumberOfProjectsPerOwners(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<Array<ProjectByOwner>> {
+        return this.projektService.getNumberOfProjectsPerOwners(
+            criteria.dataset_uuids,
+            criteria.linked_dataset_uuids,
+            criteria.owner_uuids,
+            criteria.project_uuids,
+            criteria.status,
+            criteria.themes,
+            criteria.keywords,
+            criteria.targetAudiences,
+            criteria.offset,
+            criteria.limit,
+            order
+        );
     }
 }

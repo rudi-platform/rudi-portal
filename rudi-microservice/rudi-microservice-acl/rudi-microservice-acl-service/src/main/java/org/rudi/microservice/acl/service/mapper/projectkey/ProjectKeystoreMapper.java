@@ -21,6 +21,7 @@ public interface ProjectKeystoreMapper extends AbstractMapper<ProjectKeystoreEnt
 
 	@Override
 	@Mapping(target = "projectKeys", ignore = true)
+	@Mapping(target = "uuid", ignore = true)
 	ProjectKeystoreEntity dtoToEntity(ProjectKeystore dto);
 
 }

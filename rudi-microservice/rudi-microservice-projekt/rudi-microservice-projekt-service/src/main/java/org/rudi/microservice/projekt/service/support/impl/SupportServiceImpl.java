@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.Support;
-import org.rudi.microservice.projekt.core.bean.SupportSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.SupportSearchCriteria;
 import org.rudi.microservice.projekt.service.mapper.SupportMapper;
 import org.rudi.microservice.projekt.service.support.SupportService;
 import org.rudi.microservice.projekt.service.support.impl.validator.SupportValidator;

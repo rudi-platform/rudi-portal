@@ -1,0 +1,8 @@
+{
+	"code": "closing-date-null",
+	"label": "Target audience dont la closing date est null",
+	"opening_date": "2021-10-29T10:36:40.614",
+	"closing_date": null,
+	"order": 1,
+	"is_private": true
+}

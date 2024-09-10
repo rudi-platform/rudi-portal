@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {OrganizationService, PasswordUpdate} from 'micro_service_modules/strukture/api-strukture';
+import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {
     Organization,
     OrganizationMember,
@@ -87,9 +87,5 @@ export abstract class OrganizationMetierService {
 
     updateOrganizationMember(organizationUuid: string, userUuid: string, organizationMember: OrganizationMember): Observable<any> {
         return this.organizationService.updateOrganizationMember(organizationUuid, userUuid, organizationMember);
-    }
-
-    updateUserOrganizationPassword(organizationUuid: string, passwordUpdate: PasswordUpdate): Observable<OrganizationMember> {
-        return this.organizationService.updateUserOrganizationPassword(organizationUuid, passwordUpdate);
     }
 }

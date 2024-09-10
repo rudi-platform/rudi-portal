@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.TerritorialScale;
-import org.rudi.microservice.projekt.core.bean.TerritorialScaleSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TerritorialScaleSearchCriteria;
 import org.rudi.microservice.projekt.service.mapper.TerritorialScaleMapper;
 import org.rudi.microservice.projekt.service.territory.TerritorialScaleService;
 import org.rudi.microservice.projekt.service.territory.impl.validator.TerritorialScaleValidator;

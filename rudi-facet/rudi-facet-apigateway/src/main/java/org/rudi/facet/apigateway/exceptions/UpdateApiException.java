@@ -7,7 +7,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 /**
  * @author FNI18300
- *
  */
 public class UpdateApiException extends ApiGatewayApiException {
 

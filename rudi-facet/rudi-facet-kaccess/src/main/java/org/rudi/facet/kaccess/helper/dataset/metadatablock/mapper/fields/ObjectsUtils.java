@@ -26,9 +26,10 @@ class ObjectsUtils {
 		return emptyInstance.equals(instance) ? null : instance;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nonnull
 	private static <T> T getEmptyInstanceOf(Class<?> instanceClass) {
-		//noinspection unchecked
+		// noinspection unchecked
 		return (T) EMPTY_INSTANCES.computeIfAbsent(instanceClass, key -> newEmptyInstanceOf(instanceClass));
 	}
 
@@ -36,8 +37,8 @@ class ObjectsUtils {
 	private static <T> T newEmptyInstanceOf(Class<T> instanceClass) {
 		try {
 			return instanceClass.getDeclaredConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-				 NoSuchMethodException e) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException
+				| NoSuchMethodException e) {
 			throw new NotImplementedException("Cannot create new empty instance of " + instanceClass, e);
 		}
 	}

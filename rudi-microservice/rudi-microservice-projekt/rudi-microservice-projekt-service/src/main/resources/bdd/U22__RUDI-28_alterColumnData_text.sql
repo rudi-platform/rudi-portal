@@ -1,0 +1,1 @@
+ALTER TABLE projekt_data.project ALTER COLUMN data TYPE varchar(255);

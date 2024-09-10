@@ -141,12 +141,14 @@ public class OrganizationMembersHelper {
 
 		String searchText = "";
 		String userType = "";
+		Integer limit = 10;
 		if (searchCriteria != null) {
 			searchText = searchCriteria.getSearchText() != null ? searchCriteria.getSearchText() : "";
 			userType = searchCriteria.getType() != null ? searchCriteria.getType().toString() : "";
+			limit = searchCriteria.getLimit() != null ? searchCriteria.getLimit() : limit;
 		}
 
-		return aclHelper.searchUsersWithCriteria(memberUuids, searchText, userType, searchCriteria.getLimit());
+		return aclHelper.searchUsersWithCriteria(memberUuids, searchText, userType, limit);
 	}
 
 	/**

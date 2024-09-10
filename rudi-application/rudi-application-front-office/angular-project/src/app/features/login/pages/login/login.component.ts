@@ -148,7 +148,7 @@ export class LoginComponent implements OnInit {
      * Quand l'utilisateur click sur le lien equipe technique Rudi
      */
     handleClickContactRudi(): void {
-        this.propertiesMetierService.get('rudidatarennes.contact').subscribe(link => {
+        this.propertiesMetierService.get('front.contact').subscribe(link => {
             window.location.href = link;
         });
     }

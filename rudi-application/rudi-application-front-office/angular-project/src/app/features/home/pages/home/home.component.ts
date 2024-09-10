@@ -103,15 +103,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     private initProjects(): void {
         this.projectsIsLoading = true;
-        this.projektService.searchProjects(
-            null,
-            null,
-            null,
-            null,
-            PROJECT_STATUS,
-            0,
-            3,
-            DEFAULT_PROJECT_ORDER
+        this.projektMetierService.searchProjects({
+                status: PROJECT_STATUS,
+                offset: 0,
+                limit: 3
+            }, DEFAULT_PROJECT_ORDER
         ).pipe(
             map((data: PagedProjectList) => {
                 return data.elements.map(elem => new ProjectCatalogItem({project: elem}));

@@ -1,0 +1,10 @@
+{
+	"uuid": "051fc794-50e8-4009-9ef4-6d932f7831bd",
+	"code": "Teste close date old",
+	"label": "old close date",
+	"opening_date": "2022-06-08T15:00:00.000",
+	"closing_date": "2000-06-08T15:00:00.000",
+	"order": 2,
+	"rate": null,
+	"burstCapacity": null
+}

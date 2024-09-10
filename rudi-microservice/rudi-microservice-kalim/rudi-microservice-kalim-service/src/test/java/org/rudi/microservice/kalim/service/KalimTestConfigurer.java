@@ -1,10 +1,10 @@
 package org.rudi.microservice.kalim.service;
 
-import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.facet.kaccess.bean.Metadata;
-
 import java.io.IOException;
 import java.util.UUID;
+
+import org.rudi.common.core.json.JsonResourceReader;
+import org.rudi.facet.kaccess.bean.Metadata;
 
 public class KalimTestConfigurer {
 
@@ -12,6 +12,7 @@ public class KalimTestConfigurer {
 
 	/**
 	 * Initialisation d'un JDD a partir du JSON de conf
+	 * 
 	 * @return un JDD OK
 	 * @throws IOException levée si KO lecture JSON de conf
 	 */
@@ -23,6 +24,7 @@ public class KalimTestConfigurer {
 
 	/**
 	 * Initialisation d'un JDD a partir de son NOM dans la conf, ne randomize pas les UUIds (copie direct du fichier)
+	 * 
 	 * @return un JDD OK venant des ressources
 	 * @throws IOException levée si KO lecture JSON de conf
 	 */
@@ -31,7 +33,7 @@ public class KalimTestConfigurer {
 	}
 
 	/**
-	 * Pour éviter des erreurs 409 avec WSO2, on remplace certains UUID par des UUID aléatoires
+	 * Pour éviter des erreurs 409 dataverse on remplace certains UUID par des UUID aléatoires
 	 *
 	 * @param metadata JDD à traiter
 	 */

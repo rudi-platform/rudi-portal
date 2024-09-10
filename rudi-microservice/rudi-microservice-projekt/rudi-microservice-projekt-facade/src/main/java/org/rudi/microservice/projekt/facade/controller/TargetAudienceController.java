@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.projekt.core.bean.PagedTargetAudienceList;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
-import org.rudi.microservice.projekt.core.bean.TargetAudienceSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TargetAudienceSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.TargetAudienceApi;
 import org.rudi.microservice.projekt.service.targetaudience.TargetAudienceService;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +41,20 @@ public class TargetAudienceController implements TargetAudienceApi {
 		return ResponseEntity.ok(targetAudienceService.getTargetAudience(uuid));
 	}
 
+	/**
+	 * GET /target-audience : Recherche de public cible
+	 * Recherche de public cible
+	 *
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @param active (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedTargetAudienceList> searchTargetAudiences(Integer limit, Integer offset, String order) {
-		val searchCriteria = new TargetAudienceSearchCriteria();
+	public ResponseEntity<PagedTargetAudienceList> searchTargetAudiences(Boolean active, Integer limit, Integer offset, String order) throws Exception {
+		val searchCriteria = TargetAudienceSearchCriteria.builder().active(active).build();
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = targetAudienceService.searchTargetAudiences(searchCriteria, pageable);
 

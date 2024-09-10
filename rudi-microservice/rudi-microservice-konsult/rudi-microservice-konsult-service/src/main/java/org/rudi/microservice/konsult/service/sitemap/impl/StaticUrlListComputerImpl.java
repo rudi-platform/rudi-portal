@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class StaticUrlListComputerImpl extends AbstractUrlListComputer {
 
 	@Getter(AccessLevel.PUBLIC)
-	@Value("${front.urlServer:http://www.rudi.bzh}")
+	@Value("${front.urlServer}")
 	private String urlServer;
 
 	@Override
@@ -39,7 +39,8 @@ public class StaticUrlListComputerImpl extends AbstractUrlListComputer {
 	}
 
 	@Override
-	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData) throws AppServiceException {
+	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData)
+			throws AppServiceException {
 
 		StaticSitemapEntryData data = (StaticSitemapEntryData) sitemapEntryData;
 

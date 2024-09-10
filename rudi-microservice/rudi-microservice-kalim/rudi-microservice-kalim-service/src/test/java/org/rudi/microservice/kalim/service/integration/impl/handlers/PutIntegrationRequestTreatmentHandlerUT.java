@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.DefaultJackson2ObjectMapperBuilder;
 import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -38,12 +38,12 @@ import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
-import org.rudi.microservice.kalim.service.integration.impl.validator.AbstractMetadataValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.DatasetCreatorIsAuthenticatedValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -59,8 +59,6 @@ class PutIntegrationRequestTreatmentHandlerUT {
 	@Mock
 	private DatasetService datasetService;
 	@Mock
-	private APIManagerHelper apiManagerHelper;
-	@Mock
 	private ApiManagerHelper apiGatewayManagerHelper;
 	@Mock
 	private MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator;
@@ -73,10 +71,9 @@ class PutIntegrationRequestTreatmentHandlerUT {
 
 	@BeforeEach
 	void setUp() {
-		handler = new PutIntegrationRequestTreatmentHandler(datasetService, apiGatewayManagerHelper, apiManagerHelper,
-				objectMapper, Collections.singletonList(validator), error500Builder,
-				metadataInfoProviderIsAuthenticatedValidator, datasetCreatorIsAuthenticatedValidator,
-				organizationHelper);
+		handler = new PutIntegrationRequestTreatmentHandler(datasetService, apiGatewayManagerHelper, objectMapper,
+				Collections.singletonList(validator), error500Builder, metadataInfoProviderIsAuthenticatedValidator,
+				datasetCreatorIsAuthenticatedValidator, organizationHelper);
 
 		when(validator.canBeUsedBy(handler)).thenReturn(true);
 	}
@@ -100,12 +97,12 @@ class PutIntegrationRequestTreatmentHandlerUT {
 
 		// If validation fails, integration request should not go any further
 		verifyNoMoreInteractions(datasetService);
-		verifyNoInteractions(apiManagerHelper);
+		verifyNoInteractions(apiGatewayManagerHelper);
 	}
 
 	@Test
 	@DisplayName("validation passed ✔ ⇒ dataset and API updated \uD83E\uDD73")
-	void handleNoValidationErrorUpdate() throws DataverseAPIException, APIManagerException, IOException {
+	void handleNoValidationErrorUpdate() throws DataverseAPIException, ApiGatewayApiException, IOException {
 
 		final Metadata metadataToUpdate = buildMetadataToUpdate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToUpdate);
@@ -125,7 +122,7 @@ class PutIntegrationRequestTreatmentHandlerUT {
 		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
 
 		// If validation succeeds, API should be updated
-		verify(apiManagerHelper).updateAPI(integrationRequest, updatedMetadata, metadataToUpdate);
+		verify(apiGatewayManagerHelper).updateApis(integrationRequest, updatedMetadata, metadataToUpdate);
 	}
 
 	@Test
@@ -148,12 +145,12 @@ class PutIntegrationRequestTreatmentHandlerUT {
 
 		// If validation fails, there is no interaction
 		verifyNoInteractions(datasetService);
-		verifyNoInteractions(apiManagerHelper);
+		verifyNoInteractions(apiGatewayManagerHelper);
 	}
 
 	@Test
-	@DisplayName("WSO2 error ❌ ⇒ dataset updated rollback")
-	void handleValidationWSO2ErrorNoUpdate() throws DataverseAPIException, APIManagerException, IOException {
+	@DisplayName("API Gateway error ❌ ⇒ dataset updated rollback")
+	void handleValidationApigatewayErrorNoUpdate() throws DataverseAPIException, ApiGatewayApiException, IOException {
 
 		final Metadata actualMetadata = buildMetadataBeforeUpdate();
 		final Metadata metadataToUpdate = buildMetadataToUpdate();
@@ -169,13 +166,13 @@ class PutIntegrationRequestTreatmentHandlerUT {
 		when(datasetService.updateDataset(metadataToUpdate)).thenReturn(metadataToUpdate);
 		when(datasetService.updateDataset(actualMetadata)).thenReturn(actualMetadata);
 
-		doThrow(new APIManagerException("Erreur test")).when(apiManagerHelper).updateAPI(eq(integrationRequest), any(),
-				any());
+		doThrow(new ApiGatewayApiException(WebClientResponseException.create(404, "not found", null, null, null)))
+				.when(apiGatewayManagerHelper).updateApis(eq(integrationRequest), any(), any());
 
 		handler.handle(integrationRequest);
 
-		assertThat(integrationRequest.getIntegrationStatus()).as("L'intégration est KO car WSO a renvoyé une erreur")
-				.isEqualTo(IntegrationStatus.KO);
+		assertThat(integrationRequest.getIntegrationStatus())
+				.as("L'intégration est KO car l'API Gateway a renvoyé une erreur").isEqualTo(IntegrationStatus.KO);
 
 		InOrder inOrderToVerifyDatasetServiceUpdateCall = inOrder(datasetService);
 		// Appel de la mise à jour des métadonnées

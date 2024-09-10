@@ -11,33 +11,27 @@
   <bpmn:itemDefinition id="ItemDefinition_1499" isCollection="false" structureRef="xs:int"/>
   <bpmn:process id="project-process" name="ProjectProcess" isExecutable="true">
     <bpmn:documentation id="Documentation_2"><![CDATA[Processus d'une demande]]></bpmn:documentation>
-    <bpmn:startEvent id="StartEvent_1" name="Draft">
+    <bpmn:startEvent id="StartEvent_1" name="Création">
       <bpmn:documentation id="Documentation_1"><![CDATA[Etat de départ du processus]]></bpmn:documentation>
-      <bpmn:outgoing>SequenceFlow_1</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_3</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>
     </bpmn:startEvent>
     <bpmn:scriptTask id="ScriptTask_1" name="Prise en compte" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_4"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_27</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info(&quot;Update status pending&quot;); 
-projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En attente de validation&quot;); 
-var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;);
-var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution);
-emailData.addData(&quot;projectOwner&quot;,projectOwner);
-projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="StartEvent_1" targetRef="InclusiveGateway_1"/>
     <bpmn:sequenceFlow id="SequenceFlow_12" sourceRef="ScriptTask_1" targetRef="UserTask_6"/>
     <bpmn:scriptTask id="ScriptTask_7" name="Publication" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_41"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_35</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.startSubProcess(execution); // démarrage des process pour JDD restreints et nouveaux
+      <bpmn:script>projectWorkflowContext.startSubProcess(execution); // démarrage des process pour JDD restreints et nouveaux 
 projectWorkflowContext.info(&quot;Update status complete&quot;); 
-var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution);
-projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus);
-var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;);
+var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); 
+projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); 
+var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;); 
 projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_1" name="Done">
@@ -58,16 +52,13 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
     <bpmn:scriptTask id="ScriptTask_4" name="Reutilisation à revoir" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_21</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_22</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info(&quot;Update status refused&quot;); 
-projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;REJECTED&quot;, &quot;Refusée&quot;); 
-var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-body.html&quot;);
-projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status refused&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;REJECTED&quot;, &quot;Refusée&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_21" name="refused" sourceRef="ExclusiveGateway_4" targetRef="ScriptTask_4">
       <bpmn:documentation id="Documentation_8"><![CDATA[Refuser la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_9" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_5" name="Traitement du porteur de projet">
+    <bpmn:userTask id="UserTask_5" name="Prise en compte par le porteur de projet du refus de publication">
       <bpmn:incoming>SequenceFlow_22</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_25</bpmn:outgoing>
       <bpmn:potentialOwner id="PotentialOwner_1" name="Potential Owner 1">
@@ -78,8 +69,8 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_22" sourceRef="ScriptTask_4" targetRef="UserTask_5"/>
     <bpmn:inclusiveGateway id="InclusiveGateway_1" name="Vers prise en compte" gatewayDirection="Converging">
-      <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_24</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_27</bpmn:outgoing>
     </bpmn:inclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_24" name="resubmit" sourceRef="ExclusiveGateway_5" targetRef="InclusiveGateway_1">
@@ -99,7 +90,7 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:documentation id="Documentation_15"><![CDATA[Archiver ma réutilisation]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_11" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_6" name="Moderation de l'animateur" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_6" name="Moderation par l'animateur de la réutilisation" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_12</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_28</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_30">
@@ -118,183 +109,489 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
     <bpmn:scriptTask id="ScriptTask_5" name="Archivage" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_26</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_36</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info(&quot;Update status cancelled&quot;); 
-projectWorkflowContext.updateStatus(context, execution, &quot;CANCELLED&quot;, &quot;CANCELLED&quot;, &quot;Archivée&quot;);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status cancelled&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;CANCELLED&quot;, &quot;CANCELLED&quot;, &quot;Archivée&quot;);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="SequenceFlow_35" sourceRef="ScriptTask_7" targetRef="InclusiveGateway_2"/>
+    <bpmn:sequenceFlow id="SequenceFlow_35" sourceRef="ScriptTask_7" targetRef="ScriptTask_3"/>
     <bpmn:sequenceFlow id="SequenceFlow_36" sourceRef="ScriptTask_5" targetRef="InclusiveGateway_2"/>
     <bpmn:inclusiveGateway id="InclusiveGateway_2" name="To DONE" gatewayDirection="Converging">
       <bpmn:extensionElements>
         <ext:style ext:labelPosition="Center of Figure"/>
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_35</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_36</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_4</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_2</bpmn:outgoing>
     </bpmn:inclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_2" sourceRef="InclusiveGateway_2" targetRef="EndEvent_1"/>
+    <bpmn:inclusiveGateway id="InclusiveGateway_3" name="Vers prise en compte de modification" gatewayDirection="Converging">
+      <bpmn:incoming>SequenceFlow_7</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_47</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_48</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1" name="Creation ou modification ?" gatewayDirection="Diverging">
+      <bpmn:incoming>SequenceFlow_3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_6</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_3" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_1"/>
+    <bpmn:sequenceFlow id="SequenceFlow_6" name="Création" sourceRef="ExclusiveGateway_1" targetRef="InclusiveGateway_1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_2" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == &quot;DRAFT&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_7" name="Modification" sourceRef="ExclusiveGateway_1" targetRef="InclusiveGateway_3">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_3" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == &quot;VALIDATED&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_8" name="Modif OK ou refusé ?" gatewayDirection="Diverging">
+      <bpmn:extensionElements>
+        <ext:style ext:labelPosition="Center of Figure"/>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_41</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_39</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_40</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="ScriptTask_17" name="Prise en compte de modification" scriptFormat="javascript">
+      <bpmn:documentation id="Documentation_27"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
+      <bpmn:incoming>SequenceFlow_48</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_42</bpmn:outgoing>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status pending&quot;);
+projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de validation&quot;); 
+var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;); 
+var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); 
+emailData.addData(&quot;projectOwner&quot;,projectOwner); 
+projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="UserTask_11" name="Moderation par l'animateur de la modification de la réutilisation" implementation="##unspecified">
+      <bpmn:incoming>SequenceFlow_42</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_41</bpmn:outgoing>
+      <bpmn:ioSpecification id="InputOutputSpecification_7">
+        <bpmn:inputSet id="InputSet_7" name="Input Set 3"/>
+        <bpmn:outputSet id="OutputSet_8" name="Output Set 3"/>
+      </bpmn:ioSpecification>
+      <bpmn:property id="Property_6" itemSubjectRef="ItemDefinition_18" name="action"/>
+      <bpmn:potentialOwner id="PotentialOwner_11" name="Potential Owner 1">
+        <bpmn:resourceAssignmentExpression id="ResourceAssignmentExpression_11">
+          <bpmn:formalExpression id="FormalExpression_23" language="http://www.java.com/java">group(MODERATOR)</bpmn:formalExpression>
+        </bpmn:resourceAssignmentExpression>
+      </bpmn:potentialOwner>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_12" name="Prise en compte par le porteur de projet du refus de modification">
+      <bpmn:incoming>SequenceFlow_43</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_45</bpmn:outgoing>
+      <bpmn:potentialOwner id="PotentialOwner_12" name="Potential Owner 1">
+        <bpmn:resourceAssignmentExpression id="ResourceAssignmentExpression_12">
+          <bpmn:formalExpression id="FormalExpression_24" language="http://www.java.com/java">user(${projectWorkflowContext.computePotentialProjectOwners(null,execution)})</bpmn:formalExpression>
+        </bpmn:resourceAssignmentExpression>
+      </bpmn:potentialOwner>
+    </bpmn:userTask>
+    <bpmn:scriptTask id="ScriptTask_18" name="Publication des modifications" scriptFormat="javascript">
+      <bpmn:documentation id="Documentation_28"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
+      <bpmn:incoming>SequenceFlow_39</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_44</bpmn:outgoing>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : publication des modifications&quot;); 
+var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-modif-body.html&quot;); 
+projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
+projectWorkflowContext.publishProjectModification(context, execution);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="ScriptTask_19" name="Reutilisation à revoir" scriptFormat="javascript">
+      <bpmn:incoming>SequenceFlow_40</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_43</bpmn:outgoing>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status refused&quot;); 
+projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;Refusée&quot;); 
+var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-modif-body.html&quot;); 
+projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_39" name="ok" sourceRef="ExclusiveGateway_8" targetRef="ScriptTask_18">
+      <bpmn:documentation id="Documentation_29"><![CDATA[Accepter la demande]]></bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_25" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;ok&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_40" name="refused" sourceRef="ExclusiveGateway_8" targetRef="ScriptTask_19">
+      <bpmn:documentation id="Documentation_30"><![CDATA[Refuser la demande]]></bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_26" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_41" sourceRef="UserTask_11" targetRef="ExclusiveGateway_8"/>
+    <bpmn:sequenceFlow id="SequenceFlow_42" sourceRef="ScriptTask_17" targetRef="UserTask_11"/>
+    <bpmn:sequenceFlow id="SequenceFlow_43" sourceRef="ScriptTask_19" targetRef="UserTask_12"/>
+    <bpmn:sequenceFlow id="SequenceFlow_44" sourceRef="ScriptTask_18" targetRef="InclusiveGateway_4"/>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_9" name="Resoumettre ou annuler ?" gatewayDirection="Diverging">
+      <bpmn:incoming>SequenceFlow_45</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_46</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_47</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_45" sourceRef="UserTask_12" targetRef="ExclusiveGateway_9"/>
+    <bpmn:sequenceFlow id="SequenceFlow_46" name="cancel" sourceRef="ExclusiveGateway_9" targetRef="InclusiveGateway_4">
+      <bpmn:documentation id="Documentation_43"><![CDATA[Annuler mes modifications]]></bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_4" language="http://www.java.com/java">${action == &quot;cancel&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_47" name="resubmit" sourceRef="ExclusiveGateway_9" targetRef="InclusiveGateway_3">
+      <bpmn:documentation id="Documentation_44"><![CDATA[Soumettre mes modifications]]></bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">${action == &quot;resubmit&quot;}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_48" sourceRef="InclusiveGateway_3" targetRef="ScriptTask_17"/>
+    <bpmn:inclusiveGateway id="InclusiveGateway_4" name="To reset form" gatewayDirection="Converging">
+      <bpmn:incoming>SequenceFlow_44</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_46</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:scriptTask id="ScriptTask_2" name="Reset Modif Form" scriptFormat="javascript">
+      <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Modif Form&quot;); 
+var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); 
+projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); 
+projectWorkflowContext.resetDraftForm(context, execution);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;ok&quot;, &quot;validate-project-modification&quot;);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;refused&quot;, &quot;refused-project-modification&quot;);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_12&quot;, &quot;cancel&quot;, &quot;cancel-project-modification&quot;);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_12&quot;, &quot;resubmit&quot;, &quot;resubmit-project-modification&quot;);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="InclusiveGateway_4" targetRef="ScriptTask_2"/>
+    <bpmn:sequenceFlow id="SequenceFlow_4" sourceRef="ScriptTask_2" targetRef="InclusiveGateway_2"/>
+    <bpmn:scriptTask id="ScriptTask_3" name="Reset Creation Form" scriptFormat="javascript">
+      <bpmn:incoming>SequenceFlow_35</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Creation Form&quot;); 
+var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); 
+projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); 
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_5&quot;, &quot;resubmit&quot;, &quot;resubmit-project&quot;);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;ok&quot;, &quot;validate-project&quot;);
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;refused&quot;, &quot;refused-project&quot;);
+
+</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="ScriptTask_3" targetRef="InclusiveGateway_2"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Default Process Diagram">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="project-process">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds height="36.0" width="36.0" x="0.0" y="88.0"/>
+        <dc:Bounds height="36.0" width="36.0" x="0.0" y="427.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_4" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="26.0" x="5.0" y="124.0"/>
+          <dc:Bounds height="17.0" width="55.0" x="-9.0" y="463.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_1" bpmnElement="ScriptTask_1" isExpanded="true">
-        <dc:Bounds height="81.0" width="110.0" x="200.0" y="65.0"/>
+        <dc:Bounds height="81.0" width="110.0" x="275.0" y="115.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="90.0" x="210.0" y="98.0"/>
+          <dc:Bounds height="17.0" width="107.0" x="276.0" y="147.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_7" bpmnElement="ScriptTask_7" isExpanded="true">
-        <dc:Bounds height="81.0" width="110.0" x="696.0" y="66.0"/>
+        <dc:Bounds height="81.0" width="110.0" x="741.0" y="116.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_25" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="61.0" x="720.0" y="99.0"/>
+          <dc:Bounds height="17.0" width="71.0" x="760.0" y="148.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_EndEvent_1" bpmnElement="EndEvent_1">
-        <dc:Bounds height="36.0" width="36.0" x="1290.0" y="338.0"/>
+        <dc:Bounds height="36.0" width="36.0" x="1342.0" y="434.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_5" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="30.0" x="1293.0" y="374.0"/>
+          <dc:Bounds height="17.0" width="35.0" x="1342.0" y="470.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_4" bpmnElement="ExclusiveGateway_4" isMarkerVisible="true">
-        <dc:Bounds height="50.0" width="50.0" x="500.0" y="82.0"/>
+        <dc:Bounds height="50.0" width="50.0" x="575.0" y="132.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_16" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="46.0" x="502.0" y="92.0"/>
+          <dc:Bounds height="34.0" width="55.0" x="573.0" y="140.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_4" bpmnElement="ScriptTask_4" isExpanded="true">
-        <dc:Bounds height="73.0" width="110.0" x="617.0" y="200.0"/>
+        <dc:Bounds height="73.0" width="110.0" x="662.0" y="250.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_39" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="82.0" x="631.0" y="221.0"/>
+          <dc:Bounds height="34.0" width="96.0" x="669.0" y="269.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_5" bpmnElement="UserTask_5" isExpanded="true">
-        <dc:Bounds height="81.0" width="110.0" x="778.0" y="196.0"/>
+        <dc:Bounds height="81.0" width="110.0" x="823.0" y="246.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_41" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="94.0" x="786.0" y="221.0"/>
+          <dc:Bounds height="85.0" width="108.0" x="824.0" y="244.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_1" bpmnElement="InclusiveGateway_1" isMarkerVisible="true">
-        <dc:Bounds height="50.0" width="50.0" x="80.0" y="81.0"/>
+        <dc:Bounds height="50.0" width="50.0" x="180.0" y="131.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_43" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="78.0" x="66.0" y="131.0"/>
+          <dc:Bounds height="34.0" width="74.0" x="168.0" y="181.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_5" bpmnElement="ExclusiveGateway_5" isMarkerVisible="true">
-        <dc:Bounds height="50.0" width="50.0" x="929.0" y="322.0"/>
+        <dc:Bounds height="50.0" width="50.0" x="974.0" y="372.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_46" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="75.0" x="917.0" y="332.0"/>
+          <dc:Bounds height="51.0" width="89.0" x="955.0" y="372.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_6" bpmnElement="UserTask_6" isExpanded="true">
-        <dc:Bounds height="81.0" width="110.0" x="364.0" y="66.0"/>
+        <dc:Bounds height="81.0" width="110.0" x="439.0" y="116.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_49" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="93.0" x="372.0" y="91.0"/>
+          <dc:Bounds height="51.0" width="105.0" x="441.0" y="131.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_5" bpmnElement="ScriptTask_5" isExpanded="true">
-        <dc:Bounds height="50.0" width="110.0" x="1050.0" y="322.0"/>
+        <dc:Bounds height="50.0" width="110.0" x="1095.0" y="372.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_52" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="53.0" x="1078.0" y="339.0"/>
+          <dc:Bounds height="17.0" width="64.0" x="1118.0" y="388.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_2" bpmnElement="InclusiveGateway_2" isMarkerVisible="true">
-        <dc:Bounds height="50.0" width="50.0" x="1202.0" y="328.0"/>
+        <dc:Bounds height="50.0" width="50.0" x="1254.0" y="427.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_3" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="52.0" x="1201.0" y="345.0"/>
+          <dc:Bounds height="17.0" width="64.0" x="1247.0" y="443.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_StartEvent_2" targetElement="BPMNShape_InclusiveGateway_1">
-        <di:waypoint xsi:type="dc:Point" x="36.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="58.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="80.0" y="106.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_2"/>
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_3" bpmnElement="InclusiveGateway_3" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="180.0" y="501.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_7" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="68.0" width="78.0" x="166.0" y="551.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_1" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="75.0" y="420.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_8" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="68.0" width="80.0" x="60.0" y="470.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_8" bpmnElement="ExclusiveGateway_8" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="576.0" y="503.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_12" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="79.0" x="562.0" y="511.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_17" bpmnElement="ScriptTask_17" isExpanded="true">
+        <dc:Bounds height="81.0" width="110.0" x="275.0" y="487.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_13" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="51.0" width="79.0" x="290.0" y="502.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_11" bpmnElement="UserTask_11" isExpanded="true">
+        <dc:Bounds height="81.0" width="110.0" x="439.0" y="487.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_14" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="85.0" width="105.0" x="441.0" y="485.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_12" bpmnElement="UserTask_12" isExpanded="true">
+        <dc:Bounds height="81.0" width="110.0" x="824.0" y="617.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_15" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="85.0" width="108.0" x="825.0" y="615.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_18" bpmnElement="ScriptTask_18" isExpanded="true">
+        <dc:Bounds height="81.0" width="110.0" x="742.0" y="487.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_19" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="106.0" x="744.0" y="510.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_19" bpmnElement="ScriptTask_19" isExpanded="true">
+        <dc:Bounds height="73.0" width="110.0" x="663.0" y="621.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_20" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="96.0" x="670.0" y="640.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_9" bpmnElement="ExclusiveGateway_9" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="974.0" y="697.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_28" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="51.0" width="89.0" x="955.0" y="747.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_4" bpmnElement="InclusiveGateway_4" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="1023.0" y="502.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_2" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="64.0" x="1016.0" y="552.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_2" bpmnElement="ScriptTask_2" isExpanded="true">
+        <dc:Bounds height="50.0" width="110.0" x="1110.0" y="501.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_33" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="89.0" x="1120.0" y="509.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_3" bpmnElement="ScriptTask_3" isExpanded="true">
+        <dc:Bounds height="50.0" width="110.0" x="1095.0" y="131.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_36" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds height="34.0" width="110.0" x="1095.0" y="139.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="SequenceFlow_12" sourceElement="BPMNShape_ScriptTask_1" targetElement="BPMNShape_UserTask_6">
-        <di:waypoint xsi:type="dc:Point" x="310.0" y="105.0"/>
-        <di:waypoint xsi:type="dc:Point" x="337.0" y="105.0"/>
-        <di:waypoint xsi:type="dc:Point" x="364.0" y="106.0"/>
+        <di:waypoint xsi:type="dc:Point" x="385.0" y="155.0"/>
+        <di:waypoint xsi:type="dc:Point" x="412.0" y="155.0"/>
+        <di:waypoint xsi:type="dc:Point" x="439.0" y="156.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_17"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="BPMNShape_ExclusiveGateway_4">
-        <di:waypoint xsi:type="dc:Point" x="550.0" y="107.0"/>
-        <di:waypoint xsi:type="dc:Point" x="687.0" y="107.0"/>
-        <di:waypoint xsi:type="dc:Point" x="687.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="697.0" y="106.0"/>
+        <di:waypoint xsi:type="dc:Point" x="625.0" y="157.0"/>
+        <di:waypoint xsi:type="dc:Point" x="683.0" y="157.0"/>
+        <di:waypoint xsi:type="dc:Point" x="741.0" y="156.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_18">
-          <dc:Bounds height="15.0" width="13.0" x="618.0" y="108.0"/>
+          <dc:Bounds height="17.0" width="15.0" x="676.0" y="158.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_21" bpmnElement="SequenceFlow_21" sourceElement="BPMNShape_ExclusiveGateway_4" targetElement="BPMNShape_ScriptTask_4">
-        <di:waypoint xsi:type="dc:Point" x="525.0" y="132.0"/>
-        <di:waypoint xsi:type="dc:Point" x="525.0" y="236.0"/>
-        <di:waypoint xsi:type="dc:Point" x="617.0" y="236.0"/>
+        <di:waypoint xsi:type="dc:Point" x="600.0" y="182.0"/>
+        <di:waypoint xsi:type="dc:Point" x="600.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="662.0" y="286.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_40">
-          <dc:Bounds height="15.0" width="42.0" x="505.0" y="231.0"/>
+          <dc:Bounds height="17.0" width="49.0" x="576.0" y="266.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_22" bpmnElement="SequenceFlow_22" sourceElement="BPMNShape_ScriptTask_4" targetElement="BPMNShape_UserTask_5">
-        <di:waypoint xsi:type="dc:Point" x="727.0" y="236.0"/>
-        <di:waypoint xsi:type="dc:Point" x="752.0" y="236.0"/>
-        <di:waypoint xsi:type="dc:Point" x="778.0" y="236.0"/>
+        <di:waypoint xsi:type="dc:Point" x="772.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="797.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="823.0" y="286.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_42"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_24" bpmnElement="SequenceFlow_24" sourceElement="BPMNShape_ExclusiveGateway_5" targetElement="BPMNShape_InclusiveGateway_1">
-        <di:waypoint xsi:type="dc:Point" x="929.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="105.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="105.0" y="131.0"/>
+        <di:waypoint xsi:type="dc:Point" x="974.0" y="397.0"/>
+        <di:waypoint xsi:type="dc:Point" x="205.0" y="397.0"/>
+        <di:waypoint xsi:type="dc:Point" x="205.0" y="181.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_45">
-          <dc:Bounds height="15.0" width="49.0" x="385.0" y="348.0"/>
+          <dc:Bounds height="17.0" width="57.0" x="454.0" y="398.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_25" bpmnElement="SequenceFlow_25" sourceElement="BPMNShape_UserTask_5" targetElement="BPMNShape_ExclusiveGateway_5">
-        <di:waypoint xsi:type="dc:Point" x="888.0" y="236.0"/>
-        <di:waypoint xsi:type="dc:Point" x="954.0" y="236.0"/>
-        <di:waypoint xsi:type="dc:Point" x="954.0" y="322.0"/>
+        <di:waypoint xsi:type="dc:Point" x="933.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="999.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="999.0" y="372.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_47"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_26" bpmnElement="SequenceFlow_26" sourceElement="BPMNShape_ExclusiveGateway_5" targetElement="BPMNShape_ScriptTask_5">
-        <di:waypoint xsi:type="dc:Point" x="979.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1014.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1050.0" y="347.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1024.0" y="397.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1059.0" y="397.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1095.0" y="397.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_48">
-          <dc:Bounds height="15.0" width="39.0" x="996.0" y="348.0"/>
+          <dc:Bounds height="17.0" width="47.0" x="1037.0" y="398.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_27" bpmnElement="SequenceFlow_27" sourceElement="BPMNShape_InclusiveGateway_1">
-        <di:waypoint xsi:type="dc:Point" x="130.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="200.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="210.0" y="105.0"/>
+        <di:waypoint xsi:type="dc:Point" x="230.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="252.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="275.0" y="155.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_50"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_28" bpmnElement="SequenceFlow_28" sourceElement="BPMNShape_UserTask_6" targetElement="BPMNShape_ExclusiveGateway_4">
-        <di:waypoint xsi:type="dc:Point" x="474.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="487.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="500.0" y="107.0"/>
+        <di:waypoint xsi:type="dc:Point" x="549.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="562.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="575.0" y="157.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_51"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_35" bpmnElement="SequenceFlow_35" sourceElement="BPMNShape_ScriptTask_7" targetElement="BPMNShape_InclusiveGateway_2">
-        <di:waypoint xsi:type="dc:Point" x="806.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1227.0" y="106.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1227.0" y="328.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_35" bpmnElement="SequenceFlow_35" sourceElement="BPMNShape_ScriptTask_7">
+        <di:waypoint xsi:type="dc:Point" x="851.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1091.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1101.0" y="155.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_54"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_36" bpmnElement="SequenceFlow_36" sourceElement="BPMNShape_ScriptTask_5" targetElement="BPMNShape_InclusiveGateway_2">
-        <di:waypoint xsi:type="dc:Point" x="1160.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1181.0" y="347.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1181.0" y="353.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1202.0" y="353.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1150.0" y="422.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1150.0" y="452.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1254.0" y="452.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_55"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_InclusiveGateway_2" targetElement="BPMNShape_EndEvent_1">
-        <di:waypoint xsi:type="dc:Point" x="1252.0" y="353.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1271.0" y="353.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1271.0" y="356.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1290.0" y="356.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1304.0" y="452.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1323.0" y="452.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1342.0" y="452.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_6"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_StartEvent_2" targetElement="BPMNShape_ExclusiveGateway_1">
+        <di:waypoint xsi:type="dc:Point" x="36.0" y="445.0"/>
+        <di:waypoint xsi:type="dc:Point" x="55.0" y="445.0"/>
+        <di:waypoint xsi:type="dc:Point" x="75.0" y="445.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_9"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_InclusiveGateway_1">
+        <di:waypoint xsi:type="dc:Point" x="100.0" y="420.0"/>
+        <di:waypoint xsi:type="dc:Point" x="100.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="180.0" y="156.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_10">
+          <dc:Bounds height="17.0" width="55.0" x="73.0" y="249.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_InclusiveGateway_3">
+        <di:waypoint xsi:type="dc:Point" x="100.0" y="470.0"/>
+        <di:waypoint xsi:type="dc:Point" x="100.0" y="526.0"/>
+        <di:waypoint xsi:type="dc:Point" x="180.0" y="526.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_11">
+          <dc:Bounds height="17.0" width="76.0" x="75.0" y="527.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_39" bpmnElement="SequenceFlow_39" sourceElement="BPMNShape_ExclusiveGateway_8" targetElement="BPMNShape_ScriptTask_18">
+        <di:waypoint xsi:type="dc:Point" x="626.0" y="528.0"/>
+        <di:waypoint xsi:type="dc:Point" x="684.0" y="528.0"/>
+        <di:waypoint xsi:type="dc:Point" x="742.0" y="527.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_21">
+          <dc:Bounds height="17.0" width="15.0" x="677.0" y="529.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_40" bpmnElement="SequenceFlow_40" sourceElement="BPMNShape_ExclusiveGateway_8" targetElement="BPMNShape_ScriptTask_19">
+        <di:waypoint xsi:type="dc:Point" x="601.0" y="553.0"/>
+        <di:waypoint xsi:type="dc:Point" x="601.0" y="657.0"/>
+        <di:waypoint xsi:type="dc:Point" x="663.0" y="657.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_22">
+          <dc:Bounds height="17.0" width="49.0" x="577.0" y="637.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_41" bpmnElement="SequenceFlow_41" sourceElement="BPMNShape_UserTask_11" targetElement="BPMNShape_ExclusiveGateway_8">
+        <di:waypoint xsi:type="dc:Point" x="549.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="562.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="576.0" y="528.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_23"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_42" bpmnElement="SequenceFlow_42" sourceElement="BPMNShape_ScriptTask_17" targetElement="BPMNShape_UserTask_11">
+        <di:waypoint xsi:type="dc:Point" x="385.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="412.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="439.0" y="527.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_24"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_43" bpmnElement="SequenceFlow_43" sourceElement="BPMNShape_ScriptTask_19" targetElement="BPMNShape_UserTask_12">
+        <di:waypoint xsi:type="dc:Point" x="773.0" y="657.0"/>
+        <di:waypoint xsi:type="dc:Point" x="798.0" y="657.0"/>
+        <di:waypoint xsi:type="dc:Point" x="824.0" y="657.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_26"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_44" bpmnElement="SequenceFlow_44" sourceElement="BPMNShape_ScriptTask_18" targetElement="BPMNShape_InclusiveGateway_4">
+        <di:waypoint xsi:type="dc:Point" x="852.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="937.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1023.0" y="527.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_27"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_45" bpmnElement="SequenceFlow_45" sourceElement="BPMNShape_UserTask_12" targetElement="BPMNShape_ExclusiveGateway_9">
+        <di:waypoint xsi:type="dc:Point" x="934.0" y="657.0"/>
+        <di:waypoint xsi:type="dc:Point" x="999.0" y="657.0"/>
+        <di:waypoint xsi:type="dc:Point" x="999.0" y="697.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_29"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_46" bpmnElement="SequenceFlow_46" sourceElement="BPMNShape_ExclusiveGateway_9" targetElement="BPMNShape_InclusiveGateway_4">
+        <di:waypoint xsi:type="dc:Point" x="1024.0" y="722.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1048.0" y="722.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1048.0" y="552.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_30">
+          <dc:Bounds height="17.0" width="43.0" x="1027.0" y="650.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_47" bpmnElement="SequenceFlow_47" sourceElement="BPMNShape_ExclusiveGateway_9" targetElement="BPMNShape_InclusiveGateway_3">
+        <di:waypoint xsi:type="dc:Point" x="974.0" y="722.0"/>
+        <di:waypoint xsi:type="dc:Point" x="205.0" y="722.0"/>
+        <di:waypoint xsi:type="dc:Point" x="205.0" y="551.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_31">
+          <dc:Bounds height="17.0" width="57.0" x="476.0" y="723.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_48" bpmnElement="SequenceFlow_48" sourceElement="BPMNShape_InclusiveGateway_3" targetElement="BPMNShape_ScriptTask_17">
+        <di:waypoint xsi:type="dc:Point" x="230.0" y="526.0"/>
+        <di:waypoint xsi:type="dc:Point" x="252.0" y="526.0"/>
+        <di:waypoint xsi:type="dc:Point" x="275.0" y="527.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_32"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="BPMNShape_InclusiveGateway_4" targetElement="BPMNShape_ScriptTask_2">
+        <di:waypoint xsi:type="dc:Point" x="1073.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1091.0" y="527.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1110.0" y="526.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_34"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="BPMNShape_ScriptTask_2" targetElement="BPMNShape_InclusiveGateway_2">
+        <di:waypoint xsi:type="dc:Point" x="1220.0" y="526.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1279.0" y="526.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1279.0" y="477.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_35"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_ScriptTask_3" targetElement="BPMNShape_InclusiveGateway_2">
+        <di:waypoint xsi:type="dc:Point" x="1205.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1279.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1279.0" y="427.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_37"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
     <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">

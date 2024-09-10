@@ -3,7 +3,7 @@ package org.rudi.microservice.projekt.service.targetaudience.impl;
 import java.util.UUID;
 
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
-import org.rudi.microservice.projekt.core.bean.TargetAudienceSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TargetAudienceSearchCriteria;
 import org.rudi.microservice.projekt.service.mapper.TargetAudienceMapper;
 import org.rudi.microservice.projekt.service.targetaudience.TargetAudienceService;
 import org.rudi.microservice.projekt.storage.dao.targetaudience.TargetAudienceCustomDao;

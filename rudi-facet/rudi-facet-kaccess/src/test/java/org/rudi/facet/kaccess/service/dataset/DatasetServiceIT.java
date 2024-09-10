@@ -58,7 +58,7 @@ class DatasetServiceIT {
 	private MetadataBlockHelper metadataBLockHelper;
 
 	/**
-	 * Pour éviter des erreurs avec Dataverse et WSO2, on remplace certains UUID par des UUID aléatoires
+	 * Pour éviter des erreurs avec Dataverse, on remplace certains UUID par des UUID aléatoires
 	 *
 	 * @param metadata JDD à traiter
 	 */

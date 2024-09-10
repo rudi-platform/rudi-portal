@@ -147,7 +147,7 @@ public class ProviderHelper {
 	@Nonnull
 	public NodeProvider requireNodeProviderByUUID(UUID nodeProviderUUId) {
 		final var nodeProvider = getNodeProviderByUUID(nodeProviderUUId);
-		return Objects.requireNonNull(nodeProvider, "Nœud fournisseur introuvable à l'UUID " + nodeProvider);
+		return Objects.requireNonNull(nodeProvider, "Nœud fournisseur introuvable à l'UUID " + nodeProviderUUId);
 	}
 
 	protected URI buildGetURL(UriBuilder uriBuilder, UUID value) {

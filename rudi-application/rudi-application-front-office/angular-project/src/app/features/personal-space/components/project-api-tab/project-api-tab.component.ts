@@ -1,14 +1,24 @@
-import {Clipboard} from '@angular/cdk/clipboard';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
 import {ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
+import {GenerateKeysDialogComponent} from '@features/personal-space/components/generate-keys-dialog/generate-keys-dialog.component';
+import {ProjectKey} from 'micro_service_modules/acl/acl-model';
+import { ProjectKeyPageResult, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import * as moment from 'moment/moment';
 import {map} from 'rxjs/operators';
-import {KonsultApiAccessService} from '@core/services/api-access/konsult/konsult-api-access.service';
 import {ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
-import {UserService} from '@core/services/user.service';
 import {ApiKeys} from 'micro_service_modules/konsult/konsult-api';
 import {OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
+
+export interface ProjectKeyTableData {
+    creationDate: string;
+    name: string;
+    expirationDate: string;
+    action: string;
+}
 
 @Component({
     selector: 'app-project-api-tab',
@@ -17,35 +27,45 @@ import {OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
 })
 export class ProjectApiTabComponent implements OnInit {
 
+    @ViewChild(MatSort) sort: MatSort;
+
     private project: Project;
     public keys: ApiKeys;
     public loading: boolean;
-    public passwordError: boolean;
     public hidePassword = true;
-    public hideIdentificationCard = false;
     public isOwnerTypeUser = false;
     public password: string;
     public rudiDocLink: string;
+    public isKeysLoading = false;
+
+    projectKeys: ProjectKeyTableData[] = [];
+    projectKeysTotal: number = 0;
+    displayedColumns: string[] = ['creationDate', 'name', 'expirationDate', 'action'];
+    dataSource: MatTableDataSource<ProjectKeyTableData> = new MatTableDataSource(this.projectKeys);
+
 
     constructor(private readonly route: ActivatedRoute,
-                private readonly apiAccessService: KonsultApiAccessService,
                 private readonly projectDependenciesService: ProjectDependenciesService,
                 private readonly propertiesMetierService: PropertiesMetierService,
-                private readonly utilisateurService: UserService,
-                private readonly clipboard: Clipboard,
-                private readonly translateService: TranslateService) {
+                private projektService: ProjektService,
+                private readonly dialog: MatDialog) {
     }
 
     ngOnInit(): void {
         this.route.params.subscribe(params => {
             this.projectUuid = params.projectUuid;
+            this.getProjectKeys(params.projectUuid);
         });
 
-        this.propertiesMetierService.get('rudidatarennes.docRudiBzh').subscribe({
+        this.propertiesMetierService.get('front.docRudi').subscribe({
             next: (rudiDocLink: string) => {
                 this.rudiDocLink = rudiDocLink;
             }
         });
+    }
+
+    ngAfterViewInit() {
+        this.dataSource.sort = this.sort;
     }
 
     set projectUuid(uuid: string) {
@@ -64,41 +84,47 @@ export class ProjectApiTabComponent implements OnInit {
         });
     }
 
-    getApiKeys(): void {
-        this.keys = null;
-        this.loading = true;
-        this.passwordError = false;
-        this.apiAccessService.getConsumerKeys(this.password, this.project.owner_type, this.project.owner_uuid).subscribe({
-                next: (keys: ApiKeys) => {
-                    this.loading = false;
-                    this.keys = keys;
-                    this.hideIdentificationCard = true;
-                },
-                error: (e) => {
-                    this.loading = false;
-                    this.hideIdentificationCard = false;
-                    console.error(e);
-                    this.passwordError = true;
+
+    /**
+     * Générer une clé
+     */
+    generateKey(): void {
+        const dialogConfig = new MatDialogConfig();
+
+        dialogConfig.disableClose = true;
+        dialogConfig.autoFocus = false;
+        dialogConfig.width = '768px';
+        dialogConfig.data = {data: this.project};
+        const dialogRef = this.dialog.open(GenerateKeysDialogComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(() => this.getProjectKeys(this.project.uuid));
+    }
+
+    /**
+     * Récupérer les paires de clé
+     */
+
+    getProjectKeys(projectUuid: string): void {
+        this.isKeysLoading = true;
+        this.projektService.searchProjectKeys(projectUuid).subscribe({
+            next: (keys: ProjectKeyPageResult) => {
+                this.projectKeysTotal = keys.total;
+                if (keys && keys.elements.length > 0) {
+                    this.projectKeys = keys.elements.map((projectKey: ProjectKey) => {
+                        return {
+                            name: projectKey.name,
+                            creationDate: moment(projectKey.creationDate).format('DD/MM/YYYY'),
+                            expirationDate: moment(projectKey.expirationDate).format('DD/MM/YYYY'),
+                            action: projectKey.client_id
+                        };
+                    });
+                    this.dataSource = new MatTableDataSource(this.projectKeys);
                 }
+                this.isKeysLoading = false;
+            },
+            error: (error) => {
+                console.error(error);
+                this.isKeysLoading = false;
             }
-        );
-    }
-
-    /**
-     * Méthode qui récupère le mot de passe entré par l'utilisateur
-     */
-    handlePasswordChanged(password: string): void {
-        this.password = password;
-    }
-
-    /**
-     * Affiche le bon label en fonction du Owner du projet
-     */
-    getLabel(): string {
-        if (this.isOwnerTypeUser) {
-            return this.translateService.instant('personalSpace.projectApi.textOwner');
-        } else {
-            return this.translateService.instant('personalSpace.projectApi.textUser');
-        }
+        });
     }
 }

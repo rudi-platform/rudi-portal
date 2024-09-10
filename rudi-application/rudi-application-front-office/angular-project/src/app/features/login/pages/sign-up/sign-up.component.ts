@@ -13,6 +13,7 @@ import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
+import {Level} from '@shared/notification-template/notification-template.component';
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
 import {RudiValidators} from '@shared/validators/rudi-validators';
 import {ConfirmedValidator} from './confirmed-validator';
@@ -148,10 +149,11 @@ export class SignUpComponent implements OnInit {
                 next: () => {
                     this.loading = false;
                     this.routeHistoryService.goBackOrElseGoAccount();
-                    this.propertiesService.get('rudidatarennes.contact').subscribe(rudidatarennesContactLink => {
+                    this.propertiesService.get('front.contact').subscribe(contactLink => {
                         this.snackBarService.openSnackBar({
+                            level: Level.SUCCESS,
                             message: `${this.translateService.instant('snackbarTemplate.successIncription')}
-                                        <a href="${rudidatarennesContactLink}">
+                                        <a href="${contactLink}">
                                             ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
                                         </a>`,
                             keepBeforeSecondRouteChange: true

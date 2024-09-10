@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import org.rudi.common.storage.dao.StampedRepository;
 import org.rudi.microservice.projekt.storage.entity.ReutilisationStatusEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReutilisationStatusDao extends JpaRepository<ReutilisationStatusEntity, Long> {
+public interface ReutilisationStatusDao extends StampedRepository<ReutilisationStatusEntity> {
 
 	/**
 	 * @throws org.springframework.dao.EmptyResultDataAccessException si l'entité demandée n'a pas été trouvée

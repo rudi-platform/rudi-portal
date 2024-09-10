@@ -24,8 +24,6 @@ import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
-import org.rudi.facet.apimaccess.service.ApplicationService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataAccessCondition;
@@ -97,8 +95,6 @@ class LinkedDatasetSubscriptionHelperUT {
 	private ACLHelper aclHelper;
 	@MockBean
 	private OrganizationHelper organizationHelper;
-	@MockBean
-	private ApplicationService applicationService;
 
 	private LinkedDatasetEntity createLinkedDatasetFromJson(String jsonPath) throws IOException {
 		final LinkedDatasetEntity linkedDataset = jsonResourceReader.read(jsonPath, LinkedDatasetEntity.class);
@@ -228,7 +224,7 @@ class LinkedDatasetSubscriptionHelperUT {
 
 	@Test
 	@DisplayName("Teste le bon calcul de toutes les demandes d'un ownerUuid")
-	void getOwnerAllRequests() throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void getOwnerAllRequests() throws IOException, AppServiceException, DataverseAPIException {
 		// Création de projet
 		val lampadaire = createProject(PROJET_LAMPADAIRES);
 		val lampadaireDeux = createProject(PROJET_LAMPADAIRES_DEUX);

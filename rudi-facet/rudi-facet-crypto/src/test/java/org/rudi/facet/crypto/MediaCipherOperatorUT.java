@@ -1,5 +1,7 @@
 package org.rudi.facet.crypto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,8 +12,6 @@ import java.security.GeneralSecurityException;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class MediaCipherOperatorUT {
 
@@ -47,11 +47,12 @@ class MediaCipherOperatorUT {
 		final var mediaCipherOperator = new MediaCipherOperator(spec);
 
 		final var encryptedInput = payload.getInputStream();
-		final var privateKeyPath = Paths.get("../../rudi-tools/rudi-tools-wso2-handler/src/main/resources/encryption_key.key");
-		try (
-				final var privateKeyInputStream = Files.newInputStream(privateKeyPath)
-		) {
-			final var privateKey = new KeyGeneratorFromPem().generatePrivateKey(spec.firstBlockSpec.keyPairAlgorithm, privateKeyInputStream);
+
+		final var privateKeyPath = Paths.get(
+				"../../rudi-microservice/rudi-microservice-apigateway/rudi-microservice-apigateway-service/src/test/resources/encryption/encryption_default_key_private.key");
+		try (final var privateKeyInputStream = Files.newInputStream(privateKeyPath)) {
+			final var privateKey = new KeyGeneratorFromPem().generatePrivateKey(spec.firstBlockSpec.keyPairAlgorithm,
+					privateKeyInputStream);
 			final var decryptedOutput = new ByteArrayOutputStream();
 			mediaCipherOperator.decrypt(encryptedInput, privateKey, decryptedOutput);
 

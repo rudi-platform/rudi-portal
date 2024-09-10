@@ -11,8 +11,8 @@ import {AppInfo} from 'micro_service_modules/acl/acl-api/model/models';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CustomizationDescription, KonsultService, MiscellaneousService} from 'micro_service_modules/konsult/konsult-api';
 import {CmsTermsDescription} from 'micro_service_modules/konsult/konsult-model';
-import {forkJoin, switchMap} from 'rxjs';
 import {FooterUtils} from '../utils/footer-utils';
+import {switchMap} from 'rxjs';
 
 const OFFSET: number = 0;
 const LIMIT: number = 3;
@@ -28,8 +28,7 @@ export class FooterComponent implements OnInit {
     @Input() mediaSize: MediaSize;
     appInfo: AppInfo;
     loading = false;
-    twitterLinkHref: string;
-    linkedinLinkHref: string;
+    footerLogoLink: string;
 
     customizationDescription: CustomizationDescription;
     cmsTermsDescription: CmsTermsDescription;
@@ -45,42 +44,27 @@ export class FooterComponent implements OnInit {
     constructor(
         private readonly miscellaneousService: MiscellaneousService,
         private readonly redirectService: RedirectService,
-        private readonly propertiesService: PropertiesMetierService,
-        private readonly logService: LogService,
         private readonly translateService: TranslateService,
         private readonly konsultService: KonsultService,
         private readonly logger: LogService,
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly domSanitizer: DomSanitizer,
         private readonly imageLogoService: ImageLogoService,
-        private readonly customizationService: CustomizationService
+        private readonly customizationService: CustomizationService,
+        private readonly propertiesMetierService: PropertiesMetierService
     ) {
         this.customizationDescriptionIsLoading = false;
         this.displayComponent = false;
         this.termsValues = [];
         this.logoIsLoading = false;
         this.initCustomizationDescription();
-
+        this.getUrlToRudi();
     }
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
         this.miscellaneousService.getApplicationInformation().subscribe(appInfo => this.appInfo = appInfo);
         this.loading = true;
-        forkJoin({
-            twitterLinkHref: this.propertiesService.get('rudidatarennes.twitter'),
-            linkedinLinkHref: this.propertiesService.get('rudidatarennes.linkedin'),
-        }).subscribe({
-            next: ({twitterLinkHref, linkedinLinkHref}) => {
-                this.loading = false;
-                this.twitterLinkHref = twitterLinkHref;
-                this.linkedinLinkHref = linkedinLinkHref;
-            },
-            error: (error) => {
-                this.loading = false;
-                this.logService.error(error);
-            }
-        });
     }
 
     initTerms(): void {
@@ -101,7 +85,7 @@ export class FooterComponent implements OnInit {
                     });
                 }
             },
-            error(err) {
+            error(err): void {
                 this.logService.error(err);
                 this.displayComponent = false;
             }
@@ -154,4 +138,15 @@ export class FooterComponent implements OnInit {
         });
     }
 
+    getUrlToRudi(): void {
+        this.propertiesMetierService.get('front.index').subscribe({
+            next: (link: string) => {
+                this.footerLogoLink = link;
+            }
+        });
+    }
+
+    public redirectToRudi(): void{
+        window.open(this.footerLogoLink).focus();
+    }
 }

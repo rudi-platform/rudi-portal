@@ -114,7 +114,7 @@ export class DisplayTableService {
      * @private
      */
     private getTableDisplayMaxFileSize(): Observable<number> {
-        return this.getBackendPropertyPipe.transform('rudidatarennes.tableDisplayMaxFileSize').pipe(
+        return this.getBackendPropertyPipe.transform('front.tableDisplayMaxFileSize').pipe(
             map((tableDisplayMaxFileSize: string) => {
                 return parseInt(tableDisplayMaxFileSize, 10);
             })

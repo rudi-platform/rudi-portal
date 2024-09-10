@@ -6,7 +6,7 @@
 		"title": "rudi-selfdata-api",
 		"termsOfService": "https://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -921,71 +921,6 @@
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/apim/enable-api": {
-			"put": {
-				"tags": [
-					"selfdata"
-				],
-				"summary": "Permet d'activer les accès aux APIs pour l'user fourni",
-				"description": "Va créer les accès pour l'user ou l'organisation (en fonction de ce qui est fourni) pour pouvoir consommer les APIs des JDDs à travers RUDI avec des clés d'API WSO2",
-				"operationId": "enableApi",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "./../../../rudi-facet/rudi-facet-apimaccess/src/main/resources/openapi/rudi-apimaccess-model.json#/components/schemas/Credentials"
-							}
-						}
-					}
-				},
-				"responses": {
-					"204": {
-						"description": "Accès aux APIs créés avec succès"
-					}
-				}
-			}
-		},
-		"/apim/has-enabled-api": {
-			"put": {
-				"tags": [
-					"selfdata"
-				],
-				"summary": "Permet de savoir si les accès aux API ont déjà été activé",
-				"description": "Renvoie vrai si les accès aux APIs ont déjà été réalisés, il suffit ensuite de récupérer les clés pour consommer les APIs",
-				"operationId": "hasEnabledApi",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "./../../../rudi-facet/rudi-facet-apimaccess/src/main/resources/openapi/rudi-apimaccess-model.json#/components/schemas/Credentials"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Erreur lorsque le login ou mot de passe est invalide",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
 					}
 				}
 			}

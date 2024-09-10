@@ -4,7 +4,7 @@ import org.rudi.facet.dataverse.fields.FieldSpec;
 import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 
-class Error303Builder extends ErrorBuilder {
+public class Error303Builder extends ErrorBuilder {
 	private String fieldValue;
 	private String expectedString;
 
@@ -31,7 +31,7 @@ class Error303Builder extends ErrorBuilder {
 
 	@Override
 	protected Object[] getFormattedMessageParameters() {
-		return new Object[]{fieldValue, fieldSpec.getLocalName(), expectedString};
+		return new Object[] { fieldValue, fieldSpec.getLocalName(), expectedString };
 	}
 
 	@Override

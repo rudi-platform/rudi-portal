@@ -13,10 +13,7 @@ import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_serv
     styleUrls: ['./step1-project.component.scss']
 })
 export class Step1ProjectComponent implements OnInit {
-
-    @Input()
-    public isPublished: boolean;
-
+    
     @Input()
     public isConfidentialityValid: boolean;
 

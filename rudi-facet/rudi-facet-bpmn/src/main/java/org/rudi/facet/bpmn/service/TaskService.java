@@ -117,5 +117,22 @@ public interface TaskService<D extends AssetDescription> {
 	 */
 	String getAssociatedTaskId(UUID assetUuid);
 
+	/**
+	 * Retourn l'historique d'une tâche
+	 * 
+	 * @param taskId
+	 * @param asAdmin
+	 * @return
+	 * @throws InvalidDataException
+	 */
 	List<HistoricInformation> getTaskHistoryByTaskId(String taskId, Boolean asAdmin) throws InvalidDataException;
+
+	/**
+	 * Retourne l'historique des workflows associés à l'asset
+	 * 
+	 * @param assetUuid
+	 * @return
+	 * @throws InvalidDataException
+	 */
+	List<HistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException;
 }

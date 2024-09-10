@@ -1,0 +1,12 @@
+{
+	"uuid": null,
+	"apiId": "6a4ab243-b237-49f1-a484-0c557cdffbb2",
+	"globalId": "83eef082-26ec-42e9-8a9b-0e95ed50c8e6",
+	"providerId": "d74454d4-0df5-4cc1-b272-591617aba878",
+	"nodeProviderId": "300253b1-e4b5-464f-a989-21c4f1a71c5d",
+	"producerId": "97c30a6f-1040-4efe-afaf-47e104e395e4",
+	"mediaId": "8b3844f2-f29c-4eac-a254-2b7a9eaae2c0",
+	"contract": "teste",
+	"url": "http://ren1vml0158/organization",
+	"methods": []
+}

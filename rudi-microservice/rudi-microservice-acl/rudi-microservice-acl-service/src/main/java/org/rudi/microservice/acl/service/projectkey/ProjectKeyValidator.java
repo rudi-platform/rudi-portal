@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author FNI18300
- *
  */
 @Component
 public class ProjectKeyValidator extends AbstractLongIdInputValidator<ProjectKey> {
@@ -26,7 +25,7 @@ public class ProjectKeyValidator extends AbstractLongIdInputValidator<ProjectKey
 
 	private void validateCommon(ProjectKey dto) throws AppServiceBadRequestException {
 		validateStringField(dto, "getName", "validation.error.name.mandatory");
-		if (dto.getExpirationDate() != null && dto.getExpirationDate().isAfter(LocalDateTime.now())) {
+		if (dto.getExpirationDate() != null && dto.getExpirationDate().isBefore(LocalDateTime.now())) {
 			throw new AppServiceBadRequestException("Invalid expiration date (past date)");
 		}
 	}

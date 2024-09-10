@@ -10,13 +10,12 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * @author FNI18300
- *
  */
 public interface ApiService {
 
 	/**
 	 * List all Api
-	 * 
+	 *
 	 * @return Api list
 	 */
 	Page<Api> searchApis(ApiSearchCriteria searchCriteria, Pageable pageable);
@@ -24,9 +23,8 @@ public interface ApiService {
 	/**
 	 * @param uuid
 	 * @return an api
-	 * @throws AppServiceException
 	 */
-	Api getApi(UUID uuid) throws AppServiceException;
+	Api getApi(UUID uuid);
 
 	/**
 	 * Create a Api

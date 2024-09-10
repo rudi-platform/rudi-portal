@@ -1,10 +1,5 @@
 package org.rudi.microservice.strukture.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +25,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 
 @RestController
 @RequiredArgsConstructor

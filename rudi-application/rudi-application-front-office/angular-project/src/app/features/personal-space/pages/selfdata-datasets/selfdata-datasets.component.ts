@@ -24,7 +24,7 @@ export class SelfdataDatasetsComponent {
      */
     getUrlToDoc(): void {
         this.searchUrlLoading = true;
-        this.propertiesMetierService.get('rudidatarennes.docRudiBzh').subscribe({
+        this.propertiesMetierService.get('front.docRudi').subscribe({
             next: (link: string) => {
                 this.urlToDoc = link;
                 this.searchUrlLoading = false;

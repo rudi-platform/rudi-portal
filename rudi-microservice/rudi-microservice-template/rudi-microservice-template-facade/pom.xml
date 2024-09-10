@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-template</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-template-facade</artifactId>
@@ -232,11 +232,6 @@
 				</executions>
 			</plugin>
 
-			<!-- Mise à jour BDD par flyway -->
-			<plugin>
-				<groupId>org.flywaydb</groupId>
-				<artifactId>flyway-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>

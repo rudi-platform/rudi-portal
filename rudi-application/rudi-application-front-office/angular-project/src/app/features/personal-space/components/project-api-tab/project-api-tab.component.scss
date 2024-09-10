@@ -33,8 +33,10 @@
     color: #ffffff;
     font-size: 14px;
     height: 47px;
-    width: 113px;
+    width: 130px;
 }
+
+
 
 .app-copied-style {
     width: 35em;
@@ -62,3 +64,80 @@
         }
     }
 }
+
+
+.mdc-data-table__cell {
+    padding: 0;
+}
+
+.mat-table-project-keys{
+    width: 100%;
+}
+.table-title-style {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
+.align-left{
+    text-align: left;
+}
+.nom-key{
+    font-size: 15px;
+    font-weight: bold;
+    text-align: left;
+    color: var(--primary-color);
+}
+.table-keys {
+    margin-top: 3em;
+}
+.delete-icon{
+    margin-right: 1em;
+    width: 1.5em;
+    cursor: pointer;
+}
+.table-header{
+    font-size: 18px;
+    font-weight: 600;
+    color:var(--primary-text);
+    //overide the mat table margin css
+    padding: 0px !important
+}
+
+.fake-btn-status {
+    background-color: var(--banner-solid-color);
+    border-radius: 14px;
+    white-space: nowrap;
+    padding: 5px 18px;
+    font-size: 13px;
+    border: none;
+    height: 2.5em;
+    margin-top: 20px;
+}
+
+.table-header:last-child {
+    display: flex;
+    justify-content: center;
+    height: inherit;
+}
+.center{
+    display: flex;
+    justify-content: center;
+    height: inherit;
+    height: 5em;
+}
+td {
+    text-align: left;
+}
+
+.second-row {
+    width: 40%;
+}
+
+.first-row, third-row {
+    width: 25%;
+}
+
+fourth-row {
+    width: 10%;
+}
+

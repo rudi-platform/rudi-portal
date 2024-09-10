@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-konsult</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-konsult-facade</artifactId>
@@ -150,7 +150,7 @@
 				<configuration>
 					<modelPackage>org.rudi.microservice.konsult.core.bean</modelPackage>
 					<schemaMappings>
-						Metadata=org.rudi.facet.kaccess.bean.Metadata,MetadataList=org.rudi.facet.kaccess.bean.MetadataList,MetadataFacets=org.rudi.facet.kaccess.bean.MetadataFacets,Credentials=org.rudi.facet.apimaccess.bean.Credentials,Address=org.rudi.rva.core.bean.Address,
+						Metadata=org.rudi.facet.kaccess.bean.Metadata,MetadataList=org.rudi.facet.kaccess.bean.MetadataList,MetadataFacets=org.rudi.facet.kaccess.bean.MetadataFacets,Address=org.rudi.rva.core.bean.Address,
 						CmsCategory=org.rudi.facet.cms.bean.CmsCategory,CmsAsset=org.rudi.facet.cms.bean.CmsAsset,
 						CmsAssetType=org.rudi.facet.cms.bean.CmsAssetType,PagedCmsAssets=org.rudi.facet.cms.bean.PagedCmsAssets
 					</schemaMappings>
@@ -280,7 +280,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>https</id>
 			<properties>
@@ -301,7 +301,8 @@
 									<target>
 										<echo>ANT TASK - copying https jks....</echo>
 										<copy file="${project.basedir}/../../../ansible/keystore/dev/rudi-https-certificate.jks"
-												todir="${project.basedir}/src/main/resources/keystore" overwrite="true"/>
+												todir="${project.basedir}/src/main/resources/keystore"
+												overwrite="true"/>
 									</target>
 								</configuration>
 							</execution>
@@ -309,7 +310,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>		
+		</profile>
 
 		<!-- Profil de intégration -->
 		<profile>

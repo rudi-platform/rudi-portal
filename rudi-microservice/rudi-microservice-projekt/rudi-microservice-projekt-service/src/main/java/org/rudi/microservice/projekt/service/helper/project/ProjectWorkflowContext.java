@@ -3,9 +3,13 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,11 +18,15 @@ import javax.script.ScriptContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.rudi.bpmn.core.bean.Field;
+import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
+import org.rudi.facet.bpmn.exception.FormDefinitionException;
+import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.email.EMailService;
@@ -28,6 +36,8 @@ import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.service.helper.AbstractProjektWorkflowContext;
+import org.rudi.microservice.projekt.service.helper.project.processor.ProjectTaskUpdateProjectProcessor;
+import org.rudi.microservice.projekt.service.helper.project.validator.ProjectValidator;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
 import org.rudi.microservice.projekt.service.mapper.NewDatasetRequestMapper;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
@@ -63,11 +73,15 @@ public class ProjectWorkflowContext
 
 	private final OrganizationHelper organizationHelper;
 
+	private final List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors;
+
 	public ProjectWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
 			ProjectDao assetDescriptionDao, ProjectAssigmentHelper assignmentHelper, ACLHelper aclHelper,
 			FormHelper formHelper, TaskService<NewDatasetRequest> newDatasetRequestTaskService,
 			NewDatasetRequestMapper newDatasetRequestMapper, TaskService<LinkedDataset> linkedDatasetTaskService,
-			LinkedDatasetMapper linkedDatasetMapper, ACLHelper aclHelper1, OrganizationHelper organizationHelper) {
+			LinkedDatasetMapper linkedDatasetMapper, ACLHelper aclHelper1, OrganizationHelper organizationHelper,
+			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors, ProjectDao projectDao,
+			List<ProjectValidator> projectValidators) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.newDatasetRequestTaskService = newDatasetRequestTaskService;
 		this.newDatasetRequestMapper = newDatasetRequestMapper;
@@ -75,6 +89,7 @@ public class ProjectWorkflowContext
 		this.linkedDatasetMapper = linkedDatasetMapper;
 		this.aclHelper = aclHelper1;
 		this.organizationHelper = organizationHelper;
+		this.projectTaskUpdateProjectProcessors = projectTaskUpdateProjectProcessors;
 	}
 
 	@Transactional(readOnly = true)
@@ -105,13 +120,15 @@ public class ProjectWorkflowContext
 		log.debug("WkC - Update {} to status {}, {}, {}", processInstanceBusinessKey, statusValue, projectStatusValue,
 				functionalStatusValue);
 		Status status = Status.valueOf(statusValue);
-		ProjectStatus projectStatus = ProjectStatus.valueOf(projectStatusValue);
+		ProjectStatus projectStatus = StringUtils.isEmpty(projectStatusValue) ? null
+				: ProjectStatus.valueOf(projectStatusValue);
 		if (processInstanceBusinessKey != null && status != null && functionalStatusValue != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
 			if (assetDescription != null) {
 				assetDescription.setStatus(status);
-				assetDescription.setProjectStatus(projectStatus);
+				assetDescription
+						.setProjectStatus(projectStatus == null ? assetDescription.getProjectStatus() : projectStatus);
 				assetDescription.setFunctionalStatus(functionalStatusValue);
 				assetDescription.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescription);
@@ -127,7 +144,7 @@ public class ProjectWorkflowContext
 	/**
 	 * Calcul des potentiels owners pour le gestionnaire de projet et le modérateur
 	 *
-	 * @param scriptContext contexte
+	 * @param scriptContext   contexte
 	 * @param executionEntity entity
 	 * @return List<String> liste des logins des owners potentiels
 	 */
@@ -156,18 +173,18 @@ public class ProjectWorkflowContext
 	}
 
 	/**
-	 *	Envoit un mail au porteur d'un projet pour les notifier de la réponse du MODERATOR
-	 * 		- Owner de type organisation : envoie un mail à tous les membres de l'organisation
+	 * Envoit un mail au porteur d'un projet pour les notifier de la réponse du MODERATOR - Owner de type organisation : envoie un mail à tous les membres
+	 * de l'organisation
 	 *
-	 * @param context le context
+	 * @param context         le context
 	 * @param executionEntity entité de l'éxécution, ici projet
-	 * @param eMailData email à envoyer
+	 * @param eMailData       email à envoyer
 	 */
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
-	public void sendEmailToProjectOwner(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData){
+	public void sendEmailToProjectOwner(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData) {
 		List<String> assigneesEmails = new ArrayList<>();
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
-		try{
+		try {
 			if (processInstanceBusinessKey != null) {
 
 				UUID uuid = UUID.fromString(processInstanceBusinessKey);
@@ -175,28 +192,23 @@ public class ProjectWorkflowContext
 
 				if (assetDescription != null) {
 
-					if(assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)){
-						List<User> users = getAssignmentHelper().computeOrganizationMembers(assetDescription.getOwnerUuid());
+					if (assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)) {
+						List<User> users = getAssignmentHelper()
+								.computeOrganizationMembers(assetDescription.getOwnerUuid());
 
-						CollectionUtils.addAll(
-								assigneesEmails,
-								aclHelper.lookupEmailAddresses(users)
-						);
-					}
-					else {
-						assigneesEmails.add(Objects.requireNonNull(
-								aclHelper.getUserByUUID(assetDescription.getOwnerUuid())).getLogin()
-						);
+						CollectionUtils.addAll(assigneesEmails, aclHelper.lookupEmailAddresses(users));
+					} else {
+						assigneesEmails.add(Objects
+								.requireNonNull(aclHelper.getUserByUUID(assetDescription.getOwnerUuid())).getLogin());
 					}
 				}
 
-				if (eMailData != null && CollectionUtils.isNotEmpty(assigneesEmails)){
+				if (eMailData != null && CollectionUtils.isNotEmpty(assigneesEmails)) {
 					sendEMail(executionEntity, assetDescription, eMailData, assigneesEmails, null);
 				}
 			}
-		}
-		catch (Exception e){
-			log.warn("Failed to send email to owner");
+		} catch (Exception e) {
+			log.warn("Failed to send email to owner", e);
 		}
 
 	}
@@ -210,6 +222,46 @@ public class ProjectWorkflowContext
 			startSubProcessNewDatasetRequests(assetDescription);
 			startSubProcessLinkedDatasets(assetDescription);
 		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void publishProjectModification(ScriptContext context, ExecutionEntity executionEntity) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		if (processInstanceBusinessKey != null) {
+			UUID uuid = UUID.fromString(processInstanceBusinessKey);
+			ProjectEntity assetDescriptionEntity = getAssetDescriptionDao().findByUuid(uuid);
+			if (assetDescriptionEntity != null) {
+				try {
+					Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
+					Form draftForm = getFormHelper().lookupDraftForm(processInstanceBusinessKey);
+
+					// on remplit le formulaire avec les data pour pouvoir le parcourir lors de l'update.
+					getFormHelper().fillForm(draftForm, data);
+					draftForm.getSections().stream()
+							.filter(section -> section.getName().equals(DRAFT_FORM_SECTION_NAME)).findFirst()
+							.ifPresentOrElse(s -> updateProject(s.getFields(), assetDescriptionEntity), () -> {
+								throw new NoSuchElementException(String.format(
+										"Update project : No section found draft form: %s", DRAFT_FORM_SECTION_NAME));
+							});
+
+				} catch (InvalidDataException e) {
+					log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
+				} catch (FormDefinitionException e) {
+					log.error("Failed to look up for draft form for {}", assetDescriptionEntity.getInitiator());
+				}
+			}
+		}
+	}
+
+	private void updateProject(List<Field> fields, ProjectEntity projectEntity) {
+		if (fields != null) {
+			fields.forEach(f -> projectTaskUpdateProjectProcessors.forEach(processor -> {
+				if (processor.accept(f)) {
+					processor.process(f, projectEntity);
+				}
+			}));
+		}
+
 	}
 
 	private void startSubProcessLinkedDatasets(ProjectEntity project) {
@@ -243,7 +295,7 @@ public class ProjectWorkflowContext
 
 	/**
 	 *
-	 * @param context context
+	 * @param context         context
 	 * @param executionEntity entity - ici project
 	 * @return le nom du project owner ou de l'organisation owner du projet
 	 */
@@ -255,10 +307,9 @@ public class ProjectWorkflowContext
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
 			if (assetDescription != null) {
-				if(assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)){
+				if (assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)) {
 					result = computeProjectOwnerNameOrganization(assetDescription);
-				}
-				else {
+				} else {
 					result = computeProjectOwnerNameUser(assetDescription);
 				}
 			}
@@ -267,29 +318,32 @@ public class ProjectWorkflowContext
 		return result;
 	}
 
-	private String computeProjectOwnerNameOrganization(ProjectEntity assetDescription){
+	private String computeProjectOwnerNameOrganization(ProjectEntity assetDescription) {
 		String result = null;
 		try {
 			Organization organization = organizationHelper.getOrganization(assetDescription.getOwnerUuid());
 			result = organization != null ? organization.getName() : null;
-		}catch (Exception e){
-			log.error("Erreur lors de la récupéation de l'organisation owner du projet {} : {}", assetDescription.getTitle(), e);
+		} catch (Exception e) {
+			log.error("Erreur lors de la récupéation de l'organisation owner du projet {} : {}",
+					assetDescription.getTitle(), e);
 		}
 
 		return result;
 	}
 
-	private String computeProjectOwnerNameUser(ProjectEntity assetDescription){
+	private String computeProjectOwnerNameUser(ProjectEntity assetDescription) {
 		String result = null;
 		User owner = aclHelper.getUserByUUID(assetDescription.getOwnerUuid());
-		if(owner != null){
+		if (owner != null) {
 			result = String.format("%s %s", owner.getFirstname(), owner.getLastname());
-		}
-		else {
+		} else {
 			log.error("L'UUID renseignée n'est pas rattachée à un utilisateur RUDI.");
 		}
 		return result;
 	}
 
-
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void resetDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
+		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
+	}
 }

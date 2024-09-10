@@ -14,7 +14,6 @@ import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
-import org.rudi.microservice.strukture.core.bean.PasswordUpdate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -42,7 +41,7 @@ public interface OrganizationService {
 	OrganizationMember addOrganizationMember(UUID organizationUuid, OrganizationMember organizationMember)
 			throws AppServiceException;
 
-	List<OrganizationMember> getOrganizationMembers(UUID organizationUuid) throws AppServiceNotFoundException;
+	List<OrganizationMember> getOrganizationMembers(UUID organizationUuid) throws AppServiceException;
 
 	void removeOrganizationMembers(UUID organizationUuid, UUID userUuid) throws AppServiceException;
 
@@ -53,7 +52,4 @@ public interface OrganizationService {
 
 	OrganizationMember updateOrganizationMember(UUID organizationUuid, UUID userUuid,
 			OrganizationMember organizationMember) throws AppServiceException;
-
-	void updateUserOrganizationPassword(UUID organizationUuid, PasswordUpdate passwordUpdate)
-			throws AppServiceException;
 }

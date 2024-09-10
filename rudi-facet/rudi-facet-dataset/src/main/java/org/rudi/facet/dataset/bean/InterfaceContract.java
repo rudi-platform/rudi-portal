@@ -15,7 +15,9 @@ import lombok.Getter;
 public enum InterfaceContract {
 	DOWNLOAD("dwnl", "dwnl", false), GENERIC_DATA("gdata", "generic-data", false),
 	TEMPORAL_BAR_CHART("tpbc", "temporal-bar-chart", false), WFS("wfs", "wfs", true), WMS("wms", "wms", true),
-	WMTS("wmts", "wmts", true);
+	WMTS("wmts", "wmts", true), CUSTOM("custom", "custom", true),
+	DOWNLOAD_TEMPORAL("dwnl_temporal", "dwnl_temporal", false), DOWNLOAD_SPACIAL("dwnl_spacial", "dwnl_spacial", false),
+	DOWNLOAD_TEMPORAL_AND_SPACIAL("dwnl_temporal_spacial", "dwnl_temporal_spacial", false);
 
 	/**
 	 * Nom long de l'interface_contract, tel qu'utilisé dans le JSON des métadonnées de JDD.
@@ -23,7 +25,7 @@ public enum InterfaceContract {
 	private final String code;
 
 	/**
-	 * Nom court de l'interface_contract, tel qu'utilisé dans les noms de fichiers et pour le context WSO2.
+	 * Nom court de l'interface_contract, tel qu'utilisé dans les noms de fichiers et le context de l'api gateway
 	 */
 	private final String urlPath;
 

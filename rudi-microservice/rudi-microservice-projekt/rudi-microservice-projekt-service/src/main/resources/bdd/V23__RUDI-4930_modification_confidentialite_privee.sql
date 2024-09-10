@@ -1,0 +1,1 @@
+UPDATE projekt_data.confidentiality SET label = 'Privée' WHERE uuid = 'ed5e9378-afa5-45b5-9fcf-07ebddc7ca36';

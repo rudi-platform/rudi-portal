@@ -16,31 +16,37 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultAnonymousAuthenticationFilter extends OncePerRequestFilter {
 
-	@Value("${apimanager.oauth2.client.anonymous.username:anonymous}")
+	@Value("${security.anonymous.login:anonymous}")
 	private String anonymousUsername;
 
 	private final UtilContextHelper utilContextHelper;
 
 	@Override
-	protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response,
+			@Nonnull FilterChain filterChain) throws ServletException, IOException {
 		try {
 			final var alreadyAuthenticatedUser = utilContextHelper.getAuthenticatedUser();
 			if (alreadyAuthenticatedUser == null) {
-				log.info("Aucun utilisateur n'est déjà authentifié. On s'authentifie donc automatiquement en tant que \"{}\".", anonymousUsername);
+				log.info(
+						"Aucun utilisateur n'est déjà authentifié. On s'authentifie donc automatiquement en tant que \"{}\".",
+						anonymousUsername);
 				utilContextHelper.setAuthenticatedUser(createAnonymousAuthenticatedUser());
 			} else {
-				log.info("L'utilisateur \"{}\" est déjà authentifié. On ne s'authentifie donc pas automatiquement en tant que \"{}\".", alreadyAuthenticatedUser, anonymousUsername);
+				log.info(
+						"L'utilisateur \"{}\" est déjà authentifié. On ne s'authentifie donc pas automatiquement en tant que \"{}\".",
+						alreadyAuthenticatedUser, anonymousUsername);
 			}
 		} catch (RuntimeException e) {
-			log.error("Erreur lors de l'authentification automatique en anonymous (anonymousUsername = {})", anonymousUsername, e);
+			log.error("Erreur lors de l'authentification automatique en anonymous (anonymousUsername = {})",
+					anonymousUsername, e);
 		}
 
 		filterChain.doFilter(request, response);

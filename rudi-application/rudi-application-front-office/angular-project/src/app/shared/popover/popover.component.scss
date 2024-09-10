@@ -50,7 +50,7 @@ $popover-header-bg: white;
             left: 50%;
             display: block;
             width: $popover-arrow-width;
-            margin-left:  calc(-1 * $popover-arrow-width / 2);
+            margin-left: calc(-1 * $popover-arrow-width / 2);
             content: "";
             border-bottom: $popover-border-width solid $popover-header-bg;
         }
@@ -66,8 +66,8 @@ $popover-header-bg: white;
 }
 
 .project-btn-reutilisation {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
+    --mdc-protected-button-container-color: var(--primary-color);
+    --mdc-protected-button-label-text-color: var(--secondary-color);
     font-size: 14px;
     font-weight: bold;
     font-stretch: normal;

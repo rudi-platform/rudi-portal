@@ -1,6 +1,7 @@
 FROM ekoindarto/solr-cvm
 USER root
 
+RUN apt-get update && apt-get upgrade -y
 COPY entrypoint.sh /tmp/entrypoint.sh
 
 EXPOSE 8983

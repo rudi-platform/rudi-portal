@@ -242,8 +242,8 @@ public class DatasetDecryptGatewayFilterFactory
 			int size = RudiAlgorithmSpec.DEFAULT.getMaximumBlockSizeInBytes();
 			long newContentLength = context.getTotalLengthToRead() - size - 16;
 			httpHeaders.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(newContentLength));
-			log.info("Change {} from {} header to {}", HttpHeaders.CONTENT_LENGTH, context.getTotalLengthToRead(),
-					newContentLength);
+			log.info("Content length: Change {} from {} header to {}", HttpHeaders.CONTENT_LENGTH,
+					context.getTotalLengthToRead(), newContentLength);
 			return size;
 		}
 
@@ -254,7 +254,7 @@ public class DatasetDecryptGatewayFilterFactory
 				newMimeType = StringUtils.remove(contentTypeValue, MIME_TYPE_CRYPT_SUFFIXE);
 			}
 			if (StringUtils.isEmpty(newMimeType)) {
-				log.info("Change {} from {} header to {}", HttpHeaders.CONTENT_TYPE,
+				log.info("Content type: Change {} from {} header to {}", HttpHeaders.CONTENT_TYPE,
 						httpHeaders.getFirst(HttpHeaders.CONTENT_TYPE), newMimeType);
 				httpHeaders.set(HttpHeaders.CONTENT_TYPE, newMimeType);
 			}
@@ -265,7 +265,7 @@ public class DatasetDecryptGatewayFilterFactory
 			if (contentTypeValue != null) {
 				contentTypeValue = StringUtils.remove(contentTypeValue, MIME_TYPE_CRYPT_SUFFIXE);
 			}
-			log.info("Change {} from {} header to {}", HttpHeaders.CONTENT_TYPE,
+			log.info("Content Disposition: Change {} from {} header to {}", HttpHeaders.CONTENT_DISPOSITION,
 					httpHeaders.getFirst(HttpHeaders.CONTENT_DISPOSITION), contentTypeValue);
 			httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, contentTypeValue);
 		}
@@ -414,7 +414,7 @@ public class DatasetDecryptGatewayFilterFactory
 				throw new UnauthorizedException("Incoherent call");
 			}
 
-			if (media.get().getMediaDates() != null && media.get().getMediaDates().getUpdated() != null) {
+			if (media.get().getMediaDates() != null) {
 				return media.get().getMediaDates().getUpdated().toLocalDateTime();
 			} else {
 				return LocalDateTime.now();

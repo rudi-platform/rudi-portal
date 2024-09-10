@@ -44,6 +44,7 @@ class ProducerServiceTI {
 		final Producer producer = new Producer(UUID.randomUUID());
 
 
+		when(struktureAuthorisationHelper.isAccessGrantedByRole(any())).thenReturn(true);
 		try {
 			uploadLogo(producer);
 			downloadLogo(producer);

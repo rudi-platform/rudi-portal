@@ -7,14 +7,13 @@ import org.rudi.bpmn.core.bean.Form;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
-import org.rudi.microservice.projekt.core.bean.PagedLinkedDatasetList;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface LinkedDatasetService {
@@ -40,7 +39,7 @@ public interface LinkedDatasetService {
 	 * @param linkedDataset LinkedDataset fourni par le JSON
 	 */
 	LinkedDataset linkProjectToDataset(UUID projectUuid, LinkedDataset linkedDataset)
-			throws DataverseAPIException, AppServiceException, APIManagerException;
+			throws DataverseAPIException, AppServiceException;
 
 	/**
 	 * MAJ un linked dataset
@@ -48,8 +47,7 @@ public interface LinkedDatasetService {
 	 * @param projectUuid   UUID du projet
 	 * @param linkedDataset LinkedDataset fourni par le JSON à garder
 	 */
-	LinkedDataset updateLinkedDataset(UUID projectUuid, LinkedDataset linkedDataset)
-			throws AppServiceException, APIManagerException;
+	LinkedDataset updateLinkedDataset(UUID projectUuid, LinkedDataset linkedDataset) throws AppServiceException;
 
 	/**
 	 * Supprime un lien entre un projet et un jeu de données
@@ -57,12 +55,13 @@ public interface LinkedDatasetService {
 	 * @param projectUuid       UUID du projet
 	 * @param linkedDatasetUuid UUID du jeu de données
 	 */
-	void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid)
-			throws AppServiceException, APIManagerException;
+	void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid) throws AppServiceException;
 
-	PagedLinkedDatasetList searchMyLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
+	Page<LinkedDataset> searchMyLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
 			throws AppServiceException;
 
+	Page<LinkedDataset> searchMyOrganizationsLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
+			throws AppServiceException;
 	/**
 	 * Retourne le formulaire de consultation des informations de la décision concernant la demande d'accès au JDD
 	 * 
@@ -80,5 +79,6 @@ public interface LinkedDatasetService {
 	 * @param datasetUuid globalId du dataset
 	 * @return true s'il a accès, false sinon.
 	 */
-	boolean isMyAccessGratedToDataset(UUID datasetUuid) throws GetOrganizationException, AppServiceUnauthorizedException;
+	boolean isMyAccessGratedToDataset(UUID datasetUuid)
+			throws GetOrganizationException, AppServiceUnauthorizedException;
 }

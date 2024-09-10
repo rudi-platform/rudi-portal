@@ -5,7 +5,7 @@
                         }">
     <a class="button-redirect"
        [ngClass]="{'button-redirect-mobile': mediaSize.isXs || mediaSize.isSm, 'button-redirect-tablet': mediaSize.isMd, 'button-redirect-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
-       href="{{'rudidatarennes.contact'|getBackendProperty|async}}"
+       href="{{'front.contact'|getBackendProperty|async}}"
        rel="noopener noreferrer">{{ 'footer.contactezNous'|translate }}</a>
 
 
@@ -37,10 +37,10 @@
 
         <div class="d-flex">
             <div class="footer-logo-container navbar-brand me-2">
-                <a routerLink="/home">
+                <div class="footer-logo-link" (click)="redirectToRudi()">
                     <img *ngIf="!logoIsLoading" class="footer-logo" [src]="logoSrc"
                          alt="Logo bleu orange beta de rennes metropole"/>
-                </a>
+                </div>
             </div>
             <div>
                 <div class="footer-primary-text">{{ 'footer.ccByCa'|translate }}</div>

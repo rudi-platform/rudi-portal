@@ -116,21 +116,24 @@
         </div>
 
         <!-- Info Producteur -->
-        <div class="info-prod-container mb-4">
-            <mat-card class="metadata-card px-3 pt-3">
-                <mat-card-title>
-                    <h2 class="card-label-title">{{'metaData.producteur'|translate}}</h2>
-                </mat-card-title>
+        <div class="info-prod-container">
+            <mat-card class="metadata-card">
+
                 <div class="info-prod-content-container">
 
-                    <div class="info-prod-logo-container text-md-center">
+                    <div class="info-prod-logo-container">
+                        <mat-card-title>
+                            <h2 class="card-label-title">{{'metaData.producteur'|translate}}</h2>
+                        </mat-card-title>
+
+
                         <app-organization-logo [organizationId]="metadata?.producer.organization_id"
                                                cssClass="with-border"
                                                organizationType="producer"></app-organization-logo>
                     </div>
 
                     <div class="info-prod-content">
-                        <div class="producer-info mt-sm-2">
+                        <div class="producer-info">
                                         <span
                                             *ngIf="metadata.producer.organization_name">{{metadata.producer.organization_name | uppercase}}</span>
                             <span

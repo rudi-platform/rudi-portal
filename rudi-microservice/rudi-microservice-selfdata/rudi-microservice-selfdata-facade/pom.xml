@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-selfdata</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-selfdata-facade</artifactId>
@@ -156,7 +156,7 @@
 						<typeMapping>java.time.LocalDateTime=OffsetDateTime</typeMapping>
 						<typeMapping>DocumentMetadata=org.rudi.doks.core.bean.DocumentMetadata</typeMapping>
 					</typeMappings>
-					<schemaMappings>ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,Status=org.rudi.bpmn.core.bean.Status,Form=org.rudi.bpmn.core.bean.Form,AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,Task=org.rudi.bpmn.core.bean.Task,Address=org.rudi.rva.core.bean.Address,Credentials=org.rudi.facet.apimaccess.bean.Credentials</schemaMappings>
+					<schemaMappings>ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,Status=org.rudi.bpmn.core.bean.Status,Form=org.rudi.bpmn.core.bean.Form,AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,Task=org.rudi.bpmn.core.bean.Task,Address=org.rudi.rva.core.bean.Address</schemaMappings>
 					<generatorName>spring</generatorName>
 					<library>spring-boot</library>
 					<generateModelTests>false</generateModelTests>
@@ -233,11 +233,6 @@
 				</executions>
 			</plugin>
 
-			<!-- Mise à jour BDD par flyway -->
-			<plugin>
-				<groupId>org.flywaydb</groupId>
-				<artifactId>flyway-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>

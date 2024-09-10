@@ -1,27 +1,57 @@
 package org.rudi.microservice.apigateway.facade.config.gateway.filters;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.rudi.common.service.swagger.SwaggerHelper;
+import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
+import org.rudi.facet.kaccess.bean.Media;
+import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.microservice.apigateway.core.common.ParameterInformation;
+import org.rudi.microservice.apigateway.facade.config.gateway.ApiGatewayConstants;
+import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.InterfaceContratHelper;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.PathContainer;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.swagger.models.Swagger;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-public class RerouteToRequestUrlFilter implements GlobalFilter, Ordered {
+public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements GlobalFilter, Ordered {
+
+	private static final String INTERFACE_CONTRACT_PATH = "interface-contract";
+
+	private static final String CONTRACT_URL_PARAMETER = "contract_url";
+
+	private static final String CUSTOM_CONTRACT = "custom";
 
 	public static final int ROUTE_TO_URL_FILTER_ORDER = 90000;
 
 	private static final String SCHEME_REGEX = "[a-zA-Z]([a-zA-Z]|\\d|\\+|\\.|-)*:.*";
 
-	static final Pattern schemePattern = Pattern.compile(SCHEME_REGEX);
+	private static final Pattern schemePattern = Pattern.compile(SCHEME_REGEX);
+
+	private final InterfaceContratHelper interfaceContratHelper;
+
+	private final SwaggerHelper swaggerHelper;
+
+	public RerouteToRequestUrlFilter(DatasetService datasetService, SwaggerHelper swaggerHelper,
+			InterfaceContratHelper interfaceContratHelper) {
+		super(datasetService);
+		this.interfaceContratHelper = interfaceContratHelper;
+		this.swaggerHelper = swaggerHelper;
+	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -49,12 +79,87 @@ public class RerouteToRequestUrlFilter implements GlobalFilter, Ordered {
 			throw new IllegalStateException("Invalid host: " + routeUri.toString());
 		}
 
-		URI mergedUrl = UriComponentsBuilder.fromUri(uri)
-				// .uri(routeUri)
-				.scheme(routeUri.getScheme()).host(routeUri.getHost()).port(routeUri.getPort()).path(routeUri.getPath())
-				.build(encoded).toUri();
+		String oQuery = prepareRawQuery(routeUri);
+		log.debug("RerouteToRequestUrlFilter with {} and {}", oQuery, uri.getQuery());
+
+		checkParameters(exchange, uri);
+
+		URI mergedUrl = UriComponentsBuilder.fromUri(uri).scheme(routeUri.getScheme()).host(routeUri.getHost())
+				.port(routeUri.getPort()).path(routeUri.getPath()).query(oQuery).build(encoded).toUri();
 		exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR, mergedUrl);
 		return chain.filter(exchange);
+	}
+
+	protected String prepareRawQuery(URI routeUri) {
+		String oQuery = routeUri.getRawQuery();
+		try {
+			return URLDecoder.decode(oQuery.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
+		} catch (Exception e) {
+			log.warn("Failed to decode uri " + oQuery, e);
+			return oQuery;
+		}
+	}
+
+	protected void checkParameters(ServerWebExchange exchange, URI uri) {
+		String contract = extractContract(exchange);
+
+		if (CUSTOM_CONTRACT.equalsIgnoreCase(contract)) {
+			try {
+				Metadata metadata = getMetadata(UUID.fromString(extractGlobalId(exchange)));
+				Media media = metadata.getAvailableFormats().stream()
+						.filter(m -> m.getMediaId().equals(UUID.fromString(extractMediaId(exchange)))).findFirst()
+						.orElse(null);
+				if (media != null) {
+					ConnectorConnectorParametersInner contractUrlParameter = media.getConnector()
+							.getConnectorParameters().stream()
+							.filter(p -> p.getKey().equalsIgnoreCase(CONTRACT_URL_PARAMETER)).findFirst().orElse(null);
+					if (contractUrlParameter != null) {
+						Swagger swagger = swaggerHelper.getSwaggerContractFromURL(contractUrlParameter.getValue());
+						checkParameters(exchange, swagger, uri);
+					}
+				}
+			} catch (Exception e) {
+				log.warn("Failed to get contract", e);
+			}
+		} else {
+			try {
+				String path = INTERFACE_CONTRACT_PATH + "/" + contract + ".json";
+				Swagger swagger = swaggerHelper.getSwaggerContractFromValue(path);
+				checkParameters(exchange, swagger, uri);
+			} catch (Exception e) {
+				log.warn("Failed to get contract", e);
+			}
+		}
+	}
+
+	protected String extractContract(ServerWebExchange exchange) {
+		return extractPathPart(exchange, ApiGatewayConstants.CONTRACT_ID_INDEX);
+	}
+
+	protected String extractGlobalId(ServerWebExchange exchange) {
+		return extractPathPart(exchange, ApiGatewayConstants.GLOBAL_ID_INDEX);
+	}
+
+	protected String extractMediaId(ServerWebExchange exchange) {
+		return extractPathPart(exchange, ApiGatewayConstants.MEDIA_ID_INDEX);
+	}
+
+	protected String extractPathPart(ServerWebExchange exchange, int index) {
+		PathContainer pathContainer = exchange
+				.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_PATH_CONTAINER_ATTR);
+		if (pathContainer != null) {
+			return pathContainer.subPath(index, index + 1).value();
+		} else {
+			return null;
+		}
+	}
+
+	private void checkParameters(ServerWebExchange exchange, Swagger swagger, URI uri) {
+		List<ParameterInformation> parameterInformations = interfaceContratHelper.checkParameters(swagger,
+				exchange.getRequest().getMethodValue(), uri.getRawQuery());
+		for (ParameterInformation parameterInformation : parameterInformations) {
+			log.info("checkParameter {}", parameterInformation);
+		}
 	}
 
 	@Override

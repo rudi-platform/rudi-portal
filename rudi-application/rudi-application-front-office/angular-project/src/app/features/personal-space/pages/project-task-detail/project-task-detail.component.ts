@@ -1,16 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
-import {PageTitleService} from '@core/services/page-title.service';
-import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {LinkedDatasetMetadatas} from '@core/services/asset/project/project-dependencies.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
 import {LogService} from '@core/services/log.service';
+import {PageTitleService} from '@core/services/page-title.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {
     ProjectDependencies,
@@ -20,14 +20,18 @@ import {
 } from '@core/services/tasks/projekt/project-task-dependencies.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
+import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {NewDatasetRequest, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import {Project} from 'micro_service_modules/projekt/projekt-model';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
+import {
+    Project
+} from 'micro_service_modules/projekt/projekt-model';
+import {forkJoin, of} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-project-task-detail',
@@ -39,11 +43,13 @@ export class ProjectTaskDetailComponent
     implements OnInit {
 
     isLoading: boolean;
+    childrenIsLoading: boolean;
     isLoadingOpenDataset: boolean;
     isLoadingRestrictedDataset: boolean;
     isLoadingNewDatasetRequest: boolean;
 
     isUpdateInProgress = false;
+    idTask: string;
 
     currentTask: Task;
 
@@ -52,7 +58,9 @@ export class ProjectTaskDetailComponent
 
     addActionAuthorized = false;
     deleteActionAuthorized = false;
-
+    project: Project;
+    readonly panelInitialTaskOpenState = signal(false);
+    hasSections: boolean = false;
 
     constructor(
         private readonly route: ActivatedRoute,
@@ -71,7 +79,7 @@ export class ProjectTaskDetailComponent
         readonly projektMetierService: ProjektMetierService,
         readonly projectSubmissionService: ProjectSubmissionService,
         readonly projectConsultService: ProjectConsultationService,
-        private readonly pageTitleService: PageTitleService,
+        private readonly pageTitleService: PageTitleService
     ) {
         super(dialog, translateService, snackBarService, taskWithDependenciesService, projectTaskMetierService, logger);
         iconRegistry.addSvgIcon('project-svg-icon',
@@ -88,12 +96,22 @@ export class ProjectTaskDetailComponent
     set taskId(idTask: string) {
         if (idTask) {
             this.isLoading = true;
+            this.idTask = idTask;
+
+            this.projectTaskMetierService.getTask(this.idTask).subscribe({
+                next: (task: Task) => {
+                    this.currentTask = task;
+                    this.hasSections = !!task?.asset?.form?.sections;
+
+                },
+                error: (err) => console.error('Error fetching task:', err)
+            });
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
-                     // On définit ici le titre de l'onglet en se basant sur le titre de la réutilisation
-                     // et si undefined, on définit le titre de l'onglet sur "Mes notifications"
-                    if (taskWithDependencies.task.asset.title){
-                    this.pageTitleService.setPageTitle(taskWithDependencies.task.asset.title, this.translateService.instant('pageTitle.defaultDetail'));
+                    // On définit ici le titre de l'onglet en se basant sur le titre de la réutilisation
+                    // et si undefined, on définit le titre de l'onglet sur "Mes notifications"
+                    if (taskWithDependencies.task.asset.title) {
+                        this.pageTitleService.setPageTitle(taskWithDependencies.task.asset.title, this.translateService.instant('pageTitle.defaultDetail'));
                     } else {
                         this.pageTitleService.setPageTitleFromUrl('/personal-space/my-notifications');
                     }
@@ -265,13 +283,38 @@ export class ProjectTaskDetailComponent
         });
     }
 
-    // Mettre à jour le mode modification de la réutilisation
-    updateInProgress(data: boolean): void {
-        this.isUpdateInProgress = data;
+    public updateProjectTask(obj: { confidentialities: Confidentiality[], form: FormGroup }): void {
+        this.isUpdateInProgress = true;
+        this.childrenIsLoading = true;
+        this.projectSubmissionService.updateProjectTaskField(this.currentTask, obj.form, obj.confidentialities);
+        this.projectTaskMetierService.claimTask(this.idTask).pipe(
+            switchMap(item => {
+                return forkJoin([
+                    this.projectTaskMetierService.updateTask(this.currentTask),
+                    of(item) // Utilisation de of pour conserver la valeur du premier switchMap
+                ]);
+            }),
+            tap(([updatedTask, item]) => {
+                this.project = updatedTask.asset as Project;
+                this.projektMetierService.uploadLogo(this.project.uuid, obj.form.get('image').value.file).subscribe();
+            }),
+            switchMap(() => {
+                return this.projectTaskMetierService.unclaimTask(this.idTask);
+            })
+        ).subscribe({
+            next: () => {
+                this.isUpdateInProgress = false;
+                this.childrenIsLoading = false;
+                this.taskId = this.idTask;
+                this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.success'));
+            },
+            error: (e) => {
+                console.error(e);
+                this.snackBarService.add(this.translateService.instant('personalSpace.project.tabs.update.error'));
+                this.childrenIsLoading = false;
+            }
+        });
     }
 
-    // Mettre à jour la task en cours
-    updateCurrentTask(data: Task): void {
-        this.currentTask = data;
-    }
+    protected readonly ProjectStatus = ProjectStatus;
 }

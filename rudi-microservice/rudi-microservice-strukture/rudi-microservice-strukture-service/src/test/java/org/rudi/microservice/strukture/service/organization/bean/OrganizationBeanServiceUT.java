@@ -24,6 +24,7 @@ import org.rudi.microservice.strukture.core.bean.OrganizationBean;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
@@ -61,6 +62,8 @@ class OrganizationBeanServiceUT {
 	OrganizationMembersHelper organizationMembersHelper;
 	@MockBean
 	DatasetService datasetService;
+	@MockBean
+	StruktureAuthorisationHelper struktureAuthorisationHelper;
 
 	private UUID metalOwner;
 	private UUID familialOwner;
@@ -84,6 +87,9 @@ class OrganizationBeanServiceUT {
 		metalOwner = UUID.randomUUID();
 		familialOwner = UUID.randomUUID();
 		macumbaOwner = UUID.randomUUID();
+
+		// On se "connecte" en tant qu'administrateur des organisation pour les créer et les modifier.
+		when(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(any())).thenReturn(true);
 		
 		// Organization HellFest
 		LocalDateTime hFestCreationDate = LocalDateTime.of(2006, Month.JUNE, 23, 14, 0, 0, 0);

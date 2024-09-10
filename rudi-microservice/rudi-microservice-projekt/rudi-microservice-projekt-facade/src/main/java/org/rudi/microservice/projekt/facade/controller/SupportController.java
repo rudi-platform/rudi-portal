@@ -6,7 +6,7 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.PagedSupportList;
 import org.rudi.microservice.projekt.core.bean.Support;
-import org.rudi.microservice.projekt.core.bean.SupportSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.SupportSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.SupportsApi;
 import org.rudi.microservice.projekt.service.support.SupportService;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +44,20 @@ public class SupportController implements SupportsApi {
 		return ResponseEntity.ok(supportService.getSupport(uuid));
 	}
 
+	/**
+	 * GET /supports : Liste tous les type d’accompagnements
+	 * Liste tous les type d’accompagnements
+	 *
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @param active (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedSupportList> searchSupports(Integer limit, Integer offset, String order) throws Exception {
-
-		val searchCriteria = new SupportSearchCriteria();
+	public ResponseEntity<PagedSupportList> searchSupports(Boolean active, Integer limit, Integer offset, String order ) throws Exception {
+		val searchCriteria = SupportSearchCriteria.builder().active(active).build();
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = supportService.searchSupports(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedSupportList()

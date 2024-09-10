@@ -1,18 +1,14 @@
 package org.rudi.microservice.projekt.service.project;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,18 +28,33 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.ResourceHelper;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.acl.bean.ProjectKey;
+import org.rudi.facet.acl.bean.ProjectKeystore;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
+import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
+import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.bean.MetadataAccessCondition;
+import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
+import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.facet.oauth2.config.WebClientConfig;
+import org.rudi.facet.organization.helper.OrganizationHelper;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
+import org.rudi.microservice.projekt.core.bean.DatasetConfidentiality;
+import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequestStatus;
+import org.rudi.microservice.projekt.core.bean.OwnerType;
 import org.rudi.microservice.projekt.core.bean.Project;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
+import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.service.confidentiality.impl.ConfidentialityHelper;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
@@ -58,11 +69,21 @@ import org.rudi.microservice.projekt.storage.entity.ReutilisationStatusEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Class de test de la couche service
@@ -75,6 +96,23 @@ class ProjectServiceUT {
 			"Projet de comptage des lampadaires");
 	private static final KnownProject PROJET_POUBELLES = new KnownProject("poubelles",
 			"Projet de suivi des poubelles jaunes orangées");
+	private static final KnownProject PROJET_LAMPADAIRE_PUBLIC = new KnownProject("lampadaires_public",
+			"Projet de comptage des lampadaires - Public");
+	private static final KnownProject PROJET_LAMPADAIRE_PRIVATE = new KnownProject("lampadaires_private",
+			"Projet de comptage des lampadaires - Privé");
+	private static final KnownProject PROJET_POUBELLE_PUBLIC = new KnownProject("poubelles_public",
+			"Projet de suivi des poubelles jaunes orangées - Public");
+	private static final KnownProject PROJET_POUBELLE_PRIVATE = new KnownProject("poubelles_private",
+			"Projet de suivi des poubelles jaunes orangées - Privé");
+	private static final KnownProject PROJET_LAMPADAIRE_ORGANISATION_PUBLIC = new KnownProject(
+			"lampadaires_orga_public", "Projet de comptage des lampadaires - Public");
+	private static final KnownProject PROJET_LAMPADAIRE_ORGANISATION_PRIVATE = new KnownProject(
+			"lampadaires_orga_private", "Projet de comptage des lampadaires - Privé");
+	private static final KnownProject PROJET_POUBELLE_ORGANISATION_PUBLIC = new KnownProject("poubelles_orga_public",
+			"Projet de suivi des poubelles jaunes orangées - Public");
+	private static final KnownProject PROJET_POUBELLE_ORGANISATION_PRIVATE = new KnownProject("poubelles_orga_private",
+			"Projet de suivi des poubelles jaunes orangées - Privé");
+
 	private static final String DEFAULT_LOGO_FILE_NAME = "media/default-logo.png";
 	private static final String SECOND_LOGO_FILE_NAME = "media/project-logo-changed.png";
 	private static final String REJECTED_LOGO_TYPE = "media/not_matched_logo_type.svg";
@@ -85,6 +123,7 @@ class ProjectServiceUT {
 	private final ProjectTypeDao projectTypeDao;
 	private final SupportDao supportDao;
 	private final ReutilisationStatusDao reutilisationStatusDao;
+	private final LinkedDatasetService linkedDatasetService;
 
 	private final JsonResourceReader jsonResourceReader;
 	private final List<TransientDtoReplacerTest> transientDtoReplacers;
@@ -102,7 +141,11 @@ class ProjectServiceUT {
 	@MockBean
 	private MyInformationsHelper myInformationsHelper;
 	@MockBean
+	private OrganizationHelper organizationHelper;
+	@MockBean
 	private MediaService mediaService;
+	@MockBean
+	private final DatasetService datasetService;
 
 	@SuppressWarnings("unused") // mocké pour ACLHelper
 	@MockBean(name = "rudi_oauth2")
@@ -111,6 +154,11 @@ class ProjectServiceUT {
 	@SuppressWarnings("unused") // mocké pour OrganizationHelper
 	@MockBean(name = "struktureWebClient")
 	private WebClientConfig struktureWebClient;
+
+	List<KnownProject> knownProjects = List.of(PROJET_LAMPADAIRE_PRIVATE, PROJET_LAMPADAIRE_PUBLIC,
+			PROJET_POUBELLE_PRIVATE, PROJET_POUBELLE_PUBLIC, PROJET_LAMPADAIRE_ORGANISATION_PRIVATE,
+			PROJET_LAMPADAIRE_ORGANISATION_PUBLIC, PROJET_POUBELLE_ORGANISATION_PRIVATE,
+			PROJET_POUBELLE_ORGANISATION_PUBLIC);
 
 	@BeforeEach
 	void init() throws IOException {
@@ -179,16 +227,48 @@ class ProjectServiceUT {
 				.hasMessage("Accès non autorisé à la fonctionnalité pour l'utilisateur");
 	}
 
-	private void mockAuthenticatedUserToCreateProject(Project project) throws AppServiceUnauthorizedException {
-		mockAuthenticatedUserFromManager(project.getOwnerUuid());
+	private void mockAuthenticatedUserToCreateProject(Project project)
+			throws AppServiceUnauthorizedException, GetOrganizationException, GetOrganizationMembersException {
+		mockAuthenticatedUserFromManager(project.getOwnerUuid(), project.getOwnerType().equals(OwnerType.ORGANIZATION));
 	}
 
-	private void mockAuthenticatedUserFromManager(UUID managerUserUuid) throws AppServiceUnauthorizedException {
+	private void mockUnauthenticated() throws AppServiceUnauthorizedException {
+		when(aclHelper.getUserByLogin(any())).thenReturn(null);
+		when(aclHelper.getUserByUUID(any())).thenReturn(null);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(null);
+		when(utilContextHelper.getAuthenticatedUser()).thenReturn(null);
+		when(aclHelper.getUserByLoginAndPassword(any(), any())).thenReturn(null);
+	}
+
+	private void mockAuthenticatedWrongPwd() throws AppServiceUnauthorizedException {
+		final User user = new User().login("mpokora").uuid(UUID.randomUUID())
+				.roles(Collections.singletonList(new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER)));
+		when(aclHelper.getUserByLogin(any())).thenReturn(user);
+		when(aclHelper.getUserByUUID(any())).thenReturn(user);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(utilContextHelper.getAuthenticatedUser()).thenReturn(null);
+		when(aclHelper.getUserByLoginAndPassword(any(), any())).thenReturn(null);
+	}
+
+	private void mockAuthenticatedUserFromManager(UUID managerUserUuid, boolean isOrganization)
+			throws AppServiceUnauthorizedException, GetOrganizationException, GetOrganizationMembersException {
 		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER);
-		final User user = new User().login("mpokora").uuid(managerUserUuid).roles(Arrays.asList(roleUser));
+		final User user = new User().login("mpokora").uuid(managerUserUuid).roles(Collections.singletonList(roleUser));
+		// Si le projet est créé par un user et non au nom d'une organization.
+		if (!isOrganization) {
+			user.setUuid(managerUserUuid);
+		} else {
+			// Un UUID au hasard pour ne pas avoir le même que celui de l'orga
+			user.setUuid(UUID.randomUUID());
+			when(myInformationsHelper.getMeAndMyOrganizationsUuids())
+					.thenReturn(List.of(user.getUuid(), managerUserUuid));
+			when(myInformationsHelper.getMyOrganizationsUuids()).thenReturn(List.of(managerUserUuid));
+			when(organizationHelper.organizationContainsUser(managerUserUuid, user.getUuid())).thenReturn(true);
+		}
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(aclHelper.getUserByLoginAndPassword(eq(user.getLogin()), any())).thenReturn(user);
 
 		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
 		authenticatedUser.setLogin(user.getLogin());
@@ -197,7 +277,7 @@ class ProjectServiceUT {
 
 	private void mockAuthenticatedUserFromModerator(UUID moderatorUuid) throws AppServiceUnauthorizedException {
 		org.rudi.facet.acl.bean.Role roleModerator = new org.rudi.facet.acl.bean.Role().code(RoleCodes.MODERATOR);
-		final User user = new User().login("PresentMic").uuid(moderatorUuid).roles(Arrays.asList(roleModerator));
+		final User user = new User().login("PresentMic").uuid(moderatorUuid).roles(List.of(roleModerator));
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 //		when(rolesHelper.hasAnyRole(user, Role.MODERATOR)).thenReturn(true);
@@ -210,7 +290,7 @@ class ProjectServiceUT {
 
 	private void mockAuthenticatedUserNotOwner(UUID managerUserUuid) throws AppServiceUnauthorizedException {
 		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER);
-		final User user = new User().login("shakira").uuid(managerUserUuid).roles(Arrays.asList(roleUser));
+		final User user = new User().login("shakira").uuid(managerUserUuid).roles(Collections.singletonList(roleUser));
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
@@ -222,6 +302,19 @@ class ProjectServiceUT {
 
 	private void mockUnauthenticatedUser() {
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(null);
+	}
+
+	private void mockAuthenticatedUserFromAnonymous() throws AppServiceUnauthorizedException {
+		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.ANONYMOUS);
+		final User user = new User().login("anonymous").uuid(UUID.randomUUID())
+				.roles(Collections.singletonList(roleUser));
+		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
+		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+
+		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
+		authenticatedUser.setLogin(user.getLogin());
+		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 
 	@Test
@@ -263,9 +356,9 @@ class ProjectServiceUT {
 		assertThat(createdProject.getDesiredSupports()).isEmpty();
 	}
 
+	// FIXME ce test ne fonctionne que s'il n'est pas lancé avec maven
 	@Test
 	@Disabled
-	// FIXME ce test ne fonctionne que s'il n'est pas lancé avec maven
 	void createProjectWithoutConfidentiality() throws IOException, AppServiceException {
 		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
 		project.setConfidentiality(null);
@@ -425,7 +518,7 @@ class ProjectServiceUT {
 		final UUID otherManager = UUID.randomUUID();
 		project.setOwnerUuid(otherManager);
 		createEntities(project);
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, project.getOwnerType().equals(OwnerType.ORGANIZATION));
 
 		assertThatThrownBy(() -> projectService.updateProject(project))
 				.as("Je ne peux pas modifier le projet créé par quelqu'un d'autre")
@@ -462,9 +555,11 @@ class ProjectServiceUT {
 		createProject(PROJET_LAMPADAIRES);
 		createProject(PROJET_POUBELLES);
 
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
 		val pageable = PageRequest.of(0, 2);
-		final Page<Project> projects = projectService
-				.searchProjects(new ProjectSearchCriteria().themes(Arrays.asList("comptage", "lampadaires")), pageable);
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().themes(Arrays.asList("comptage", "lampadaires")).build(), pageable);
 
 		assertThat(projects).as("On retrouve uniquement le project attendu").extracting("title")
 				.containsExactly(PROJET_LAMPADAIRES.getTitle());
@@ -477,8 +572,11 @@ class ProjectServiceUT {
 		createProject(PROJET_POUBELLES);
 
 		val pageable = PageRequest.of(0, 2);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
 		final Page<Project> projects = projectService.searchProjects(
-				new ProjectSearchCriteria().keywords(Arrays.asList("comptage", "lampadaires")), pageable);
+				ProjectSearchCriteria.builder().keywords(Arrays.asList("comptage", "lampadaires")).build(), pageable);
 
 		assertThat(projects).as("On retrouve uniquement le project attendu").extracting("title")
 				.containsExactly(PROJET_LAMPADAIRES.getTitle());
@@ -596,7 +694,7 @@ class ProjectServiceUT {
 		final UUID projectUuid = createdProject.getUuid();
 
 		// On fait en sorte que le helper renvoit un utilisateur connecté
-		when(myInformationsHelper.getMeAndMyOrganizationUuids()).thenReturn(List.of(projectToCreate.getOwnerUuid()));
+		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(projectToCreate.getOwnerUuid()));
 
 		assertThat(projectService.isAuthenticatedUserProjectOwner(projectUuid))
 				.as("L'utilisateur connecté est celui qui a créé le projet, il doit donc avoir accès.").isTrue();
@@ -618,7 +716,7 @@ class ProjectServiceUT {
 		final UUID projectUuid = createdProject.getUuid();
 
 		// on fait en sorte que le helper renvoit un autre utilisateur que celui connecté
-		when(myInformationsHelper.getMeAndMyOrganizationUuids()).thenReturn(List.of(UUID.randomUUID()));
+		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(UUID.randomUUID()));
 
 		assertThat(projectService.isAuthenticatedUserProjectOwner(projectUuid))
 				.as("L'utilisateur connecté n'est pas celui qui a créé le projet, il ne doit donc pas avoir accès.")
@@ -632,7 +730,7 @@ class ProjectServiceUT {
 		final UUID projectUuid = UUID.randomUUID();
 
 		// on fait en sorte que le helper renvoit un autre utilisateur que celui connecté
-		when(myInformationsHelper.getMeAndMyOrganizationUuids()).thenReturn(List.of(UUID.randomUUID()));
+		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(UUID.randomUUID()));
 
 		// Test random UUID (ne renvoit aucun projet)
 		assertThrows(AppServiceNotFoundException.class,
@@ -706,7 +804,7 @@ class ProjectServiceUT {
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, false);
 
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.createNewDatasetRequest(projectUuid, request));
@@ -794,7 +892,7 @@ class ProjectServiceUT {
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, false);
 
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.updateNewDatasetRequest(projectUuid, requestToUpdate));
@@ -885,7 +983,7 @@ class ProjectServiceUT {
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, false);
 
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.deleteNewDatasetRequest(projectUuid, requestCreated.getUuid()));
@@ -914,7 +1012,7 @@ class ProjectServiceUT {
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, false);
 
 		val newLogo = getLogoFromPath(SECOND_LOGO_FILE_NAME);
 
@@ -968,7 +1066,7 @@ class ProjectServiceUT {
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
-		mockAuthenticatedUserFromManager(otherManager);
+		mockAuthenticatedUserFromManager(otherManager, false);
 
 		// Une exception est levée, car je ne suis pas connecté avec un utilisateur qui est Owner du projet
 		assertThrows(AppServiceUnauthorizedException.class,
@@ -977,6 +1075,105 @@ class ProjectServiceUT {
 		// Je me re connecte en tant qu'Owner du projet
 		mockAuthenticatedUserToCreateProject(projectToCreate);
 		assertAll(() -> projectService.deleteMedia(projectUuid, KindOfData.LOGO));
+	}
+
+	@Test
+	@DisplayName("Recherche de projet en anonymous")
+	void searchProjectAuthenticatedAsAnonymous() throws AppServiceException, IOException {
+		mockAuthenticatedUserFromAnonymous();
+		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+				.getTotalElements();
+
+		for (KnownProject knownProject : knownProjects) {
+			createProject(knownProject);
+		}
+
+		// On se connecte en tant qu'Anonymous
+		mockAuthenticatedUserFromAnonymous();
+		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+
+		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
+		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
+				.isPositive().as("Le resultat doit comporter quatre nouvelles réutilisations").isEqualTo(baseValue + 4);
+		assertThat(projects.get()).as("Le résultat ne doit pas comporter de confidentialités privée")
+				.allMatch(p -> !p.getConfidentiality().getPrivateAccess());
+	}
+
+	@Test
+	@DisplayName("Recherche de projet en animateur")
+	void searchProjectAuthenticatedAsModerator() throws AppServiceException, IOException {
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+				.getTotalElements();
+
+		for (KnownProject knownProject : knownProjects) {
+			createProject(knownProject);
+		}
+
+		// On se connecte en tant qu'Anonymous
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+
+		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
+		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
+				.isPositive().isPositive().as("Le resultat doit comporter huit nouvelles réutilisations")
+				.isEqualTo(baseValue + 8);
+		assertThat(projects.get()).as("Le résultat doit comporter des confidentialités privée")
+				.anyMatch(p -> p.getConfidentiality().getPrivateAccess())
+				.as("Le résultat doit comporter des confidentialités public")
+				.anyMatch(p -> !p.getConfidentiality().getPrivateAccess());
+	}
+
+	@Test
+	@DisplayName("Recherche de projet en membre de l'organisation à l'origine du projet")
+	void searchProjectAuthenticatedAsOrganizationMember()
+			throws AppServiceException, IOException, DataverseAPIException {
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+				.getTotalElements();
+
+		List<Project> createdPtojects = new ArrayList<>();
+		for (KnownProject knownProject : knownProjects) {
+			Project project = createProject(knownProject);
+			createdPtojects.add(project);
+		}
+
+		for (Project p : createdPtojects) {
+			UUID projectUuid = p.getUuid();
+			// Créations des JDDs de test
+			final var ld1Uuid = UUID.randomUUID();
+			final var ld1 = createLinkedDataset(ld1Uuid, "link opened", DatasetConfidentiality.OPENED);
+			Metadata associated1 = createMetadataAssociated(ld1);
+			when(datasetService.getDataset(any(UUID.class))).thenReturn(associated1);
+			mockAuthenticatedUserFromManager(p.getOwnerUuid(), p.getOwnerType().equals(OwnerType.ORGANIZATION));
+			var ld_openUuid = linkedDatasetService.linkProjectToDataset(projectUuid, ld1).getUuid();
+			assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid))
+					.as(String.format("La création du JDD %s doit se passer correctement pour le projet %s",
+							ld1.getDescription(), p.getTitle()))
+					.isNotNull();
+		}
+
+		Optional<UUID> organizationUuid = createdPtojects.stream()
+				.filter(p -> p.getOwnerType() == OwnerType.ORGANIZATION).map(p -> p.getOwnerUuid()).findFirst();
+		assertThat(organizationUuid).as("S'il n'y a pas d'organization, il y a un soucis").isNotEmpty();
+		// On se connecte en tant qu'Anonymous
+		mockAuthenticatedUserFromManager(organizationUuid.get(), true);
+//		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+
+		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
+		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
+				.isPositive().isPositive()
+				.as("Le resultat doit comporter 6 nouvelles réutilisations, car deux sont privées et non attribué à lui")
+				.isEqualTo(baseValue + 6);
+		assertThat(projects.get()).as("Le résultat doit comporter des confidentialités privée")
+				.anyMatch(p -> p.getConfidentiality().getPrivateAccess())
+				.as("Le résultat doit comporter des confidentialités public")
+				.anyMatch(p -> !p.getConfidentiality().getPrivateAccess())
+				.as("Les confidentialités retournées doivent être public ou avoir un JDD appartenant à cette organisation ou avoir été créé au nom de l'oganization de l'utilsiateur connecté")
+				.allMatch(p -> !p.getConfidentiality().getPrivateAccess() || (p.getConfidentiality().getPrivateAccess()
+						&& (p.getOwnerUuid().equals(organizationUuid.get()) || p.getLinkedDatasets().stream()
+								.anyMatch(l -> l.getDatasetOrganizationUuid().equals(organizationUuid.get())))));
 	}
 
 	private NewDatasetRequest getNewDatasetRequest() {
@@ -988,14 +1185,271 @@ class ProjectServiceUT {
 		return request;
 	}
 
-	private long countProjects() {
+	private long countProjects() throws AppServiceException {
 		val pageable = PageRequest.of(0, 100);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
 		return projectService.searchProjects(new ProjectSearchCriteria(), pageable).getTotalElements();
 	}
 
 	private DocumentContent getLogoFromPath(String path) throws IOException {
 		val logo = resourceHelper.getResourceFromAdditionalLocationOrFromClasspath(path);
 		return DocumentContent.fromResource(logo, false);
+	}
+
+	private LinkedDataset createLinkedDataset(UUID uuid, String comment, DatasetConfidentiality dc) {
+		LinkedDataset linkedDataset = new LinkedDataset();
+		linkedDataset.setComment(comment);
+		linkedDataset.setUuid(uuid);
+		linkedDataset.setDatasetConfidentiality(dc);
+		linkedDataset.setDatasetUuid(UUID.randomUUID());
+		return linkedDataset;
+	}
+
+	private Metadata createMetadataAssociated(LinkedDataset linkedDataset) {
+		Metadata returned = new Metadata();
+		returned.setResourceTitle("On s'en moque");
+		MetadataAccessCondition accessCondition = new MetadataAccessCondition();
+		MetadataAccessConditionConfidentiality confidentiality = new MetadataAccessConditionConfidentiality();
+		confidentiality.setGdprSensitive(linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.SELFDATA);
+
+		confidentiality
+				.setRestrictedAccess(linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.RESTRICTED
+						|| linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.SELFDATA);
+		accessCondition.setConfidentiality(confidentiality);
+		returned.setAccessCondition(accessCondition);
+		return returned;
+	}
+
+	@Test
+	@DisplayName("Vérification création key avec un project keystore inexsitant")
+	void createProjectKey() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+		final Project createdProject = projectService.createProject(project);
+
+		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of()));
+		when(aclHelper.createProjectKeyStore(any())).thenReturn(pks);
+		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
+		when(aclHelper.createProjectKey(any(), any())).thenReturn(pkToCreate.getProjectKey());
+
+		projectService.createProjectKey(createdProject.getUuid(), pkToCreate);
+
+		verify(aclHelper).searchProjectKeystores(any(), any());
+		verify(aclHelper).createProjectKeyStore(any());
+		verify(aclHelper).createProjectKey(any(), any());
+	}
+
+	@Test
+	@DisplayName("Vérification création key avec un project keystore qui existe déjà")
+	void createProjectKeyAlreadyExist() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+		final Project createdProject = projectService.createProject(project);
+
+		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));
+		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
+		when(aclHelper.createProjectKey(any(), any())).thenReturn(pkToCreate.getProjectKey());
+
+		projectService.createProjectKey(createdProject.getUuid(), pkToCreate);
+		verify(aclHelper).searchProjectKeystores(any(), any());
+		verify(aclHelper).createProjectKey(any(), any());
+	}
+
+	@Test
+	@DisplayName("Vérification de la non création d'une key en ayant seulement les droits Anonymous")
+	void createProjectKeyNoRightAnonymous() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
+
+		mockAuthenticatedUserFromAnonymous();
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.createProjectKey(createdProject.getUuid(), pkToCreate));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non création d'une key en étant non authentifié")
+	void createProjectKeyNoRightUnauthenticated() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
+		mockAuthenticatedWrongPwd();
+
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.createProjectKey(createdProject.getUuid(), pkToCreate));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non création d'une key pour un projet sur lequel on n'est pas owner")
+	void createProjectKeyNoRightNotOwner() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
+
+		mockAuthenticatedUserNotOwner(UUID.randomUUID());
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.createProjectKey(createdProject.getUuid(), pkToCreate));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non suppression d'une key avec un project keystore inexistant")
+	void deleteProjectKey() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+
+		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));
+		when(aclHelper.createProjectKeyStore(any())).thenReturn(pks);
+		when(aclHelper.createProjectKey(any(), any())).thenReturn(createKeyCredential("teste1").getProjectKey());
+
+		projectService.createProjectKey(createdProject.getUuid(), createKeyCredential("teste1"));
+
+		projectService.deleteProjectKey(createdProject.getUuid(), UUID.randomUUID());
+		verify(aclHelper).deleteProjectKey(any(), any());
+	}
+
+	@Test
+	@DisplayName("Vérification de la non suppression d'une key avec un project keystore inexistant")
+	void deleteProjectKeyThrow() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		createKeyCredential("teste1");
+
+		assertThrows(AppServiceBadRequestException.class,
+				() -> projectService.deleteProjectKey(createdProject.getUuid(), null));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non suppression d'une key en ayant seulement les droits Anonymous")
+	void deleteProjectKeyNoRightAnonymous() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		createKeyCredential("teste1");
+
+		mockAuthenticatedUserFromAnonymous();
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.deleteProjectKey(createdProject.getUuid(), UUID.randomUUID()));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non suppression d'une key en étant non authentifié")
+	void deleteProjectKeyNoRightUnauthenticated() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		mockUnauthenticated();
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.deleteProjectKey(createdProject.getUuid(), UUID.randomUUID()));
+	}
+
+	@Test
+	@DisplayName("Vérification de la non suppression d'une key pour un projet sur lequel on n'est pas owner")
+	void deleteProjectKeyNoRightNotOwner() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		mockAuthenticatedUserNotOwner(UUID.randomUUID());
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.deleteProjectKey(createdProject.getUuid(), UUID.randomUUID()));
+	}
+
+	@Test
+	@DisplayName("Teste la recherche des ProjectKey sans avoir les droits Anonymous")
+	void searchProjectKeyNoRightAnonymous() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		createKeyCredential("teste1");
+
+		mockAuthenticatedUserFromAnonymous();
+		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
+				.projectUuid(createdProject.getUuid());
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
+	}
+
+	@Test
+	@DisplayName("Teste la recherche des ProjectKey sans avoir les droits Unauthenticated")
+	void searchProjectKeyNoRightUnauthenticated() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		createKeyCredential("teste1");
+
+		mockUnauthenticated();
+		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
+				.projectUuid(createdProject.getUuid());
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
+	}
+
+	@Test
+	@DisplayName("Teste la recherche des ProjectKey sans avoir les droits Not Owner")
+	void searchProjectKeyNoRightNotOwner() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+
+		final Project createdProject = projectService.createProject(project);
+		createKeyCredential("teste1");
+
+		mockAuthenticatedUserNotOwner(UUID.randomUUID());
+		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
+				.projectUuid(createdProject.getUuid());
+		assertThrows(AppServiceUnauthorizedException.class,
+				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
+	}
+
+	@Test
+	@DisplayName("Teste la recherche des ProjectKey")
+	void searchProjectKeyThrow() throws IOException, AppServiceException {
+		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
+		createEntities(project);
+		mockAuthenticatedUserToCreateProject(project);
+		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria();
+		assertThrows(AppServiceBadRequestException.class,
+				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
+	}
+
+	private ProjectKeyCredential createKeyCredential(String name) {
+		ProjectKey projectKey = new ProjectKey();
+		projectKey.setName(name);
+		projectKey.setExpirationDate(LocalDateTime.now());
+		ProjectKeyCredential projectKeyCredential = new ProjectKeyCredential().projectKey(projectKey)
+				.password("pwd" + name);
+		return projectKeyCredential;
 	}
 
 	@Data
