@@ -1,0 +1,59 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"description": "API download"
+	},
+	"paths": {
+		"/*": {
+			"get": {
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BoundingBox"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"parameters": {
+			"BoundingBox": {
+				"name": "bbox",
+				"in": "query",
+				"description": "La boite englobante en ",
+				"required": false,
+				"schema": {
+					"description": "Représente une BBOX (Bounding box) ou boîte englobante. Il s'agit de deux points dans l'espace qui permettent de définir un rectangle, les BBOX sont normées pour utiliser des points dans le système de coordonnées EPSG:4326 WGS84 ou les coordonnées GPS longitude et latitude",
+					"type": "object",
+					"properties": {
+						"west_longitude": {
+							"type": "number"
+						},
+						"south_latitude": {
+							"type": "number"
+						},
+						"east_longitude": {
+							"type": "number"
+						},
+						"north_latitude": {
+							"type": "number"
+						}
+					}
+				},
+				"allowEmptyValue": true
+			}
+		}
+	}
+}

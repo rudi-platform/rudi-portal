@@ -9,6 +9,8 @@ import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.LocalIdExtractor;
+import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.UniqueLocalIdValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 
 import java.util.Set;

@@ -163,7 +163,6 @@ public class AuthorizationServerSecurityConfigurer
 				builder.authenticationProvider(provider);
 			}
 		}
-		// http.securityContext().securityContextRepository(new NullSecurityContextRepository());
 		http.httpBasic().authenticationEntryPoint(this.authenticationEntryPoint).realmName(realm);
 		if (sslOnly) {
 			http.requiresChannel().anyRequest().requiresSecure();

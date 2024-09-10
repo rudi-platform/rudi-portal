@@ -6,13 +6,11 @@ import {ProjectConsultationService} from '@core/services/asset/project/project-c
 import {
     LinkedDatasetMetadatas,
     ProjectDependenciesFetchers,
-    ProjectDependenciesService,
     ProjectWithDependencies
 } from '@core/services/asset/project/project-dependencies.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
-import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -150,9 +148,7 @@ export class ProjectDatasetsTabComponent {
 
     constructor(
         private readonly dialog: MatDialog,
-        private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
         private readonly apiAccessService: KonsultApiAccessService,
-        private readonly projectDependenciesService: ProjectDependenciesService,
         private readonly projectDependenciesFetchers: ProjectDependenciesFetchers,
         private readonly projectSubmissionService: ProjectSubmissionService,
         private readonly projectConsultService: ProjectConsultationService,
@@ -167,17 +163,6 @@ export class ProjectDatasetsTabComponent {
         this.loadingCommentData = false;
     }
 
-    /**
-     * Action déclenchée lors du clic sur le bouton "Souscrire", ouverture de popin
-     */
-    public handleClickSubscribe(): void {
-        this.personalSpaceProjectService.openDialogSelectDatasetsToSubscribe(this.subscribableLinkedDatasetMetadatas, this._project)
-            .subscribe({
-                error: (error) => {
-                    console.error(error);
-                }
-            });
-    }
 
     updateAddButtonStatus(buttonStatus: boolean): void {
         this.addingInProgress = buttonStatus;

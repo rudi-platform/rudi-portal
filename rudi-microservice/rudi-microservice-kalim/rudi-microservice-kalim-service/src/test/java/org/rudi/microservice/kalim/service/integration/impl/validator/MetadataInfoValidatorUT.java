@@ -1,5 +1,9 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Set;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,11 +14,8 @@ import org.rudi.facet.kaccess.bean.MetadataMetadataInfo;
 import org.rudi.facet.kaccess.constant.ConstantMetadata;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
 import org.rudi.microservice.kalim.service.IntegrationError;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.MetadataInfoValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
-
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class MetadataInfoValidatorUT {
@@ -26,15 +27,16 @@ class MetadataInfoValidatorUT {
 	@DisplayName("Test de la validation d'un object MetadataMetadataInfo vide")
 	void testValidateMetadataInfoEmptyValue() {
 		Metadata metadata = new Metadata().metadataInfo(null);
-		Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities =
-				metadataInfoValidator.validateMetadata(metadata);
+		Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities = metadataInfoValidator
+				.validateMetadata(metadata);
 
 		assertThat(integrationRequestErrorEntities.size()).isEqualTo(1);
 
-		assertThat(integrationRequestErrorEntities).anyMatch(integrationRequestErrorEntity ->
-						integrationRequestErrorEntity.getFieldName().equals(RudiMetadataField.METADATA_INFO.getLocalName())
-					 && integrationRequestErrorEntity.getMessage().equals(
-								String.format(IntegrationError.ERR_202.getMessage(),
+		assertThat(integrationRequestErrorEntities)
+				.anyMatch(integrationRequestErrorEntity -> integrationRequestErrorEntity.getFieldName()
+						.equals(RudiMetadataField.METADATA_INFO.getLocalName())
+						&& integrationRequestErrorEntity.getMessage()
+								.equals(String.format(IntegrationError.ERR_202.getMessage(),
 										RudiMetadataField.METADATA_INFO.getLocalName())));
 	}
 
@@ -44,13 +46,15 @@ class MetadataInfoValidatorUT {
 		final String metadataVersion = "2.1.0";
 		final MetadataMetadataInfo metadataMetadataInfo = new MetadataMetadataInfo().apiVersion(metadataVersion);
 
-		final Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities =
-				metadataInfoValidator.validate(metadataMetadataInfo);
+		final Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities = metadataInfoValidator
+				.validate(metadataMetadataInfo);
 
-		assertThat(integrationRequestErrorEntities).anyMatch(error ->
-				error.getCode().equals(IntegrationError.ERR_106.getCode()) &&
-						error.getMessage().equals(String.format(IntegrationError.ERR_106.getMessage(), metadataVersion, ConstantMetadata.CURRENT_METADATA_VERSION)) &&
-						error.getFieldName().equals(RudiMetadataField.METADATA_INFO_API_VERSION.getLocalName()));
+		assertThat(integrationRequestErrorEntities).anyMatch(
+				error -> error.getCode().equals(IntegrationError.ERR_106.getCode())
+						&& error.getMessage()
+								.equals(String.format(IntegrationError.ERR_106.getMessage(), metadataVersion,
+										ConstantMetadata.CURRENT_METADATA_VERSION))
+						&& error.getFieldName().equals(RudiMetadataField.METADATA_INFO_API_VERSION.getLocalName()));
 	}
 
 	@Test
@@ -59,8 +63,8 @@ class MetadataInfoValidatorUT {
 		final String metadataVersion = ConstantMetadata.CURRENT_METADATA_VERSION;
 		final MetadataMetadataInfo metadataMetadataInfo = new MetadataMetadataInfo().apiVersion(metadataVersion);
 
-		final Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities =
-				metadataInfoValidator.validate(metadataMetadataInfo);
+		final Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities = metadataInfoValidator
+				.validate(metadataMetadataInfo);
 
 		assertThat(integrationRequestErrorEntities).isEmpty();
 	}

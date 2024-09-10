@@ -106,7 +106,7 @@ export class ForgotPasswordComponent implements OnInit {
             switchMap(() => this.routeHistoryService.goBackOrElseGoAccount()),
             switchMap(() => forkJoin({
                 messageBeforeLink: this.translateService.get('resetPassword.snackbar.messageBeforeLink'),
-                linkHref: this.propertiesService.get('rudidatarennes.contact'),
+                linkHref: this.propertiesService.get('front.contact'),
                 linkLabel: this.translateService.get('resetPassword.snackbar.linkLabel'),
             })),
             map(({messageBeforeLink, linkHref, linkLabel}) =>
@@ -117,10 +117,10 @@ export class ForgotPasswordComponent implements OnInit {
         ).subscribe({
             next: () => {
                 this.loading = false;
-                this.propertiesService.get('rudidatarennes.contact').subscribe(rudidatarennesContactLink => {
+                this.propertiesService.get('front.contact').subscribe(contactLink => {
                     this.snackBarService.openSnackBar({
                         message: `${this.translateService.instant('snackbarTemplate.successInitPassword')}
-                                        <a href="${rudidatarennesContactLink}">
+                                        <a href="${contactLink}">
                                             ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
                                         </a>`,
                         keepBeforeSecondRouteChange: true,

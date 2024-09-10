@@ -132,10 +132,7 @@ Tous les composants se trouvent dans le package `org.springframework.security.oa
 
 # Voir aussi
 
-- [GitHub Rennes Métropole][GitHub Rennes Métropole]
-
-
-[OAuth2]: https://www.oauth.com/
-[password-grant]: https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
-[client-credentials]: https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
-[GitHub Rennes Métropole]: https://github.com/sigrennesmetropole/rudi_documentation/tree/main/authentification
+- [OAuth2]: https://www.oauth.com/
+- [password-grant]: https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
+- [client-credentials]: https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
+- [GitHub Rennes Métropole]: https://github.com/rudi-platform/rudi-documentation/blob/main/articles/_authentification/authentification.md

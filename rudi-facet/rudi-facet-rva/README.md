@@ -2,12 +2,14 @@
 
 ### Description
 
-Cette facette a pour objectif de rechercher des addresses sur un ensemble de communes. Pour y arriver, elle utilise
-l'API RVA de Rennes métropole <a>https://api-rva.sig.rennesmetropole.fr
-La facette permet ainsi à terme permettra d'intérroger l'ensemble des endpoints mis à disposition par cette API mais à
-ce jour ne permet que de taper sur l'endpoint **getfulladdresses** de l'API. La facette via son swagger instancie tous
-les objets nécessaires pour communiquer avec l'API. La facette expose un ensemble de **properties** à ré-définir par les
-µs utilisateurs.
+Cette facette a pour objectif de rechercher des addresses sur un ensemble de communes. 
+Elle utilise pour ce faire l'API RVA de Rennes métropole <a>https://api-rva.sig.rennesmetropole.fr</a>
+
+La facette permet d'intérroger l'endpoint **getfulladdresses** mis à disposition par cette API.
+La facette via son swagger instancie tous les objets nécessaires pour communiquer avec l'API. 
+La facette expose un ensemble de **properties** à ré-définir par les µService utilisateurs.
+
+Des implémentations alternatives devront être réalisées pour les différentes instantiations de Rudi.
 
 ### Intégration dans un µs
 

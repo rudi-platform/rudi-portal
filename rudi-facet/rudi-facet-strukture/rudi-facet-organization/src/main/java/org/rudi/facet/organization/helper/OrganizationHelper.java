@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.bean.OrganizationMember;
+import org.rudi.facet.organization.bean.OrganizationRole;
 import org.rudi.facet.organization.bean.PagedOrganizationList;
 import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.CreateOrganizationException;
@@ -46,6 +47,24 @@ public class OrganizationHelper {
 			return false;
 		}
 		return members.stream().anyMatch(member -> member.getUserUuid().equals(userUuid));
+	}
+
+	public boolean organizationContainsUserAsAdministrator(UUID organizationUuid, UUID userUuid)
+			throws GetOrganizationMembersException {
+		if (organizationUuid == null) {
+			throw new IllegalArgumentException("organizationUuid required");
+		}
+		if (userUuid == null) {
+			throw new IllegalArgumentException("userUuid required");
+		}
+		final var members = getOrganizationMembers(organizationUuid);
+		if (members == null) {
+			return false;
+		}
+		return members.stream().anyMatch(member ->
+				member.getUserUuid().equals(userUuid)
+				&& member.getRole().equals(OrganizationRole.ADMINISTRATOR)
+		);
 	}
 
 	public OrganizationMember addMemberToOrganization(OrganizationMember member, UUID organizationUuid)

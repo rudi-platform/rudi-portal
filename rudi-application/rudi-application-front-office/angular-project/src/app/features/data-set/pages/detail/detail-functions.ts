@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {LanguageService} from '@core/i18n/language.service';
 import {LogService} from '@core/services/log.service';
 import {Licence, LicenceCustom, Media, Metadata} from 'micro_service_modules/api-kaccess';
-import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {Observable, of, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import MediaTypeEnum = Media.MediaTypeEnum;
+import { DataSetAccessService } from '@app/core/services/data-set/data-set-access.service';
 
 const DWNL_INTERFACE_CONTRACT = 'dwnl';
 
@@ -16,7 +16,7 @@ const DWNL_INTERFACE_CONTRACT = 'dwnl';
 export class DetailFunctions {
     constructor(
         private readonly languageService: LanguageService,
-        private readonly konsulService: KonsultService,
+        private readonly datasetAccessService: DataSetAccessService,
         private readonly logService: LogService
     ) {
     }
@@ -40,7 +40,7 @@ export class DetailFunctions {
             if (!metadata.access_condition.confidentiality?.restricted_access) {
                 return of(true);
             } else {
-                return this.konsulService.hasSubscribeToMetadataMedia(metadata.global_id, media.media_id).pipe(
+                return this.datasetAccessService.hasAccess(metadata).pipe(
                     catchError((error) => {
                         if (error.status === 480) {
                             this.logService.error('Accès impossible au média', error);

@@ -8,8 +8,6 @@ import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.tools.nodestub.config.filter.NodestubJwtRequestFilter;
-import org.rudi.tools.nodestub.config.filter.NodestubJwtTokenUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -35,7 +33,7 @@ public class WebSecurityConfig {
 			// swagger ui / openapi
 			"/nodestub/v3/api-docs/**", "/nodestub/swagger-ui/**", "/nodestub/swagger-ui.html",
 			"/nodestub/swagger-resources/**", "/configuration/ui", "/configuration/security", "/webjars/**",
-			"/nodestub/endpoints/**" };
+			"/nodestub/endpoints/**", "nodestub/test/**" };
 
 	@Value("${module.oauth2.check-token-uri}")
 	private String checkTokenUri;
@@ -44,7 +42,6 @@ public class WebSecurityConfig {
 
 	private final UtilContextHelper utilContextHelper;
 	private final RestTemplate oAuth2RestTemplate;
-	private final NodestubJwtTokenUtil nodestubJwtTokenUtil;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,8 +81,7 @@ public class WebSecurityConfig {
 
 	@Bean
 	public JwtRequestFilter createJwtRequestFilter() {
-		return new NodestubJwtRequestFilter(SB_PERMIT_ALL_URL, utilContextHelper, nodestubJwtTokenUtil,
-				oAuth2RestTemplate);
+		return new JwtRequestFilter(SB_PERMIT_ALL_URL, utilContextHelper, oAuth2RestTemplate);
 	}
 
 	private Filter createOAuth2Filter() {

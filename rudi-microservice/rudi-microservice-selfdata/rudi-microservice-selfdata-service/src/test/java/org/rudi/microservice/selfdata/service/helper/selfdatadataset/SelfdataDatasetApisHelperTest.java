@@ -2,7 +2,6 @@ package org.rudi.microservice.selfdata.service.helper.selfdatadataset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,18 +22,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.common.service.exception.AppServiceUnauthorizedException;
-import org.rudi.facet.apimaccess.api.application.ApplicationOperationAPI;
-import org.rudi.facet.apimaccess.api.registration.ClientRegistrationResponse;
-import org.rudi.facet.apimaccess.bean.Application;
-import org.rudi.facet.apimaccess.exception.APIEndpointException;
-import org.rudi.facet.apimaccess.exception.APIsOperationException;
-import org.rudi.facet.apimaccess.exception.ApplicationKeysNotFoundException;
-import org.rudi.facet.apimaccess.exception.ApplicationOperationException;
-import org.rudi.facet.apimaccess.exception.ApplicationTokenGenerationException;
-import org.rudi.facet.apimaccess.exception.GetClientRegistrationException;
-import org.rudi.facet.apimaccess.helper.rest.RudiClientRegistrationRepository;
-import org.rudi.facet.apimaccess.service.APIsService;
+import org.rudi.common.service.exception.AppServiceNotFoundException;
+import org.rudi.facet.apigateway.exceptions.GetApiException;
+import org.rudi.facet.apigateway.helper.ApiGatewayHelper;
 import org.rudi.facet.dataset.bean.InterfaceContract;
 import org.rudi.facet.kaccess.bean.Connector;
 import org.rudi.facet.kaccess.bean.Media;
@@ -46,18 +35,18 @@ import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
 import org.rudi.facet.kaccess.bean.MetadataExtMetadata;
 import org.rudi.facet.kaccess.bean.MetadataExtMetadataExtSelfdata;
 import org.rudi.facet.kaccess.bean.SelfdataContent;
+import org.rudi.microservice.apigateway.core.bean.Api;
+import org.rudi.microservice.apigateway.core.bean.ApiMethod;
 import org.rudi.microservice.selfdata.core.bean.BarChartData;
 import org.rudi.microservice.selfdata.core.bean.GenericDataObject;
 import org.rudi.microservice.selfdata.service.SelfdataSpringBootTest;
 import org.rudi.microservice.selfdata.service.exception.InvalidSelfdataApisException;
 import org.rudi.microservice.selfdata.service.exception.MissingApiForMediaException;
-import org.rudi.microservice.selfdata.service.exception.TechnicalWso2CallException;
+import org.rudi.microservice.selfdata.service.helper.apigateway.SelfdataApiGatewayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.wso2.carbon.apimgt.rest.api.publisher.APIInfo;
-import org.wso2.carbon.apimgt.rest.api.publisher.APIList;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,13 +55,12 @@ import lombok.RequiredArgsConstructor;
 class SelfdataDatasetApisHelperTest {
 
 	private final SelfdataDatasetApisHelper selfdataDatasetApisHelper;
-	private final RudiClientRegistrationRepository rudiClientRegistrationRepository;
 
 	@MockBean
-	private APIsService apIsService;
+	private ApiGatewayHelper apiGatewayHelper;
 
 	@MockBean
-	private ApplicationOperationAPI applicationOperationAPI;
+	private SelfdataApiGatewayHelper selfdataApiGatewayHelper;
 
 	@ParameterizedTest
 	@MethodSource("getMalformedMetadatas")
@@ -103,42 +91,6 @@ class SelfdataDatasetApisHelperTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("getUnauthenticatedUsers")
-	void test_searchCachedRegistration_401_when_unauthenticated(AuthenticatedUser input) {
-		assertThrows(AppServiceUnauthorizedException.class,
-				() -> selfdataDatasetApisHelper.searchCachedRegistration(input));
-	}
-
-	private static Stream<Arguments> getUnauthenticatedUsers() {
-
-		AuthenticatedUser userEmptyLogin = new AuthenticatedUser();
-		userEmptyLogin.setLogin("");
-
-		return Stream.of(null, Arguments.of(new AuthenticatedUser()), Arguments.of(userEmptyLogin));
-	}
-
-	@Test
-	void test_searchCachedRegistration_null_when_userNotSubscribed()
-			throws AppServiceException, GetClientRegistrationException {
-		AuthenticatedUser user = new AuthenticatedUser();
-		user.setLogin("valid@mail.com");
-		assertNull(selfdataDatasetApisHelper.searchCachedRegistration(user));
-	}
-
-	@Test
-	void test_searchCachedRegistration_ok_when_userSubscribed()
-			throws AppServiceException, GetClientRegistrationException {
-		AuthenticatedUser user = new AuthenticatedUser();
-		user.setLogin(RandomStringUtils.random(6));
-
-		ClientRegistrationResponse response = new org.rudi.facet.apimaccess.api.registration.Application()
-				.setClientId("randomId").setClientSecret("randomSecret");
-
-		rudiClientRegistrationRepository.addClientRegistration(user.getLogin(), response);
-		assertNotNull(selfdataDatasetApisHelper.searchCachedRegistration(user));
-	}
-
-	@ParameterizedTest
 	@MethodSource("getInvalidApiParams")
 	void test_getGdataData_ko_when_invalidParameters(SelfdataApiParameters parameters) {
 		assertThrows(AppServiceException.class, () -> selfdataDatasetApisHelper.getGdataData(parameters));
@@ -159,7 +111,6 @@ class SelfdataDatasetApisHelperTest {
 		justMetadata.setUser(new AuthenticatedUser());
 
 		SelfdataApiParameters justApplication = new SelfdataApiParameters();
-		justMetadata.setApplication(new Application());
 
 		SelfdataApiParameters metadataAndUser = new SelfdataApiParameters();
 		metadataAndUser.setMetadata(new Metadata());
@@ -167,15 +118,12 @@ class SelfdataDatasetApisHelperTest {
 
 		SelfdataApiParameters userAndApplication = new SelfdataApiParameters();
 		userAndApplication.setUser(new AuthenticatedUser());
-		userAndApplication.setApplication(new Application());
 
 		SelfdataApiParameters metadataAndApplication = new SelfdataApiParameters();
 		metadataAndApplication.setMetadata(new Metadata());
-		metadataAndApplication.setApplication(new Application());
 
 		SelfdataApiParameters allButEmpty = new SelfdataApiParameters();
 		allButEmpty.setMetadata(new Metadata());
-		allButEmpty.setApplication(new Application());
 		allButEmpty.setUser(new AuthenticatedUser());
 
 		return Stream.of(null, Arguments.of(new SelfdataApiParameters()), Arguments.of(justMetadata),
@@ -184,89 +132,77 @@ class SelfdataDatasetApisHelperTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("getMissingWso2Responses")
-	void test_getGdataData_ko_when_MediaMissingWso2Api(APIList inputList) throws APIsOperationException {
+	@MethodSource("getMissingApiGatewayResponses")
+	void test_getGdataData_ko_when_MediaMissingApigatewayApi(Api inputApi) throws GetApiException {
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenReturn(inputList);
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(inputApi);
 		assertThrows(MissingApiForMediaException.class, () -> selfdataDatasetApisHelper.getGdataData(parameters));
 	}
 
 	@ParameterizedTest
-	@MethodSource("getMissingWso2Responses")
-	void test_getTpbcData_ko_when_MediaMissingWso2Api(APIList inputList) throws APIsOperationException {
+	@MethodSource("getMissingApiGatewayResponses")
+	void test_getTpbcData_ko_when_MediaMissingApigatewayApi(Api inputApi) throws GetApiException {
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenReturn(inputList);
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(inputApi);
 		assertThrows(MissingApiForMediaException.class, () -> selfdataDatasetApisHelper.getTpbcData(parameters));
 	}
 
-	private static Stream<Arguments> getMissingWso2Responses() {
-		APIList emptyList = new APIList();
-		emptyList.setList(new ArrayList<>());
-		return Stream.of(null, Arguments.of(new APIList()), Arguments.of(emptyList));
+	private static Stream<Arguments> getMissingApiGatewayResponses() {
+		return Stream.of(null, Arguments.of(new Api()));
 	}
 
 	@Test
-	void test_getGdataData_500_when_searchApiErrorWSO2() throws APIsOperationException {
+	void test_getGdataData_500_when_searchApiErrorApiGateway() throws GetApiException {
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenThrow(APIsOperationException.class);
+		when(apiGatewayHelper.getApiById(any(), any())).thenThrow(GetApiException.class);
 		assertThrows(AppServiceException.class, () -> selfdataDatasetApisHelper.getGdataData(parameters));
 	}
 
 	@Test
-	void test_getTpbcData_500_when_searchApiErrorWSO2() throws APIsOperationException {
+	void test_getTpbcData_500_when_searchApiErrorApiGateway() throws GetApiException {
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenThrow(APIsOperationException.class);
+		when(apiGatewayHelper.getApiById(any(), any())).thenThrow(GetApiException.class);
 		assertThrows(AppServiceException.class, () -> selfdataDatasetApisHelper.getTpbcData(parameters));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getThrownExceptions")
-	void test_getGdataData_500_when_technicalWso2ErrorCallingApiEndpoint(Class<? extends Exception> inputException)
-			throws APIsOperationException, ApplicationTokenGenerationException, ApplicationKeysNotFoundException,
-			ApplicationOperationException, APIEndpointException {
+	void test_getGdataData_500_when_technicalApiGatewayErrorCallingApiEndpoint(
+			Class<? extends Exception> inputException) throws AppServiceNotFoundException, GetApiException {
 
-		APIList apiList = new APIList();
-		List<APIInfo> apiInfos = new ArrayList<>();
-		apiInfos.add(new APIInfo());
-		apiList.setList(apiInfos);
+		Api api = new Api();
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenReturn(apiList);
-		when(applicationOperationAPI.getAPIResponse(any(), any(), any(), any(), any())).thenThrow(inputException);
-		assertThrows(TechnicalWso2CallException.class, () -> selfdataDatasetApisHelper.getGdataData(parameters));
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(api);
+		when(selfdataApiGatewayHelper.datasets(any(), any(), any())).thenThrow(inputException);
+		assertThrows(AppServiceException.class, () -> selfdataDatasetApisHelper.getGdataData(parameters));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getThrownExceptions")
-	void test_getTpbcData_500_when_technicalWso2ErrorCallingApiEndpoint(Class<? extends Exception> inputException)
-			throws APIsOperationException, ApplicationTokenGenerationException, ApplicationKeysNotFoundException,
-			ApplicationOperationException, APIEndpointException {
+	void test_getTpbcData_500_when_technicalApigatewayErrorCallingApiEndpoint(Class<? extends Exception> inputException)
+			throws AppServiceNotFoundException, GetApiException {
 
-		APIList apiList = new APIList();
-		List<APIInfo> apiInfos = new ArrayList<>();
-		apiInfos.add(new APIInfo());
-		apiList.setList(apiInfos);
+		Api api = new Api();
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenReturn(apiList);
-		when(applicationOperationAPI.getAPIResponse(any(), any(), any(), any(), any())).thenThrow(inputException);
-		assertThrows(TechnicalWso2CallException.class, () -> selfdataDatasetApisHelper.getTpbcData(parameters));
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(api);
+		when(selfdataApiGatewayHelper.datasets(any(), any(), any())).thenThrow(inputException);
+		assertThrows(AppServiceException.class, () -> selfdataDatasetApisHelper.getTpbcData(parameters));
 	}
 
 	@Test
-	void test_getGdataData_ok() throws AppServiceException, APIsOperationException, ApplicationTokenGenerationException,
-			ApplicationKeysNotFoundException, ApplicationOperationException, APIEndpointException,
-			GetClientRegistrationException {
+	void test_getGdataData_ok() throws AppServiceException {
 		String mock;
 		try {
 			File file = new File("./src/test/resources/gdata-mocked-response.json");
@@ -278,15 +214,12 @@ class SelfdataDatasetApisHelperTest {
 		ClientResponse successfulResponse = ClientResponse.create(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.getValue()).body(mock).build();
 
-		APIList apiList = new APIList();
-		List<APIInfo> apiInfos = new ArrayList<>();
-		apiInfos.add(new APIInfo());
-		apiList.setList(apiInfos);
+		Api api = new Api().methods(List.of(ApiMethod.GET));
 
 		SelfdataApiParameters parameters = createValidParameters();
 
-		when(apIsService.searchAPI(any())).thenReturn(apiList);
-		when(applicationOperationAPI.getAPIResponse(any(), any(), any(), any(), any())).thenReturn(successfulResponse);
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(api);
+		when(selfdataApiGatewayHelper.datasets(any(), any(), any())).thenReturn(successfulResponse);
 		GenericDataObject gdata = selfdataDatasetApisHelper.getGdataData(parameters);
 
 		assertNotNull(gdata);
@@ -295,9 +228,7 @@ class SelfdataDatasetApisHelperTest {
 
 	@ParameterizedTest
 	@MethodSource("getValidDateParams")
-	void test_getTpbcData_ok(OffsetDateTime minimum, OffsetDateTime maximum) throws AppServiceException,
-			APIsOperationException, ApplicationTokenGenerationException, ApplicationKeysNotFoundException,
-			ApplicationOperationException, APIEndpointException, GetClientRegistrationException {
+	void test_getTpbcData_ok(OffsetDateTime minimum, OffsetDateTime maximum) throws AppServiceException {
 
 		String mock;
 		try {
@@ -309,18 +240,14 @@ class SelfdataDatasetApisHelperTest {
 
 		ClientResponse successfulResponse = ClientResponse.create(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.getValue()).body(mock).build();
-
-		APIList apiList = new APIList();
-		List<APIInfo> apiInfos = new ArrayList<>();
-		apiInfos.add(new APIInfo());
-		apiList.setList(apiInfos);
+		Api api = new Api().methods(List.of(ApiMethod.GET));
 
 		SelfdataApiParameters parameters = createValidParameters();
 		parameters.setMinDate(minimum);
 		parameters.setMaxDate(maximum);
 
-		when(apIsService.searchAPI(any())).thenReturn(apiList);
-		when(applicationOperationAPI.getAPIResponse(any(), any(), any(), any(), any())).thenReturn(successfulResponse);
+		when(apiGatewayHelper.getApiById(any(), any())).thenReturn(api);
+		when(selfdataApiGatewayHelper.datasets(any(), any(), any())).thenReturn(successfulResponse);
 		BarChartData tpbc = selfdataDatasetApisHelper.getTpbcData(parameters);
 
 		assertNotNull(tpbc);
@@ -350,30 +277,21 @@ class SelfdataDatasetApisHelperTest {
 	private SelfdataApiParameters createValidParameters() {
 		SelfdataApiParameters parameters = new SelfdataApiParameters();
 
-		AuthenticatedUser user = createAndRegisterValidUser();
-
-		Application application = new Application();
-		application.setApplicationId("randomId");
+		AuthenticatedUser user = createValidUser();
 
 		parameters.setMetadata(getValidMetadata());
 		parameters.setUser(user);
-		parameters.setApplication(application);
 		return parameters;
 	}
 
-	private AuthenticatedUser createAndRegisterValidUser() {
+	private AuthenticatedUser createValidUser() {
 		AuthenticatedUser user = new AuthenticatedUser();
 		user.setLogin("validUser@com");
-		ClientRegistrationResponse response = new org.rudi.facet.apimaccess.api.registration.Application()
-				.setClientId("randomId").setClientSecret("randomSecret");
-		rudiClientRegistrationRepository.addClientRegistration(user.getLogin(), response);
 		return user;
 	}
 
 	private static Stream<Arguments> getThrownExceptions() {
-		return Stream.of(Arguments.of(ApplicationOperationException.class),
-				Arguments.of(ApplicationKeysNotFoundException.class),
-				Arguments.of(ApplicationTokenGenerationException.class), Arguments.of(APIEndpointException.class));
+		return Stream.of(Arguments.of(IllegalArgumentException.class), Arguments.of(MissingApiForMediaException.class));
 	}
 
 	private static Metadata getSelfdataMetadata() {

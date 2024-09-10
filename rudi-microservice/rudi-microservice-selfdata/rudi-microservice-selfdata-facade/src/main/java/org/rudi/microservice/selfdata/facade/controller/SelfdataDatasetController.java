@@ -1,8 +1,11 @@
 package org.rudi.microservice.selfdata.facade.controller;
 
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
 
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
@@ -18,9 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +32,8 @@ public class SelfdataDatasetController implements SelfdataDatasetsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODERATOR + "," + USER + ")")
-	public ResponseEntity<PagedSelfdataDatasetList> searchSelfdataDatasets(Integer offset, Integer limit, String order) throws AppServiceException {
+	public ResponseEntity<PagedSelfdataDatasetList> searchSelfdataDatasets(Integer offset, Integer limit, String order)
+			throws AppServiceException {
 
 		SelfdataDatasetSearchCriteria criteria = new SelfdataDatasetSearchCriteria();
 		criteria.setOffset(offset);
@@ -46,7 +47,8 @@ public class SelfdataDatasetController implements SelfdataDatasetsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ")")
-	public ResponseEntity<BarChartData> getTpbcData(UUID uuid, OffsetDateTime minDate, OffsetDateTime maxDate) throws Exception {
+	public ResponseEntity<BarChartData> getTpbcData(UUID uuid, OffsetDateTime minDate, OffsetDateTime maxDate)
+			throws Exception {
 		return ResponseEntity.ok(selfdataService.getTpbcData(uuid, minDate, maxDate));
 	}
 

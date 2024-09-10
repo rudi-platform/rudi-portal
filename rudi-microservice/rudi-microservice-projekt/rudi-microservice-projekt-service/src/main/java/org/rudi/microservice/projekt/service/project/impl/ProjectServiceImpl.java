@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -14,7 +15,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.core.security.AuthenticatedUser;
+import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.core.util.ContentTypeUtils;
+import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
@@ -23,9 +26,9 @@ import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.ProjectKey;
 import org.rudi.facet.acl.bean.ProjectKeystore;
+import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.ProjectKeystoreSearchCriteria;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.bean.MediaOrigin;
@@ -35,14 +38,18 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
+import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.service.exception.DataverseExternalServiceException;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
+import org.rudi.microservice.projekt.service.helper.linkeddataset.MyLinkedDatasetHelper;
 import org.rudi.microservice.projekt.service.mapper.NewDatasetRequestMapper;
 import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.service.project.ProjectService;
@@ -102,6 +109,8 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ACLHelper aclHelper;
 	private final MyInformationsHelper myInformationsHelper;
 	private final ProjektAuthorisationHelper projektAuthorisationHelper;
+	private final UtilPageable utilPageable;
+	private final MyLinkedDatasetHelper myLinkedDatasetHelper;
 
 	@Value("${rudi.producer.attachement.allowed.types:image/jpeg,image/png}")
 	List<String> allowedLogoType;
@@ -136,13 +145,33 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public Project getProject(UUID uuid) throws AppServiceNotFoundException {
+	public Project getProject(UUID uuid) throws AppServiceException {
 		final var projectEntity = getRequiredProjectEntity(uuid);
+		if (projectEntity.getConfidentiality().isPrivateAccess()) {
+			projektAuthorisationHelper.checkRightsAdministerProject(projectEntity);
+		}
 		return projectMapper.entityToDto(projectEntity);
 	}
 
 	@Override
-	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable) {
+	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
+			throws AppServiceException {
+		User user = aclHelper.getAuthenticatedUser();
+		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
+			searchCriteria.setIsPrivate(false);
+		} else if (!projektAuthorisationHelper.hasAnyRole(user,
+				List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR))) {
+			List<UUID> ownersUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
+			List<UUID> datasetUuids = myLinkedDatasetHelper
+					.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
+			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(
+					searchCriteria);
+			enhancedProjectSearchCriteria.setMyOrganizationsUuids(ownersUuid);
+			enhancedProjectSearchCriteria.setMyOrganizationsDatasetsUuids(datasetUuids);
+			return projectMapper.entitiesToDto(
+					projectCustomDao.searchRelatedProjects(enhancedProjectSearchCriteria, pageable), pageable);
+		}
+		// Si on est modérateur, le isPrivate n'entre pas en ligne de compte.
 		return projectMapper.entitiesToDto(projectCustomDao.searchProjects(searchCriteria, pageable), pageable);
 	}
 
@@ -199,7 +228,7 @@ public class ProjectServiceImpl implements ProjectService {
 				for (final DeleteLinkedDatasetFieldProcessor processor : deleteLinkedDatasetProcessors) {
 					try {
 						processor.process(null, linkedDataset);
-					} catch (APIManagerException e) {
+					} catch (Exception e) {
 						throw new AppServiceException(String.format(
 								"Erreur de suppression du linkedDataset %s (dataset %s) dans le projet %s",
 								linkedDataset.getUuid(), linkedDataset.getDatasetUuid(), existingProject.getUuid()), e);
@@ -408,7 +437,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public Page<Project> getMyProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
-			throws GetOrganizationException {
+			throws AppServiceException {
 		// get user uuid
 		UUID userUuid = null;
 		AuthenticatedUser authenticatedUser = utilContextHelper.getAuthenticatedUser();
@@ -436,7 +465,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
 			throws GetOrganizationException, AppServiceUnauthorizedException, AppServiceNotFoundException {
-		var uuids = myInformationsHelper.getMeAndMyOrganizationUuids();
+		var uuids = myInformationsHelper.getMeAndMyOrganizationsUuids();
 		final var projectEntity = getRequiredProjectEntity(projectUuid);
 		return CollectionUtils.containsAny(uuids, projectEntity.getOwnerUuid());
 	}
@@ -447,19 +476,42 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectKey createProjectKey(UUID projectUuid, ProjectKey projectKey) throws AppServiceException {
+	public ProjectKey createProjectKey(UUID projectUuid, ProjectKeyCredential projectKeyCredential)
+			throws AppServiceException {
+		User user = aclHelper.getAuthenticatedUser();
+		if (aclHelper.getUserByLoginAndPassword(user.getLogin(), projectKeyCredential.getPassword()) == null) {
+			throw new AppServiceUnauthorizedException("Identification impossible");
+		}
+
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
-		projektAuthorisationHelper.checkRightsAdministerProject(project);
-		if (projectKey == null || projectKey.getName() == null) {
+		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
+
+		if (projectKeyCredential.getProjectKey() == null || projectKeyCredential.getProjectKey().getName() == null) {
 			throw new AppServiceBadRequestException("Project key with name is required");
 		}
-		return aclHelper.createProjectKey(projectUuid, projectKey);
+
+		// Récupération du Keystore
+		ProjectKeystoreSearchCriteria criteria = new ProjectKeystoreSearchCriteria();
+		criteria.setProjectUuids(List.of(projectUuid));
+		Pageable pageable = utilPageable.getPageable(0, 1, null);
+		Page<ProjectKeystore> projectKeystores = aclHelper.searchProjectKeystores(criteria, pageable);
+
+		ProjectKeystore projectKeystore;
+		Optional<ProjectKeystore> pks = projectKeystores.get().findFirst();
+		boolean containsKeystore = pks.isPresent();
+		if (containsKeystore) {
+			projectKeystore = pks.get();
+		} else { // si la page est vide
+			projectKeystore = aclHelper.createProjectKeyStore(projectUuid);
+		}
+
+		return aclHelper.createProjectKey(projectKeystore.getUuid(), projectKeyCredential.getProjectKey());
 	}
 
 	@Override
 	public void deleteProjectKey(UUID projectUuid, UUID projectKeyUuid) throws AppServiceException {
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
-		projektAuthorisationHelper.checkRightsAdministerProject(project);
+		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
 		if (projectKeyUuid == null) {
 			throw new AppServiceBadRequestException("Project key uuid is required");
 		}
@@ -472,7 +524,7 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new AppServiceBadRequestException("Project uuid is required");
 		}
 		ProjectEntity project = getRequiredProjectEntity(searchCriteria.getProjectUuid());
-		projektAuthorisationHelper.checkRightsAdministerProject(project);
+		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
 		ProjectKeystoreSearchCriteria projectKeystoreSearchCriteria = ProjectKeystoreSearchCriteria.builder()
 				.projectUuids(List.of(searchCriteria.getProjectUuid())).build();
 		Page<ProjectKeystore> projectKeystores = aclHelper.searchProjectKeystores(projectKeystoreSearchCriteria,
@@ -486,9 +538,9 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * Définition de l'ouverture des droits la fonctionnalité de d'administration de media associé à un projet : Le projectowner ou un membre de
 	 * l'organisation peut / L'administrateur peut (uniquement via Postman) / Un autre user ne peut pas
-	 * 
+	 * <p>
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
-	 * 
+	 *
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
 	 * @throws GetOrganizationMembersException
 	 * @throws GetOrganizationException

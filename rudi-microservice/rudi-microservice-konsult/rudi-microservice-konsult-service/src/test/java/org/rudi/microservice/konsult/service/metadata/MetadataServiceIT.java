@@ -1,5 +1,10 @@
 package org.rudi.microservice.konsult.service.metadata;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.acl.bean.ClientKey;
 import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.apimaccess.service.ApplicationService;
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
@@ -22,15 +25,9 @@ import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataList;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.konsult.service.KonsultSpringBootTest;
-import org.rudi.microservice.konsult.service.helper.APIManagerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
 
 /**
  * Class de test de MetadataService
@@ -49,21 +46,16 @@ class MetadataServiceIT {
 	@Autowired
 	private DatasetOperationAPI datasetOperationAPI;
 	@MockBean
-	private ApplicationService applicationService;
-	@MockBean
-	private APIManagerHelper apiManagerHelper;
-	@MockBean
 	private UtilContextHelper utilContextHelper;
 	@MockBean
 	private ACLHelper aclHelper;
-	@Value("${apimanager.oauth2.client.anonymous.username}")
+	@Value("${security.anonymous.login:anonymous}")
 	private String anonymousUsername;
 
 	public void mockUserData(String username) {
 		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
 		authenticatedUser.setLogin(username);
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
-		when(aclHelper.getClientKeyByLogin(username)).thenReturn(new ClientKey().clientId("xxx").clientSecret("yyy"));
 	}
 
 	@AfterEach
@@ -83,7 +75,6 @@ class MetadataServiceIT {
 		mockUserData(username);
 		DatasetSearchCriteria searchCriteria = new DatasetSearchCriteria().producerUuids(List.of(firstProducerUUID));
 		MetadataList oldMetadataList = metadataService.searchMetadatas(searchCriteria);
-
 
 		List<Metadata> listOK = new ArrayList<>(oldMetadataList.getItems());
 

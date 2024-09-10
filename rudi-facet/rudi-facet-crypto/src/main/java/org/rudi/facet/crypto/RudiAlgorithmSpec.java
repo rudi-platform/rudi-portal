@@ -50,9 +50,7 @@ public class RudiAlgorithmSpec implements AlgorithmParameterSpec {
 					// On utilise exactement le même paramétrage que la librairie JavaScript "SubtleCrypto" :
 					// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#rsa-oaep
 					// Source : https://stackoverflow.com/a/59678340
-					.keyPairAlgorithm("RSA") // cf rudi-tools/rudi-tools-wso2-handler/src/main/resources/encryption_key.key
-					.keyPairKeySize(2048) // cf rudi-tools/rudi-tools-wso2-handler/src/main/resources/encryption_key.key
-					.cipherAlgorithm("RSA/ECB/OAEPPadding")
+					.keyPairAlgorithm("RSA").keyPairKeySize(2048).cipherAlgorithm("RSA/ECB/OAEPPadding")
 					.cipherAlgorithmParams(new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"),
 							PSource.PSpecified.DEFAULT))
 					.build())

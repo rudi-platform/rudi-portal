@@ -14,6 +14,9 @@ import {DatasetTableComponent} from '@shared/project-datasets-tables/dataset-tab
 
 import {SearchBoxComponent} from '@shared/search-box/search-box.component';
 import {SocialMediaSectionComponent} from '@shared/social-media-section/social-media-section.component';
+import {WorkflowExpansionDateComponent} from '@shared/workflow-expansion/workflow-expansion-date/workflow-expansion-date.component';
+import {WorkflowExpansionLabelComponent} from '@shared/workflow-expansion/workflow-expansion-label/workflow-expansion-label.component';
+import {WorkflowExpansionComponent} from '@shared/workflow-expansion/workflow-expansion.component';
 import {WorkflowFieldDateComponent} from '@shared/workflow-field-date/workflow-field-date.component';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {IsSectionDisplayedPipe} from '@shared/workflow-form/pipes/is-section-displayed.pipe';
@@ -181,6 +184,9 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             IsSectionOnlyHelpPipe,
             RudiSwiperComponent,
             SocialMediaSectionComponent,
+            WorkflowExpansionComponent,
+            WorkflowExpansionLabelComponent,
+            WorkflowExpansionDateComponent
         ],
     imports: [
         CommonModule,
@@ -265,7 +271,10 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         RestrictedDatasetTableComponent,
         DeletionConfirmationPopinComponent,
         ClipboardFieldComponent,
-        RudiSwiperComponent
+        RudiSwiperComponent,
+        WorkflowExpansionComponent,
+        WorkflowExpansionLabelComponent,
+        WorkflowExpansionDateComponent
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},

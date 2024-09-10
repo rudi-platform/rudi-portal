@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
-import org.rudi.microservice.projekt.core.bean.TargetAudienceSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TargetAudienceSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

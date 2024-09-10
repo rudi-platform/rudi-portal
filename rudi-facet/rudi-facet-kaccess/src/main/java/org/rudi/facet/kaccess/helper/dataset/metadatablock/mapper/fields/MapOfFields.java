@@ -17,12 +17,11 @@ class MapOfFields {
 	private final Map<String, Field> fieldsByName;
 
 	static MapOfFields from(Map<String, Object> map) {
-		return new MapOfFields(
-				map.entrySet().stream()
-						.collect(Collectors.toMap(Map.Entry::getKey, entry -> objectToField(entry.getValue())))
-		);
+		return new MapOfFields(map.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> objectToField(entry.getValue()))));
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Field objectToField(Object object) {
 		if (object instanceof DatasetMetadataBlockElementField) {
 			final var blockElementField = (DatasetMetadataBlockElementField) object;
@@ -40,7 +39,8 @@ class MapOfFields {
 	}
 
 	/**
-	 * @return le champ correspondant s'il existe, {@link MissingOptionnalField#INSTANCE} sinon pour éviter les NullPointerException, si et seulement si le champ n'est pas obligatoire.
+	 * @return le champ correspondant s'il existe, {@link MissingOptionnalField#INSTANCE} sinon pour éviter les NullPointerException, si et seulement si
+	 *         le champ n'est pas obligatoire.
 	 */
 	@Nonnull
 	public Field get(FieldSpec fieldSpec) {

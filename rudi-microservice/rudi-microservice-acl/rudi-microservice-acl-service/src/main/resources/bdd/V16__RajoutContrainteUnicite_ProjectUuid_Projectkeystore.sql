@@ -1,0 +1,1 @@
+alter table if exists acl_data.project_keystore add constraint UK_4b66pakbq284picw845xd1juy unique (project_uuid);

@@ -3,6 +3,7 @@
  */
 package org.rudi.microservice.apigateway.facade.config.gateway.filters;
 
+import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -19,8 +20,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LogGlobalFilter extends AbstractGlobalFilter {
 
-	public LogGlobalFilter() {
-		super();
+	public LogGlobalFilter(DatasetService datasetService) {
+		super(datasetService);
 	}
 
 	@Override

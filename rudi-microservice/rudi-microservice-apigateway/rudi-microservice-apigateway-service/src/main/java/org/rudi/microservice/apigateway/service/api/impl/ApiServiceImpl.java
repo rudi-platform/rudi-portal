@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * @author FNI18300
- *
  */
 @Service
 @RequiredArgsConstructor
@@ -51,7 +50,7 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
-	public Api getApi(UUID uuid) throws AppServiceException {
+	public Api getApi(UUID uuid) {
 		return apiMapper.entityToDto(apiDao.findByUuid(uuid));
 	}
 

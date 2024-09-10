@@ -17,9 +17,6 @@ import {
     OrganizationMembersTableComponent
 } from './components/administration-tab/organization-members-table/organization-members-table.component';
 import {OrganizationTableComponent} from './components/administration-tab/organization-table/organization-table.component';
-import {
-    UpdateUserPasswordPopinComponent
-} from './components/administration-tab/update-user-password-popin/update-user-password-popin.component';
 import {OrganizationInformationsComponent} from './components/organization-informations/organization-informations.component';
 import {OrganizationRoutingModule} from './organization-routing.module';
 import {DetailComponent} from './pages/detail/detail.component';
@@ -36,8 +33,7 @@ import {DetailComponent} from './pages/detail/detail.component';
         OrganizationMembersTableComponent,
         OrganizationTableComponent,
         DeletionMemberConfirmationPopinComponent,
-        DeletionMemberConfirmationPopinComponent,
-        UpdateUserPasswordPopinComponent
+        DeletionMemberConfirmationPopinComponent
     ],
     imports: [
         CommonModule,

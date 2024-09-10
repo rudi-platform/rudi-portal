@@ -6,7 +6,7 @@
 		"title": "rudi-acl-api",
 		"termsOfService": "http://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -338,17 +338,6 @@
 					}
 				]
 			},
-			"ClientKey": {
-				"type": "object",
-				"properties": {
-					"clientId": {
-						"type": "string"
-					},
-					"clientSecret": {
-						"type": "string"
-					}
-				}
-			},
 			"CaptchaModel": {
 				"type": "object",
 				"required": [
@@ -388,72 +377,6 @@
 					"alphanumerique4to6LightCaptchaEN",
 					"alphanumerique4to6LightCaptchaFR"
 				]
-			},
-			"ClientRegistrationDto": {
-				"type": "object",
-				"properties": {
-					"registrationId": {
-						"type": "string"
-					},
-					"clientId": {
-						"type": "string"
-					},
-					"clientSecret": {
-						"type": "string"
-					},
-					"redirectUriTemplate": {
-						"type": "string"
-					},
-					"clientName": {
-						"type": "string"
-					},
-					"clientAuthenticationMethod": {
-						"$ref": "#/components/schemas/ClientAuthenticationMethodDto"
-					},
-					"authorizationGrantType": {
-						"$ref": "#/components/schemas/AuthorizationGrantTypeDto"
-					},
-					"scopes": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
-					"providerDetails": {
-						"$ref": "#/components/schemas/ProviderDetailsDto"
-					}
-				}
-			},
-			"ClientAuthenticationMethodDto": {
-				"type": "object",
-				"properties": {
-					"value": {
-						"type": "string",
-						"enum": [
-							"BASIC",
-							"CLIENT_SECRET_BASIC",
-							"POST",
-							"CLIENT_SECRET_POST",
-							"CLIENT_SECRET_JWT",
-							"PRIVATE_KEY_JWT",
-							"NONE"
-						]
-					}
-				}
-			},
-			"AuthorizationGrantTypeDto": {
-				"type": "object",
-				"properties": {
-					"value": {
-						"type": "string",
-						"enum": [
-							"IMPLICIT",
-							"REFRESH_TOKEN",
-							"CLIENT_CREDENTIALS",
-							"PASSWORD"
-						]
-					}
-				}
 			},
 			"ProviderDetailsDto": {
 				"type": "object",
@@ -529,6 +452,10 @@
 				"description": "Object conteneur d'une clé d'accès d'un projet",
 				"type": "object",
 				"properties": {
+					"uuid": {
+						"type": "string",
+						"format": "uuid"
+					},
 					"name": {
 						"description": "Nom de la clé",
 						"type": "string"
@@ -536,12 +463,12 @@
 					"creationDate": {
 						"description": "Date de création de la clé",
 						"type": "string",
-						"format": "date-time"						
+						"format": "date-time"
 					},
 					"expirationDate": {
 						"description": "Date d'expiration de la clé",
 						"type": "string",
-						"format": "date-time"						
+						"format": "date-time"
 					},
 					"client_id": {
 						"type": "string"
@@ -555,10 +482,14 @@
 				"description": "Objet de liaison entre un client et une liste d'utilisateurs",
 				"type": "object",
 				"properties": {
+					"uuid": {
+						"type": "string",
+						"format": "uuid"
+					},
 					"projectUuid": {
 						"description": "Date de création de la clé",
 						"type": "string",
-						"format": "uuid"						
+						"format": "uuid"
 					},
 					"projectKeys": {
 						"type": "array",

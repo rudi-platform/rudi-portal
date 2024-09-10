@@ -1,0 +1,12 @@
+{
+	"sections": [
+		{
+			"name": "project-process-draft/message-to-moderator",
+			"readonly": true
+		},
+		{
+			"name": "project-process-draft/modified-project",
+			"readonly": true
+		}
+	]
+}

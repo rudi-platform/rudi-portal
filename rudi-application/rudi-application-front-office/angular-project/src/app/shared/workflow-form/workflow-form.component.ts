@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
-import {Form, Section} from 'micro_service_modules/api-bpmn';
 import {LogService} from '@core/services/log.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -8,6 +7,7 @@ import {Level} from '@shared/notification-template/notification-template.compone
 import {getSectionWithFields} from '@shared/utils/workflow-form-utils';
 import {WorkflowFormUtils} from '@shared/workflow-form/workflow-form.utils';
 import {WorkflowProperties} from '@shared/workflow-form/workflow-properties';
+import {Form, Section} from 'micro_service_modules/api-bpmn';
 
 @Component({
     selector: 'app-workflow-form',
@@ -91,6 +91,7 @@ export class WorkflowFormComponent implements OnInit {
                 if (!control) {
                     throw new Error(`Cannot find control for WorkFlow Field ${fieldKey} with name "${field.definition.name}" in section "${section.name}"`);
                 }
+                // TODO Traiter le cas des champs date
                 field.values = [control.value]; // Pour le moment on ne gère que les champs non multiples
             });
         });

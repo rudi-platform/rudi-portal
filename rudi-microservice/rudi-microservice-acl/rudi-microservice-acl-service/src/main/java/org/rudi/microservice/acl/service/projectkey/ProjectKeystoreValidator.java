@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author FNI18300
- *
  */
 @Component
 public class ProjectKeystoreValidator extends AbstractLongIdInputValidator<ProjectKeystore> {
@@ -18,14 +17,14 @@ public class ProjectKeystoreValidator extends AbstractLongIdInputValidator<Proje
 	@Override
 	public void validateCreation(ProjectKeystore dto) throws AppServiceException {
 		super.validateCreation(dto);
-		validateStringField(dto, "getProjectUuid", "validation.error.projectuuid.mandatory");
+		validateNotNullField(dto, "getProjectUuid", "validation.error.projectuuid.mandatory");
 
 	}
 
 	@Override
 	public void validateUpdate(ProjectKeystore dto) throws AppServiceException {
 		super.validateUpdate(dto);
-		validateStringField(dto, "getProjectUuid", "validation.error.projectuuid.mandatory");
+		validateNotNullField(dto, "getProjectUuid", "validation.error.projectuuid.mandatory");
 	}
 
 }

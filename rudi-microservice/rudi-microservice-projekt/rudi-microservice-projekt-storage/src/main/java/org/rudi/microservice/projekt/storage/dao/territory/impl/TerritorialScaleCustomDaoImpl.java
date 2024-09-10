@@ -1,17 +1,17 @@
 package org.rudi.microservice.projekt.storage.dao.territory.impl;
 
-import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.projekt.core.bean.TerritorialScaleSearchCriteria;
+import javax.persistence.EntityManager;
+
+import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
+import org.rudi.microservice.projekt.core.bean.criteria.TerritorialScaleSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.territory.TerritorialScaleCustomDao;
 import org.rudi.microservice.projekt.storage.entity.TerritorialScaleEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-
 @Repository
-public class TerritorialScaleCustomDaoImpl extends AbstractCustomDaoImpl<TerritorialScaleEntity, TerritorialScaleSearchCriteria> implements TerritorialScaleCustomDao {
+public class TerritorialScaleCustomDaoImpl extends AbstractStampedCustomDaoImpl<TerritorialScaleEntity, TerritorialScaleSearchCriteria> implements TerritorialScaleCustomDao {
 
 	public TerritorialScaleCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, TerritorialScaleEntity.class);

@@ -1,10 +1,5 @@
 package org.rudi.microservice.projekt.service.reutilisationstatus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -15,7 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
-import org.rudi.microservice.projekt.core.bean.ReutilisationStatusSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ReutilisationStatusSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.storage.dao.reutilisationstatus.ReutilisationStatusDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +20,10 @@ import org.springframework.data.domain.Pageable;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ProjectSpringBootTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

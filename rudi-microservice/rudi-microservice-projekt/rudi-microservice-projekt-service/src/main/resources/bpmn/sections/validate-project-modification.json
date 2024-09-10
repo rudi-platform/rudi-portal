@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à accepter la modification d’une réutilisation. Après approbation, celle-ci sera mise à jour dans le catalogue des réutilisations.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToProjectOwnerProjectModification",
+			"label": "Message à l’attention du porteur de projet",
+			"type": "TEXT",
+			"required": false
+		}
+	]
+}

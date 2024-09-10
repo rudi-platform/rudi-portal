@@ -6,7 +6,7 @@
 		"title": "rudi-strukture-api",
 		"termsOfService": "http://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -1987,47 +1987,6 @@
 								}
 							}
 						}
-					},
-					"500": {
-						"$ref": "#/components/responses/ServiceUnavailable"
-					}
-				}
-			}
-		},
-		"/organizations/{organizationUuid}/password": {
-			"put": {
-				"tags": [
-					"organization"
-				],
-				"summary": "Modifie le mot de passe de l'utilisateur de l'organisation. ",
-				"description": "Modifie le mot de passe de l'utilisateur de l'organisation. La correspondance se fait entre le login de l'utilisateur et l'UUID de l'organisation.",
-				"operationId": "updateUserOrganizationPassword",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "organizationUuid",
-						"description": "L'UUID de l'organisation",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						}
-					}
-				],
-				"requestBody": {
-					"description": "Informations de changement de mot de passe",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "rudi-strukture-model.json#/components/schemas/PasswordUpdate"
-							}
-						}
-					}
-				},
-				"responses": {
-					"204": {
-						"description": "OK"
 					},
 					"500": {
 						"$ref": "#/components/responses/ServiceUnavailable"

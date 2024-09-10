@@ -9,6 +9,10 @@
     overflow: hidden;
     margin-bottom: 1em;
 
+    &:hover {
+        box-shadow: var(--shadow-box);
+    }
+
     .organization-card-content {
         min-height: var(--card-height-sm);
         max-height: var(--card-height-sm);

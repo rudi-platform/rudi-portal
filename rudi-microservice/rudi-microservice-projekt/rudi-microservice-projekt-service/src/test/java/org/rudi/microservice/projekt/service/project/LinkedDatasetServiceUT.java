@@ -1,13 +1,5 @@
 package org.rudi.microservice.projekt.service.project;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,8 +24,6 @@ import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
-import org.rudi.facet.apimaccess.service.ApplicationService;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
@@ -65,6 +55,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Class de test de la couche service
@@ -106,8 +102,6 @@ class LinkedDatasetServiceUT {
 	@SuppressWarnings("unused") // mocké pour les tests via les orga
 	@MockBean
 	private OrganizationHelper organizationHelper;
-	@MockBean
-	private final ApplicationService applicationService;
 	@SuppressWarnings("unused") // mocké pour ACLHelper
 	@MockBean(name = "rudi_oauth2")
 	private WebClientConfig webClientConfig;
@@ -202,8 +196,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet puis lui ajoute des JDD, l'ajout fonctionne.")
-	void linkDatasetsToProject_DRAFT()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void linkDatasetsToProject_DRAFT() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		final Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -256,8 +249,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet avec des JDD, puis les supprime, la suppression fonctionne.")
-	void unlinkDatasetsToProject_DRAFT()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkDatasetsToProject_DRAFT() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		final Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -299,7 +291,6 @@ class LinkedDatasetServiceUT {
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_restrictedUuid)).isNotNull();
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_selfUuid)).isNotNull();
 
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
 		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid);
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
 		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_restrictedUuid);
@@ -343,8 +334,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet avec un JDD ouvert, l'annule et supprime le JDD, la suppression est refusée")
-	void unlinkOpenDatasetToProject_CANCELLED()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkOpenDatasetToProject_CANCELLED() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -371,8 +361,6 @@ class LinkedDatasetServiceUT {
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.CANCELLED, createdProject.getProjectStatus());
 
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
-
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
 				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
@@ -383,8 +371,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet, le refuse puis lui ajoute un JDD, l'ajout fonctionne.")
-	void linkOpenDatasetToProject_REJECTED()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void linkOpenDatasetToProject_REJECTED() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -424,8 +411,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet, le refuse puis lui ajoute un JDD et le supprime, la suppression fonctionne.")
-	void unlinkOpenDatasetToProject_REJECTED()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkOpenDatasetToProject_REJECTED() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -455,7 +441,6 @@ class LinkedDatasetServiceUT {
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.REJECTED, createdProject.getProjectStatus());
 
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
 		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid);
 
 		// le JDD a bien été supprimé
@@ -465,7 +450,7 @@ class LinkedDatasetServiceUT {
 	@Test
 	@DisplayName("Je crée un projet avec une réutilisation 'en cours', le valide  puis lui ajoute un JDD ouvert, l'ajout fonctionne")
 	void linkOpenDatasetToProject_VALIDATED_INPROGRESS()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+			throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -493,20 +478,13 @@ class LinkedDatasetServiceUT {
 		// Ajout du JDD lié ouvert
 		Metadata associated1 = createMetadataAssociated(ld1);
 		when(datasetService.getDataset(any(UUID.class))).thenReturn(associated1);
-		linkedDatasetService.linkProjectToDataset(projectUuid, ld1);
-
-		// Check que le JDD lié ouvert est bien completé
-		assertThat(linkedDatasetService.getLinkedDatasets(projectUuid, List.of(LinkedDatasetStatus.VALIDATED)))
-				.isNotEmpty();
-		assertThat(linkedDatasetService.getLinkedDatasets(projectUuid, List.of(LinkedDatasetStatus.VALIDATED)).get(0))
-				.hasFieldOrPropertyWithValue("linkedDatasetStatus", LinkedDatasetStatus.VALIDATED)
-				.hasFieldOrPropertyWithValue("comment", "link opened");
+		assertThrows(AppServiceForbiddenException.class, () -> linkedDatasetService.linkProjectToDataset(projectUuid, ld1));
 	}
 
 	@Test
-	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'en cours' et supprime le JDD, la suppression fonctionne")
+	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'en cours' et supprime le JDD, la suppression lance une erreur")
 	void unlinkOpenDatasetToProject_VALIDATED_INPROGRESS()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+			throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -538,11 +516,7 @@ class LinkedDatasetServiceUT {
 		assertEquals(ProjectStatus.VALIDATED, createdProject.getProjectStatus());
 		assertEquals(Boolean.TRUE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
 
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid);
-
-		// le JDD a bien été supprimé
-		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
+		assertThrows(AppServiceForbiddenException.class, () -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
 	}
 
 	@Test
@@ -583,7 +557,7 @@ class LinkedDatasetServiceUT {
 	@Test
 	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'fini' et supprime le JDD, la suppression est refusée")
 	void unlinkOpenDatasetToProject_VALIDATED_FINISHED()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+			throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -611,8 +585,6 @@ class LinkedDatasetServiceUT {
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.VALIDATED, createdProject.getProjectStatus());
 		assertEquals(Boolean.FALSE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
-
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
@@ -657,8 +629,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet avec un JDD ouvert, le passe en validation et supprime le JDD, la suppression est refusée")
-	void unlinkOpenDatasetToProject_INPROGRESS()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkOpenDatasetToProject_INPROGRESS() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -684,8 +655,6 @@ class LinkedDatasetServiceUT {
 		createdProject.setProjectStatus(ProjectStatus.IN_PROGRESS);
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getProjectStatus());
-
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
@@ -729,8 +698,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet avec un JDD ouvert, l'annule et supprime le JDD, la suppression est refusée")
-	void unlinkOpenDatasetToProject_DISENGAGED()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkOpenDatasetToProject_DISENGAGED() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -757,8 +725,6 @@ class LinkedDatasetServiceUT {
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.DISENGAGED, createdProject.getProjectStatus());
 
-		doNothing().when(applicationService).deleteUserSubscriptionsForDatasetAPIs(any(String.class), any(UUID.class));
-
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
 				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
@@ -769,8 +735,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet puis lui ajoute un JDD restreint")
-	void linkRestrictedDatasetToProject_DRAFT()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void linkRestrictedDatasetToProject_DRAFT() throws IOException, AppServiceException, DataverseAPIException {
 
 		// Création projet
 		final Project createdProject = createProject(PROJET_LAMPADAIRES);
@@ -864,8 +829,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet, puis un autre tente d'y supprimer un JDD ouvert avec un utilisateur non autorisé")
-	void unlinkOpenDatasetToProject_unauthorized()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void unlinkOpenDatasetToProject_unauthorized() throws IOException, AppServiceException, DataverseAPIException {
 		// Création du projet
 		final Project createdProject = createProject(PROJET_LAMPADAIRES);
 		final var projectUuid = createdProject.getUuid();
@@ -900,8 +864,7 @@ class LinkedDatasetServiceUT {
 
 	@Test
 	@DisplayName("Je crée un projet, puis un autre tente d'y supprimer un JDD ouvert avec un utilisateur non autorisé")
-	void updateLinkedDataset_unauthorized()
-			throws IOException, AppServiceException, DataverseAPIException, APIManagerException {
+	void updateLinkedDataset_unauthorized() throws IOException, AppServiceException, DataverseAPIException {
 		// Création du projet
 		final Project createdProject = createProject(PROJET_LAMPADAIRES);
 		final var projectUuid = createdProject.getUuid();
@@ -1285,7 +1248,7 @@ class LinkedDatasetServiceUT {
 		fakeMetadata.setProducer(fakeOrganization);
 		when(datasetService.getDataset(linkedDataset.getDatasetUuid())).thenReturn(fakeMetadata);
 		List<UUID> meAndMyOrganizations = List.of(aclHelper.getAuthenticatedUserUuid(), fakeOrganizationUuid);
-		when(myInformationsHelper.getMeAndMyOrganizationUuids()).thenReturn(meAndMyOrganizations);
+		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(meAndMyOrganizations);
 
 		// Le forumlaire retourné ne doit pas être null
 		val decision = linkedDatasetService.getDecisionInformations(projectUuid, linkedDatasetUuid);
@@ -1362,7 +1325,7 @@ class LinkedDatasetServiceUT {
 
 		// L'utilisateur n'est pas membre de l'organization liée au JDD.
 		List<UUID> meAndMyOrganizations = List.of(aclHelper.getAuthenticatedUserUuid(), UUID.randomUUID());
-		when(myInformationsHelper.getMeAndMyOrganizationUuids()).thenReturn(meAndMyOrganizations);
+		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(meAndMyOrganizations);
 
 		// La fonction doit retourner une exception car l'utilisateur n'a pas les accès
 		assertThrows(AppServiceUnauthorizedException.class,

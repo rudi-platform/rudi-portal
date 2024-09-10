@@ -2,22 +2,21 @@ package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
 import java.util.List;
 
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
+import org.rudi.facet.apigateway.exceptions.CreateApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
-import org.rudi.microservice.kalim.service.integration.impl.validator.AbstractMetadataValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.DatasetCreatorIsAuthenticatedValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,24 +26,24 @@ import lombok.extern.slf4j.Slf4j;
 public class PostIntegrationRequestTreatmentHandler extends AbstractIntegrationRequestTreatmentHandlerWithValidation {
 
 	protected PostIntegrationRequestTreatmentHandler(DatasetService datasetService,
-			ApiManagerHelper apigatewayManagerHelper, APIManagerHelper apiManagerHelper, ObjectMapper objectMapper,
+			ApiManagerHelper apigatewayManagerHelper, ObjectMapper objectMapper,
 			List<AbstractMetadataValidator<?>> metadataValidators, Error500Builder error500Builder,
 			MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator,
 			DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator,
 			OrganizationHelper organizationHelper) {
-		super(datasetService, apigatewayManagerHelper, apiManagerHelper, objectMapper, metadataValidators,
+		super(datasetService, apigatewayManagerHelper, objectMapper, metadataValidators,
 				error500Builder, metadataInfoProviderIsAuthenticatedValidator, datasetCreatorIsAuthenticatedValidator,
 				organizationHelper);
 	}
 
 	@Override
 	protected void treat(IntegrationRequestEntity integrationRequest, Metadata metadata)
-			throws DataverseAPIException, APIManagerException {
+			throws DataverseAPIException, ApiGatewayApiException {
 		final String doi = datasetService.createDataset(metadata);
 		try {
 			final Metadata metadataCreated = datasetService.getDataset(doi);
 			createApi(integrationRequest, metadataCreated);
-		} catch (RuntimeException e) {
+		} catch (final ApiGatewayApiException | RuntimeException e) {
 			log.error("On va supprimer le JDD qui vient d'être créé car une erreur est survenue", e);
 			datasetService.deleteDataset(doi);
 			throw e;
@@ -52,11 +51,10 @@ public class PostIntegrationRequestTreatmentHandler extends AbstractIntegrationR
 	}
 
 	private void createApi(IntegrationRequestEntity integrationRequest, Metadata metadataCreated)
-			throws DataverseAPIException, APIManagerException {
+			throws DataverseAPIException, ApiGatewayApiException {
 		try {
-			apiManagerHelper.createAPI(integrationRequest, metadataCreated);
 			apiGatewayManagerHelper.createApis(integrationRequest, metadataCreated);
-		} catch (final APIManagerException | RuntimeException e) {
+		} catch (final CreateApiException | RuntimeException e) {
 			datasetService.deleteDataset(metadataCreated.getGlobalId());
 			throw e;
 		}

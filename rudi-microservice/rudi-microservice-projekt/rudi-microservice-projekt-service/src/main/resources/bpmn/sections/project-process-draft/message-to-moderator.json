@@ -1,0 +1,15 @@
+{
+	"name": "message-to-moderator",
+	"label": "Message à l'attention des équipes Rudi :",
+	"help": "Message à l'attention des équipes Rudi :",
+	"readonly": false,
+	"fieldDefinitions": [
+		{
+			"name": "messageToModerator",
+			"label": "Message à l'attention des équipes Rudi",
+			"type": "TEXT",
+			"readonly": false,
+			"required": false
+		}
+	]
+}

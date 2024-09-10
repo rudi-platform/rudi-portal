@@ -11,10 +11,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.apigateway.exceptions.CreateApiException;
+import org.rudi.facet.apigateway.exceptions.DeleteApiException;
 import org.rudi.facet.apigateway.exceptions.GetApiException;
 import org.rudi.facet.apigateway.exceptions.UpdateApiException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.helper.ApiGatewayHelper;
 import org.rudi.facet.dataset.bean.InterfaceContract;
 import org.rudi.facet.kaccess.bean.Connector;
 import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
@@ -22,6 +24,7 @@ import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.helper.OrganizationHelper;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.providers.bean.NodeProvider;
 import org.rudi.facet.providers.bean.Provider;
 import org.rudi.facet.providers.helper.ProviderHelper;
@@ -48,7 +51,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	private static final Map<InterfaceContract, List<ApiMethod>> CONTRACT_API_METHODS = new EnumMap<>(
 			InterfaceContract.class);
 
-	private final org.rudi.facet.apigateway.helper.ApiGatewayHelper apiGatewayHelper;
+	private final ApiGatewayHelper apiGatewayHelper;
 	private final ProviderHelper providerHelper;
 	private final OrganizationHelper organizationHelper;
 
@@ -64,7 +67,8 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	private List<Throttling> throttlings;
 
 	@Override
-	public void createApis(IntegrationRequestEntity integrationRequest, Metadata metadata) throws APIManagerException {
+	public void createApis(IntegrationRequestEntity integrationRequest, Metadata metadata)
+			throws ApiGatewayApiException {
 
 		final List<Media> medias = getValidMedias(metadata);
 		for (Media media : medias) {
@@ -75,7 +79,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 
 	@Override
 	public void updateApis(IntegrationRequestEntity integrationRequest, Metadata metadata, Metadata actualMetadata)
-			throws APIManagerException {
+			throws ApiGatewayApiException {
 		// On récupère les média valides dans les JDDs
 		List<Media> nextMedias = getValidMedias(metadata);
 		List<Media> previousMedias = getValidMedias(actualMetadata);
@@ -106,53 +110,48 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	}
 
 	@Override
-	public void deleteApis(IntegrationRequestEntity integrationRequest) throws APIManagerException {
+	public void deleteApis(IntegrationRequestEntity integrationRequest) throws DeleteApiException {
 		ApiSearchCriteria searchCriteria = new ApiSearchCriteria();
 		searchCriteria.setGlobalId(integrationRequest.getGlobalId());
-		try {
-			Page<Api> apis = apiGatewayHelper.searchApis(searchCriteria, Pageable.unpaged());
-			if (apis != null && !apis.isEmpty()) {
-				apis.getContent().forEach(api -> {
-					try {
-						apiGatewayHelper.deleteApi(api.getApiId());
-					} catch (Exception e) {
-						log.warn("Failed to delete api:" + api.getApiId(), e);
-					}
-				});
-			}
-		} catch (Exception e) {
-			throw new APIManagerException("Failed to delete api for dataset:" + integrationRequest.getGlobalId(), e);
-		}
+		deleteApi(searchCriteria);
 
 	}
 
 	/**
-	 * 
+	 * Suppression de toutes les APIs
+	 *
+	 * @throws DeleteApiException
+	 */
+	public void deleteApis() throws DeleteApiException {
+		ApiSearchCriteria searchCriteria = new ApiSearchCriteria();
+		deleteApi(searchCriteria);
+
+	}
+
+	/**
 	 * @param metadata           les métadonnées
 	 * @param media              le media
 	 * @param integrationRequest la requete
-	 * @throws APIManagerException
+	 * @throws DeleteApiException
 	 */
 	protected void deleteApiForMedia(Metadata metadata, Media media, IntegrationRequestEntity integrationRequest)
-			throws APIManagerException {
+			throws DeleteApiException {
 		try {
 			apiGatewayHelper.deleteApi(metadata.getGlobalId(), media.getMediaId());
-		} catch (Exception e) {
-			throw new APIManagerException("Failed to delete api " + metadata.getGlobalId() + " " + media.getMediaId(),
-					e);
+		} catch (GetApiException e) {
+			throw new DeleteApiException(e);
 		}
 	}
 
 	/**
-	 * 
 	 * @param metadata           les métadonnées
 	 * @param media              le media
 	 * @param integrationRequest la requete
 	 * @return
-	 * @throws APIManagerException
+	 * @throws UpdateApiException
 	 */
 	protected Api createOrUpdateApiForMedia(Metadata metadata, Media media, IntegrationRequestEntity integrationRequest)
-			throws APIManagerException {
+			throws ApiGatewayApiException {
 		Api api = null;
 		try {
 			// Récupération des infos du fournisseur, du noeud, du producteur
@@ -164,9 +163,8 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 
 			// on est résilient ...
 			api = createOrUpdateApiForMedia(metadata, media, nodeProvider, provider, producer);
-		} catch (Exception e) {
-			throw new APIManagerException("Failed to update api " + metadata.getGlobalId() + " " + media.getMediaId(),
-					e);
+		} catch (final GetApiException | CreateApiException | UpdateApiException | GetOrganizationException e) {
+			throw new ApiGatewayApiException(e);
 		}
 		return api;
 	}
@@ -250,7 +248,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	}
 
 	/**
-	 * Est-ce que le média fourni a bien ce qu'il faut pour créer une API WSO2
+	 * Est-ce que le média fourni a bien ce qu'il faut pour créer une API
 	 *
 	 * @param media le média testé
 	 * @return vrai/faux
@@ -288,7 +286,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 
 	/**
 	 * un jour il faudra même le throttling correspondant au media...
-	 * 
+	 *
 	 * @param metadata les metadonnées
 	 * @param media    le média
 	 * @return
@@ -416,7 +414,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 
 	/**
 	 * Récupère l'intersection entre les 2 listes de médias
-	 * 
+	 *
 	 * @param first
 	 * @param second
 	 * @return
@@ -450,5 +448,22 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 					.findFirst().orElse(null);
 		}
 		return result;
+	}
+
+	private void deleteApi(ApiSearchCriteria searchCriteria) throws DeleteApiException {
+		try {
+			Page<Api> apis = apiGatewayHelper.searchApis(searchCriteria, Pageable.unpaged());
+			if (apis != null && !apis.isEmpty()) {
+				apis.getContent().forEach(api -> {
+					try {
+						apiGatewayHelper.deleteApi(api.getApiId());
+					} catch (Exception e) {
+						log.warn("Failed to delete api:" + api.getApiId(), e);
+					}
+				});
+			}
+		} catch (Exception e) {
+			throw new DeleteApiException(e);
+		}
 	}
 }

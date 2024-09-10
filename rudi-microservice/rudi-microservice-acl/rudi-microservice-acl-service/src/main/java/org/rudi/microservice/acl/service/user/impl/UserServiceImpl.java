@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-import javax.net.ssl.SSLException;
 import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,21 +22,13 @@ import org.rudi.common.core.security.UserType;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.PageableUtil;
-import org.rudi.facet.apimaccess.api.registration.Application;
-import org.rudi.facet.apimaccess.exception.BuildClientRegistrationException;
-import org.rudi.facet.apimaccess.exception.GetClientRegistrationException;
-import org.rudi.facet.apimaccess.helper.rest.RudiClientRegistrationRepository;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
-import org.rudi.microservice.acl.core.bean.AccessKeyDto;
-import org.rudi.microservice.acl.core.bean.ClientKey;
-import org.rudi.microservice.acl.core.bean.ClientRegistrationDto;
 import org.rudi.microservice.acl.core.bean.PasswordUpdate;
 import org.rudi.microservice.acl.core.bean.Role;
 import org.rudi.microservice.acl.core.bean.RoleSearchCriteria;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
 import org.rudi.microservice.acl.service.helper.PasswordHelper;
-import org.rudi.microservice.acl.service.mapper.ClientRegistrationMapper;
 import org.rudi.microservice.acl.service.mapper.address.AbstractAddressMapper;
 import org.rudi.microservice.acl.service.mapper.user.UserFullMapper;
 import org.rudi.microservice.acl.service.mapper.user.UserLightMapper;
@@ -61,17 +51,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Getter;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service de gestion des utilisateurs RUDI
- *
  */
 @Service
 @Transactional(readOnly = true)
@@ -79,24 +66,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UserServiceImpl implements UserService {
 
 	private static final String UUID_USER_MISSING_MESSAGE = "UUID user missing";
-	private static final String LOGIN_USER_MISSING_MESSAGE = "Login user missing";
 	private static final String UUID_ADRESSE_MISSING_MESSAGE = "UUID Adresse missing";
 	private static final String USER_UNKNOWN_MESSAGE = "User unknown :";
 	private static final String ADDRESS_UNKNOWN_MESSAGE = "Address unknown:";
 	private static final String ADDRESS_MISSING_MESSAGE = "Address missing";
 	private static final String ADDRESS_ROLE_INVALID_MESSAGE = "AddresseRole invalid";
-
-	@Value("${apimanager.oauth2.client.anonymous.username}")
-	private String anonymousUsername;
-
-	@Value("${apimanager.oauth2.client.rudi.username}")
-	private String rudiUsername;
-
-	@Value("${apimanager.oauth2.client.anonymous.password}")
-	private String anonymousPassword;
-
-	@Value("${apimanager.oauth2.client.rudi.password}")
-	private String rudiPassword;
 
 	@Value("${user.authentication.maxFailedAttempt:10}")
 	@Getter
@@ -146,16 +120,10 @@ public class UserServiceImpl implements UserService {
 	private AbstractAddressMapper abstractAddressMapper;
 
 	@Autowired
-	private RudiClientRegistrationRepository rudiClientRegistrationRepository;
-
-	@Autowired
 	private PageableUtil pageableUtil;
 
 	@Autowired
 	private NonDaoUserSearchCriteriaMapper nonDaoUserSearchCriteriaMapper;
-
-	@Autowired
-	private ClientRegistrationMapper clientRegistrationMapper;
 
 	@Override
 	public Page<User> searchUsers(UserSearchCriteria searchCriteria, Pageable pageable) {
@@ -374,31 +342,6 @@ public class UserServiceImpl implements UserService {
 		userDao.save(userEntity);
 	}
 
-	@Override
-	@Nullable
-	public ClientKey getClientKeyByLogin(String login)
-			throws SSLException, BuildClientRegistrationException, GetClientRegistrationException {
-		ClientKey clientKey = null;
-		if (StringUtils.isEmpty(login)) {
-			throw new IllegalArgumentException(LOGIN_USER_MISSING_MESSAGE);
-		}
-		ClientRegistration clientRegistration = rudiClientRegistrationRepository.findByUsername(login);
-
-		// si c'est l'utilisateur anonymous, on crée son client id et client secret
-		if (clientRegistration == null && login.equals(anonymousUsername)) {
-			clientRegistration = rudiClientRegistrationRepository.register(anonymousUsername, anonymousPassword);
-		}
-
-		if (clientRegistration != null) {
-			clientKey = new ClientKey().clientId(clientRegistration.getClientId())
-					.clientSecret(clientRegistration.getClientSecret());
-		}
-
-		// TODO Doit-on ajouter un message d'erreur pour indiquer d'activer les API pour pouvoir télécharger des médias ?
-
-		return clientKey;
-	}
-
 	private Set<RoleEntity> roleListToRoleEntitySet(List<Role> list) {
 		if (list == null) {
 			return Collections.emptySet();
@@ -461,37 +404,6 @@ public class UserServiceImpl implements UserService {
 		user.resetFailedAttempt();
 		user.setLastFailedAttempt(null);
 		userDao.save(user);
-	}
-
-	@Override
-	public org.rudi.microservice.acl.core.bean.ClientRegistrationDto getClientRegistration(String login)
-			throws GetClientRegistrationException, BuildClientRegistrationException, SSLException {
-		ClientRegistration registration = null;
-		// Register anonymous et rudi
-		if (login.equals(anonymousUsername)) {
-			registration = rudiClientRegistrationRepository.findRegistrationOrRegister(anonymousUsername,
-					anonymousPassword);
-		} else if (login.equals(rudiUsername)) {
-			registration = rudiClientRegistrationRepository.findRegistrationOrRegister(rudiUsername, rudiPassword);
-		}
-		if (registration == null) {
-			registration = rudiClientRegistrationRepository.findByUsername(login);
-		}
-		return clientRegistrationMapper.entityToDto(registration);
-	}
-
-	@Override
-	public ClientRegistrationDto registerClientByPassword(String login, String password)
-			throws GetClientRegistrationException, BuildClientRegistrationException, SSLException {
-		return clientRegistrationMapper
-				.entityToDto(rudiClientRegistrationRepository.findRegistrationOrRegister(login, password));
-	}
-
-	@Override
-	public void addClientRegistration(String login, AccessKeyDto accessKey) {
-		val clientAccessKey = new Application().setClientId(accessKey.getClientId())
-				.setClientSecret(accessKey.getClientSecret());
-		rudiClientRegistrationRepository.addClientRegistration(login, clientAccessKey);
 	}
 
 	@Override

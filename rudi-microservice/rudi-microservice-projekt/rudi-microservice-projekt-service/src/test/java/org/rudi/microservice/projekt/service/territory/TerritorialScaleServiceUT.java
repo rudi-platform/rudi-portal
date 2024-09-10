@@ -1,25 +1,25 @@
 package org.rudi.microservice.projekt.service.territory;
 
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.TerritorialScale;
-import org.rudi.microservice.projekt.core.bean.TerritorialScaleSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.TerritorialScaleSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
-import org.rudi.microservice.projekt.service.territory.TerritorialScaleService;
 import org.rudi.microservice.projekt.storage.dao.territory.TerritorialScaleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -32,6 +32,10 @@ class TerritorialScaleServiceUT {
 	private static final String CODE_DE_L_ECHELLE_DU_TERRITOIRE_MEGALOPOLE = "megalopole";
 	private static final String CODE_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE = "metropole";
 	private static final String JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE = "territorial-scales/metropole.json";
+
+	private static final String TERRITORIAL_SCALE_CLOSE_DATE_NULL = "territorial-scales/closing-date-null.json";
+	private static final String TERRITORIAL_SCALE_CLOSE_DATE_VALID = "territorial-scales/closing-date-valid.json";
+	private static final String TERRITORIAL_SCALE_CLOSE_DATE_PASSED = "territorial-scales/closing-date-passed.json";
 
 	private final TerritorialScaleService territorialScaleService;
 	private final TerritorialScaleDao territorialScaleDao;
@@ -49,6 +53,7 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la création d'un TerritorialScale sans UUID")
 	void createTerritorialScaleWithoutUuid() throws IOException, AppServiceException {
 		final TerritorialScale territorialScaleToCreate = jsonResourceReader.read(JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE, TerritorialScale.class);
 		territorialScaleToCreate.setUuid(null);
@@ -61,6 +66,7 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la création d'un TerritorialScale avec un UUID")
 	void createTerritorialScaleWithUuid() throws IOException, AppServiceException {
 		final TerritorialScale territorialScaleToCreate = jsonResourceReader.read(JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE, TerritorialScale.class);
 		final UUID forcedUuid = UUID.randomUUID();
@@ -74,6 +80,7 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la récupération d'un TerritorialScale par UUID")
 	void getTerritorialScale() throws IOException, AppServiceException {
 		final TerritorialScale territorialScaleToCreate = jsonResourceReader.read(JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE, TerritorialScale.class);
 		final TerritorialScale createdTerritorialScale = territorialScaleService.createTerritorialScale(territorialScaleToCreate);
@@ -86,6 +93,7 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la recherche des TerritorialScale")
 	void searchTerritorialScales() throws IOException, AppServiceException {
 
 		createTerritorialScaleFromJson(JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE);
@@ -93,7 +101,6 @@ class TerritorialScaleServiceUT {
 
 		val pageable = PageRequest.of(0, 2);
 		final TerritorialScaleSearchCriteria searchCriteria = new TerritorialScaleSearchCriteria();
-		searchCriteria.limit(2).offset(0);
 		final Page<TerritorialScale> territorialScales = territorialScaleService.searchTerritorialScales(searchCriteria, pageable);
 
 		assertThat(territorialScales).as("On retrouve uniquement les échelles de territoire attendues")
@@ -102,6 +109,32 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la recherche des TerritorialScale avec la variable Active")
+	void searchTerritorialScalesWithActive() throws IOException, AppServiceException {
+
+		final TerritorialScale territorialScaleWithCloseDateNull = createTerritorialScaleFromJson(TERRITORIAL_SCALE_CLOSE_DATE_NULL);
+		final TerritorialScale territorialScaleWithCloseDateValid = createTerritorialScaleFromJson(TERRITORIAL_SCALE_CLOSE_DATE_VALID);
+		final TerritorialScale territorialScaleWithCloseDatePassed = createTerritorialScaleFromJson(TERRITORIAL_SCALE_CLOSE_DATE_PASSED);
+
+		val pageable = PageRequest.of(0, 10);
+		final TerritorialScaleSearchCriteria searchCriteriaWithActive = TerritorialScaleSearchCriteria.builder().active(true).build();
+		final TerritorialScaleSearchCriteria searchCriteriaWithoutActive = new TerritorialScaleSearchCriteria();
+		final Page<TerritorialScale> territorialScalesWithActive = territorialScaleService.searchTerritorialScales(searchCriteriaWithActive, pageable);
+		final Page<TerritorialScale> territorialScalesWithoutActive = territorialScaleService.searchTerritorialScales(searchCriteriaWithoutActive, pageable);
+
+		assertThat(territorialScalesWithActive)
+				.as("On retrouve les échelles de territoire avec une date de fin null").contains(territorialScaleWithCloseDateNull)
+				.as("On retrouve les échelles de territoire avec une date de fin valide").contains(territorialScaleWithCloseDateValid)
+				.as("On ne retrouve pas les échelles de territoire avec une date de fin passée").isNotIn(territorialScaleWithCloseDatePassed);
+
+		assertThat(territorialScalesWithoutActive)
+				.as("On retrouve les échelles de territoire avec une date de fin null").contains(territorialScaleWithCloseDateNull)
+				.as("On retrouve les échelles de territoire avec une date de fin valide").contains(territorialScaleWithCloseDateValid)
+				.as("On retrouve les échelles de territoire avec une date de fin passée").contains(territorialScaleWithCloseDatePassed);
+	}
+
+	@Test
+	@DisplayName("Teste de la mise à jour des TerritorialScale")
 	void updateTerritorialScale() throws IOException, AppServiceException {
 		final TerritorialScale territorialScale = createTerritorialScaleFromJson(JSON_DE_L_ECHELLE_DU_TERRITOIRE_METROPOLE);
 		territorialScale.setCode("nouveau_code");
@@ -118,6 +151,7 @@ class TerritorialScaleServiceUT {
 	}
 
 	@Test
+	@DisplayName("Teste de la suppression des TerritorialScale")
 	void deleteTerritorialScale() throws IOException, AppServiceException {
 		final long totalElementsBeforeCreate = countTerritorialScales();
 

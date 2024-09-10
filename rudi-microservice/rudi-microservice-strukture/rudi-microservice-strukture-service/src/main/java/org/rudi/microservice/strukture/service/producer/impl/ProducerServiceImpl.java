@@ -59,27 +59,28 @@ public class ProducerServiceImpl implements ProducerService {
 	 * Upload un media sous la forme d'un document content pour un producer ciblé par son UUID.
 	 * Le media cible chez le producteur est détermié par le kindOfData
 	 *
-	 * @param producerUuid uuid du producteur de donnée à qui on souhaite changer le "kindOfData"
-	 * @param kindOfData type de data ciblée par la requête (EXEMPLE : LOGO)
+	 * @param producerUuid    uuid du producteur de donnée à qui on souhaite changer le "kindOfData"
+	 * @param kindOfData      type de data ciblée par la requête (EXEMPLE : LOGO)
 	 * @param documentContent document qui doit être uploadé
 	 * @throws AppServiceException en cas d'erreur sur l'upload
 	 */
 	@Override
 	public void uploadMedia(UUID producerUuid, KindOfData kindOfData, DocumentContent documentContent) throws AppServiceException {
-		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper.getADMINISTRATOR_ACCESS();
+		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
-		if(!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole)) && !(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganization(producerUuid))) {
-			throw new AppServiceUnauthorizedException("Accès non autorisé à la fonctionnalité pour l'utilisateur");
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole))
+				&& !(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(producerUuid))) {
+			throw new AppServiceUnauthorizedException(StruktureAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 
 		try {
-			if(kindOfData.equals(KindOfData.LOGO)) {
+			if (kindOfData.equals(KindOfData.LOGO)) {
 				// Vérifie que le type de contenu est bien autorisé pour un logo
 				ContentTypeUtils.checkMediaType(documentContent.getContentType(), allowedLogoType);
 			}
 
-			File tempFile = File.createTempFile(UUID.randomUUID().toString(),"." + FilenameUtils.getExtension(documentContent.getFileName()));
+			File tempFile = File.createTempFile(UUID.randomUUID().toString(), "." + FilenameUtils.getExtension(documentContent.getFileName()));
 			FileUtils.copyInputStreamToFile(documentContent.getFileStream(), tempFile);
 			mediaService.setMediaFor(MediaOrigin.PRODUCER, producerUuid, kindOfData, tempFile);
 		} catch (final DataverseAPIException | IOException e) {
@@ -92,8 +93,17 @@ public class ProducerServiceImpl implements ProducerService {
 		}
 	}
 
+
 	@Override
 	public void deleteMedia(UUID producerUuid, KindOfData kindOfData) throws AppServiceException {
+		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+		// Vérification des droits d'accès
+		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole)) &&
+				!(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(producerUuid))) {
+			throw new AppServiceUnauthorizedException(StruktureAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
+		}
+
 		try {
 			mediaService.deleteMediaFor(MediaOrigin.PRODUCER, producerUuid, kindOfData);
 		} catch (final DataverseAPIException e) {

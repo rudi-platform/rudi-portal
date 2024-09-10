@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -39,7 +40,10 @@ import lombok.val;
 @RequiredArgsConstructor
 public class ProjektAuthorisationHelper {
 
-	private static final Boolean DEFAULT_ACCESS_GRANT = Boolean.FALSE;
+	// Message envoyé dans la réponse à l'utilisateur de l'API
+	public static final String USER_GENERIC_MSG_UNAUTHORIZED = "Accès non autorisé à la fonctionnalité pour l'utilisateur";
+
+	private static final boolean DEFAULT_ACCESS_GRANT = Boolean.FALSE;
 
 	private final ACLHelper aclHelper;
 	private final OrganizationHelper organizationHelper;
@@ -93,7 +97,7 @@ public class ProjektAuthorisationHelper {
 	 * @param accessRights la map des droits d'accès : code du rôle -> droit d'accès
 	 * @return true si l'utilisateur a l'un des roles autorisés
 	 */
-	public Boolean isAccessGrantedByRole(Map<String, Boolean> accessRights) {
+	public boolean isAccessGrantedByRole(Map<String, Boolean> accessRights) {
 		try {
 			User user = aclHelper.getAuthenticatedUser();
 			// identifier tous les roles autorisés dans la map des droits d'accès
@@ -104,7 +108,7 @@ public class ProjektAuthorisationHelper {
 			grantedRoles.retainAll(CollectionUtils.union(TECHNICAL_ROLES, TRANSVERSAL_ROLES));
 
 			// vérifier que l'utilisateur a bien l'un des rôles autorisés
-			return Boolean.valueOf(hasAnyRole(user, grantedRoles));
+			return hasAnyRole(user, grantedRoles);
 		} catch (AppServiceUnauthorizedException e) {
 			return accessRights.getOrDefault(NOT_USER, DEFAULT_ACCESS_GRANT);
 		}
@@ -116,10 +120,10 @@ public class ProjektAuthorisationHelper {
 	 * 
 	 * @param projectEntity le projet
 	 * @return true si l'utilisateur a accès
-	 * @throws GetOrganizationMembersException en cas de problème avec la récupération des membres de l'organisation
-	 * @throws MissingParameterException       en cas d'inforamtion manquante sur le projet
+	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
+	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
 	 */
-	public Boolean isAccessGrantedForUserOnProject(ProjectEntity projectEntity)
+	public boolean isAccessGrantedForUserOnProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, MissingParameterException {
 
 		try {
@@ -160,15 +164,15 @@ public class ProjektAuthorisationHelper {
 	 * @return si l'utilisateur a accès
 	 * @throws GetOrganizationException en cas de problème avec la récupération des membres de l'organisation
 	 */
-	public Boolean isAccessGrantedForUserOnLinkedDataset(LinkedDatasetEntity linkedDatasetEntity)
+	public boolean isAccessGrantedForUserOnLinkedDataset(LinkedDatasetEntity linkedDatasetEntity)
 			throws GetOrganizationException {
 		try {
 			User user = aclHelper.getAuthenticatedUser();
 
-			if (linkedDatasetEntity != null && hasAnyRole(user, Arrays.asList(RoleCodes.USER))) {
+			if (linkedDatasetEntity != null && hasAnyRole(user, List.of(RoleCodes.USER))) {
 				var metadata = datasetService.getDataset(linkedDatasetEntity.getDatasetUuid());
 				var organization = metadata.getProducer();
-				List<UUID> userAndItsOrganizationUuid = myInformationsHelper.getMeAndMyOrganizationUuids();
+				List<UUID> userAndItsOrganizationUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
 				// retourne true si l'utilisateur est provider et que le dataset appartient à lui ou une de ses organisations
 				return IterableUtils.contains(userAndItsOrganizationUuid, organization.getOrganizationId());
 			}
@@ -179,7 +183,48 @@ public class ProjektAuthorisationHelper {
 		}
 	}
 
-	private boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
+	/**
+	 * Un projectAdministrator est :
+	 * 	[Si le projet est individuel : le propriétaire du projet]
+	 * 	[Si le projet est au nom d'une organisation : les administrateurs de l'organsiation.]
+	 *
+	 * @param projectEntity entité du projet
+	 * @return true si accès accordé, false sinon
+	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
+	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 */
+	public boolean isAccessGrantedAsProjectAdministrator(ProjectEntity projectEntity) throws GetOrganizationMembersException, MissingParameterException {
+		try {
+			User user = aclHelper.getAuthenticatedUser();
+
+			if (projectEntity != null && hasAnyRole(user, Arrays.asList(RoleCodes.PROJECT_MANAGER, RoleCodes.USER))) {
+				// Vérification comme dans le ownerprocessor
+				val ownerUuid = projectEntity.getOwnerUuid();
+
+				if (ownerUuid == null) {
+					throw new MissingParameterException("owner_uuid manquant");
+				}
+
+				switch (projectEntity.getOwnerType()) {
+					case USER:
+						return user.getUuid() != null && ownerUuid.equals(user.getUuid());
+
+					case ORGANIZATION:
+						return user.getUuid() != null
+								&& organizationHelper.organizationContainsUserAsAdministrator(ownerUuid, user.getUuid());
+
+					default:
+						break;
+				}
+			}
+
+			return DEFAULT_ACCESS_GRANT;
+		} catch (AppServiceUnauthorizedException e) {
+			return DEFAULT_ACCESS_GRANT;
+		}
+	}
+
+	public boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
 		if (user == null) { // NOSONAR il faut pouvoir traiter le cas où le user n'est pas positionné (pour les TU par exemple)
 			throw new AppServiceUnauthorizedException("No user");
 		}
@@ -197,10 +242,9 @@ public class ProjektAuthorisationHelper {
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
 	 * 
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
-	 * @throws GetOrganizationMembersException
-	 * @throws GetOrganizationException
-	 * @throws AppServiceUnauthorizedException
-	 * @throws MissingParameterException
+	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
+	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
+	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsInitProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
@@ -208,7 +252,7 @@ public class ProjektAuthorisationHelper {
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
 		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity))) {
-			throw new AppServiceUnauthorizedException("Accès non autorisé à la fonctionnalité pour l'utilisateur");
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}
 
@@ -219,10 +263,9 @@ public class ProjektAuthorisationHelper {
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
 	 * 
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
-	 * @throws GetOrganizationMembersException
-	 * @throws GetOrganizationException
-	 * @throws AppServiceUnauthorizedException
-	 * @throws MissingParameterException
+	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
+	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
+	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsAdministerProjectDataset(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
@@ -239,7 +282,11 @@ public class ProjektAuthorisationHelper {
 				// l'opération d'ajout ou de suppression de dataset est autorisée
 				break;
 			case VALIDATED:
-				if (!existingProject.getReutilisationStatus().isDatasetSetModificationAllowed()) {
+				if (
+						!existingProject.getReutilisationStatus().isDatasetSetModificationAllowed()
+						|| existingProject.getStatus().equals(Status.DRAFT)
+						|| existingProject.getStatus().equals(Status.PENDING)
+				) {
 					throw new AppServiceForbiddenException(
 							String.format("Cannot modify linkeddataset in project status %s",
 									existingProject.getReutilisationStatus().getCode()));
@@ -265,19 +312,26 @@ public class ProjektAuthorisationHelper {
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
 	 * 
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
-	 * @throws GetOrganizationMembersException
-	 * @throws GetOrganizationException
-	 * @throws AppServiceUnauthorizedException
-	 * @throws MissingParameterException
+	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
+	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
+	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsAdministerProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
 		Map<String, Boolean> accessRightsByRole = ProjektAuthorisationHelper.getADMINISTRATOR_MODERATOR_ACCESS();
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
-		if (!(isAccessGrantedByRole(accessRightsByRole)
-				|| isAccessGrantedForUserOnProject(projectEntity))) {
-			throw new AppServiceUnauthorizedException("Accès non autorisé à la fonctionnalité pour l'utilisateur");
+		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity))) {
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
+		}
+	}
+
+	public void checkRightAdministerKeyOnProject(ProjectEntity projectEntity) throws GetOrganizationMembersException, MissingParameterException, AppServiceUnauthorizedException {
+		Map<String, Boolean> accessRightsByRole = ProjektAuthorisationHelper.getADMINISTRATOR_ACCESS();
+		// Vérification des droits d'accès
+		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
+		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedAsProjectAdministrator(projectEntity))) {
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}
 }

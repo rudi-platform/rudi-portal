@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
 import org.rudi.facet.kos.helper.KosHelper;
 import org.rudi.microservice.kalim.service.IntegrationError;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.ThemeValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 
 import java.util.Set;

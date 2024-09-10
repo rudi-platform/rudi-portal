@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders, HttpParameterCodec, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse} from '@angular/common/http';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Filters} from '@shared/models/filters';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
@@ -50,12 +50,12 @@ export class KonsultMetierService {
             return httpParams;
         }
 
-        if (typeof value === "object") {
+        if (typeof value === 'object') {
             if (Array.isArray(value)) {
-                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+                value.forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
             } else if (value instanceof Date) {
                     httpParams = httpParams.append(key,
-                        (value as Date).toISOString().substr(0, 10));
+                        value.toISOString().substr(0, 10));
             } else {
                 Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
                     httpParams, value[k], key != null ? `${key}.${k}` : k));
@@ -63,13 +63,13 @@ export class KonsultMetierService {
         } else if (key != null) {
             httpParams = httpParams.append(key, value);
         } else {
-            throw Error("key may not be null if value is not object or array");
+            throw Error('key may not be null if value is not object or array');
         }
         return httpParams;
     }
 
     private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
-        if (typeof value === "object" && value instanceof Date === false) {
+        if (typeof value === 'object' && !(value instanceof Date)) {
             httpParams = this.addToHttpParamsRecursive(httpParams, value);
         } else {
             httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
@@ -144,7 +144,7 @@ export class KonsultMetierService {
     /**
      * Fonction qui permet de recuperer la methode downloadMetadataMedia du server
      */
-    downloadMetadataMedia(mediaUrl: string, options?: {httpHeaderAccept?: 'application/octet-stream' | 'application/json'}): Observable<any> {
+    downloadMetadataMedia(mediaUrl: string, options?: {httpHeaderAccept?: 'application/octet-stream' | 'application/json'}): Observable<HttpResponse<Blob>> {
         let headers = this.defaultHeaders;
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -159,12 +159,13 @@ export class KonsultMetierService {
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
-        console.log(headers);
         return this.httpClient.get(`${String(mediaUrl)}`,
             {
                 responseType: 'blob',
                 withCredentials: this.configuration.withCredentials,
                 headers,
+                observe: 'response',
+                reportProgress: true
             }
         );
     }
@@ -193,13 +194,13 @@ export class KonsultMetierService {
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
-        console.log(headers);
         return this.httpClient.get(`${String(mediaUrl)}`,
             {
                 params: queryParameters,
                 responseType: 'blob',
                 withCredentials: this.configuration.withCredentials,
                 headers,
+                observe: 'response'
             }
         );
     }

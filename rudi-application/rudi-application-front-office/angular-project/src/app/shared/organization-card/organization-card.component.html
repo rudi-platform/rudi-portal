@@ -1,5 +1,5 @@
 <mat-card
-    class="mat-elevation-z0 organization-card">
+    class="organization-card">
     <mat-card-content (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)" class="card-content">
         <div class="d-flex my-3">
             <div class="align-items-center">
@@ -11,10 +11,10 @@
             </div>
             <div class="organization-card-content">
                 <div class="resource-title">
-                    {{organizationBean.name}}
+                    {{ organizationBean.name }}
                 </div>
                 <div class="ressource-description">
-                    <p class="description">{{organizationBean.description | truncateText: 181}}</p>
+                    <p class="description">{{ organizationBean.description | truncateText: 181 }}</p>
                 </div>
             </div>
         </div>
@@ -22,12 +22,12 @@
     <div class="d-flex d-table-cell ">
         <ng-container *ngIf="!datasetCountLoading else loader">
             <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>
-                {{datasetsCountTranslationKey | translate: {number: organizationBean.datasetCount} }}
+                {{ datasetsCountTranslationKey | translate: {number: organizationBean.datasetCount} }}
             </button>
         </ng-container>
         <ng-container *ngIf="!projectCountLoading$ else loader">
             <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>
-                {{projectsCountTranslationKey | translate: {number: organizationBean.projectCount} }}
+                {{ projectsCountTranslationKey | translate: {number: organizationBean.projectCount} }}
             </button>
         </ng-container>
         <ng-template #loader>

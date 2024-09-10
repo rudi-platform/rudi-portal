@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
@@ -6,8 +6,8 @@ import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-project-modification-confirmation-popin',
-  standalone: true,
+    selector: 'app-project-modification-confirmation-popin',
+    standalone: true,
     imports: [
         MatDialogContent,
         MatButton,
@@ -16,10 +16,11 @@ import {TranslateModule} from '@ngx-translate/core';
         MatIconButton,
         TranslateModule
     ],
-  templateUrl: './project-modification-confirmation-popin.component.html',
-  styleUrl: './project-modification-confirmation-popin.component.scss'
+    templateUrl: './project-modification-confirmation-popin.component.html',
+    styleUrl: './project-modification-confirmation-popin.component.scss'
 })
 export class ProjectModificationConfirmationPopinComponent {
+    public dialogDescription: string;
 
     constructor(public dialogRef: MatDialogRef<string>) {
     }

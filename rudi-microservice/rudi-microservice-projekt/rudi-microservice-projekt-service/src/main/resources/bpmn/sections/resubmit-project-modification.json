@@ -1,0 +1,11 @@
+{
+	"help": "Celles-ci vont être soumises à modération auprès des équipes Rudi afin d’être publiées sur le catalogue des réutilisations.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToModerator",
+			"label": "Message à l’attention de l'animateur",
+			"type": "TEXT",
+			"required": false
+		}
+	]
+}

@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
-FROM openjdk:11.0.9.1-jre-buster
+FROM openjdk:11.0-jdk-bullseye
 USER root
 MAINTAINER rudi@rennes-metropole.fr
 ENV TZ=Europe/Paris
+
+RUN apt update && apt upgrade -y
 
 RUN mkdir -p /etc/rudi/config
 RUN chmod 777 -R /etc/rudi/config && chmod o+t -R /etc/rudi/config

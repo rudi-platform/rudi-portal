@@ -1,0 +1,102 @@
+@import "_responsive";
+
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+
+    caption {
+        font-size: 24px;
+        font-weight: 700;
+        caption-side: top;
+        margin-bottom: 24px;
+    }
+
+    thead tr {
+        border-bottom: 1px solid var(--primary-text-light);
+        height: 50px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid var(--keywords-outline);
+        height: 75px;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+.date-label, .initiator-label, .action-label, .step-label {
+    font-weight: 600;
+    color: var(--primary-text-light);
+}
+
+
+.initiator-value {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.blue-step {
+    border-radius: 14px;
+    padding: 10px 14px;
+    text-align: center;
+    background-color: var(--background-s-lection-active-tableau);
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+
+@mixin desktop-screen {
+    .date-label, .date-value {
+        width: 20%;
+        padding-left: 10px;
+    }
+
+    .initiator-label, .initiator-value {
+        width: 70%;
+
+    }
+
+    .step-label, .step-value {
+        width: 10%;
+        padding-right: 15px;
+        text-align: center;
+    }
+
+    .action-label, .action-value {
+        width: 10%;
+        padding-right: 15px;
+        text-align: center;
+    }
+}
+
+@mixin mobile-screen {
+    .date-label, .date-value {
+        padding-left: 10px;
+    }
+    .initiator-label, .initiator-value, .action-label, .action-value, .step-label, .step-value {
+        padding-left: 30px;
+    }
+}
+
+@include xs() {
+    @include mobile-screen;
+}
+
+@include sm() {
+    @include mobile-screen;
+}
+
+@include md() {
+    @include desktop-screen;
+}
+
+@include lg() {
+    @include desktop-screen;
+}
+
+@include xl() {
+    @include desktop-screen;
+}

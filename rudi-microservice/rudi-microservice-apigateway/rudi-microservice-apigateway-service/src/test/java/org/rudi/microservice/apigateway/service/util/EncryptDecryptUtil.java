@@ -3,9 +3,6 @@
  */
 package org.rudi.microservice.apigateway.service.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -28,6 +25,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.RequiredArgsConstructor;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author FNI18300
@@ -59,14 +58,14 @@ class EncryptDecryptUtil {
 		final var encryptedOutput = new ByteArrayOutputStream();
 		mediaCipherOperator.encrypt(ipsum, publicKey, encryptedOutput);
 
-		assertThat(encryptedOutput.size() > 0);
+		assertThat(encryptedOutput.size()).isPositive();
 
 		final var encryptedInput = new ByteArrayInputStream(encryptedOutput.toByteArray());
 		PrivateKey privateKey = encryptionService.getPrivateEncryptionKey(null, LocalDateTime.now());
 		final var decryptedOutput = new ByteArrayOutputStream();
 		mediaCipherOperator.decrypt(encryptedInput, privateKey, decryptedOutput);
 
-		assertThat(decryptedOutput.size() > 0);
+		assertThat(decryptedOutput.size()).isPositive();
 
 		try (FileOutputStream fout = new FileOutputStream("ipsum_crypted.json")) {
 			fout.write(encryptedOutput.toByteArray());

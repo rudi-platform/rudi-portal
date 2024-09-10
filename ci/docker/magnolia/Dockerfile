@@ -1,4 +1,4 @@
-FROM tomcat:9-jdk11-temurin
+FROM tomcat:9.0.93-jre11-temurin-noble
 
 RUN mkdir -p /etc/magnolia/config/default /etc/magnolia/config/repo-conf /etc/magnolia/config/shared
 RUN mkdir -p /opt/magnolia/data/deploy /opt/magnolia/data/repository /opt/magnolia/data/repositories/magnolia /opt/magnolia/data/workspaces  
@@ -8,8 +8,8 @@ RUN chmod 777 -R /etc/magnolia/config && chmod o+t -R /etc/magnolia/config
 RUN chmod 777 -R /opt/magnolia/data && chmod o+t -R /opt/magnolia/data
 RUN chmod 777 -R /opt/magnolia/modules && chmod o+t -R /opt/magnolia/modules
 
-#COPY magnolia-community-webapp-6.2.40.war /usr/local/tomcat/webapps/ROOT.war
-COPY ROOT-6.2.40.tgz /tmp/ROOT.tgz
+#COPY magnolia-community-webapp-6.2.48.war /usr/local/tomcat/webapps/ROOT.war
+COPY ROOT-6.2.48.tgz /tmp/ROOT.tgz
 RUN mkdir -p /usr/local/tomcat/webapps/ROOT
 WORKDIR /usr/local/tomcat/webapps/ROOT
 RUN tar -zxvf /tmp/ROOT.tgz .

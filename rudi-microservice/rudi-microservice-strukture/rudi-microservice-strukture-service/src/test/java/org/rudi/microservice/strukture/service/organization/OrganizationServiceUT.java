@@ -13,11 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.security.AuthenticatedUser;
+import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.common.service.exception.AppServiceForbiddenException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
@@ -27,7 +28,6 @@ import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationRole;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
-import org.rudi.microservice.strukture.core.bean.PasswordUpdate;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
@@ -96,12 +96,19 @@ class OrganizationServiceUT {
 		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
 	}
 
-	private void mockAuthenticationData() {
+	private void mockAuthenticationData() throws AppServiceException {
+		Role userRole = new Role();
+		userRole.setCode(RoleCodes.USER);
+
+		final List<Role> roles = List.of(userRole);
 		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
 		authenticatedUser.setLogin("login");
 		User user = new User().login(authenticatedUser.getLogin()).uuid(UUID.randomUUID());
+		user.setRoles(roles);
 		when(aclHelper.getUserByLogin(any())).thenReturn(user);
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(organizationMembersHelper.isAuthenticatedUserOrganizationMember(any())).thenReturn(true);
 	}
 
 	private Organization createTestOrganization() throws AppServiceBadRequestException {
@@ -548,7 +555,7 @@ class OrganizationServiceUT {
 		when(organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(any())).thenReturn(true);
 
 		// J'essaye de MAJ les infos d'un autre membre (membre 1) alors que j'ai un DTO qui concerne quelqu'un d'autre (membre 2)
-		assertThrows(AppServiceBadRequestException.class, () -> organizationService
+		assertThrows(AppServiceUnauthorizedException.class, () -> organizationService
 				.updateOrganizationMember(organization.getUuid(), userUuidFromAnotherUser, updateDto));
 	}
 
@@ -568,7 +575,7 @@ class OrganizationServiceUT {
 		when(organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(any())).thenReturn(true);
 
 		// J'essaye de MAJ les infos d'un membre d'une autre organisation ( orga 1) alors que j'ai un DTO qui concerne l'orga 2
-		assertThrows(AppServiceBadRequestException.class,
+		assertThrows(AppServiceUnauthorizedException.class,
 				() -> organizationService.updateOrganizationMember(anotherOne.getUuid(), userUuidModified, updateDto));
 	}
 
@@ -592,6 +599,8 @@ class OrganizationServiceUT {
 
 	@Test
 	void removeOrganizationMembers_does_not_delete_members_if_it_fails() throws AppServiceException {
+		mockAuthenticationData();
+		mockExternalCalls();
 
 		Organization organization = createTestOrganization();
 		UUID userRemovedUuid = UUID.randomUUID();
@@ -602,20 +611,13 @@ class OrganizationServiceUT {
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> organizationService.removeOrganizationMembers(organization.getUuid(), userRemovedUuid));
 
+		// On a changé le mock, donc on se "reconnecte" en tant qu'admin de l'organisation
+		mockAuthenticationData();
+		mockExternalCalls();
+
 		var newMembers = organizationService.getOrganizationMembers(organization.getUuid());
 
 		// On ne doit avoir supprimé aucun membre
 		assertEquals(oldMembers, newMembers);
-	}
-
-	@Test
-	void updateUserOrganizationPassword_forbidden_when_not_admin_of_organization() throws AppServiceException {
-		createTestOrganization();
-		when(organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(any())).thenReturn(false);
-		PasswordUpdate passwordUpdate = new PasswordUpdate();
-		passwordUpdate.setOldPassword("manemajeff");
-		passwordUpdate.setNewPassword("Peut1mp0rt3!");
-		assertThrows(AppServiceForbiddenException.class,
-				() -> organizationService.updateUserOrganizationPassword(UUID.randomUUID(), passwordUpdate));
 	}
 }

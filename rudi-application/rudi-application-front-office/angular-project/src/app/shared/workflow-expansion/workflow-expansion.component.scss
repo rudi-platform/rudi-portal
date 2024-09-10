@@ -1,0 +1,54 @@
+@import "common-style";
+
+.expansion-title {
+    color: var(--secondary-text);
+    font-size: 18px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.72;
+    margin-bottom: 8px;
+}
+
+.periode-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 45%;
+}
+
+.text-area-height {
+    height: 160px !important;
+}
+
+.msg-to-moderator-form {
+
+    & .title {
+        margin: 0 0 15px;
+        font-size: 26px;
+        font-weight: bold;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: center;
+        color: var(--primary-color);
+    }
+
+    & .hint {
+        width: 608px;
+        margin: 5px 32px 12px 0;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: #71757e;
+    }
+}
+
+*:focus-visible {
+    // on ne veut pas les rectangles bleu sur focus du champ input
+    outline: none;
+}

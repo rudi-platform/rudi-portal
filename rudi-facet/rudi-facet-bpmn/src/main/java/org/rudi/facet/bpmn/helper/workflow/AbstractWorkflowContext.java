@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.script.ScriptContext;
@@ -18,6 +19,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.acl.bean.User;
@@ -26,6 +28,8 @@ import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
+import org.rudi.facet.bpmn.exception.FormDefinitionException;
+import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.email.exception.EMailException;
@@ -40,12 +44,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  *
  */
 @Transactional(readOnly = true)
+@Slf4j
 public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, D extends AssetDescriptionDao<E>, A extends AssignmentHelper<E>> {
 
 	private static final String WK_C_FAILED_TO_SEND_MAIL_FOR = "WkC - Failed to send mail for ";
@@ -253,9 +259,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	}
 
 	/**
-	 * Retourne la liste des users candidats pour la tâche
-	 * Utilisable via une balise bpmn:humanPerformer
-	 * cf rudi-facet/rudi-facet-bpmn/README.md
+	 * Retourne la liste des users candidats pour la tâche Utilisable via une balise bpmn:humanPerformer cf rudi-facet/rudi-facet-bpmn/README.md
 	 * 
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
@@ -439,4 +443,36 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 			return null;
 		}
 	}
+
+	public void resetFormData(ScriptContext context, ExecutionEntity executionEntity, String userKey, String actionName,
+			String sectionName) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		if (processInstanceBusinessKey != null) {
+			UUID uuid = UUID.fromString(processInstanceBusinessKey);
+			E assetDescriptionEntity = getAssetDescriptionDao().findByUuid(uuid);
+			if (assetDescriptionEntity != null) {
+				try {
+					Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
+					Form userKeyForm = getFormHelper().lookupForm(processInstanceBusinessKey, userKey, actionName);
+
+					userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName))
+							.findFirst().ifPresentOrElse(value -> {
+								if (CollectionUtils.isNotEmpty(value.getFields())) {
+									value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
+								}
+							}, () -> {
+								log.error("No section {} found in form: {}", sectionName, userKey);
+							});
+					assetDescriptionEntity.setData(getFormHelper().deshydrateData(data));
+					getAssetDescriptionDao().save(assetDescriptionEntity);
+
+				} catch (InvalidDataException e) {
+					log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
+				} catch (FormDefinitionException e) {
+					log.error("Failed to look up for {} form for {}", userKey, assetDescriptionEntity.getInitiator());
+				}
+			}
+		}
+	}
+
 }

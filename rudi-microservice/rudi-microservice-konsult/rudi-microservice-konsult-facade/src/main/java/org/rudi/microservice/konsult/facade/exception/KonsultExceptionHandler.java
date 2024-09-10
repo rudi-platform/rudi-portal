@@ -1,6 +1,5 @@
 package org.rudi.microservice.konsult.facade.exception;
 
-import org.rudi.facet.apimaccess.exception.APINotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.microservice.konsult.core.bean.ApiError;
 import org.slf4j.Logger;
@@ -18,32 +17,23 @@ import org.springframework.web.context.request.WebRequest;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class KonsultExceptionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KonsultExceptionHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KonsultExceptionHandler.class);
 
-    @ExceptionHandler(DataverseAPIException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected @ResponseBody ApiError handleDataverseService(final DataverseAPIException ex, final WebRequest request) {
+	@ExceptionHandler(DataverseAPIException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	protected @ResponseBody ApiError handleDataverseService(final DataverseAPIException ex, final WebRequest request) {
 
-        LOGGER.error(ex.getMessage(), ex);
+		LOGGER.error(ex.getMessage(), ex);
 
-        ApiError apiError = new ApiError();
-        if (ex.getApiResponseInfo() != null) {
-            apiError.setCode(ex.getApiResponseInfo().getStatus());
-        }
-        else {
-            apiError.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        }
-        apiError.setLabel(ex.getMessage());
+		ApiError apiError = new ApiError();
+		if (ex.getApiResponseInfo() != null) {
+			apiError.setCode(ex.getApiResponseInfo().getStatus());
+		} else {
+			apiError.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+		}
+		apiError.setLabel(ex.getMessage());
 
-        return apiError;
-    }
-
-    @ExceptionHandler(APINotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected @ResponseBody ApiError handleNotFoundException(final APINotFoundException e) {
-        return new ApiError()
-                .code(Integer.toString(HttpStatus.NOT_FOUND.value()))
-                .label(e.getMessage());
-    }
+		return apiError;
+	}
 
 }

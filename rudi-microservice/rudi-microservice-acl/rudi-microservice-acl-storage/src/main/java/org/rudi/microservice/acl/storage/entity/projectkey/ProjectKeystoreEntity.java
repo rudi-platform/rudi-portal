@@ -33,7 +33,7 @@ public class ProjectKeystoreEntity extends AbstractLongIdEntity {
 
 	private static final long serialVersionUID = -6508639499690690560L;
 
-	@Column(name = "project_uuid", nullable = false)
+	@Column(name = "project_uuid", nullable = false, unique = true)
 	private UUID projectUuid;
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -54,6 +54,7 @@ public class ProjectKeystoreEntity extends AbstractLongIdEntity {
 			while (it.hasNext()) {
 				ProjectKeyEntity item = it.next();
 				if (item.getUuid().equals(projetKeyUuid)) {
+					result = item;
 					it.remove();
 					break;
 				}

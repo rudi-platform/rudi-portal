@@ -66,12 +66,12 @@
                 <div class="mat-radio-button-panel">
                     <p class="mat-radio-button-description">{{'project.stepper.submission.step2.ownerType.organization.description' | translate}}</p>
 
-                    <div *ngIf="step2FormGroup.get('ownerType').value === 'ORGANIZATION'">
+                    <div *ngIf="step2FormGroup.get('ownerType').value === 'ORGANIZATION' && organizationItems?.length">
                         <label
                             for="organization-name">{{'project.stepper.submission.step2.ownerType.organization.name.label'|translate}}
                             <span
                                 class="required-symbol">*</span></label><br/>
-                        <mat-form-field id="organization-name" appearance="outline" *ngIf="organizationItems?.length">
+                        <mat-form-field id="organization-name" appearance="outline">
                             <mat-select
                                 placeholder="{{'project.stepper.submission.step2.ownerType.organization.name.placeholder'|translate}}"
                                 formControlName="organizationUuid">

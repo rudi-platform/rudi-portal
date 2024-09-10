@@ -23,7 +23,7 @@ public interface ProjectKeyLightMapper {
 	 * @param entity entity to transform to dto
 	 * @return DossierDto
 	 */
-	@Mapping(target = "clientId", source = "client.login")
+	@Mapping(target = "clientId", source = "client.login", ignore = true)
 	ProjectKey entityToDto(ProjectKeyEntity entity);
 
 }

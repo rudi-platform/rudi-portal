@@ -1,13 +1,14 @@
 package org.rudi.microservice.projekt.service.support;
 
-import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.microservice.projekt.core.bean.Support;
-import org.rudi.microservice.projekt.core.bean.SupportSearchCriteria;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
-import java.util.UUID;
+
+import org.rudi.common.service.exception.AppServiceException;
+import org.rudi.microservice.projekt.core.bean.Support;
+import org.rudi.microservice.projekt.core.bean.criteria.SupportSearchCriteria;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface SupportService {
 

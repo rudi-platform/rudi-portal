@@ -185,7 +185,7 @@ export class DataSetInfosComponent implements OnInit {
                     this.isLoading = false;
                     const message = this.translateService.instant('common.echec');
                     const linkLabel = this.translateService.instant('snackbarTemplate.ici');
-                    this.propertiesMetierService.get('rudidatarennes.contact').subscribe(link => {
+                    this.propertiesMetierService.get('front.contact').subscribe(link => {
                         this.snacbackService.openSnackBar({
                             message: `${message} <a href="${link}">${linkLabel}</a>.`,
                             level: Level.ERROR
@@ -290,7 +290,7 @@ export class DataSetInfosComponent implements OnInit {
      * Sur clic du bouton "?" on ouvre un nouvel onglet vers la documentation de l'utilisation de l'URL
      */
     goApiDocumentation(): void {
-        this.getBackendPropertyPipe.transform('rudidatarennes.apidocumentation').subscribe(
+        this.getBackendPropertyPipe.transform('front.apiDocumentation').subscribe(
             (urlApi: string) => {
                 window.open(urlApi, '_blank');
             }
@@ -301,7 +301,7 @@ export class DataSetInfosComponent implements OnInit {
      * Sur clic du bouton "?" pour un média de type service on ouvre un nouvel onglet vers la documentation des media_service
      */
     goApiDocumentationService(): void {
-        this.getBackendPropertyPipe.transform('rudidatarennes.apiDocumentationService').subscribe(
+        this.getBackendPropertyPipe.transform('front.apiDocumentationService').subscribe(
             (urlApi: string) => {
                 window.open(urlApi, '_blank');
             }

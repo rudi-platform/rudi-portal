@@ -6,7 +6,8 @@ import java.util.UUID;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,6 @@ public interface ProjectCustomDao {
 	Integer getNumberOfNewRequests(UUID projectUuid);
 
 	List<ProjectByOwner> getNumberOfProjectsPerOwners(List<UUID> owners);
+
+	Page<ProjectEntity> searchRelatedProjects(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria, Pageable pageable);
 }

@@ -2,14 +2,13 @@ package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
 import java.util.Collections;
 
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ public abstract class AbstractIntegrationRequestTreatmentHandler {
 
 	protected final DatasetService datasetService;
 	protected final ApiManagerHelper apiGatewayManagerHelper;
-	protected final APIManagerHelper apiManagerHelper;
 	private final Error500Builder error500Builder;
 
 	public void handle(IntegrationRequestEntity integrationRequest) {
@@ -35,6 +33,6 @@ public abstract class AbstractIntegrationRequestTreatmentHandler {
 	}
 
 	protected abstract void handleInternal(IntegrationRequestEntity integrationRequest)
-			throws IntegrationException, DataverseAPIException, APIManagerException;
+			throws IntegrationException, DataverseAPIException, ApiGatewayApiException;
 
 }

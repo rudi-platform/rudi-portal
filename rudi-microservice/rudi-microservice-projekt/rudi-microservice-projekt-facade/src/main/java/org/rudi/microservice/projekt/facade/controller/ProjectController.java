@@ -1,13 +1,5 @@
 package org.rudi.microservice.projekt.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +15,6 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.bean.ProjectKey;
 import org.rudi.facet.acl.bean.ProjectKeyPageResult;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -36,9 +27,11 @@ import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.PagedProjectList;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.rudi.microservice.projekt.core.bean.TargetAudience;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.ProjectsApi;
 import org.rudi.microservice.projekt.service.project.LinkedDatasetService;
 import org.rudi.microservice.projekt.service.project.NewDatasetRequestService;
@@ -54,6 +47,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,17 +77,54 @@ public class ProjectController implements ProjectsApi {
 	}
 
 	@Override
-	public ResponseEntity<Project> getProject(UUID uuid) throws AppServiceNotFoundException {
+	public ResponseEntity<Project> getProject(UUID uuid) throws AppServiceException {
 		return ResponseEntity.ok(projectService.getProject(uuid));
 	}
 
+	/**
+	 * GET /projects : Recherche de projets
+	 * Recherche de projets
+	 *
+	 * @param datasetUuids       UUIDs des jeux de données liés aux projets recherchés (optional)
+	 * @param linkedDatasetUuids UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
+	 * @param ownerUuids         UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet (optional)
+	 * @param projectUuids       UUIDs des projets (optional)
+	 * @param status             (optional)
+	 * @param themes             (optional)
+	 * @param keywords           (optional)
+	 * @param targetAudiennces   (optional)
+	 * @param offset             Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param limit              Le nombre de résultats à retourner par page (optional)
+	 * @param order              (optional)
+	 * @return OK (status code 200)
+	 * or Service Unavailable (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedProjectList> searchProjects(List<UUID> datasetUuids, List<UUID> linkedDatasetUuids,
-			List<UUID> ownerUuids, List<UUID> projectUuids, List<ProjectStatus> status, Integer offset, Integer limit,
-			String order) throws Exception {
-		val searchCriteria = new ProjectSearchCriteria().datasetUuids(datasetUuids)
-				.linkedDatasetUuids(linkedDatasetUuids).ownerUuids(ownerUuids).projectUuids(projectUuids)
-				.status(status);
+	public ResponseEntity<PagedProjectList> searchProjects(
+			@Valid List<UUID> datasetUuids,
+			@Valid List<UUID> linkedDatasetUuids,
+			@Valid List<UUID> ownerUuids,
+			@Valid List<UUID> projectUuids,
+			@Valid List<ProjectStatus> status,
+			@Valid List<String> themes,
+			@Valid List<String> keywords,
+			@Valid List<@Valid TargetAudience> targetAudiennces,
+			@Valid Integer offset,
+			@Valid Integer limit,
+			@Valid String order
+	) throws Exception {
+		val searchCriteria = ProjectSearchCriteria
+				.builder()
+				.datasetUuids(datasetUuids)
+				.linkedDatasetUuids(linkedDatasetUuids)
+				.ownerUuids(ownerUuids)
+				.projectUuids(projectUuids)
+				.status(status)
+				.themes(themes)
+				.keywords(keywords)
+				.targetAudiences(targetAudiennces)
+				.build();
+
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = projectService.searchProjects(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedProjectList().total(page.getTotalElements()).elements(page.getContent()));
@@ -144,7 +181,7 @@ public class ProjectController implements ProjectsApi {
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_PROJEKT + ", "
 			+ PROJECT_MANAGER + ", " + USER + ")")
 	public ResponseEntity<LinkedDataset> linkProjectToDataset(UUID projectUuid, LinkedDataset linkedDataset)
-			throws DataverseAPIException, AppServiceException, APIManagerException {
+			throws DataverseAPIException, AppServiceException {
 		return ResponseEntity.ok(linkedDatasetService.linkProjectToDataset(projectUuid, linkedDataset));
 	}
 
@@ -160,7 +197,7 @@ public class ProjectController implements ProjectsApi {
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_PROJEKT + ", "
 			+ PROJECT_MANAGER + ", " + USER + ")")
 	public ResponseEntity<Void> unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUUID)
-			throws AppServiceException, APIManagerException {
+			throws AppServiceException {
 		linkedDatasetService.unlinkProjectToDataset(projectUuid, linkedDatasetUUID);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -265,9 +302,7 @@ public class ProjectController implements ProjectsApi {
 	public ResponseEntity<PagedProjectList> getMyProjects(Integer offset, Integer limit, String order)
 			throws Exception {
 
-		ProjectSearchCriteria searchCriteria = new ProjectSearchCriteria();
-		searchCriteria.setOffset(offset);
-		searchCriteria.setLimit(limit);
+		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria.builder().build();
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		val page = projectService.getMyProjects(searchCriteria, pageable);
@@ -323,15 +358,57 @@ public class ProjectController implements ProjectsApi {
 		}
 	}
 
+	/**
+	 * GET /projects/count-per-owner : Retourne le nombre de projects par owner
+	 * Recherche de statut de réutilisation
+	 *
+	 * @param datasetUuids       UUIDs des jeux de données liés aux projets recherchés (optional)
+	 * @param linkedDatasetUuids UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
+	 * @param ownerUuids         UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet (optional)
+	 * @param projectUuids       UUIDs des projets (optional)
+	 * @param status             (optional)
+	 * @param themes             (optional)
+	 * @param keywords           (optional)
+	 * @param targetAudiennces   (optional)
+	 * @param offset             Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param limit              Le nombre de résultats à retourner par page (optional)
+	 * @param order              (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<List<ProjectByOwner>> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria)
-			throws Exception {
+	public ResponseEntity<List<ProjectByOwner>> getNumberOfProjectsPerOwners(
+			@Valid List<UUID> datasetUuids,
+			@Valid List<UUID> linkedDatasetUuids,
+			@Valid List<UUID> ownerUuids,
+			@Valid List<UUID> projectUuids,
+			@Valid List<ProjectStatus> status,
+			@Valid List<String> themes,
+			@Valid List<String> keywords,
+			@Valid List<@Valid TargetAudience> targetAudiennces,
+			@Valid Integer offset,
+			@Valid Integer limit,
+			@Valid String order
+	) throws Exception {
+		val criteria = ProjectSearchCriteria
+				.builder()
+				.datasetUuids(datasetUuids)
+				.linkedDatasetUuids(linkedDatasetUuids)
+				.ownerUuids(ownerUuids)
+				.projectUuids(projectUuids)
+				.status(status)
+				.themes(themes)
+				.keywords(keywords)
+				.targetAudiences(targetAudiennces)
+				.build();
+
 		return ResponseEntity.ok(projectService.getNumberOfProjectsPerOwners(criteria));
 	}
 
 	@Override
-	public ResponseEntity<ProjectKey> createProjectKey(UUID projectUuid, ProjectKey projectKey) throws Exception {
-		return ResponseEntity.ok(projectService.createProjectKey(projectUuid, projectKey));
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + USER + ")")
+	public ResponseEntity<ProjectKey> createProjectKey(UUID projectUuid, ProjectKeyCredential projectKeyCredential) throws Exception {
+		return ResponseEntity.ok(projectService.createProjectKey(projectUuid, projectKeyCredential));
 	}
 
 	@Override

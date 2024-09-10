@@ -1,20 +1,13 @@
 package org.rudi.microservice.konsult.service.metadata.impl;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
-import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.MissingParameterException;
-import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
-import org.rudi.facet.apimaccess.exception.GetClientRegistrationException;
-import org.rudi.facet.apimaccess.service.ApplicationService;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
@@ -24,17 +17,10 @@ import org.rudi.facet.kaccess.bean.MetadataFacets;
 import org.rudi.facet.kaccess.bean.MetadataList;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.projekt.helper.ProjektHelper;
-import org.rudi.microservice.konsult.service.exception.APIManagerExternalServiceException;
 import org.rudi.microservice.konsult.service.exception.DataverseExternalServiceException;
-import org.rudi.microservice.konsult.service.exception.MediaNotFoundException;
 import org.rudi.microservice.konsult.service.exception.MetadataNotFoundException;
-import org.rudi.microservice.konsult.service.exception.UnhandledMediaTypeException;
-import org.rudi.microservice.konsult.service.helper.APIManagerHelper;
 import org.rudi.microservice.konsult.service.metadata.MetadataService;
-import org.rudi.microservice.konsult.service.metadata.impl.checker.AbstractAccessToDatasetChecker;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,12 +31,7 @@ public class MetadataServiceImpl implements MetadataService {
 	private static final Integer DEFAULT_START = 0;
 	private static final Integer DEFAULT_RESULTS_NUMBER = 100;
 	private final DatasetService datasetService;
-	private final ApplicationService applicationService;
-	private final APIManagerHelper apiManagerHelper;
-	private final ProjektHelper projektHelper;
-	private final ACLHelper aclHelper;
 	private final MetadataWithSameThemeFinder metadataWithSameThemeFinder;
-	private final List<AbstractAccessToDatasetChecker> accessToDatasetCheckerList;
 
 	@Override
 	public MetadataList searchMetadatas(DatasetSearchCriteria datasetSearchCriteria) throws DataverseAPIException {
@@ -83,67 +64,6 @@ public class MetadataServiceImpl implements MetadataService {
 	}
 
 	@Override
-	public DocumentContent downloadMetadataMedia(UUID globalId, UUID mediaId)
-			throws AppServiceException, IOException, GetClientRegistrationException {
-
-		final Metadata metadata = getMetadataById(globalId);
-		final Media media = getMetadataMediaById(metadata, mediaId);
-		final String loginAbleToDownloadMedia = getLoginAbleToDownloadMedia(metadata, media);
-		return downloadMetadataMedia(metadata, media, loginAbleToDownloadMedia, null);
-	}
-
-	@Override
-	public boolean hasSubscribeToSelfdataDataset(UUID globalId) throws AppServiceException, APIManagerException {
-		return projektHelper.hasAccessToDataset(aclHelper.getAuthenticatedUserUuid(), globalId);
-	}
-
-	@Override
-	public boolean hasSubscribeToLinkedDataset(UUID globalId, UUID linkedDatasetUuid)
-			throws AppServiceException, APIManagerException {
-		final var metadata = getMetadataById(globalId);
-		UUID ownerUuid = null; // Uuid à partir duquel on a souscrit (soi-même pour un selfdata)
-		for (AbstractAccessToDatasetChecker accessToDatasetChecker : accessToDatasetCheckerList) {
-			if (accessToDatasetChecker.accept(metadata)) {
-				ownerUuid = accessToDatasetChecker.getOwnerUuidToUse(linkedDatasetUuid);
-			}
-		}
-		return apiManagerHelper.userHasSubscribedToEachMediaOfDataset(globalId, ownerUuid);
-	}
-
-	@Override
-	public void subscribeToSelfdataDataset(UUID globalId) throws APIManagerException, AppServiceException {
-		final var metadata = getMetadataById(globalId);
-		UUID ownerUuid = null; // Uuid à partir duquel on va souscrire (soi-même pour un selfdata)
-		for (AbstractAccessToDatasetChecker accessToDatasetChecker : accessToDatasetCheckerList) {
-			if (accessToDatasetChecker.accept(metadata)) {
-				accessToDatasetChecker.checkAuthenticatedUserHasAccessToDataset(globalId, Optional.empty());
-				ownerUuid = accessToDatasetChecker.getOwnerUuidToUse(null);
-			}
-		}
-		apiManagerHelper.subscribeToEachMediaOfDataset(globalId, ownerUuid);
-	}
-
-	@Override
-	public void unsubscribeToDataset(UUID globalId, UUID subscriptionOwnerUuid) throws APIManagerException {
-		applicationService.deleteUserSubscriptionsForDatasetAPIs(subscriptionOwnerUuid.toString(), globalId);
-	}
-
-	@Override
-	public void subscribeToLinkedDataset(UUID globalId, UUID linkedDatasetUuid)
-			throws APIManagerException, AppServiceException {
-		final var metadata = getMetadataById(globalId);
-		UUID ownerUuid = null; // Uuid à partir duquel on va souscrire (soi-même ou une de nos organisations)
-		for (AbstractAccessToDatasetChecker accessToDatasetChecker : accessToDatasetCheckerList) {
-			if (accessToDatasetChecker.accept(metadata)) {
-				accessToDatasetChecker.checkAuthenticatedUserHasAccessToDataset(globalId,
-						Optional.of(linkedDatasetUuid));
-				ownerUuid = accessToDatasetChecker.getOwnerUuidToUse(linkedDatasetUuid);
-			}
-		}
-		apiManagerHelper.subscribeToEachMediaOfDataset(globalId, ownerUuid);
-	}
-
-	@Override
 	public List<Metadata> getMetadatasWithSameTheme(UUID globalId, Integer limit) throws AppServiceException {
 		final var metadata = getMetadataById(globalId);
 		try {
@@ -162,15 +82,6 @@ public class MetadataServiceImpl implements MetadataService {
 			throw new DataverseExternalServiceException(de);
 		}
 
-	}
-
-	private Media getMetadataMediaById(Metadata metadata, UUID mediaId) throws MediaNotFoundException {
-		final Optional<Media> optionalMedia = metadata.getAvailableFormats().stream()
-				.filter(actualMedia -> actualMedia.getMediaId().equals(mediaId)).findFirst();
-		if (optionalMedia.isEmpty()) {
-			throw new MediaNotFoundException(mediaId, metadata.getGlobalId());
-		}
-		return optionalMedia.get();
 	}
 
 	private MetadataListFacets searchMetadataWithFacets(DatasetSearchCriteria datasetSearchCriteria,
@@ -200,28 +111,5 @@ public class MetadataServiceImpl implements MetadataService {
 		String url = String.format("/medias/%s/%s/%s", metadata.getGlobalId().toString(), media.getMediaId().toString(),
 				media.getConnector().getInterfaceContract());
 		media.getConnector().setUrl(url);
-	}
-
-	/**
-	 * Nom d'utilisateur utilisé pour télécharger le média à travers WSO2
-	 */
-	private String getLoginAbleToDownloadMedia(Metadata metadata, Media media) throws AppServiceException {
-		return apiManagerHelper.getLoginAbleToDownloadMedia(metadata, media);
-	}
-
-	private DocumentContent downloadMetadataMedia(Metadata metadata, Media media, String loginAbleToDownloadMedia,
-			MultiValueMap<String, String> parameters)
-			throws UnhandledMediaTypeException, APIManagerExternalServiceException, IOException {
-		if (media.getMediaType().equals(Media.MediaTypeEnum.FILE)
-				|| media.getMediaType().equals(Media.MediaTypeEnum.SERVICE)) {
-			try {
-				return applicationService.downloadAPIContent(metadata.getGlobalId(), media.getMediaId(),
-						loginAbleToDownloadMedia, parameters);
-			} catch (APIManagerException e) {
-				throw new APIManagerExternalServiceException(e);
-			}
-		}
-
-		throw new UnhandledMediaTypeException(media.getMediaType());
 	}
 }

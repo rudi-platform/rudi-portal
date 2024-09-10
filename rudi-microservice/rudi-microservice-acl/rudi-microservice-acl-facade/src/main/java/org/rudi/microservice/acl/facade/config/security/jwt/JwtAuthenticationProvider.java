@@ -6,7 +6,6 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
-import org.rudi.facet.apimaccess.helper.rest.RudiClientRegistrationRepository;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
 import org.rudi.microservice.acl.core.bean.AddressType;
 import org.rudi.microservice.acl.core.bean.EmailAddress;
@@ -38,35 +37,15 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 	private UserService userService;
 
 	@Autowired
-	private RudiClientRegistrationRepository rudiClientRegistrationRepository;
-
-	@Autowired
 	@Qualifier("clientPasswordEncoder")
 	private PasswordEncoder passwordEncoder;
 
-	@Value("${apimanager.oauth2.client.anonymous.username}")
+	@Value("${security.anonymous.login:anonymous}")
 	private String anonymousUsername;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) {
-		Authentication result = checkCredential(authentication);
-
-		// wso2 registration
-		String login = authentication.getName();
-		String password = (String) authentication.getCredentials();
-
-		try {
-			// récupération du client id + client secret de l'utilisateur qui se connecte (inutile de le faire pour les users rudi et anonymous)
-			if (!login.equals(anonymousUsername)) {
-				rudiClientRegistrationRepository.register(login, password);
-			}
-		} catch (Exception e) {
-			log.error(String.format(
-					"Impossible de générer les paramètres d'authentification à l'API Manager pour l'utilisateur %s",
-					login), e);
-		}
-
-		return result;
+		return checkCredential(authentication);
 	}
 
 	/**
@@ -146,7 +125,7 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 
 	private boolean isAnonymous(User user) {
 		if (CollectionUtils.isNotEmpty(user.getRoles())) {
-			return user.getRoles().stream().anyMatch(role -> role.getCode().equalsIgnoreCase("anonymous"));
+			return user.getRoles().stream().anyMatch(role -> role.getCode().equalsIgnoreCase(anonymousUsername));
 		} else {
 			return false;
 		}

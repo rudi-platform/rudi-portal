@@ -3,17 +3,25 @@
  */
 package org.rudi.microservice.projekt.service.workflow;
 
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
 import org.activiti.engine.ProcessEngine;
+import org.jetbrains.annotations.Nullable;
+import org.rudi.bpmn.core.bean.Form;
+import org.rudi.bpmn.core.bean.Section;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
+import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.service.InitializationService;
@@ -31,7 +39,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author FNI18300
- *
  */
 @Service
 public class ProjectTaskServiceImpl extends
@@ -42,6 +49,9 @@ public class ProjectTaskServiceImpl extends
 
 	@Value("${rudi.project.task.allowed.status.owner}")
 	private List<String> projectOwnerAllowedModificationStatus;
+
+	@Autowired
+	private ProjektFormEnhancerHelper projektFormEnhancerHelper;
 
 	@Autowired
 	private ProjektAuthorisationHelper projektAuthorisationHelper;
@@ -58,7 +68,7 @@ public class ProjectTaskServiceImpl extends
 	protected void fillProcessVariables(Map<String, Object> variables, ProjectEntity assetDescriptionEntity) {
 		variables.put(ProjektWorkflowConstants.TITLE, assetDescriptionEntity.getTitle());
 		if (assetDescriptionEntity.getProjectStatus() != null) {
-			variables.put(ProjektWorkflowConstants.PROJECT_STATUS, assetDescriptionEntity.getStatus().name());
+			variables.put(ProjektWorkflowConstants.PROJECT_STATUS, assetDescriptionEntity.getProjectStatus().name());
 		}
 	}
 
@@ -98,5 +108,53 @@ public class ProjectTaskServiceImpl extends
 			throw new IllegalArgumentException(
 					"Erreur lors de la vérification des droits pour le traitement de la tache de projet", e);
 		}
+	}
+
+	/**
+	 * @param assetDescriptionEntity
+	 */
+	@Override
+	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity) throws IllegalArgumentException {
+		if (getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getId()) != null
+				&& !(assetDescriptionEntity.getStatus().equals(Status.DRAFT)
+						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
+			throw new IllegalArgumentException("Invalid state for project " + assetDescriptionEntity.getId());
+		}
+	}
+
+	/**
+	 * @param assetDescriptionEntity
+	 * @throws IllegalArgumentException
+	 */
+	@Override
+	protected void checkTaskValidity(ProjectEntity assetDescriptionEntity) throws IllegalArgumentException {
+		if (assetDescriptionEntity == null || !(assetDescriptionEntity.getStatus().equals(Status.DRAFT)
+				|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
+			throw new IllegalArgumentException("Invalid task");
+		}
+	}
+
+	/**
+	 * @return
+	 * @throws FormDefinitionException
+	 */
+	@Nullable
+	@Override
+	public Form lookupDraftForm() throws FormDefinitionException {
+		Form form = super.lookupDraftForm();
+		if (form != null) {
+			Optional<Section> section = form.getSections().stream()
+					.filter(s -> s.getName().equals(DRAFT_FORM_SECTION_NAME)).findFirst();
+
+			if (section.isEmpty()) {
+				throw new FormDefinitionException(
+						String.format("Une erreur est survenur lors du chargement de la section %s du draftForm",
+								DRAFT_FORM_SECTION_NAME));
+			}
+
+			projektFormEnhancerHelper.enhance(section.get());
+		}
+
+		return form;
 	}
 }

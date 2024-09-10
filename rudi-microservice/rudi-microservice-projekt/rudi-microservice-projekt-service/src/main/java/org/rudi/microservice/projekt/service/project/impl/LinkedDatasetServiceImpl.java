@@ -19,7 +19,6 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -31,7 +30,6 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersExcep
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
-import org.rudi.microservice.projekt.core.bean.PagedLinkedDatasetList;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
@@ -45,13 +43,14 @@ import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,7 +76,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 	@Override
 	@Transactional // readOnly = false
 	public LinkedDataset linkProjectToDataset(UUID projectUuid, LinkedDataset linkedDataset)
-			throws AppServiceException, APIManagerException {
+			throws AppServiceException {
 
 		// 1) traduction DTO en entité
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
@@ -156,8 +155,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 
 	@Override
 	@Transactional
-	public LinkedDataset updateLinkedDataset(UUID projectUuid, LinkedDataset linkedDataset)
-			throws AppServiceException, APIManagerException {
+	public LinkedDataset updateLinkedDataset(UUID projectUuid, LinkedDataset linkedDataset) throws AppServiceException {
 
 		val project = getRequiredProjectEntity(projectUuid);
 		projektAuthorisationHelper.checkRightsAdministerProjectDataset(project);
@@ -187,8 +185,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 
 	@Override
 	@Transactional // readOnly = false
-	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid)
-			throws AppServiceException, APIManagerException {
+	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid) throws AppServiceException {
 		val project = getRequiredProjectEntity(projectUuid);
 
 		projektAuthorisationHelper.checkRightsAdministerProjectDataset(project);
@@ -222,22 +219,40 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 	}
 
 	@Override
-	public PagedLinkedDatasetList searchMyLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
+	public Page<LinkedDataset> searchMyLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
 			throws AppServiceException {
 		// Récupération des UUIDs du connectedUser et de ses organisations.
 
-		List<UUID> uuids = myInformationsHelper.getMeAndMyOrganizationUuids();
+		List<UUID> uuids = myInformationsHelper.getMeAndMyOrganizationsUuids();
 		if (CollectionUtils.isEmpty(uuids)) {
-			return new PagedLinkedDatasetList().total(0L).elements(List.of());
+			return new PageImpl<>(List.of());
 		}
 
 		// Rajout des owner uuid dans le criteria
 		criteria.setProjectOwnerUuids(uuids);
 
-		Page<LinkedDatasetEntity> pages = linkedDatasetCustomDao.searchLinkedDatasets(criteria, pageable);
-		List<LinkedDataset> request = linkedDatasetMapper.entitiesToDto(pages.getContent());
+		return linkedDatasetMapper.entitiesToDto(linkedDatasetCustomDao.searchLinkedDatasets(criteria, pageable),
+				pageable);
+	}
 
-		return new PagedLinkedDatasetList().total(pages.getTotalElements()).elements(request);
+	/**
+	 * @param criteria
+	 * @param pageable
+	 * @return
+	 * @throws AppServiceException
+	 */
+	@Override
+	public Page<LinkedDataset> searchMyOrganizationsLinkedDatasets(LinkedDatasetSearchCriteria criteria,
+			Pageable pageable) throws AppServiceException {
+		List<UUID> uuids = myInformationsHelper.getMyOrganizationsUuids();
+		if (CollectionUtils.isEmpty(uuids)) {
+			return new PageImpl<>(List.of());
+		}
+		criteria.setDatasetOwnerUuids(uuids);
+
+		return linkedDatasetMapper.entitiesToDto(linkedDatasetCustomDao.searchLinkedDatasets(criteria, pageable),
+				pageable);
+
 	}
 
 	@Override
@@ -300,7 +315,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 		if (!(projektAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole)
 				|| projektAuthorisationHelper.isAccessGrantedForUserOnProject(projectEntity)
 				|| projektAuthorisationHelper.isAccessGrantedForUserOnLinkedDataset(linkedDatasetEntity))) {
-			throw new AppServiceUnauthorizedException("Accès non autorisé à la fonctionnalité pour l'utilisateur");
+			throw new AppServiceUnauthorizedException(ProjektAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}
 
@@ -309,25 +324,25 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 	 * @return
 	 */
 	@Override
-	public boolean isMyAccessGratedToDataset(UUID datasetUuid) throws GetOrganizationException, AppServiceUnauthorizedException {
-		if(datasetUuid == null){
+	public boolean isMyAccessGratedToDataset(UUID datasetUuid)
+			throws GetOrganizationException, AppServiceUnauthorizedException {
+		if (datasetUuid == null) {
 			log.error("Dataset Uuid null. Requête impossible.");
 			return false;
 		}
 
-		//on récupère l'utilisateur connecté et l'ensemble des organisations dont il fait partie.
-		List<UUID> meAndMyOrganizations = myInformationsHelper.getMeAndMyOrganizationUuids();
-		if(CollectionUtils.isEmpty(meAndMyOrganizations)){
+		// on récupère l'utilisateur connecté et l'ensemble des organisations dont il fait partie.
+		List<UUID> meAndMyOrganizations = myInformationsHelper.getMeAndMyOrganizationsUuids();
+		if (CollectionUtils.isEmpty(meAndMyOrganizations)) {
 			log.error("Utilisateur connecté null");
 			return false;
 		}
 
-		var linkedDatasetSearchCriteria = new LinkedDatasetSearchCriteria()
-				.datasetUuid(datasetUuid)
-				.projectOwnerUuids(meAndMyOrganizations)
-				.status(List.of(LinkedDatasetStatus.VALIDATED))
+		var linkedDatasetSearchCriteria = new LinkedDatasetSearchCriteria().datasetUuid(datasetUuid)
+				.projectOwnerUuids(meAndMyOrganizations).status(List.of(LinkedDatasetStatus.VALIDATED))
 				.endDateIsNotOver(true);
-		final var linkedDatasetEntities = linkedDatasetCustomDao.searchLinkedDatasets(linkedDatasetSearchCriteria, Pageable.unpaged());
+		final var linkedDatasetEntities = linkedDatasetCustomDao.searchLinkedDatasets(linkedDatasetSearchCriteria,
+				Pageable.unpaged());
 		return linkedDatasetEntities.getTotalElements() > 0;
 	}
 }

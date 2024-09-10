@@ -15,7 +15,7 @@
         <div *ngIf="mediaSize.isDeviceDesktop">
             <div *ngTemplateOutlet="menuList"></div>
         </div>
-        
+
         <div *ngIf="isConnectedAsUser">
             <button [matMenuTriggerFor]="accountMenu" mat-stroked-button [ngClass]="{
                     'my-account-btn-mobile': mediaSize.isSm || mediaSize.isXs || mediaSize.isMd || mediaSize.isLg,
@@ -103,22 +103,6 @@
                (click)="handleClickBurger()">
                 {{ 'header.organisations'| translate }}
             </a>
-        </li>
-        <li>
-            <a [ngClass]="ngClassNavLink" [routerLinkActive]="'active'"
-               [href]="urlToDoc"
-               rel="noopener noreferrer" target="_blank">
-                <em class="fa fa-external-link me-2"></em>
-                <span>{{ 'header.documentation'| translate }}</span>
-            </a>
-        </li>
-        <li>
-            <a [ngClass]="ngClassNavLink"
-               href="{{'rudidatarennes.index'|getBackendProperty|async}}"
-               target="_blank"
-               rel="noopener noreferrer" [routerLinkActive]="'active'">
-                <em class="fa fa-external-link  me-2"></em>
-                <span>{{ 'header.blogProjet'| translate }}</span></a>
         </li>
     </ul>
 </ng-template>

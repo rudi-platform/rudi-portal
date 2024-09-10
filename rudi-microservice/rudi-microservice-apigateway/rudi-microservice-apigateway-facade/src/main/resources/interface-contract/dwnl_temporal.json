@@ -1,0 +1,59 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+		"description": "API download"
+	},
+    "paths": {
+        "/*": {
+            "get": {
+            	"parameters": [
+					{
+						"$ref": "#/components/parameters/MinDateParam"
+					},
+					{
+						"$ref": "#/components/parameters/MaxDateParam"
+					}
+				],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+      						"application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+		"parameters": {
+			"MaxDateParam": {
+				"name": "max-date",
+				"in": "query",
+				"description": "La date maximum",
+				"required": false,
+				"schema": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"allowEmptyValue": true
+			},
+			"MinDateParam": {
+				"name": "min-date",
+				"in": "query",
+				"description": "La date minimale",
+				"required": false,
+				"schema": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"allowEmptyValue": true
+			}
+		}
+	}
+}

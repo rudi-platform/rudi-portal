@@ -24,20 +24,40 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class StruktureAuthorisationHelper {
-	private static final Boolean DEFAULT_ACCESS_GRANT = Boolean.FALSE;
+	private static final boolean DEFAULT_ACCESS_GRANT = Boolean.FALSE;
+
+	// Message envoyé dans la réponse à l'utilisateur de l'API
+	public static final String USER_GENERIC_MSG_UNAUTHORIZED = "Accès non autorisé à la fonctionnalité pour l'utilisateur";
 
 	private final ACLHelper aclHelper;
 	private final OrganizationMembersHelper organizationMembersHelper;
 
 	/**
-	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au profil technique du module
+	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au module strukture
 	 */
 	@Getter
-	private static final Map<String, Boolean> ADMINISTRATOR_ACCESS = new HashMap<>();
+	private static final Map<String, Boolean> ADMINISTRATOR_MODULE_STRUKTURE_ACCESS = new HashMap<>();
 	static {
+		ADMINISTRATOR_MODULE_STRUKTURE_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODULE_STRUKTURE_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODULE_STRUKTURE_ACCESS.put(RoleCodes.MODULE_STRUKTURE, Boolean.TRUE);
+	}
+
+	/**
+	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au module kalim
+	 */
+	@Getter
+	private static final Map<String, Boolean> ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS = new HashMap<>();
+	static {
+		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_KALIM, Boolean.TRUE);
+	}
+
+	@Getter
+	private static final Map<String, Boolean> ADMINISTRATOR_ACCESS = new HashMap<>();
+	static{
 		ADMINISTRATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
-		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
-		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE, Boolean.TRUE);
 	}
 
 	/**
@@ -89,7 +109,7 @@ public class StruktureAuthorisationHelper {
 	 * @param accessRights la map des droits d'accès : code du rôle -> droit d'accès
 	 * @return true si l'utilisateur a l'un des roles autorisés
 	 */
-	public Boolean isAccessGrantedByRole(Map<String, Boolean> accessRights) {
+	public boolean isAccessGrantedByRole(Map<String, Boolean> accessRights) {
 		try {
 			User user = aclHelper.getAuthenticatedUser();
 			// identifier tous les roles autorisés dans la map des droits d'accès
@@ -100,7 +120,7 @@ public class StruktureAuthorisationHelper {
 			grantedRoles.retainAll(CollectionUtils.union(TECHNICAL_ROLES, TRANSVERSAL_ROLES));
 
 			// vérifier que l'utilisateur a bien l'un des rôles autorisés
-			return Boolean.valueOf(hasAnyRole(user, grantedRoles));
+			return hasAnyRole(user, grantedRoles);
 		} catch (AppServiceUnauthorizedException e) {
 			return accessRights.getOrDefault(NOT_USER, DEFAULT_ACCESS_GRANT);
 		}
@@ -111,10 +131,10 @@ public class StruktureAuthorisationHelper {
 	 * @param organizationUuid uuid de l'organization concernée
 	 * @return true si l'utilisateur a accès
 	 */
-	public Boolean isAccessGrantedForUserOnOrganization(UUID organizationUuid){
+	public boolean isAccessGrantedForUserOnOrganization(UUID organizationUuid){
 		try {
 			User user = aclHelper.getAuthenticatedUser();
-			if(organizationUuid != null && hasAnyRole(user, Arrays.asList(RoleCodes.USER))) {
+			if(organizationUuid != null && hasAnyRole(user, List.of(RoleCodes.USER))) {
 				return user.getUuid() != null
 						&& organizationMembersHelper.isAuthenticatedUserOrganizationMember(organizationUuid);
 
@@ -123,5 +143,9 @@ public class StruktureAuthorisationHelper {
 		} catch (AppServiceException e) {
 			return DEFAULT_ACCESS_GRANT;
 		}
+	}
+
+	public boolean isAccessGrantedForUserOnOrganizationAsAdministrator(UUID organizationUuid) throws AppServiceException {
+		return isAccessGrantedForUserOnOrganization(organizationUuid) && organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
 	}
 }

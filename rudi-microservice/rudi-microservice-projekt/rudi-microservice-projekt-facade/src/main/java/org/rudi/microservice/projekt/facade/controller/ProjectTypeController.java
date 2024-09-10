@@ -6,7 +6,7 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.PagedProjectTypeList;
 import org.rudi.microservice.projekt.core.bean.ProjectType;
-import org.rudi.microservice.projekt.core.bean.ProjectTypeSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectTypeSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.TypesApi;
 import org.rudi.microservice.projekt.service.type.ProjectTypeService;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +44,20 @@ public class ProjectTypeController implements TypesApi {
 		return ResponseEntity.ok(projectTypeService.getProjectType(uuid));
 	}
 
+	/**
+	 * GET /types : Recherche de type de projet
+	 * Recherche de type de projet
+	 *
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @param active (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedProjectTypeList> searchProjectTypes(Integer limit, Integer offset, String order) throws Exception {
-		val searchCriteria = new ProjectTypeSearchCriteria();
+	public ResponseEntity<PagedProjectTypeList> searchProjectTypes(Boolean active, Integer limit, Integer offset, String order) throws Exception {
+		val searchCriteria = ProjectTypeSearchCriteria.builder().active(active).build();
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = projectTypeService.searchProjectTypes(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedProjectTypeList()

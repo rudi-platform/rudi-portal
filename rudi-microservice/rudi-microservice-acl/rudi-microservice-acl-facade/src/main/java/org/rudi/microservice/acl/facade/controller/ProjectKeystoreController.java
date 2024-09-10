@@ -3,9 +3,6 @@
  */
 package org.rudi.microservice.acl.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +21,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
 
 /**
  * @author FNI18300
@@ -38,7 +39,7 @@ public class ProjectKeystoreController implements ProjectKeystoresApi {
 	private final UtilPageable utilPageable;
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
 	public ResponseEntity<ProjectKeystore> createProjectKeystore(ProjectKeystore projectKeystore) throws Exception {
 		return ResponseEntity.ok(projectKeystoreService.createProjectKeystore(projectKeystore));
 	}
@@ -51,27 +52,27 @@ public class ProjectKeystoreController implements ProjectKeystoresApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + ")")
-	public ResponseEntity<ProjectKey> createProjectKey(UUID projectKeystoreUuid, ProjectKey projectKey)
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
+	public ResponseEntity<ProjectKey>  createProjectKey(UUID projectKeystoreUuid, ProjectKey projectKey)
 			throws Exception {
 		return ResponseEntity.ok(projectKeystoreService.createProjectKey(projectKeystoreUuid, projectKey));
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + ")")
 	public ResponseEntity<Void> deleteProjectKey(UUID projectKeystoreUuid, UUID projectKeyUuid) throws Exception {
 		projectKeystoreService.deleteProjectKey(projectKeystoreUuid, projectKeyUuid);
 		return ResponseEntity.noContent().build();
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
 	public ResponseEntity<ProjectKeystore> getProjectKeystore(UUID projectKeystoreUuid) throws Exception {
 		return ResponseEntity.ok(projectKeystoreService.getProjectKeystoreByUUID(projectKeystoreUuid));
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
 	public ResponseEntity<ProjectKeystorePageResult> searchProjectKeystores(List<UUID> projectUuids,
 			OffsetDateTime minExpirationDate, OffsetDateTime maxExpirationDate, String clientId, Integer offset,
 			Integer limit, String order) throws Exception {
@@ -81,7 +82,7 @@ public class ProjectKeystoreController implements ProjectKeystoresApi {
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 
-		Page<ProjectKeystore> page = projectKeystoreService.searchProjectKey(searchCriteria, pageable);
+		Page<ProjectKeystore> page = projectKeystoreService.searchProjectKeys(searchCriteria, pageable);
 
 		ProjectKeystorePageResult result = new ProjectKeystorePageResult();
 		result.setTotal(page.getTotalElements());

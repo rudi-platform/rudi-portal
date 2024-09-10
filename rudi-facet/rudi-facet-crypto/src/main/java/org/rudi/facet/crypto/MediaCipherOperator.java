@@ -83,7 +83,7 @@ public class MediaCipherOperator extends CipherOperator {
 	}
 
 	public void decryptUpdateNextBlocks(Cipher cipher, InputStream encryptedStream, OutputStream decryptedStream)
-			throws GeneralSecurityException, IOException {
+			throws IOException {
 		decryptUpdateWithKey(cipher, encryptedStream, decryptedStream);
 	}
 

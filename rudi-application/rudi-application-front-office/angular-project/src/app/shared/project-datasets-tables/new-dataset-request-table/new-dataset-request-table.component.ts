@@ -6,9 +6,7 @@ import {DataRequestItem} from '@features/project/model/data-request-item';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
-import {SnackBarService} from '@core/services/snack-bar.service';
 import {ObjectType} from '@core/services/tasks/object-type.enum';
-import {TranslateService} from '@ngx-translate/core';
 import {NewDatasetRequestTableData, RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {NewDatasetRequest, NewDatasetRequestStatus} from 'micro_service_modules/projekt/projekt-model';
 import * as moment from 'moment';
@@ -51,8 +49,6 @@ export class NewDatasetRequestTableComponent {
     constructor(
         private _liveAnnouncer: LiveAnnouncer,
         private readonly projectSubmissionService: ProjectSubmissionService,
-        private readonly snackBarService: SnackBarService,
-        private readonly translateService: TranslateService,
         private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
         private readonly projectConsultationService: ProjectConsultationService,
     ) {

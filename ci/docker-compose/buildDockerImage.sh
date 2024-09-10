@@ -63,23 +63,6 @@ DOCKER_TAG_NAME=${RUDI_VERSION}
 
 #'echo $DOCKER_REGISTRY_PASSWORD | docker login -u $DOCKER_REGISTRY_USER --password-stdin $DOCKER_REGISTRY'
 
-# JAR pour WSO2
-log "Copy wso2 jar"
-
-mkdir -p ${CI_DIR}/docker/apim
-mkdir -p ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/dropins
-mkdir -p ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/lib
- 
-cp rudi-tools/rudi-tools-wso2/target/org.rudi.wso2.userstore.jar                       ${CI_DIR}/docker/apim/org.rudi.wso2.userstore.jar
-cp rudi-tools/rudi-tools-wso2-handler/target/org.rudi.wso2.handler.jar ${CI_DIR}/docker/apim/org.rudi.wso2.handler.jar
-cp rudi-facet/rudi-facet-crypto/target/rudi-facet-crypto.jar           ${CI_DIR}/docker/apim/rudi-facet-crypto.jar
-cp rudi-common/rudi-common-core/target/rudi-common-core-${RUDI_VERSION}.jar            ${CI_DIR}/docker/apim/rudi-common.jar
-
-cp rudi-tools/rudi-tools-wso2/target/org.rudi.wso2.userstore.jar                       ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/dropins/org.rudi.wso2.userstore.jar
-cp rudi-tools/rudi-tools-wso2-handler/target/org.rudi.wso2.handler.jar ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/lib/org.rudi.wso2.handler.jar
-cp rudi-facet/rudi-facet-crypto/target/rudi-facet-crypto.jar           ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/lib/rudi-facet-crypto.jar
-cp rudi-common/rudi-common-core/target/rudi-common-core-${RUDI_VERSION}.jar            ${CI_DIR}/docker-compose/wso2/conf/apim/repository/components/lib/rudi-common-core.jar
-
 # JAR Dataverse
 #export SERVICE_BASIC=`printf "${SERVICE_LOGIN}:${SERVICE_PWD}" | base64`
 #export AUTHORIZATION_HEADER_RAW=" Basic ${SERVICE_BASIC}"
@@ -116,17 +99,7 @@ cd ${ROOT_DIR}
 
 log "Build services images..."
 build_docker_images ci/docker/
-
-log "Build wso2..."
-
 GIT_SUBMODULE_STRATEGY=recursive
-WSO2_DOCKERFILES_DIRECTORY=ci/docker-apim/docker-compose/apim-with-analytics/
-WSO2_VERSION=3.2.0.1 
-# On corrige les Dockerfile de WSO2 pour pouvoir les builder (source : https://github.com/wso2/docker-apim/issues/412#issuecomment-1146758176)
-find "$WSO2_DOCKERFILES_DIRECTORY" -type f -name "Dockerfile" | while read line; do
-	sed -i 's/FROM docker.wso2.com/FROM wso2/' $line
-done
-build_docker_images "$WSO2_DOCKERFILES_DIRECTORY" $WSO2_VERSION
 
 cd ${PWD}
 

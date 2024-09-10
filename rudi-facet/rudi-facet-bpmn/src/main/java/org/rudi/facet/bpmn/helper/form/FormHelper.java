@@ -6,6 +6,8 @@ package org.rudi.facet.bpmn.helper.form;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,15 +47,12 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
- *
  */
 @Slf4j
 @Component
 public class FormHelper {
 
-	private static final String DEFAULT_DATA_FORMAT = "dd/MM/yyyy";
-
-	private static final String DRAFT_USER_TASK_ID = "draft";
+	public static final String DRAFT_USER_TASK_ID = "draft";
 
 	@Autowired
 	private FormMapper formMapper;
@@ -110,7 +109,7 @@ public class FormHelper {
 
 	/**
 	 * Retourne le formulaire le plus adapté à la tâche
-	 *
+	 * <p>
 	 * Lors de la recherche on ramène tous les formulaires pour le workflow, la révision courante ou null, la tâche utilisateur ou null ce qui permet
 	 * d'avoir des formulaires génériques pour toutes les révisions ou pour toutes les tâches etc.
 	 *
@@ -135,13 +134,25 @@ public class FormHelper {
 		return result;
 	}
 
-	public Form lookupDraftForm(String processDefinitionKey) throws FormDefinitionException {
-		return lookupViewForm(processDefinitionKey, DRAFT_USER_TASK_ID);
-	}
-
-	public Form lookupViewForm(String processDefinitionKey, String userKey) throws FormDefinitionException {
+	/**
+	 * Retourne le formulaire correspondant à une userTask et une action
+	 * 
+	 * @param processDefinitionKey le process
+	 * @param userKey              le nom de la user task
+	 * @param actionName           l'action
+	 * @return le form
+	 * @throws FormDefinitionException
+	 */
+	public Form lookupForm(String processDefinitionKey, String userKey, String actionName)
+			throws FormDefinitionException {
 		Form result = null;
-		ProcessFormDefinitionSearchCriteria searchCriteria = createSearchCriteria(processDefinitionKey, userKey);
+		ProcessFormDefinitionSearchCriteria searchCriteria = null;
+		if (StringUtils.isEmpty(actionName)) {
+
+			searchCriteria = createSearchCriteria(processDefinitionKey, userKey);
+		} else {
+			searchCriteria = createSearchCriteria(processDefinitionKey, userKey, actionName);
+		}
 		Page<ProcessFormDefinitionEntity> processFormDefinitionEntities = processFormDefinitionCustomDao
 				.searchProcessFormDefintions(searchCriteria, PageRequest.of(0, 1, createSortCriteria()));
 		if (!processFormDefinitionEntities.isEmpty()) {
@@ -153,6 +164,14 @@ public class FormHelper {
 			}
 		}
 		return result;
+	}
+
+	public Form lookupDraftForm(String processDefinitionKey) throws FormDefinitionException {
+		return lookupViewForm(processDefinitionKey, DRAFT_USER_TASK_ID);
+	}
+
+	public Form lookupViewForm(String processDefinitionKey, String userKey) throws FormDefinitionException {
+		return lookupForm(processDefinitionKey, userKey, null);
 	}
 
 	/**
@@ -215,7 +234,6 @@ public class FormHelper {
 	}
 
 	/**
-	 *
 	 * @param form
 	 * @return la map des champs existants
 	 */
@@ -304,7 +322,7 @@ public class FormHelper {
 		}
 	}
 
-	private Object convertValue(FieldDefinition fieldDefinition, String value) throws FormConvertException {
+	public Object convertValue(FieldDefinition fieldDefinition, String value) throws FormConvertException {
 		Object result = null;
 		try {
 			switch (fieldDefinition.getType()) {
@@ -312,12 +330,12 @@ public class FormHelper {
 				result = Boolean.valueOf(value);
 				break;
 			case DATE:
-				String pattern = StringUtils.isNotEmpty(fieldDefinition.getExtendedType())
-						? fieldDefinition.getExtendedType()
-						: DEFAULT_DATA_FORMAT;
-				SimpleDateFormat dataFormat = new SimpleDateFormat(pattern);
-				result = dataFormat.parse(value);
-
+				if (StringUtils.isNotEmpty(fieldDefinition.getExtendedType())) {
+					SimpleDateFormat dataFormat = new SimpleDateFormat(fieldDefinition.getExtendedType());
+					result = dataFormat.parse(value);
+				} else {
+					result = ZonedDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+				}
 				break;
 			case DOUBLE:
 				result = Double.valueOf(value);
@@ -352,13 +370,21 @@ public class FormHelper {
 				.acceptFlexRevision(true).userTaskId(userTaskId).acceptFlexUserTaskId(true).build();
 	}
 
+	private ProcessFormDefinitionSearchCriteria createSearchCriteria(String processDefinitionKey, String userTaskId,
+			String actionName) {
+		String processInstanceId = lookupBpmnHelper().lookupProcessInstanceBusinessKey(processDefinitionKey, null);
+		return ProcessFormDefinitionSearchCriteria.builder().processDefinitionId(processInstanceId)
+				.acceptFlexRevision(true).userTaskId(userTaskId).acceptFlexUserTaskId(true)
+				.actionName(actionName != null ? actionName : "main").acceptFlexActionName(actionName == null).build();
+	}
+
 	private Sort createSortCriteria() {
 		return Sort.by(Order.asc("revision"), Order.asc("userTaskId"));
 	}
 
 	/**
 	 * cicular reference
-	 * 
+	 *
 	 * @return
 	 */
 	protected BpmnHelper lookupBpmnHelper() {

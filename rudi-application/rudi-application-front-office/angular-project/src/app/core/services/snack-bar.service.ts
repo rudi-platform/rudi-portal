@@ -17,6 +17,7 @@ export class SnackBarService {
     /**
      *  Constructeur
      * @param snackBar  Instanciation SnackBar Bar Material Design (notification en bas de page)
+     * @param translateService
      */
     constructor(
         private readonly snackBar: MatSnackBar,
@@ -66,11 +67,11 @@ export class SnackBarService {
     }
 
     showSuccess(i18nMessageKey: string, duration?: number): void {
-            const data: Data = {
-                level: Level.SUCCESS,
-                message: i18nMessageKey,
-            };
-            this.openSnackBar(data, duration);
+        const data: Data = {
+            level: Level.SUCCESS,
+            message: i18nMessageKey,
+        };
+        this.openSnackBar(data, duration);
     }
 
     showError(i18nMessageKey: string, duration?: number): void {

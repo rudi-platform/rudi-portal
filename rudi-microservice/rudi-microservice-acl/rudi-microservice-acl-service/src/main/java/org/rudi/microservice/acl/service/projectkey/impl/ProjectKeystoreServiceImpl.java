@@ -39,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
- *
  */
 @Service
 @ConditionalOnProperty(name = "acl.project-key-store.implementation", havingValue = "bdd", matchIfMissing = true)
@@ -74,10 +73,14 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 
 	private final PasswordHelper passwordHelper;
 
+
 	@Override
 	@Transactional(readOnly = false)
 	public ProjectKeystore createProjectKeystore(ProjectKeystore projectKeystore) throws AppServiceException {
 		projectKeystoreValidator.validateCreation(projectKeystore);
+		if (projectKeystoreDao.findByProjectUuid(projectKeystore.getProjectUuid()) != null) {
+			throw new AppServiceException("Il existe déjà un Project Keystore pour ce Projet");
+		}
 		ProjectKeystoreEntity entity = projectKeystoreMapper.dtoToEntity(projectKeystore);
 		entity.setUuid(UUID.randomUUID());
 		return projectKeystoreMapper.entityToDto(projectKeystoreDao.save(entity));
@@ -123,7 +126,9 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 
 	private ProjectKeyEntity createProjectKey(ProjectKey projectKey, UserEntity user) {
 		ProjectKeyEntity projectKeyEntity = projectKeyMapper.dtoToEntity(projectKey);
+		projectKeyEntity.setUuid(UUID.randomUUID());
 		projectKeyEntity.setClient(user);
+		projectKeyEntity.setUuid(UUID.randomUUID());
 		projectKeyEntity.setCreationDate(LocalDateTime.now());
 		projectKeyEntity = projectKeyDao.save(projectKeyEntity);
 		return projectKeyEntity;
@@ -191,12 +196,12 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 			projectKeyDao.delete(item);
 		}
 		projectKeystoreDao.save(entity);
-
 	}
 
 	@Override
-	public Page<ProjectKeystore> searchProjectKey(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable) {
-		return projectKeystoreMapper.entitiesToDto(projectKeystoreCustomDao.searchUsers(searchCriteria, pageable),
+	public Page<ProjectKeystore> searchProjectKeys(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable) {
+		var entities = projectKeystoreCustomDao.searchUsers(searchCriteria, pageable);
+		return projectKeystoreMapper.entitiesToDto(entities,
 				pageable);
 	}
 
@@ -205,6 +210,7 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 		ProjectKeystoreEntity entity = getProjectKeystoreEntity(projectKeystoreUuid);
 		return projectKeystoreMapper.entityToDto(entity);
 	}
+
 
 	protected ProjectKeystoreEntity getProjectKeystoreEntity(UUID uuid) throws AppServiceBadRequestException {
 		ProjectKeystoreEntity result = projectKeystoreDao.findByUuid(uuid);

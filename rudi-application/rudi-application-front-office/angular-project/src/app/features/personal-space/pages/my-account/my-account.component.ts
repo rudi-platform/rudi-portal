@@ -18,7 +18,7 @@ export class MyAccountComponent implements OnInit {
 
     ngOnInit(): void {
         this.isLoading = true;
-        this.propertiesMetierService.get('rudidatarennes.docRudiBzh').subscribe({
+        this.propertiesMetierService.get('front.docRudi').subscribe({
             next: (rudiDocLink: string) => {
                 this.urlToDoc = rudiDocLink;
                 this.isLoading = false;

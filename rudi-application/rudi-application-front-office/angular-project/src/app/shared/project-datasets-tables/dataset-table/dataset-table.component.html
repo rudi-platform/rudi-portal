@@ -1,5 +1,5 @@
 <div class="table-jdd">
-    <hr>
+    <hr *ngIf="showHorizontalSeparator">
     <span class="table-title-style" [translate]="title"></span>
     <app-loader [allPage]="false" [isLight]="true" [noText]="true" [active]="tableLoading"></app-loader>
     <table

@@ -17,18 +17,19 @@
 .info-prod-container {
 
     .info-prod-content-container {
-        @extend .row;
+        width: 100%;
+        display: flex;
 
         .info-prod-logo-container {
-            @extend .col-sm-12;
-            @extend .col-md-2;
-            @extend .col-lg-4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
         }
 
         .info-prod-content {
-            @extend .col-sm-12;
-            @extend .col-md-10;
-            @extend .col-lg-8;
+            width: 100%;
+            padding-top: 48px;
         }
 
     }
@@ -227,6 +228,7 @@
 
 /* Card */
 .metadata-card {
+    padding: 16px;
     .card-label-title {
         font-size: 18px;
         font-weight: 600;

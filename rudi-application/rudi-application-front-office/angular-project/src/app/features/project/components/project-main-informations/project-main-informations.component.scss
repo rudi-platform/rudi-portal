@@ -16,3 +16,61 @@
     justify-content: space-between;
     width: 45%;
 }
+
+.text-area-height {
+    height: 160px !important;
+}
+
+.msg-to-moderator-form {
+
+& .title {
+    margin: 0 0 15px;
+    font-size: 26px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+& .label {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: black;
+}
+
+    & .description {
+        margin: 5px auto 20px;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: var(--primary-text);
+        text-align: center;
+    }
+}
+
+.my-reuse-recap {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: black;
+}
+
+*:focus-visible {
+    // on ne veut pas les rectangles bleu sur focus du champ input
+    outline: none;
+}

@@ -3,9 +3,13 @@
  */
 package org.rudi.microservice.projekt.facade.controller;
 
+import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.rudi.bpmn.core.bean.Form;
+import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
@@ -66,8 +70,8 @@ public class LinkedDatasetController implements LinkedDatasetApi {
 	}
 
 	/**
-	 * GET /linked-dataset/{datasetUuid}/myAccess : Définit si l&#39;utilisateur connecté à un linked dataset
-	 * Définit si l&#39;utilisateur connecté a accès au linked dataset ciblé
+	 * GET /linked-dataset/{datasetUuid}/myAccess : Définit si l&#39;utilisateur connecté à un linked dataset Définit si l&#39;utilisateur connecté a
+	 * accès au linked dataset ciblé
 	 *
 	 * @param datasetUuid Uuid du linkedDataset auquel on souhaite avoir accès. (required)
 	 * @return OK (status code 200)
@@ -76,4 +80,11 @@ public class LinkedDatasetController implements LinkedDatasetApi {
 	public ResponseEntity<Boolean> isMyAccessGratedToDataset(UUID datasetUuid) throws Exception {
 		return ResponseEntity.ok(linkedDatasetService.isMyAccessGratedToDataset(datasetUuid));
 	}
+
+	@Override
+	public ResponseEntity<List<HistoricInformation>> getLinkedDatasetTaskHistoryByTaskId(String taskId,
+			@Valid Boolean asAdmin) throws Exception {
+		return ResponseEntity.ok(linkedDatasetTaskService.getTaskHistoryByTaskId(taskId, asAdmin));
+	}
+
 }

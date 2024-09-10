@@ -3,6 +3,7 @@
  */
 package org.rudi.microservice.apigateway.facade.config.gateway;
 
+import org.rudi.common.service.swagger.SwaggerHelper;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.helper.dataset.metadatadetails.MetadataDetailsHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -13,6 +14,7 @@ import org.rudi.microservice.apigateway.facade.config.gateway.filters.DatasetDec
 import org.rudi.microservice.apigateway.facade.config.gateway.filters.LogGlobalFilter;
 import org.rudi.microservice.apigateway.facade.config.gateway.filters.RerouteToRequestUrlFilter;
 import org.rudi.microservice.apigateway.facade.config.gateway.filters.SelfdataGlobalFilter;
+import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.InterfaceContratHelper;
 import org.rudi.microservice.apigateway.service.api.ApiService;
 import org.rudi.microservice.apigateway.service.encryption.EncryptionService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,8 +48,8 @@ public class ApiGatewayConfiguration extends GatewayAutoConfiguration {
 	}
 
 	@Bean
-	public GlobalFilter logFilters() {
-		return new LogGlobalFilter();
+	public GlobalFilter logFilters(DatasetService datasetService) {
+		return new LogGlobalFilter(datasetService);
 	}
 
 	@Bean
@@ -65,15 +67,15 @@ public class ApiGatewayConfiguration extends GatewayAutoConfiguration {
 	}
 
 	@Bean
-	public RerouteToRequestUrlFilter rerouteToRequestUrlFilter() {
-		return new RerouteToRequestUrlFilter();
+	public RerouteToRequestUrlFilter rerouteToRequestUrlFilter(DatasetService datasetService,
+			SwaggerHelper swaggerHelper, InterfaceContratHelper interfaceContratHelper) {
+		return new RerouteToRequestUrlFilter(datasetService, swaggerHelper, interfaceContratHelper);
 	}
 
 	@Bean
 	@ConditionalOnEnabledFilter
 	public DatasetDecryptGatewayFilterFactory datasetDecryptGatewayFilterFactory(EncryptionService encryptionService,
 			DatasetService datasetService) {
-		// TODO RUDI-4728 : revoir cette parie ?
 		return new DatasetDecryptGatewayFilterFactory(encryptionService, datasetService);
 	}
 

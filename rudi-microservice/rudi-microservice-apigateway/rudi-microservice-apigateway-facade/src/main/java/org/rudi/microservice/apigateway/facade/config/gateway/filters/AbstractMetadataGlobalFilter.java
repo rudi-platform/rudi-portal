@@ -20,11 +20,9 @@ import org.rudi.microservice.apigateway.facade.config.gateway.ApiGatewayConstant
 import org.rudi.microservice.apigateway.facade.config.gateway.exception.UnauthorizedException;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -37,11 +35,7 @@ import reactor.core.publisher.Mono;
  *
  */
 @Slf4j
-@AllArgsConstructor
 public abstract class AbstractMetadataGlobalFilter extends AbstractGlobalFilter {
-
-	@Getter(value = AccessLevel.PROTECTED)
-	private final DatasetService datasetService;
 
 	@Getter(value = AccessLevel.PROTECTED)
 	private final ProjektHelper projektHelper;
@@ -54,6 +48,15 @@ public abstract class AbstractMetadataGlobalFilter extends AbstractGlobalFilter 
 
 	@Getter(value = AccessLevel.PROTECTED)
 	private final MetadataDetailsHelper metadataDetailsHelper;
+
+	protected AbstractMetadataGlobalFilter(DatasetService datasetService, ProjektHelper projektHelper,
+			ACLHelper aclHelper, SelfdataHelper selfdataHelper, MetadataDetailsHelper metadataDetailsHelper) {
+		super(datasetService);
+		this.projektHelper = projektHelper;
+		this.aclHelper = aclHelper;
+		this.selfdataHelper = selfdataHelper;
+		this.metadataDetailsHelper = metadataDetailsHelper;
+	}
 
 	/**
 	 * 
@@ -104,15 +107,6 @@ public abstract class AbstractMetadataGlobalFilter extends AbstractGlobalFilter 
 		return exchange.getRequest().getPath().toString().startsWith(ApiGatewayConstants.APIGATEWAY_DATASETS_PATH);
 	}
 
-	protected Pair<UUID, UUID> extractDatasetIdentifiers(ServerWebExchange exchange) {
-		ServerHttpRequest request = exchange.getRequest();
-		UUID globalId = UUID.fromString(request.getPath()
-				.subPath(ApiGatewayConstants.GLOBAL_ID_INDEX, ApiGatewayConstants.GLOBAL_ID_INDEX + 1).toString());
-		UUID mediaId = UUID.fromString(request.getPath()
-				.subPath(ApiGatewayConstants.MEDIA_ID_INDEX, ApiGatewayConstants.MEDIA_ID_INDEX + 1).toString());
-		return Pair.of(globalId, mediaId);
-	}
-
 	/**
 	 * 
 	 * @param exchange           le flux d'échange
@@ -123,7 +117,7 @@ public abstract class AbstractMetadataGlobalFilter extends AbstractGlobalFilter 
 	 */
 	protected Pair<Boolean, Boolean> extractAccess(ServerWebExchange exchange, Pair<UUID, UUID> datasetIdentifiers)
 			throws DataverseAPIException, UnauthorizedException {
-		Metadata metadata = datasetService.getDataset(datasetIdentifiers.getLeft());
+		Metadata metadata = getMetadata(datasetIdentifiers.getLeft());
 		boolean isRestricted = metadataDetailsHelper.isRestricted(metadata);
 		boolean isSelfDdata = metadataDetailsHelper.isSelfdata(metadata);
 		long hasMedia = metadata.getAvailableFormats().stream().map(Media::getMediaId)

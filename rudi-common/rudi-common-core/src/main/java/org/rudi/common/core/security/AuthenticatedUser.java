@@ -55,7 +55,7 @@ public class AuthenticatedUser {
 	}
 
 	public boolean hasData(String key) {
-		return (data != null) ? data.containsKey(key) : false;
+		return (data != null) && data.containsKey(key);
 	}
 
 	public String getData(String key) {

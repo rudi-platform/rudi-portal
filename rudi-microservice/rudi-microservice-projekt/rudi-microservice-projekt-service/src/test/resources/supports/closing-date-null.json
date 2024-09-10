@@ -1,0 +1,8 @@
+{
+	"uuid": "fdf6b956-2414-4311-a88d-0aa1836c70be",
+	"code": "closingDateNull",
+	"label": "Support dont la closing date est null",
+	"opening_date": "2021-10-29T10:36:40.614",
+	"closing_date": null,
+	"order": 1
+}

@@ -26,11 +26,7 @@ import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.apimaccess.api.PageResultUtils;
-import org.rudi.facet.apimaccess.bean.APISearchCriteria;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
-import org.rudi.facet.apimaccess.exception.APIsOperationException;
-import org.rudi.facet.apimaccess.service.APIsService;
+import org.rudi.facet.apigateway.exceptions.DeleteApiException;
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseMappingException;
@@ -42,7 +38,6 @@ import org.rudi.facet.dataverse.model.search.SearchParams;
 import org.rudi.facet.dataverse.utils.MetadataListUtils;
 import org.rudi.facet.dataverse.utils.SearchElementsUtils;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
-import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.bean.ReferenceDates;
@@ -63,13 +58,9 @@ import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.OrganizationsReparationReport;
 import org.rudi.microservice.kalim.service.admin.AdminService;
 import org.rudi.microservice.kalim.service.helper.apigateway.ApiGatewayManagerHelper;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
 import org.rudi.microservice.kalim.service.integration.IntegrationRequestService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.wso2.carbon.apimgt.rest.api.publisher.API;
-import org.wso2.carbon.apimgt.rest.api.publisher.APIInfo;
-import org.wso2.carbon.apimgt.rest.api.publisher.APIList;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -85,9 +76,7 @@ public class AdminServiceImpl implements AdminService {
 	private final Collection<ResourceRepairer> resourceRepairers;
 	private final MetadataBlockHelper metadataBLockHelper;
 	private final DatasetService datasetService;
-	private final APIManagerHelper apiManagerHelper;
 	private final ApiGatewayManagerHelper apiGatewayManagerHelper;
-	private final APIsService apIsService;
 	private final ProviderHelper providerHelper;
 	private final IntegrationRequestService integrationRequestService;
 	private final UtilPageable utilPageable;
@@ -272,7 +261,6 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void createMissingApis(List<UUID> globalIds) {
 		log.info("Starting createMissingApis...");
-		fetchAllMetadata(globalIds).map(this::createMissingApis).blockLast();
 		fetchAllMetadata(globalIds).map(this::synchronizeApis).blockLast();
 		log.info("createMissingApis terminated.");
 	}
@@ -328,58 +316,6 @@ public class AdminServiceImpl implements AdminService {
 		}
 	}
 
-	private List<API> createMissingApis(Metadata metadata) {
-		try {
-			log.info("Creating missing apis for dataset {}.", metadata.getGlobalId());
-
-			final var medias = metadata.getAvailableFormats();
-			if (CollectionUtils.isEmpty(medias)) {
-				return Collections.emptyList();
-			}
-
-			final List<API> createdMissingApis = new ArrayList<>(medias.size());
-
-			for (final var media : apiManagerHelper.getValidMedias(metadata)) {
-				final var createdApi = createApiIfMissingForMedia(media, metadata);
-				if (createdApi != null) {
-					createdMissingApis.add(createdApi);
-				}
-			}
-
-			log.info("{} missing api(s) created for dataset {}.", createdMissingApis.size(), metadata.getGlobalId());
-
-			return createdMissingApis;
-
-		} catch (Exception e) {
-			log.error("Failed to create missing apis for dataset {}.", metadata.getGlobalId(), e);
-			return Collections.emptyList();
-		}
-	}
-
-	/**
-	 * @return l'API créée, null si déjà existante
-	 */
-	@Nullable
-	private API createApiIfMissingForMedia(Media media, Metadata metadata) throws APIManagerException {
-		log.info("Checking if API is missing for media {}...", media.getMediaId());
-		final var apiExists = apIsService.existsApi(metadata.getGlobalId(), media.getMediaId());
-
-		if (apiExists) {
-			log.info("API already exists for media {}.", media.getMediaId());
-			return null;
-		} else {
-			log.info("Creating API for media {}...", media.getMediaId());
-			final var createdApi = createApiForMedia(media, metadata);
-			log.info("API created for media {} : {}", media.getMediaId(), createdApi.getId());
-			return createdApi;
-		}
-	}
-
-	@Nonnull
-	private API createApiForMedia(Media media, Metadata metadata) throws APIManagerException {
-		final var nodeProviderUuid = getProviderUuid(metadata);
-		return apiManagerHelper.createApiForMedia(metadata, media, nodeProviderUuid);
-	}
 
 	@Nonnull
 	private UUID getProviderUuid(Metadata metadata) {
@@ -417,27 +353,11 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public void deleteAllApis() {
-		getAllApis().doOnNext(this::deleteApi).blockLast();
-	}
-
-	private Flux<APIInfo> getAllApis() {
-		return PageResultUtils.fluxAllElementsUsing(offset -> {
-			try {
-				return Mono.just(apIsService.searchAPI(new APISearchCriteria().offset(offset)));
-			} catch (APIsOperationException e) {
-				throw new RuntimeException(e);
-			}
-		}, APIList::getList, page -> page.getPagination().getOffset() + page.getPagination().getLimit());
-	}
-
-	private void deleteApi(APIInfo apiInfo) {
-		final var id = apiInfo.getId();
 		try {
-			log.info("Deleting API {}...", id);
-			apiManagerHelper.deleteAPI(apiInfo);
-			log.info("API {} deleted.", id);
-		} catch (Exception e) {
-			log.error("Failed to delete API {}", id, e);
+			apiGatewayManagerHelper.deleteApis();
+		} catch (DeleteApiException e) {
+			log.error("Failed to delete all apis", e);
 		}
+
 	}
 }

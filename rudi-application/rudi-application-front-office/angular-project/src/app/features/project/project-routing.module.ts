@@ -1,7 +1,8 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
-import {AuthGuardService} from '@core/services/auth-guard.service';
+import {AuthGuardService as AuthGuard, AuthGuardService} from '@core/services/auth-guard.service';
+import {OwnerGuardService} from '@core/services/owner-guard.service';
 import {UserGuardService} from '@core/services/user-guard.service';
 import {DetailComponent} from './pages/detail/detail.component';
 import {ListComponent} from './pages/list/list.component';
@@ -25,7 +26,7 @@ const routes: Routes = [
     {
         path: 'detail/:uuid/:name',
         component: DetailComponent,
-        canActivate: mapToCanActivate([AuthGuardService])
+        canActivate: mapToCanActivate([AuthGuardService, UserGuardService])
     }
 ];
 

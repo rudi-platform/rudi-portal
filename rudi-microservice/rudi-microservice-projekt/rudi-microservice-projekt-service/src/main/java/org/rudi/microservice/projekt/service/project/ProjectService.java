@@ -15,8 +15,9 @@ import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -30,9 +31,16 @@ public interface ProjectService {
 	 *
 	 * @return paged project list
 	 */
-	Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable);
+	Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable) throws AppServiceException;
 
-	Project getProject(UUID uuid) throws AppServiceNotFoundException;
+	/**
+	 * Get project information
+	 * 
+	 * @param uuid project uuid
+	 * @return project information if access to details is allowed
+	 * @throws AppServiceException if user is not allowed to access to service
+	 */
+	Project getProject(UUID uuid) throws AppServiceException;
 
 	/**
 	 * Create a project
@@ -140,8 +148,7 @@ public interface ProjectService {
 	 * @return Une page de project (limit max sinon 10)
 	 * @throws GetOrganizationException si erreur
 	 */
-	Page<Project> getMyProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
-			throws GetOrganizationException;
+	Page<Project> getMyProjects(ProjectSearchCriteria searchCriteria, Pageable pageable) throws AppServiceException;
 
 	/**
 	 * Détermine si l'utilisateur connecté est owner du projet passé en paramètre.
@@ -160,12 +167,12 @@ public interface ProjectService {
 	/**
 	 * Création d'une nouvelle clé pour une projet donné
 	 * 
-	 * @param projectUuid l'uuid du projet
-	 * @param projectKey  la demande de clé
+	 * @param projectUuid          l'uuid du projet
+	 * @param projectKeyCredential la demande de clé + mot de passe de l'utilsiateur
 	 * @return la clé
 	 * @throws AppServiceException
 	 */
-	ProjectKey createProjectKey(UUID projectUuid, ProjectKey projectKey) throws AppServiceException;
+	ProjectKey createProjectKey(UUID projectUuid, ProjectKeyCredential projectKeyCredential) throws AppServiceException;
 
 	/**
 	 * Révocation d'un clé d'un projet donné
@@ -180,7 +187,6 @@ public interface ProjectService {
 	 * Recherche paginée des clés d'un projet
 	 * 
 	 * @param searchCriteria
-	 * @param page
 	 * @return
 	 * @throws AppServiceException
 	 */

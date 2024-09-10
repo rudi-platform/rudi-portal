@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
+import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {Order} from '@features/organization/components/order/type';
 import {MetadataFacets} from 'micro_service_modules/api-kaccess';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
-import {ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {ProjectByOwner} from 'micro_service_modules/projekt/projekt-model';
 import {OrganizationBean, OrganizationService, PagedOrganizationBeanList} from 'micro_service_modules/strukture/api-strukture';
 import {BehaviorSubject, Subscription} from 'rxjs';
@@ -35,7 +35,7 @@ export class SearchOrganizationsService {
 
     constructor(
         private organizationService: OrganizationService,
-        private readonly projektService: ProjektService,
+        private readonly projektMetierService: ProjektMetierService,
         private readonly konsultService: KonsultService
     ) {
         this.currentRequest = {
@@ -114,7 +114,7 @@ export class SearchOrganizationsService {
         this.projectsCountLoading$.next(true);
         const organizations: OrganizationBean[] = [...this.organizations$.value];
 
-        this.projektService.getNumberOfProjectsPerOwners({
+        this.projektMetierService.getNumberOfProjectsPerOwners({
             owner_uuids: organizations.map((e: OrganizationBean) => e.uuid)
         }).subscribe((projectByOwners: ProjectByOwner[]): void => {
 

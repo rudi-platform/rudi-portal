@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import org.rudi.facet.apigateway.exceptions.DeleteApiException;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
@@ -26,8 +26,7 @@ import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
-import org.rudi.microservice.kalim.service.integration.impl.validator.DatasetCreatorIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,8 +40,6 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 	@Mock
 	private DatasetService datasetService;
 	@Mock
-	private APIManagerHelper apiManagerHelper;
-	@Mock
 	private ApiManagerHelper apigatewayManagerHelper;
 	@Mock
 	private DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator;
@@ -51,14 +48,14 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 
 	@BeforeEach
 	void setUp() {
-		handler = new DeleteIntegrationRequestTreatmentHandler(datasetService, apigatewayManagerHelper,
-				apiManagerHelper, error500Builder, datasetCreatorIsAuthenticatedValidator, metadataDetailsHelper);
+		handler = new DeleteIntegrationRequestTreatmentHandler(datasetService, apigatewayManagerHelper, error500Builder,
+				datasetCreatorIsAuthenticatedValidator, metadataDetailsHelper);
 	}
 
 	@Test
 	@DisplayName("non existing metadata ⇒ error")
 	void createIntegrationRequestDeleteNonExistingMetadata()
-			throws DataverseAPIException, APIManagerException, JsonProcessingException {
+			throws DataverseAPIException, JsonProcessingException, DeleteApiException {
 
 		final Metadata metadataToDelete = buildMetadataToDelete();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToDelete);
@@ -76,8 +73,8 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 		// No more interactions with DataSet
 		verifyNoMoreInteractions(datasetService);
 
-		// API is archived
-		verify(apiManagerHelper).archiveAllAPI(integrationRequest);
+		// API is deleted
+		verify(apigatewayManagerHelper).deleteApis(integrationRequest);
 	}
 
 	private Metadata buildMetadataToDelete() {
@@ -86,11 +83,13 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 
 	/**
 	 * RUDI-541 : On doit pouvoir supprimer un JDD sans devoir envoyer tout son contenu JSON
+	 * 
+	 * @throws DeleteApiException
 	 */
 	@Test
 	@DisplayName("existing metadata ⇒ dataset archived and API deleted")
 	void createIntegrationRequestDeleteExistingMetadata()
-			throws DataverseAPIException, APIManagerException, JsonProcessingException {
+			throws DataverseAPIException, JsonProcessingException, DeleteApiException {
 
 		final Metadata metadataToDelete = new Metadata().globalId(UUID.randomUUID());
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToDelete);
@@ -107,8 +106,8 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 		// DataSet is archived
 		verify(datasetService).archiveDataset(metadataToDelete.getDataverseDoi());
 
-		// API is archived
-		verify(apiManagerHelper).archiveAllAPI(integrationRequest);
+		// API is deleted
+		verify(apigatewayManagerHelper).deleteApis(integrationRequest);
 	}
 
 }

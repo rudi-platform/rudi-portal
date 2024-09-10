@@ -11,25 +11,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = {
-		"org.rudi.common.facade",
-		"org.rudi.common.service",
-		"org.rudi.common.storage",
-		"org.rudi.common.core",
-		"org.rudi.facet.apimaccess",
-		"org.rudi.facet.dataverse",
-		"org.rudi.facet.kaccess",
-		"org.rudi.facet.kos",
-		"org.rudi.facet.acl",
-		"org.rudi.facet.strukture",
-		"org.rudi.facet.providers",
-		"org.rudi.facet.organization",
-		"org.rudi.facet.apigateway",
-		"org.rudi.microservice.kalim.facade",
-		"org.rudi.microservice.kalim.service",
-		"org.rudi.microservice.kalim.storage",
-		"org.rudi.facet.apimremote",
-})
+@SpringBootApplication(scanBasePackages = { "org.rudi.common.facade", "org.rudi.common.service",
+		"org.rudi.common.storage", "org.rudi.common.core", "org.rudi.facet.dataverse", "org.rudi.facet.kaccess",
+		"org.rudi.facet.kos", "org.rudi.facet.acl", "org.rudi.facet.strukture", "org.rudi.facet.providers",
+		"org.rudi.facet.organization", "org.rudi.facet.apigateway", "org.rudi.microservice.kalim.facade",
+		"org.rudi.microservice.kalim.service", "org.rudi.microservice.kalim.storage", })
 @EnableEurekaClient
 @EnableScheduling
 @PropertySource(value = { "classpath:kalim/kalim-common.properties" })

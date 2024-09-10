@@ -6,7 +6,7 @@
 		"title": "rudi-kalim-api",
 		"termsOfService": "http://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -770,8 +770,8 @@
 				"tags": [
 					"kalim"
 				],
-				"summary": "Recrée toutes les API WSO2 manquantes.",
-				"description": "À partir de tous les JDD actuellement connus, on crée toutes les API manquantes côté WSO2.",
+				"summary": "Recrée toutes les API manquantes.",
+				"description": "À partir de tous les JDD actuellement connus, on crée toutes les API manquantes côté API Gateway.",
 				"operationId": "createMissingApis",
 				"parameters": [
 					{
@@ -824,12 +824,12 @@
 				"tags": [
 					"kalim"
 				],
-				"summary": "Supprime toutes les API WSO2.",
-				"description": "Supprime toutes les API WSO2. On peut les recréer avec /admin/create-missing-apis.",
+				"summary": "Supprime toutes les API dans l'API Gateway.",
+				"description": "Supprime toutes les API dans l'API Gateway. On peut les recréer avec /admin/create-missing-apis.",
 				"operationId": "deleteAllApis",
 				"responses": {
 					"204": {
-						"description": "Toutes les APIs WSO2 ont été supprimées avec succès. Veuillez consulter les logs serveur pour plus de détails."
+						"description": "Toutes les APIs de l'API Gateway ont été supprimées avec succès. Veuillez consulter les logs serveur pour plus de détails."
 					},
 					"400": {
 						"$ref": "#/components/responses/BadRequestError"

@@ -339,11 +339,11 @@ export class DetailComponent implements OnInit {
     /**
      * Function permettant de récupérer le nom du fichier à télécharger
      * @param response
+     * @param media
      */
-    downLoadFile(response: HttpResponse<Blob>): void {
+    downLoadFile(response: HttpResponse<Blob>, media?: Media): void {
         const blob = new Blob([response.body], {type: response.body.type});
-        const filename = response.headers.get('content-disposition').split(';')[1].split('filename')[1].split('=')[1].trim();
-        saveAs(blob, filename);
+        saveAs(blob, media.media_name);
     }
 
     /**
@@ -359,13 +359,13 @@ export class DetailComponent implements OnInit {
                 .subscribe({
                     next: (response) => {
                         this.isLoading = false;
-                        this.downLoadFile(response);
+                        this.downLoadFile(response, selectedItem);
                     },
                     error: () => {
                         this.isLoading = false;
                         const message = this.translateService.instant('common.echec');
                         const linkLabel = this.translateService.instant('snackbarTemplate.ici');
-                        this.propertiesMetierService.get('rudidatarennes.contact').subscribe(link => {
+                        this.propertiesMetierService.get('front.contact').subscribe(link => {
                             this.snackBarService.openSnackBar({
                                 message: `${message} <a href="${link}">${linkLabel}</a>.`,
                                 level: Level.ERROR

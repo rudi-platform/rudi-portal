@@ -270,24 +270,11 @@ public class BpmnHelper {
 	 * @return
 	 */
 	public List<Action> computeTaskActions(org.activiti.engine.task.Task task) {
-		List<Action> result = new ArrayList<>();
-		RepositoryService repositoryService = processEngine.getRepositoryService();
 		String processDefinitionId = task.getProcessDefinitionId();
+		String taskDefinitionKey = task.getTaskDefinitionKey();
 		ProcessInstance processInstance = lookupProcessInstance(task);
-		BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-		org.activiti.bpmn.model.Process process = bpmnModel.getProcessById(processInstance.getProcessDefinitionKey());
-		if (process != null) {
-			FlowElement flowElement = process.getFlowElement(task.getTaskDefinitionKey());
-			if (flowElement instanceof UserTask) {
-				handleUserTask(result, flowElement);
-			}
-		}
-		if (result.isEmpty()) {
-			Action action = new Action();
-			action.setLabel("Envoyer");
-			action.setName(DEFAULT_ACTION);
-			result.add(action);
-		}
+		List<Action> result = extractActions(processInstance.getProcessDefinitionKey(), processDefinitionId,
+				taskDefinitionKey);
 		for (Action action : result) {
 			try {
 				action.setForm(formHelper.lookupForm(task, action.getName()));
@@ -296,6 +283,31 @@ public class BpmnHelper {
 			}
 		}
 		return result;
+	}
+
+	public List<Action> extractActions(String processDefinitionKey, String processDefinitionId,
+			String taskDefinitionKey) {
+		List<Action> result = new ArrayList<>();
+		RepositoryService repositoryService = processEngine.getRepositoryService();
+		BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+		org.activiti.bpmn.model.Process process = bpmnModel.getProcessById(processDefinitionKey);
+		if (process != null) {
+			FlowElement flowElement = process.getFlowElement(taskDefinitionKey);
+			if (flowElement instanceof UserTask) {
+				handleUserTask(result, flowElement);
+			}
+		}
+		addDefaultAction(result);
+		return result;
+	}
+
+	private void addDefaultAction(List<Action> result) {
+		if (result.isEmpty()) {
+			Action action = new Action();
+			action.setLabel("Envoyer");
+			action.setName(DEFAULT_ACTION);
+			result.add(action);
+		}
 	}
 
 	/**

@@ -37,7 +37,7 @@
 }
 
 .table-jdd {
-    margin-top: 3em;
+    margin-top: 0.3em;
 }
 
 .table-header {
@@ -45,7 +45,7 @@
     font-weight: 600;
     color: var(--primary-text);
     //overide the mat table margin css
-    padding: 0px !important
+    padding: 0 !important
 }
 
 .first-row {
@@ -68,7 +68,6 @@
 .center{
     display: flex;
     justify-content: center;
-    height: inherit;
     height: 5em;
 }
 

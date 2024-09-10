@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Connector;
@@ -32,7 +31,7 @@ class MetadataServiceImplIT {
 	private DatasetService datasetService;
 
 	@Test
-	void getMetadataByIdRewrittenMediaUrlOk() throws AppServiceException, DataverseAPIException, APIManagerException {
+	void getMetadataByIdRewrittenMediaUrlOk() throws AppServiceException, DataverseAPIException {
 		UUID mediaId = UUID.fromString("8ec31763-a4a4-44d7-8624-801632d29382");
 		UUID globalId = UUID.fromString("d6dcaed6-c8a9-4a35-b87c-7802acf3ebb2");
 		final Media originalMedia = new Media().mediaId(mediaId).connector(new Connector().url(

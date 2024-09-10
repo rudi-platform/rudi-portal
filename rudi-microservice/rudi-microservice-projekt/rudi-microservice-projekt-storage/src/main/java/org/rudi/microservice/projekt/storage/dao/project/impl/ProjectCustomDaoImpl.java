@@ -6,8 +6,11 @@ import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
@@ -15,7 +18,8 @@ import org.rudi.common.storage.dao.PredicateListBuilder;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
-import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
@@ -23,7 +27,9 @@ import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDataset
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +50,8 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	private static final String FIELD_UUID = "uuid";
 	private static final String FIELD_PRODUCER_UUID = "datasetOrganisationUuid";
 	private static final String FIELD_DATASET_CONFIDENTIALITY = "datasetConfidentiality";
+	private static final String FIELD_PROJECT_CONFIDENTIALITY = "confidentiality";
+	private static final String FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE = "privateAccess";
 
 	public ProjectCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, ProjectEntity.class);
@@ -73,7 +81,10 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.add(searchCriteria.getProjectUuids(),
 						(project, projectUuids) -> project.get(FIELD_UUID).in(projectUuids))
 				.add(searchCriteria.getStatus(), ProjectStatus::valueOf,
-						(project, status) -> project.get(FIELD_PROJECT_STATUS).in(status));
+						(project, status) -> project.get(FIELD_PROJECT_STATUS).in(status))
+				.add(searchCriteria.getIsPrivate(),
+						(project, confidentialities) -> project.join(FIELD_PROJECT_CONFIDENTIALITY)
+								.get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE).in(confidentialities));
 	}
 
 	@Override
@@ -172,4 +183,77 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				builder.countDistinct(countRoot)));
 		return entityManager.createQuery(countQuery).getResultList();
 	}
+
+	public Page<ProjectEntity> searchRelatedProjects(EnhancedProjectSearchCriteria searchCriteria, Pageable pageable) {
+		if (searchCriteria == null) {
+			return emptyPage(pageable);
+		}
+
+		final Long totalCount = getTotalProjectRelatedToAuthenticatedUser(searchCriteria);
+		if (totalCount == 0) {
+			return emptyPage(pageable);
+		}
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ProjectEntity> searchQuery = builder.createQuery(entitiesClass);
+		Root<ProjectEntity> searchRoot = searchQuery.from(entitiesClass);
+		addWhereSearchRelatedProjects(builder, searchQuery, searchRoot, searchCriteria);
+		searchQuery.select(searchRoot).distinct(true)
+				.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
+
+		TypedQuery<ProjectEntity> typedQuery = entityManager.createQuery(searchQuery);
+		if (pageable.isPaged()) {
+			typedQuery.setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize());
+		}
+
+		List<ProjectEntity> projectEntities = typedQuery.getResultList();
+		return new PageImpl<>(projectEntities, pageable, totalCount.intValue());
+	}
+
+	private void addWhereSearchRelatedProjects(CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery,
+			Root<ProjectEntity> root, EnhancedProjectSearchCriteria searchCriteria) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		Predicate isNotPrivatePredicate = builder
+				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), false);
+		Predicate isPrivatePredicate = builder
+				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), true);
+		Predicate owners = root.get(FIELD_OWNER_UUID).in(searchCriteria.getMyOrganizationsUuids());
+		Predicate dataSetOwner = root.join(FIELD_LINKED_DATASETS).get(FIELD_DATASET_UUID)
+				.in(searchCriteria.getMyOrganizationsDatasetsUuids());
+
+		predicates.add(
+				builder.or(isNotPrivatePredicate, builder.and(isPrivatePredicate, builder.or(owners, dataSetOwner))));
+
+		ProjectSearchCriteria projectSearchCriteria = searchCriteria.getProjectSearchCriteria();
+
+		// On rajoute les predicates issus du projectSearchCriteria
+		if (projectSearchCriteria != null) {
+			addPredicates(projectSearchCriteria, builder, criteriaQuery, root, predicates);
+			final PredicateListBuilder<ProjectEntity, ProjectSearchCriteria> predicateListBuilder = new PredicateListBuilder<>(
+					projectSearchCriteria, predicates, builder, root);
+
+			addPredicates(predicateListBuilder);
+		}
+
+		// Je ne suis pas sûr de ce que fais ce code par rapport à mes OR // AND dans les predicates plus haut.
+		if (CollectionUtils.isNotEmpty(predicates)) {
+			criteriaQuery.where(builder.and(predicates.toArray(new Predicate[0])));
+		}
+	}
+
+	private Long getTotalProjectRelatedToAuthenticatedUser(EnhancedProjectSearchCriteria searchCriteria) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+		Root<ProjectEntity> countRoot = countQuery.from(entitiesClass);
+
+		addWhereSearchRelatedProjects(builder, countQuery, countRoot, searchCriteria);
+
+		countQuery.select(builder.countDistinct(countRoot));
+
+		return entityManager.createQuery(countQuery).getSingleResult();
+
+	}
+
 }

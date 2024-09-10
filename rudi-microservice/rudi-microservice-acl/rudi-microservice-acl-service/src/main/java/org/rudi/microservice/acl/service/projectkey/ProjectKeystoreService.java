@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * @author FNI18300
- *
  */
 public interface ProjectKeystoreService {
 
@@ -26,7 +25,7 @@ public interface ProjectKeystoreService {
 
 	void deleteProjectKey(UUID projectKeystoreUuid, UUID projectKeyUuid) throws AppServiceException;
 
-	Page<ProjectKeystore> searchProjectKey(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable);
+	Page<ProjectKeystore> searchProjectKeys(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable);
 
 	ProjectKeystore getProjectKeystoreByUUID(UUID projectKeystoreUuid) throws AppServiceException;
 }

@@ -39,7 +39,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {RequestDetails} from '@shared/models/request-details';
 import {TitleIconType} from '@shared/models/title-icon-type';
 import {Level} from '@shared/notification-template/notification-template.component';
-import {RadioListItem} from '@shared/radio-list/radio-list-item';
 import {AccessConditionConfidentiality} from '@shared/utils/access-condition-confidentiality';
 import {ActionFallbackUtils} from '@shared/utils/action-fallback-utils';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
@@ -64,15 +63,6 @@ import {Moment} from 'moment';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {ProjektMetierService} from './projekt-metier.service';
-
-/**
- * Liste des codes de niveaux de restriction connus
- */
-const KNOWN_CONFIDENTIALITY_CODES = [
-    'CONFIDENTIAL', 'OPEN'
-];
-
-const DEFAULT_CONFIDENTIALITY_CODE = 'OPEN';
 
 /**
  * Taille maximale de la description d'un projet ou d'une réutilisation
@@ -344,39 +334,19 @@ export class ProjectSubmissionService {
     public loadDependenciesProject(): Observable<FormProjectDependencies> {
         const connectedUser$: Observable<User | undefined> = this.userService.getConnectedUser();
         const dependencies = {
-            confidentialities: this.projektMetierService.searchProjectConfidentialities(),
-            territorialScales: this.projektMetierService.searchTerritorialScales(),
-            supports: this.projektMetierService.searchSupports(),
-            projectPublicCible: this.projektMetierService.searchProjectPublicCible(),
-            projectTypes: this.projektMetierService.searchProjectTypes(),
+            confidentialities: this.projektMetierService.searchProjectConfidentialities({active: true}),
+            territorialScales: this.projektMetierService.searchTerritorialScales(true),
+            supports: this.projektMetierService.searchSupports(true),
+            projectPublicCible: this.projektMetierService.searchProjectPublicCible(true),
+            projectTypes: this.projektMetierService.searchProjectTypes(true),
             user: connectedUser$,
             organizations: connectedUser$.pipe(
                 switchMap(connectedUser => this.organizationMetierService.getMyOrganizations(connectedUser.uuid))
             ),
-            reuseStatus: this.projektMetierService.searchReuseStatus()
+            reuseStatus: this.projektMetierService.searchReuseStatus(true)
         };
 
         return forkJoin(dependencies);
-    }
-
-    /**
-     * Récupère l'ensemble des niveaux de confidentialité sous forme d'items de boutons radio
-     * @return Un observable d'un tableau de suggestions
-     */
-    public getConfidentialitiesRadio(confidentialities: Confidentiality[]): RadioListItem[] {
-
-        // Le tableau qui contiendra les radio items
-        const radioConfidentialities = [];
-
-        // On va mapper chaque niveau de confidentialité en item de bouton radio
-        confidentialities.forEach((confidentiality) => {
-            const radioItem = this.getConfidentialityDetails(confidentiality);
-            if (radioItem) {
-                radioConfidentialities.push(radioItem);
-            }
-        });
-
-        return radioConfidentialities;
     }
 
     /**
@@ -804,29 +774,6 @@ export class ProjectSubmissionService {
                 }).pipe(map(() => true));
             })
         );
-    }
-
-    /**
-     * Traduit le niveau de confidentialité en item de Radio Button
-     * @param confidentiality le niveau de confidentialité traduit
-     * @private
-     */
-    private getConfidentialityDetails(confidentiality: Confidentiality): RadioListItem | undefined {
-
-        // Si le niveau de confidentialité est inconnu on renvoie undefined
-        if (!KNOWN_CONFIDENTIALITY_CODES.includes(confidentiality.code)) {
-            return undefined;
-        }
-
-        // Récupération de la clé de translate
-        const translateKey = 'project.confidentiality.' + confidentiality.code;
-
-        // On construit un RadioItem
-        return {
-            code: confidentiality.code,
-            label: this.translateService.instant(translateKey + '.label'),
-            description: this.translateService.instant(translateKey + '.description')
-        };
     }
 
     /**

@@ -1,6 +1,11 @@
 @import "common-style";
 @import "responsive";
 
+::ng-deep.cdk-overlay-pane {
+    margin: 14px 0 14px -18px;
+}
+
+
 .mat-drawer-content {
     overflow-x: hidden;
 }
@@ -21,12 +26,12 @@
 }
 
 .menu-btn-download {
-    width: 191px;
+    --mdc-protected-button-label-text-color: var(--secondary-color);
+    --mdc-protected-button-container-color: var(--primary-color);
+    width: 100%;
     height: 40px;
     text-align: center;
-    color: var(--secondary-color);
     border-radius: 3px;
-    background-color: var(--focus);
     font-weight: 500;
     font-stretch: normal;
     font-style: normal;

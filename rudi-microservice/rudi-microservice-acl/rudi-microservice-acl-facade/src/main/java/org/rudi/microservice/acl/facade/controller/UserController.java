@@ -3,13 +3,6 @@ package org.rudi.microservice.acl.facade.controller;
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_SELFDATA;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_SELFDATA_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 
@@ -18,9 +11,6 @@ import java.util.UUID;
 
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
-import org.rudi.microservice.acl.core.bean.AccessKeyDto;
-import org.rudi.microservice.acl.core.bean.ClientKey;
-import org.rudi.microservice.acl.core.bean.ClientRegistrationDto;
 import org.rudi.microservice.acl.core.bean.PasswordUpdate;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserPageResult;
@@ -131,35 +121,6 @@ public class UserController implements UsersApi {
 	public ResponseEntity<AbstractAddress> updateAddress(UUID userUuid, AbstractAddress abstractAddress)
 			throws Exception {
 		return ResponseEntity.ok(userService.updateAddress(userUuid, abstractAddress));
-	}
-
-	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KONSULT + ", " + MODULE_KONSULT_ADMINISTRATOR + ")")
-	public ResponseEntity<ClientKey> getClientKeyByLogin(String login) throws Exception {
-		return ResponseEntity.ok(userService.getClientKeyByLogin(login));
-	}
-
-	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KONSULT + ", " + MODULE_PROJEKT + ", "
-			+ MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_KALIM + ", " + MODULE_KALIM_ADMINISTRATOR + ", "
-			+ MODULE_SELFDATA + ", " + MODULE_SELFDATA_ADMINISTRATOR + ", " + MODULE_KONSULT_ADMINISTRATOR + ")")
-	public ResponseEntity<ClientRegistrationDto> getClientRegistration(String login) throws Exception {
-		return ResponseEntity.ok(userService.getClientRegistration(login));
-	}
-
-	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KONSULT + ", " + MODULE_PROJEKT + ", "
-			+ MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_KALIM + ", " + MODULE_KALIM_ADMINISTRATOR + ", "
-			+ MODULE_SELFDATA + ", " + MODULE_SELFDATA_ADMINISTRATOR + ", " + MODULE_KONSULT_ADMINISTRATOR + ")")
-	public ResponseEntity<Void> addClientRegistration(String login, AccessKeyDto accessKeyDto) throws Exception {
-		userService.addClientRegistration(login, accessKeyDto);
-		return ResponseEntity.ok().build();
-	}
-
-	@Override
-	public ResponseEntity<ClientRegistrationDto> registerClientByPassword(String login, String password)
-			throws Exception {
-		return ResponseEntity.ok(userService.registerClientByPassword(login, password));
 	}
 
 	@Override

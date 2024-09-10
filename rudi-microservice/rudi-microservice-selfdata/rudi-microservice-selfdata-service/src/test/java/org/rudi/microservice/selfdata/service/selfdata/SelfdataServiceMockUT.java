@@ -1,6 +1,7 @@
 package org.rudi.microservice.selfdata.service.selfdata;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -15,11 +16,11 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.apimaccess.exception.ApplicationOperationException;
-import org.rudi.facet.apimaccess.helper.registration.RegistrationHelper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.microservice.selfdata.service.exception.MissingApiForMediaException;
+import org.rudi.microservice.selfdata.service.helper.selfdatadataset.SelfdataDatasetApisHelper;
 import org.rudi.microservice.selfdata.service.selfdata.impl.SelfdataServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,10 +33,10 @@ class SelfdataServiceMockUT {
 	private DatasetService datasetService;
 
 	@Mock
-	private RegistrationHelper registrationHelper;
+	private UtilContextHelper utilContextHelper;
 
 	@Mock
-	private UtilContextHelper utilContextHelper;
+	private SelfdataDatasetApisHelper selfdataDatasetApisHelper;
 
 	@Test
 	void test_get_gdata_data_404_on_non_existing_dataset() throws DataverseAPIException {
@@ -53,16 +54,15 @@ class SelfdataServiceMockUT {
 	}
 
 	@Test
-	void test_get_gdata_data_500_on_searchApplicationWso2Error()
-			throws DataverseAPIException, ApplicationOperationException {
+	void test_get_gdata_data_error_on_callApiGatewayApi() throws DataverseAPIException, AppServiceException {
 		UUID randomUuid = UUID.randomUUID();
 		when(datasetService.getDataset(randomUuid)).thenReturn(new Metadata());
 		AuthenticatedUser correctUser = new AuthenticatedUser();
 		correctUser.setLogin("something@com");
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(correctUser);
-		when(registrationHelper.getOrCreateApplicationForUser(correctUser.getLogin()))
-				.thenThrow(ApplicationOperationException.class);
-		assertThrows(AppServiceException.class, () -> selfdataService.getGdataData(randomUuid));
+		when(selfdataDatasetApisHelper.getGdataData(any())).thenThrow(MissingApiForMediaException.class);
+
+		assertThrows(MissingApiForMediaException.class, () -> selfdataService.getGdataData(randomUuid));
 	}
 
 }

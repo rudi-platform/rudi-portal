@@ -24,10 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.acl.bean.AccessKeyDto;
 import org.rudi.facet.acl.bean.AddressType;
-import org.rudi.facet.acl.bean.ClientKey;
-import org.rudi.facet.acl.bean.ClientRegistrationDto;
 import org.rudi.facet.acl.bean.EmailAddress;
 import org.rudi.facet.acl.bean.PasswordUpdate;
 import org.rudi.facet.acl.bean.ProjectKey;
@@ -95,18 +92,6 @@ public class ACLHelper {
 	private String userCountEndpointURL;
 
 	@Getter
-	@Value("${rudi.facet.acl.endpoint.users.client-key.url:/acl/v1/users/{login}/client-key}")
-	private String clientKeyEndpointURL;
-
-	@Getter
-	@Value("${rudi.facet.acl.endpoint.users.client-registration.url:/acl/v1/users/{login}/client-registration-access-key}")
-	private String clientRegistrationEndpointURL;
-
-	@Getter
-	@Value("${rudi.facet.acl.endpoint.users.client-registration-by-password.url:/acl/v1/users/{login}/client-registration-password}")
-	private String registrationByPasswordEndpointURL;
-
-	@Getter
 	@Value("${rudi.facet.acl.endpoint.users.client-registration-by-password.url:/acl/v1/users/{login}/password}")
 	private String updateUserPasswordEndpointUrl;
 
@@ -117,7 +102,6 @@ public class ACLHelper {
 	@Getter
 	@Value("${rudi.facet.acl.endpoint.project-key-stores.get.url:/acl/v1/project-keystores/{project-key-store-uuid}}")
 	private String getOrDeleteProjectKeystoresUrl;
-
 	@Getter
 	@Value("${rudi.facet.acl.endpoint.project-key-stores.create.url:/acl/v1/project-keystores/{project-key-store-uuid}/project-keys}")
 	private String createProjectKeyUrl;
@@ -236,31 +220,6 @@ public class ACLHelper {
 		}
 
 		return result;
-	}
-
-	@Nullable
-	public ClientKey getClientKeyByLogin(String login) {
-		return loadBalancedWebClient.get().uri(buildClientKeyGetURL(), Map.of(ACLConstants.USER_LOGIN_PARAMETER, login))
-				.retrieve().bodyToMono(ClientKey.class).block();
-	}
-
-	@Nullable
-	public ClientRegistrationDto getClientRegistrationByLogin(String login) {
-		return loadBalancedWebClient.get()
-				.uri(buildClientRegistrationURL(), Map.of(ACLConstants.USER_LOGIN_PARAMETER, login)).retrieve()
-				.bodyToMono(ClientRegistrationDto.class).block();
-	}
-
-	public void addClientRegistration(String username, AccessKeyDto clientAccessKey) {
-		loadBalancedWebClient.post()
-				.uri(buildClientRegistrationURL(), Map.of(ACLConstants.USER_LOGIN_PARAMETER, username))
-				.bodyValue(clientAccessKey).retrieve().bodyToMono(void.class).block();
-	}
-
-	public ClientRegistrationDto findRegistrationOrRegister(String username, String password) {
-		return loadBalancedWebClient.post()
-				.uri(buildClientRegistrationByPasswordURL(), Map.of(ACLConstants.USER_LOGIN_PARAMETER, username))
-				.bodyValue(password).retrieve().bodyToMono(ClientRegistrationDto.class).block();
 	}
 
 	public User createUser(User user) {
@@ -388,24 +347,6 @@ public class ACLHelper {
 		if (StringUtils.isNotEmpty(code)) {
 			urlBuilder.append("&").append(CODE_PARAMETER).append('=').append(code);
 		}
-		return urlBuilder.toString();
-	}
-
-	protected String buildClientKeyGetURL() {
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(getAclServiceURL()).append(getClientKeyEndpointURL());
-		return urlBuilder.toString();
-	}
-
-	protected String buildClientRegistrationURL() {
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(getAclServiceURL()).append(getClientRegistrationEndpointURL());
-		return urlBuilder.toString();
-	}
-
-	protected String buildClientRegistrationByPasswordURL() {
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(getAclServiceURL()).append(getRegistrationByPasswordEndpointURL());
 		return urlBuilder.toString();
 	}
 
@@ -551,7 +492,7 @@ public class ACLHelper {
 	}
 
 	public ProjectKey createProjectKey(UUID projectKeyStoreUuid, ProjectKey projectKey) {
-		return loadBalancedWebClient.post()
+		return loadBalancedWebClient.put()
 				.uri(buildCreateProjectKeyUrl(), Map.of(PROJECT_KEY_STORE_UUID_PARAMETER, projectKeyStoreUuid))
 				.bodyValue(projectKey).retrieve().bodyToMono(ProjectKey.class).block();
 	}

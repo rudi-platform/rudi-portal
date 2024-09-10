@@ -1,6 +1,5 @@
 package org.rudi.microservice.projekt.service.helper.linkeddataset;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,8 +8,6 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.apimaccess.exception.APIManagerException;
-import org.rudi.facet.apimaccess.service.ApplicationService;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetCustomDao;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
@@ -24,8 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
@@ -33,44 +30,19 @@ import lombok.val;
 @Slf4j
 public class LinkedDatasetSubscriptionHelper {
 	private final ACLHelper aclHelper;
-	private final ApplicationService applicationService;
 	private final LinkedDatasetCustomDao linkedDatasetCustomDao;
 	private final LinkedDatasetDao linkedDatasetDao;
 	private final UtilPageable utilPageable;
 	private final ProjectCustomDao projectCustomDao;
 
 	@Transactional // true
-	public void cleanLinkedDatasetExpired(LinkedDatasetEntity existingLinkedDataset)
-			throws AppServiceException, APIManagerException {
-		val project = getProject(existingLinkedDataset);
-		val ownerName = getSubscriptionOwnerName(project);
-		// Recup de toutes les demandes de ce owner pour s'assurer qu'une autre demande ne donne pas accès à ce JDD
-		val ownerLinkedDatasets = new ArrayList<LinkedDatasetEntity>();
-		getOwnerAllRequests(List.of(project.getOwnerUuid()), 0, ownerLinkedDatasets);
-		val datasetUuid = existingLinkedDataset.getDatasetUuid();
-		boolean hasNotAccess = !hasAccessThroughAnotherRequest(ownerLinkedDatasets, datasetUuid);
-		if (hasNotAccess) { // Aucun autre linkedDataset ne donne accès au JDD => Désouscription
-			blockSubscription(existingLinkedDataset, ownerName);
-		} else { // Il existe un autre linkedDataset qui donne accès au JDD => Archivage du linkedDataset actuel expiré mais sans désouscription
-			archivedLinkedDataset(existingLinkedDataset);
-		}
+	public void cleanLinkedDatasetExpired(LinkedDatasetEntity existingLinkedDataset) {
+		archivedLinkedDataset(existingLinkedDataset);
 	}
 
 	@Transactional // true
-	public void handleUnlinkLinkedDataset(LinkedDatasetEntity existingLinkedDataset)
-			throws AppServiceException, APIManagerException {
-		val project = getProject(existingLinkedDataset);
-		val ownerName = getSubscriptionOwnerName(project);
-		// Recup de toutes les demandes de ce owner pour s'assurer qu'une autre demande ne donne pas accès à ce JDD
-		val ownerLinkedDatasets = new ArrayList<LinkedDatasetEntity>();
-		getOwnerAllRequests(List.of(project.getOwnerUuid()), 0, ownerLinkedDatasets);
-		val datasetUuid = existingLinkedDataset.getDatasetUuid();
-		boolean hasNotAccess = !hasAccessThroughAnotherRequest(ownerLinkedDatasets, datasetUuid);
-		if (hasNotAccess) { // Aucun autre linkedDataset ne donne accès au JDD => Désouscription
-			deleteSubscription(existingLinkedDataset, ownerName, datasetUuid);
-		} else { // Il existe un autre linkedDataset qui donne accès au JDD => Archivage du linkedDataset actuel expiré mais sans désouscription
-			archivedLinkedDataset(existingLinkedDataset);
-		}
+	public void handleUnlinkLinkedDataset(LinkedDatasetEntity existingLinkedDataset) {
+		archivedLinkedDataset(existingLinkedDataset);
 	}
 
 	/**
@@ -80,35 +52,6 @@ public class LinkedDatasetSubscriptionHelper {
 	protected void archivedLinkedDataset(LinkedDatasetEntity existingLinkedDataset) {
 		existingLinkedDataset.setLinkedDatasetStatus(LinkedDatasetStatus.ARCHIVED);
 		linkedDatasetDao.save(existingLinkedDataset);
-	}
-
-	/**
-	 *
-	 * @param existingLinkedDataset link à archiver
-	 * @param ownerName             nom auquel la souscription au jdd a été faite
-	 * @param datasetUuid           uuid du jdd
-	 * @throws APIManagerException Execption WSO2
-	 */
-	protected void deleteSubscription(LinkedDatasetEntity existingLinkedDataset, String ownerName, UUID datasetUuid) throws APIManagerException {
-		try {
-			applicationService.deleteUserSubscriptionsForDatasetAPIs(ownerName, datasetUuid);
-		} catch (APIManagerException e) {
-			log.error("Erreur lors de la suppresion du JDD {} pour le owner {}", datasetUuid, ownerName, e);
-			blockSubscription(existingLinkedDataset, ownerName);
-		}
-		archivedLinkedDataset(existingLinkedDataset);
-	}
-
-	/**
-	 *
-	 * @param existingLinkedDataset link à archiver
-	 * @param ownerName             nom auquel la souscription au jdd a été faite
-	 * @throws APIManagerException Execption WSO2
-	 */
-	protected void blockSubscription(LinkedDatasetEntity existingLinkedDataset, String ownerName)
-			throws APIManagerException {
-		applicationService.blockUserSubscriptionsForDatasetAPIs(ownerName, existingLinkedDataset.getDatasetUuid());
-		archivedLinkedDataset(existingLinkedDataset);
 	}
 
 	/**

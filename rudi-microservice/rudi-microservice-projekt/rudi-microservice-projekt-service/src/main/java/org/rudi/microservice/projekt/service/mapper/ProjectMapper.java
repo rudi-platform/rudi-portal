@@ -12,7 +12,7 @@ import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class,
-		LinkedDatasetMapper.class, NewDatasetRequestMapper.class, ReutilisationStatusMapper.class })
+		LinkedDatasetMapper.class, NewDatasetRequestMapper.class, ReutilisationStatusMapper.class, ConfidentialityMapper.class })
 public interface ProjectMapper extends AssetDescriptionMapper<ProjectEntity, Project> {
 
 	@Override

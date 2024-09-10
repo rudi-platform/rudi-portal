@@ -6,7 +6,7 @@
 		"title": "rudi-projekt-api",
 		"termsOfService": "https://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -326,78 +326,6 @@
 					}
 				}
 			},
-			"ProjectSearchCriteria": {
-				"description": "Critère de recherche d'un projet",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					},
-					{
-						"properties": {
-							"themes": {
-								"description": "Thèmes du jeu de données (codes SKOS)",
-								"type": "array",
-								"items": {
-									"type": "string"
-								}
-							},
-							"keywords": {
-								"description": "Mots-clés du projet (codes SKOS)",
-								"type": "array",
-								"items": {
-									"type": "string"
-								}
-							},
-							"target_audiences": {
-								"description": "Public cible du projet",
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/TargetAudience"
-								}
-							},
-							"dataset_uuids": {
-								"description": "UUIDs des jeux de données liés aux projets recherchés",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid"
-								}
-							},
-							"linked_dataset_uuids": {
-								"description": "UUIDs des LinkedDatasetEntity (des demandes d'accès) liées aux projets recherchés",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid"
-								}
-							},
-							"owner_uuids": {
-								"description": "UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid"
-								}
-							},
-							"project_uuids": {
-								"description": "UUIDs des projets",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid"
-								}
-							},
-							"status": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/ProjectStatus"
-								}
-							}
-						}
-					}
-				]
-			},
 			"ComputeIndicatorsSearchCriteria": {
 				"description": "Critère de recherche d'indicateurs d'un projet",
 				"type": "object",
@@ -452,24 +380,6 @@
 					"SELFDATA"
 				]
 			},
-			"ProjectTypeSearchCriteria": {
-				"description": "Critère de recherche d'un type de projet",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
-			"ConfidentialitySearchCriteria": {
-				"description": "Critère de recherche d'un niveau de confidentialité",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
 			"NewDatasetRequest": {
 				"description": "Demande de nouveau JDD",
 				"type": "object",
@@ -499,33 +409,6 @@
 					}
 				]
 			},
-			"TerritorialScaleSearchCriteria": {
-				"description": "Critère de recherche d'une échelle de territoire",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
-			"TargetAudienceSearchCriteria": {
-				"description": "Critère de recherche d'un public cible",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
-			"SupportSearchCriteria": {
-				"description": "Critère de recherche d'un type d’accompagnement",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
 			"LinkedDatasetSearchCriteria": {
 				"description": "Critère de recherche d'un dataset lié",
 				"type": "object",
@@ -547,6 +430,15 @@
 							},
 							"projectOwnerUuids": {
 								"description": "UUID du porteur de projet",
+								"type": "array",
+								"items": {
+									"type": "string",
+									"format": "uuid",
+									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
+								}
+							},
+							"datasetOwnerUuids": {
+								"description": "UUID des owner de datasets",
 								"type": "array",
 								"items": {
 									"type": "string",
@@ -873,9 +765,22 @@
 			"Confidentiality": {
 				"description": "Caractère confidentiel du projet (par défaut : confidentiel)",
 				"type": "object",
+				"required": [
+					"is_private"
+				],
 				"allOf": [
 					{
 						"$ref": "#/components/schemas/AbstractStampedDto"
+					},
+					{
+						"properties": {
+							"private_access": {
+								"type": "boolean"
+							},
+							"description": {
+								"type": "string"
+							}
+						}
 					}
 				]
 			},
@@ -1126,15 +1031,6 @@
 								}
 							}
 						}
-					}
-				]
-			},
-			"ReutilisationStatusSearchCriteria": {
-				"description": "Critère de recherche d'un statut de réutilisation",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
 					}
 				]
 			},

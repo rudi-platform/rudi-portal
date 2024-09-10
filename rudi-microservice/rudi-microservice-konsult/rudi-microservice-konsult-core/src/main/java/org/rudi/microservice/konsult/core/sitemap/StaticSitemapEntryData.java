@@ -2,9 +2,15 @@ package org.rudi.microservice.konsult.core.sitemap;
 
 import java.util.List;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@ToString
+@EqualsAndHashCode(callSuper = true)
+@Setter
+@Getter
 public class StaticSitemapEntryData extends SitemapEntryData {
 	List<StaticSitemapEntry> urlList;
 

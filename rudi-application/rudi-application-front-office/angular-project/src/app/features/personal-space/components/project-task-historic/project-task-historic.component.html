@@ -1,0 +1,32 @@
+<div *ngIf="historic$ | async as historic">
+
+    <div class="no-result" *ngIf="historic.length == 0">
+        <h3>{{ 'personalSpace.projectTaskHistoric.noResult' | translate }}</h3>
+    </div>
+
+    <table *ngIf="historic.length > 0">
+        <caption>
+            {{ 'personalSpace.projectTaskHistoric.title' | translate }}
+        </caption>
+        <thead>
+        <tr>
+            <th class="date-label">{{ 'personalSpace.projectTaskHistoric.addAt' | translate }}</th>
+            <th class="initiator-label">{{ 'personalSpace.projectTaskHistoric.initiator' | translate }}</th>
+            <th class="step-label">{{ 'personalSpace.projectTaskHistoric.step' | translate }}</th>
+            <th class="action-label">{{ 'personalSpace.projectTaskHistoric.action' | translate }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let histo of historic">
+            <td class="date-value">{{ histo.endTime | date:'dd/MM/yyyy' }}</td>
+            <td class="initiator-value">{{ histo.assignee }}</td>
+            <td class="step-value">
+                <div class="blue-step">{{ histo.activityName }}</div>
+            </td>
+            <td class="action-value">
+                <div *ngIf="histo.action">{{ histo.action!! }}</div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

@@ -6,7 +6,7 @@
 		"title": "rudi-konsult-api",
 		"termsOfService": "http://swagger.io/terms/",
 		"contact": {
-			"email": "rudi@datarennes.fr"
+			"email": "contact@rudi.fr"
 		},
 		"license": {
 			"name": "Apache 2.0",
@@ -97,113 +97,6 @@
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/apim/has-enabled-api": {
-			"put": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet de savoir si les accès aux API ont déjà été activé",
-				"description": "Renvoie vrai si les accès aux APIs ont déjà été réalisés, il suffit ensuite de récupérer les clés pour consommer les APIs",
-				"operationId": "hasEnabledApi",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "Credentials"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Erreur lorsque le login ou mot de passe est invalide",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/apim/enable-api": {
-			"put": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet d'activer les accès aux APIs pour l'user fourni",
-				"description": "Va créer les accès pour l'user ou l'organisation (en fonction de ce qui est fourni) pour pouvoir consommer les APIs des JDDs à travers RUDI avec des clés d'API WSO2",
-				"operationId": "enableApi",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "Credentials"
-							}
-						}
-					}
-				},
-				"responses": {
-					"204": {
-						"description": "Accès aux APIs créés avec succès"
-					}
-				}
-			}
-		},
-		"/apim/keys": {
-			"put": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet de récupérer les clés de consommations des APIs des JDDs pour un projet",
-				"description": "Renvoie le consumer key et le consumer secret pour consommer les APIs des JDDs du projet",
-				"operationId": "getKeys",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "type",
-						"description": "type de clé que l'on souhaite récupérer",
-						"required": true,
-						"schema": {
-							"$ref": "#/components/schemas/ApiKeysType"
-						}
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "Credentials"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiKeys"
-								}
-							}
-						}
 					}
 				}
 			}
@@ -406,252 +299,6 @@
 				}
 			}
 		},
-		"/datasets/{globalId}/has-subscribe-to-selfdata": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet de savoir si l'utilisateur a souscrit au jeu de données",
-				"description": "Retourne true si l'utilisateur a souscrit au jeu de données",
-				"operationId": "hasSubscribeToSelfdataDataset",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne true si l'utilisateur a souscrit au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Erreur lorsque l'utilisateur n'a pas souscrit au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/has-subscribe-to-linked-dataset/{linkedDatasetUuid}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet de savoir si l'utilisateur a souscrit au jeu de données",
-				"description": "Retourne true si l'utilisateur a souscrit au jeu de données (ouvert ou restreint)",
-				"operationId": "hasSubscribeToLinkedDataset",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					},
-					{
-						"$ref": "#/components/parameters/LinkedDatasetUuidPathParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne true si l'utilisateur a souscrit au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Erreur lorsque l'utilisateur n'a pas souscrit au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/subscribe-to-selfdata": {
-			"post": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Souscrit au jeu de données (selfdata)",
-				"description": "L'utilisateur souscrit au jeu de données (selfdata)",
-				"operationId": "subscribeToSelfdataDataset",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "L'utilisateur a souscrit au jeu de données avec succès"
-					},
-					"403": {
-						"description": "Erreur lorsque l'utilisateur n'est pas autorisé à souscrire au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiForbiddenError"
-								}
-							}
-						}
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/subscribe-to-linked-dataset/{linkedDatasetUuid}": {
-			"post": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Souscrit au jeu de données ouvert ou restreint",
-				"description": "L'utilisateur souscrit au jeu de données ouvert ou restreint",
-				"operationId": "subscribeToLinkedDataset",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					},
-					{
-						"$ref": "#/components/parameters/LinkedDatasetUuidPathParam"
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "L'utilisateur a souscrit au jeu de données ouvert ou restreint avec succès s'il a une demande d'accès validée pour le JDD"
-					},
-					"403": {
-						"description": "Erreur lorsque l'utilisateur n'est pas autorisé à souscrire au jeu de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiForbiddenError"
-								}
-							}
-						}
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/unsubscribe-to-dataset/{souscriptionOwnerUuid}": {
-			"delete": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Desouscrit au jeu de données ouvert ou restreint",
-				"description": "L'utilisateur désouscrit au jeu de données ouvert ou restreint donc à tous les médias dudit JDD",
-				"operationId": "unsubscribeToDataset",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					},
-					{
-						"$ref": "#/components/parameters/SubscriptionOwnerUuidPathParam"
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "True ou false selon que l'utilisateur a désouscrit au jeu de données ouvert ou restreint avec succès s'il avait effectivement souscrit au JDD"
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/media/{mediaId}/has-subscribe": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Permet de savoir si l'utilisateur a souscrit au média associé au jdd",
-				"description": "Retourne true si l'utilisateur a souscrit au média associé au jdd",
-				"operationId": "hasSubscribeToMetadataMedia",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					},
-					{
-						"in": "path",
-						"name": "mediaId",
-						"description": "Identifiant du media",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne true si l'utilisateur a souscrit au média",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
-					},
-					"403": {
-						"description": "Erreur lorsque l'utilisateur n'a pas souscrit au jeux de données",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"480": {
-						"$ref": "#/components/responses/UnknownClientKeyError"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
 		"/map/search-addresses": {
 			"get": {
 				"tags": [
@@ -771,65 +418,6 @@
 							"application/json": {
 								"schema": {
 									"$ref": "./rudi-konsult-model.json#/components/schemas/Proj4Information"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/medias/{mediaId}/{interfaceContract}/{version}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement d'un média en s'authentifiant implicitement en tant qu'anonymous.",
-				"description": "Équivalent à l'appel à l'API /datasets/{globalId}/media/{mediaId}/download en s'authentifiant automatiquement en tant qu'anonymous.",
-				"operationId": "downloadMedia",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "mediaId",
-						"description": "Identifiant du media",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						},
-						"example": "ac27b14c-4b9e-4ee1-9436-0d603dd05137"
-					},
-					{
-						"in": "path",
-						"name": "interfaceContract",
-						"description": "Contrat d'interface",
-						"required": true,
-						"schema": {
-							"type": "string"
-						},
-						"example": "dwnl"
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"description": "Version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						},
-						"example": "1.0.0"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne les données d'un média",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
 								}
 							}
 						}
@@ -1461,50 +1049,26 @@
 			"FrontOfficeProperties": {
 				"type": "object",
 				"properties": {
-					"rudidatarennes": {
+					"front": {
 						"type": "object",
 						"properties": {
 							"index": {
 								"type": "string"
 							},
-							"beta": {
-								"type": "string"
-							},
-							"cgu": {
-								"type": "string"
-							},
 							"contact": {
 								"type": "string"
 							},
-							"confidentialite": {
-								"type": "string"
-							},
-							"forum": {
-								"type": "string"
-							},
-							"mentionsLegales": {
-								"type": "string"
-							},
-							"wiki": {
-								"type": "string"
-							},
-							"apidocumentation": {
+							"apiDocumentation": {
 								"type": "string"
 							},
 							"apiDocumentationService": {
 								"type": "string"
 							},
-							"docRudiBzh": {
+							"docRudi": {
 								"type": "string"
 							},
 							"tableDisplayMaxFileSize": {
 								"type": "number"
-							},
-							"twitter": {
-								"type": "string"
-							},
-							"linkedin": {
-								"type": "string"
 							}
 						}
 					}

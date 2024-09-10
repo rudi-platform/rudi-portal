@@ -1,0 +1,159 @@
+<div id="dialog-container">
+    <mat-dialog-content>
+        <div class="dialog-content mt-3">
+            <div class="dialog-title">{{'personalSpace.projectApi.generateKeyDialog.title' | translate}}</div>
+
+            <div
+                class="dialog-description mb-4">{{'personalSpace.projectApi.generateKeyDialog.description1' | translate}}
+            </div>
+
+            <div
+                class="dialog-description mb-4">{{'personalSpace.projectApi.generateKeyDialog.description2' | translate}}
+            </div>
+
+            <div class="dialog-description">
+                <span class="required-symbol">*</span>
+                {{'common.requiredInformation' | translate}}
+            </div>
+
+<!--            Première étape -->
+            <form [formGroup]="generateKeyForm1" *ngIf="isFirstStepActive">
+                <!-- Nom de paire de clés -->
+                <ng-container>
+                    <div class="d-flex">
+                        <mat-label
+                            class="dialog-subtitle">{{'personalSpace.projectApi.generateKeyDialog.form.nameLabel' | translate}}
+                            <span class="required-symbol">*</span>
+                        </mat-label>
+                    </div>
+                    <mat-hint
+                        class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.nameDescription' | translate}}
+                    </mat-hint>
+                    <mat-form-field appearance="outline" hideRequiredMarker>
+                        <input type="text" formControlName="name" matInput
+                               autocomplete="off" maxlength="150">
+                        <mat-error class="stepper-mat-error"
+                                   *ngIf="generateKeyForm1.get('name').errors">
+                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'personalSpace.projectApi.generateKeyDialog.form.nameError' | translate}}
+                        </mat-error>
+                    </mat-form-field>
+                </ng-container>
+
+                <!-- Date d'expiration -->
+                <ng-container>
+                    <div class="d-flex">
+                        <mat-label class="dialog-subtitle">
+                            {{'personalSpace.projectApi.generateKeyDialog.form.expirationDateLabel' | translate}}
+                            <span class="required-symbol">*</span>
+                        </mat-label>
+                    </div>
+
+                    <mat-hint
+                        class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.expirationDateDescription' | translate}}
+                    </mat-hint>
+    <div class="flex w-100">
+        <app-month-year-datepicker [formGroup]="generateKeyForm1" controlName="expirationDate"
+                                   [isDisable]="true"
+                                   >
+        </app-month-year-datepicker>
+    </div>
+
+                </ng-container>
+
+                <!-- Mot de passe -->
+                <ng-container>
+                    <div class="d-flex">
+                        <mat-label class="dialog-subtitle">
+                            {{'personalSpace.projectApi.generateKeyDialog.form.passwordLabel' | translate}}
+                            <span class="required-symbol">*</span>
+                        </mat-label>
+                    </div>
+
+                    <mat-hint
+                        class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.passwordDescription' | translate}}
+                    </mat-hint>
+                    <mat-form-field appearance="outline" hideRequiredMarker>
+                        <input type="password" formControlName="password" matInput
+                               autocomplete="off" maxlength="150"/>
+                    </mat-form-field>
+                        <mat-error class="stepper-mat-error"
+                                   *ngIf="passwordError">
+                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'personalSpace.projectApi.generateKeyDialog.form.passwordError' | translate}}
+                        </mat-error>
+                </ng-container>
+            </form>
+
+        <!-- Le loader de transition -->
+            <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="isLoading"></app-loader>
+
+<!--            Deuxième étape-->
+
+                    <!-- Identification key -->
+                    <form class="form-container" *ngIf="isSecondStepActive" [formGroup]="generateKeyForm2" >
+
+                        <!-- Nom de paire de clés -->
+                        <ng-container>
+                            <div class="d-flex">
+                                <mat-label
+                                    class="dialog-subtitle">{{'personalSpace.projectApi.generateKeyDialog.form.nameLabel' | translate}}
+                                    <span class="required-symbol">*</span>
+                                </mat-label>
+                            </div>
+                            <mat-hint
+                                class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.nameDescription' | translate}}
+                            </mat-hint>
+                            <mat-form-field appearance="outline" hideRequiredMarker>
+                                <input type="text" formControlName="name" matInput
+                                       autocomplete="off" maxlength="150">
+                                <mat-error class="stepper-mat-error"
+                                           *ngIf="generateKeyForm2.get('name').errors?.required">
+                                    <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                                </mat-error>
+                            </mat-form-field>
+                        </ng-container>
+                        <!-- Consumer Key-->
+                        <div class="consumer-field-wrapper">
+                            <span class="title-keys">{{'personalSpace.projectApi.consumerKey' | translate}}</span>
+                            <p class="mt-2">{{'personalSpace.projectApi.textConsumerKey' | translate}}<a [href]="rudiDocLink"> {{'personalSpace.projectApi.clickHere' | translate}} </a></p>
+                            <div class="app-copied-style">
+                                <app-copied-button [toCopy]="generateKeyForm2.get('consumerKey').value" [masked]="false"></app-copied-button>
+                            </div>
+                        </div>
+
+                        <!-- Consumer Secret-->
+                        <div class="consumer-field-wrapper">
+                            <span class="title-keys">{{'personalSpace.projectApi.consumerSecret' | translate}}</span>
+                            <p class="mt-2">{{'personalSpace.projectApi.textConsumerSecret' | translate}} <a [href]="rudiDocLink"> {{'personalSpace.projectApi.clickHere' | translate}} </a></p>
+                            <div class="app-copied-style">
+                                <app-copied-button [toCopy]="generateKeyForm2.get('consumerSecret').value" [masked]="true"></app-copied-button>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox de confirmation-->
+                        <ng-container>
+                            <div class="d-flex my-2">
+                        <mat-checkbox formControlName="confirmed">{{'personalSpace.projectApi.generateKeyDialog.form.confirmDescription' | translate}}</mat-checkbox>
+                            </div>
+                        </ng-container>
+                    </form>
+
+            <mat-dialog-actions class="dialog-buttons" *ngIf="isFirstStepActive">
+                <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
+                    <span>{{'personalSpace.projectApi.cancel'|translate}}</span>
+                </button>
+                <button class="primary-raised-button" mat-raised-button (click)="confirmForm1()"
+                        [disabled]="!generateKeyForm1.valid">
+                    <span>{{'personalSpace.projectApi.confirm'|translate}}</span>
+                </button>
+            </mat-dialog-actions>
+
+            <mat-dialog-actions class="dialog-buttons d-flex justify-content-center" *ngIf="isSecondStepActive">
+                <button *ngIf="isSecondStepActive" class="primary-raised-button" mat-raised-button [mat-dialog-close]="null"
+                        [disabled]="generateKeyForm2.controls['confirmed'].value === false">
+                    <span>{{'personalSpace.projectApi.confirm'|translate}}</span>
+                </button>
+            </mat-dialog-actions>
+        </div>
+    </mat-dialog-content>
+</div>
+

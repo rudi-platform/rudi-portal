@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +38,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,7 +71,7 @@ public class NewDatasetRequestServiceImpl implements NewDatasetRequestService {
 	public PagedNewDatasetRequestList searchMyNewDatasetRequests(NewDatasetRequestSearchCriteria criteria,
 			Pageable pageable) throws AppServiceException {
 		// Récupération des UUIDs du connectedUser et de ses organisations.
-		List<UUID> uuids = myInformationsHelper.getMeAndMyOrganizationUuids();
+		List<UUID> uuids = myInformationsHelper.getMeAndMyOrganizationsUuids();
 		if (CollectionUtils.isEmpty(uuids)) {
 			return new PagedNewDatasetRequestList().total(0L).elements(List.of());
 		}
@@ -152,7 +151,7 @@ public class NewDatasetRequestServiceImpl implements NewDatasetRequestService {
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
 		if (!(projektAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole)
 				|| projektAuthorisationHelper.isAccessGrantedForUserOnProject(projectEntity))) {
-			throw new AppServiceUnauthorizedException("Accès non autorisé à la fonctionnalité pour l'utilisateur");
+			throw new AppServiceUnauthorizedException(ProjektAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}
 }

@@ -1,0 +1,36 @@
+@import "common-style";
+
+form {
+    text-align: left;
+}
+
+mat-form-field {
+    width: 100%;
+    margin: 12px 0 5px;
+    border-radius: 4px;
+}
+
+*:focus-visible {
+    // on ne veut pas les rectangles bleu sur focus du champ input
+    outline: none;
+}
+
+
+.consumer-field-wrapper {
+    margin-bottom: 2em;
+}
+
+.title-keys {
+    margin-bottom: 2em;
+    font-weight: 600;
+}
+
+::ng-deep {
+    .error-zone {
+        height: 50px !important;
+
+        span {
+            vertical-align: middle;
+        }
+    }
+}

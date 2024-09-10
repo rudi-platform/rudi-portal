@@ -16,6 +16,11 @@ export class DatasetTableComponent {
      */
     @Input()
     title: string;
+    /**
+     * titre du tableau
+     */
+    @Input()
+    showHorizontalSeparator: boolean = true;
 
     /**
      * Label RGAA pour le tableau

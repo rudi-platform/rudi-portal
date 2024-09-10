@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-parent</artifactId>
-		<version>3.0.2</version>
+		<version>3.0.3</version>
 	</parent>
 
 	<artifactId>rudi-facet</artifactId>
@@ -29,14 +29,12 @@
 		<module>rudi-facet-bucket-s3</module>
 
 		<module>rudi-facet-cms</module>
-		
+
 		<module>rudi-facet-oauth2</module>
 
 		<module>rudi-facet-dataverse</module>
 		<module>rudi-facet-kaccess</module>
 		<module>rudi-facet-kmedia</module>
-		<module>rudi-facet-apimaccess</module>
-		<module>rudi-facet-apimremote</module>
 
 		<module>rudi-facet-strukture</module>
 		<module>rudi-facet-acl</module>

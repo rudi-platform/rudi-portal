@@ -8,7 +8,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.rudi.facet.apimaccess.exception.APIManagerException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -25,15 +26,12 @@ import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.helper.apim.APIManagerHelper;
-import org.rudi.microservice.kalim.service.integration.impl.validator.AbstractMetadataValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.DatasetCreatorIsAuthenticatedValidator;
-import org.rudi.microservice.kalim.service.integration.impl.validator.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
+import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 import org.springframework.beans.factory.annotation.Value;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,12 +50,12 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 	private String defaultOrganizationPassword;
 
 	protected AbstractIntegrationRequestTreatmentHandlerWithValidation(DatasetService datasetService,
-			ApiManagerHelper apiGatewayManagerHelper, APIManagerHelper apiManagerHelper, ObjectMapper objectMapper,
+			ApiManagerHelper apiGatewayManagerHelper, ObjectMapper objectMapper,
 			List<AbstractMetadataValidator<?>> metadataValidators, Error500Builder error500Builder,
 			MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator,
 			DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator,
 			OrganizationHelper organizationHelper) {
-		super(datasetService, apiGatewayManagerHelper, apiManagerHelper, error500Builder);
+		super(datasetService, apiGatewayManagerHelper, error500Builder);
 		this.objectMapper = objectMapper;
 		this.metadataValidators = metadataValidators;
 		this.metadataInfoProviderIsAuthenticatedValidator = metadataInfoProviderIsAuthenticatedValidator;
@@ -66,7 +64,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 	}
 
 	protected void handleInternal(IntegrationRequestEntity integrationRequest)
-			throws IntegrationException, DataverseAPIException, APIManagerException {
+			throws IntegrationException, DataverseAPIException, ApiGatewayApiException {
 		final var metadata = hydrateMetadata(integrationRequest.getFile());
 		if (validateAndSetErrors(metadata, integrationRequest)) {
 			treat(integrationRequest, metadata);
@@ -155,5 +153,5 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 	}
 
 	protected abstract void treat(IntegrationRequestEntity integrationRequest, Metadata metadata)
-			throws DataverseAPIException, APIManagerException;
+			throws DataverseAPIException, ApiGatewayApiException;
 }

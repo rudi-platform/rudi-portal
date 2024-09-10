@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_CONFIDENTIALITY_FIELD;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_ORGANIZATION_UUID_FIELD;
 import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_UUID_FIELD;
 import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.END_DATE_FIELD;
 import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.STATUS_FIELD;
@@ -85,6 +86,10 @@ public class LinkedDatasetCustomDaoImpl extends AbstractCustomDaoImpl<LinkedData
 		if (searchCriteria.getDatasetConfidentiality() != null) {
 			DatasetConfidentiality confidentiality = DatasetConfidentiality.valueOf(searchCriteria.getDatasetConfidentiality());
 			predicates.add(root.get(DATASET_CONFIDENTIALITY_FIELD).in(confidentiality));
+		}
+
+		if(CollectionUtils.isNotEmpty(searchCriteria.getDatasetOwnerUuids())) {
+			predicates.add(root.get(DATASET_ORGANIZATION_UUID_FIELD).in(searchCriteria.getDatasetOwnerUuids()));
 		}
 	}
 }

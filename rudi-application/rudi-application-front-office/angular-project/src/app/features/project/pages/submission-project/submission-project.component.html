@@ -3,12 +3,13 @@
     <app-loader [active]="isLoading"></app-loader>
 
     <h1>
-        <span class="title-1">{{'project.stepper.submission.title.1' | translate}}</span>&nbsp;<span
-        class="title-2">{{'project.stepper.submission.title.2' | translate}}</span>
+        <span class="title-1">{{ 'project.stepper.submission.title.1' | translate }}</span>&nbsp;<span
+        class="title-2">{{ 'project.stepper.submission.title.2' | translate }}</span>
     </h1>
-    <p class="description">{{'project.stepper.submission.description' | translate}}</p>
+    <p class="description">{{ 'project.stepper.submission.description' | translate }}</p>
 
-    <mat-stepper #submissionStepper orientation="horizontal" [disableRipple]="true" class="rudi-stepper" labelPosition="bottom" linear>
+    <mat-stepper #submissionStepper orientation="horizontal" [disableRipple]="true" class="rudi-stepper"
+                 labelPosition="bottom" linear>
         <ng-template matStepperIcon="edit">
             <mat-icon>check</mat-icon>
         </ng-template>
@@ -18,8 +19,7 @@
                   label="{{'project.stepper.submission.step1.label' | translate}}">
 
             <!-- Formulaire de l'étape 1-->
-            <app-step1-project [isPublished]="isPublished"
-                               [step1FormGroup]="step1FormGroup"
+            <app-step1-project [step1FormGroup]="step1FormGroup"
                                [suggestions]="suggestions"
                                [publicCible]="publicCible"
                                [reuseStatus]="reuseStatus"

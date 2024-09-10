@@ -19,7 +19,16 @@ public class MyInformationsHelper {
 	private final ACLHelper aclHelper;
 	private final OrganizationHelper organizationHelper;
 
-	public List<UUID> getMeAndMyOrganizationUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
+	public List<UUID> getMeAndMyOrganizationsUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
+		val user = aclHelper.getAuthenticatedUser();
+		//Récupération des UUIDs du connectedUser et de ses organisations.
+		List<UUID> uuids = getMyOrganizationsUuids();
+		uuids.add(user.getUuid());
+
+		return uuids;
+	}
+
+	public List<UUID> getMyOrganizationsUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
 		val user = aclHelper.getAuthenticatedUser();
 		if (user == null || user.getLogin() == null) {
 			throw new AppServiceUnauthorizedException(
@@ -27,9 +36,7 @@ public class MyInformationsHelper {
 		}
 
 		//Récupération des UUIDs du connectedUser et de ses organisations.
-		List<UUID> uuids = organizationHelper.getMyOrganizationsUuids(user.getUuid());
-		uuids.add(user.getUuid());
-
-		return uuids;
+		return organizationHelper.getMyOrganizationsUuids(user.getUuid());
 	}
+
 }
