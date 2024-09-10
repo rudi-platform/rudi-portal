@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
 
 jobs:
   build:
@@ -30,11 +32,110 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        id: push
+        id: push-rudi-microservice-acl
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: "rudi-microservice-acl:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-aclcl
+      - name: Build Docker image
+        id: push-rudi-microservice-apigateway
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-apigateway:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-apigateway
+      - name: Build Docker image
+        id: push-rudi-microservice-gateway
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-gateway:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-gateway
+      - name: Build Docker image
+        id: push-rudi-microservice-kalim
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-kalim:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-kalim
+      - name: Build Docker image
+        id: push-rudi-microservice-konsent
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-konsent:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-konsent
+      - name: Build Docker image
+        id: push-rudi-microservice-konsult
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-konsult:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-konsult
+      - name: Build Docker image
+        id: push-rudi-microservice-kos
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-kos:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-koscl
+      - name: Build Docker image
+        id: push-rudi-microservice-projekt
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-projekt:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-projekt
+      - name: Build Docker image
+        id: push-rudi-microservice-registry
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-registry:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-registry
+      - name: Build Docker image
+        id: push-rudi-microservice-selfdata
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-selfdata:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-selfdata
+      - name: Build Docker image
+        id: push-rudi-microservice-strukture
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-strukture:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-strukture
+      - name: Build Docker image
+        id: push-rudi-microservice-template
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "rudi-microservice-template:${{ github.ref_type == 'tag' && github.ref != '' ? github.ref : 'latest' }}"
+          target: rudi-microservice-template
