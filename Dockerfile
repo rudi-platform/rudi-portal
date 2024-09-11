@@ -20,8 +20,6 @@ CMD [ "sh", "-c", "exec java -Djava.io.tmpdir=/tmp/jetty \
 
 FROM rudi_base as rudi-microservice-acl
 ADD rudi-microservice/rudi-microservice-acl/rudi-microservice-acl-facade/target/rudi-microservice-acl-facade.jar /opt/rudi/microservice.jar
-COPY "acl/relai-smtp-ext.rennesmetropole.fr.port26.cer" "$JAVA_HOME/lib/security"
-RUN keytool -import -file "$JAVA_HOME/lib/security/relai-smtp-ext.rennesmetropole.fr.port26.cer" -alias "relai-smtp-ext.rennesmetropole.fr.port26" -cacerts -noprompt -storepass "changeit"
 
 FROM rudi_base as rudi-microservice-apigateway
 ADD rudi-microservice/rudi-microservice-apigateway/rudi-microservice-apigateway-facade/target/rudi-microservice-apigateway-facade.jar /opt/rudi/microservice.jar
