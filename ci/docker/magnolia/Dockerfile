@@ -8,8 +8,8 @@ RUN chmod 777 -R /etc/magnolia/config && chmod o+t -R /etc/magnolia/config
 RUN chmod 777 -R /opt/magnolia/data && chmod o+t -R /opt/magnolia/data
 RUN chmod 777 -R /opt/magnolia/modules && chmod o+t -R /opt/magnolia/modules
 
-#COPY magnolia-community-webapp-6.2.40.war /usr/local/tomcat/webapps/ROOT.war
-COPY ROOT-6.2.40.tgz /tmp/ROOT.tgz
+#COPY magnolia-community-webapp-6.2.48.war /usr/local/tomcat/webapps/ROOT.war
+COPY ROOT-6.2.48.tgz /tmp/ROOT.tgz
 RUN mkdir -p /usr/local/tomcat/webapps/ROOT
 WORKDIR /usr/local/tomcat/webapps/ROOT
 RUN tar -zxvf /tmp/ROOT.tgz .

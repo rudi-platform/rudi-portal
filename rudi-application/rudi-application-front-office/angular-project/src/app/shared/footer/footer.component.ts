@@ -30,6 +30,7 @@ export class FooterComponent implements OnInit {
     loading = false;
     twitterLinkHref: string;
     linkedinLinkHref: string;
+    footerLogoLink: string;
 
     customizationDescription: CustomizationDescription;
     cmsTermsDescription: CmsTermsDescription;
@@ -60,6 +61,7 @@ export class FooterComponent implements OnInit {
         this.termsValues = [];
         this.logoIsLoading = false;
         this.initCustomizationDescription();
+        this.getUrlToRudi();
 
     }
 
@@ -101,7 +103,7 @@ export class FooterComponent implements OnInit {
                     });
                 }
             },
-            error(err) {
+            error(err): void {
                 this.logService.error(err);
                 this.displayComponent = false;
             }
@@ -152,6 +154,18 @@ export class FooterComponent implements OnInit {
                 this.logoIsLoading = false;
             }
         });
+    }
+
+    getUrlToRudi(): void {
+        this.propertiesService.get('front.index').subscribe({
+            next: (link: string) => {
+                this.footerLogoLink = link;
+            }
+        });
+    }
+
+    public redirectToRudi(): void{
+        window.open(this.footerLogoLink).focus();
     }
 
 }

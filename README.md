@@ -3,13 +3,13 @@
 ## Présentation
 
 Ce répertoire regroupe le code du portail Rudi.
-Le portail Rudi est accessible à l'adresse : [https://rudi.bzh](https://rudi.bzh)
+Une instance du portail Rudi est accessible à l'adresse : [https://rudi.rennesmetropole.fr](https://rudi.rennesmetropole.fr)
 
 La documentation générale sur le projet Rudi est disponible à cette
-adresse : [https://rudi.datarennes.fr/yeswiki/?PagePrincipale](https://rudi.datarennes.fr/yeswiki/?PagePrincipale).
+adresse : [https://rudi.fr/yeswiki](https://rudi.fr/yeswiki/?PagePrincipale).
 
 La documentation sur l'utilisation du portail est disponible
-ici : [https://sigrennesmetropole.github.io/rudi_documentation/](https://sigrennesmetropole.github.io/rudi_documentation/)
+ici : [https://rudi-platform.github.io/rudi-documentation/](https://rudi-platform.github.io/rudi-documentation/)
 
 ## Installation
 

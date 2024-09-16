@@ -3,9 +3,10 @@
  */
 package org.rudi.facet.email;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
 
 /**
  * @author fni18300
@@ -33,7 +34,7 @@ public class EMailConfiguration {
 	@Value("${mail.smtp.password:}")
 	private String password;
 
-	@Value("${mail.from:ne-pas-repondre@rudi.bzh}")
+	@Value("${mail.from}")
 	private String defaultFrom;
 
 	@Value("${mail.smtp.starttls.enable:false}")

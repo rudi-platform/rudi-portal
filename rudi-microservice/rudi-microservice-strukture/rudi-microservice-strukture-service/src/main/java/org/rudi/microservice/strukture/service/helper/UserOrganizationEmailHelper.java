@@ -35,7 +35,7 @@ public class UserOrganizationEmailHelper {
 	@Value("${email.organization.password.update.body}")
 	private String organizationUserPasswordChangeBody;
 
-	@Value("${email.urlServer:http://www.rudi.bzh}")
+	@Value("${email.urlServer:http://rudi.rennesmetropole.fr}")
 	private String urlServer;
 
 	@Autowired

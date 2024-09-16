@@ -21,6 +21,6 @@ L'ajout de cette facette dans un µservice dispose aussi de la configuration des
 * `mail.smtp.port` Le port d'écoute - valeur par défaut `25`
 * `mail.smtp.user` L'utilisateur pour l'authentification
 * `mail.smtp.password` Le mot de passe pour l'authentification
-* `mail.from` L'adresse par défaut d'émission - valeur par défaut `robot@rudi.bzh`
+* `mail.from` L'adresse par défaut d'émission - exemple : `ne-pas-repondre@rudi.fr`
 * `mail.smtp.starttls.enable`- valeur par défaut : `false`
 * `mail.debug` Permet d'activer le mode debug pour l'émission de courriel - valeur par défaut : `false`

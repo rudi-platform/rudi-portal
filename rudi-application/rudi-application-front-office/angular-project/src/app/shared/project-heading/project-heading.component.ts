@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 
 @Component({
     selector: 'app-project-heading',
@@ -6,6 +7,8 @@ import {Component, Input} from '@angular/core';
     styleUrls: ['./project-heading.component.scss']
 })
 export class ProjectHeadingComponent {
+
+    mediaSize: MediaSize;
 
     /**
      * CHaîne base 64 du logo du projet
@@ -30,4 +33,8 @@ export class ProjectHeadingComponent {
      */
     @Input()
     status: string;
+
+    constructor(private readonly breakpointObserverService: BreakpointObserverService) {
+        this.mediaSize = this.breakpointObserverService.getMediaSize();
+    }
 }

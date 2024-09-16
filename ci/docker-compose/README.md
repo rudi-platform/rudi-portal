@@ -22,7 +22,7 @@ Installation prévue sur linux debian :
 
 ### Installation microservices RUDI
 
-  - Cloner le projet *https://github.com/sigrennesmetropole/rudi_portal*
+  - Cloner le projet *https://github.com/rudi-plateform/rudi-portal*
   - Construire le projet à l'aide de la commande suivante :
 
 ```

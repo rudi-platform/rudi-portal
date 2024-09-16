@@ -182,7 +182,7 @@
                     "requiredInformation": "Informations obligatoires à renseigner",
                     "uuid": {
                         "title": "Uuid",
-                        "description": "L'uuid est défini dans l'url de détail d'un jdd. Pour le récupérer, veuillez accéder à l'écran de détail du jdd concerné et copier le dernier élément de l'url. (Par exemple dans https://rudi.bzh/detail/111f22c3-c888-55ab-45f9-e11azer99b11 , le uuid est 111f22c3-c888-55ab-45f9-e11azer99b11)",
+                        "description": "L'uuid est défini dans l'url de détail d'un jdd. Pour le récupérer, veuillez accéder à l'écran de détail du jdd concerné et copier le dernier élément de l'url. (Par exemple dans https://<server-rudi>/detail/111f22c3-c888-55ab-45f9-e11azer99b11 , le uuid est 111f22c3-c888-55ab-45f9-e11azer99b11)",
                         "add-open": "Ajouter un jeu de données ouvert",
                         "add-restricted": "Demander l'accès à un jeu de données"
                     },
@@ -336,7 +336,7 @@
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
-        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée. Si besoin, <a href=\"https://rudi.datarennes.fr/portail-beta-contact/\">contactez-nous</a>."
+        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée. Si besoin, <a href=\"https://rudi.fr/contact/\">contactez-nous</a>."
     },
     "common": {
         "modifier": "Modifier",
@@ -1355,7 +1355,7 @@
         "projectApi": {
             "identificationKey": "Clés d'identification",
             "explainationText": "Vous trouverez ici vos clés d'identification nécessaires pour requêter des jeux de données en vous authentifiant. De plus amples informations sont disponibles sur ",
-            "explainationTextLink": "doc.rudi.bzh.",
+            "explainationTextLink": "doc.rudi.fr.",
             "acces": "Accès",
             "textOwner": "Saisissez le mot de passe de votre compte pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
             "textUser": "Saisissez le mot de passe de votre organisation pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
@@ -1385,7 +1385,7 @@
             "title": "Souscrire",
             "description": "Veuillez sélectionner le ou les jeux de données auxquels vous souhaitez souscrire. Plus d'informations sont disponibles sur ",
             "tableTitle": "Jeux de données",
-            "link": " doc.rudi.bzh.",
+            "link": " doc.rudi.fr.",
             "textOwner": "Saisissez le mot de passe de votre compte.",
             "textUser": "Saisissez le mot de passe de votre organisation."
         },

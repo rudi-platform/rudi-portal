@@ -745,7 +745,7 @@ components:
 
   #=============================================================================
   # See schemas definitions at
-  # https://github.com/sigrennesmetropole/rudi_documentation/tree/main/schemas
+  # https://github.com/rudi-platform/rudi-documentation/tree/main/schemas
   #=============================================================================
   schemas:
 

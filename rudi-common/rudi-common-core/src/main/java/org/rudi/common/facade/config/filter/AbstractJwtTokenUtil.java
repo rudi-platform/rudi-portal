@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.rudi.common.core.util.SecretKeyUtils;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -27,8 +30,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import org.rudi.common.core.util.SecretKeyUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -72,7 +73,7 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	@Value("${security.jwt.refresh.validity:1800}")
 	private int refreshTokenValidity;
 
-	@Value("${security.jwt.apim.url:https://rudi.bzh}")
+	@Value("${security.jwt.apim.url:https://rudi.rennesmetropole.fr}")
 	private String apimUrl;
 
 	@Value("${security.jwt.apim.hostVerifier:false}")

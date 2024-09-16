@@ -46,3 +46,13 @@
         padding: 0.5em;
     }
 }
+
+.fake-btn-mobile {
+    display: inline-block;
+    border-radius: 14px;
+    background-color: var(--banner-solid-color);
+    text-align: center;
+    border: none;
+    padding: 0.5em;
+    margin: 10px auto;
+}

@@ -37,22 +37,7 @@
                            [routerLinkActive]="'active'"><span
                             class="ul-items-mobile">{{ 'header.organisations'| translate }}</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-uppercase text-decoration-none" [routerLinkActive]="'active'"
-                           [href]="urlToDoc"
-                           rel="noopener noreferrer" target="_blank">
-                            <em class="fa fa-external-link fa-1x me-2  icon-hide-mobile"></em>
-                            <span>{{ 'header.documentation'| translate }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-uppercase text-decoration-none"
-                           href="{{'rudidatarennes.index'|getBackendProperty|async}}"
-                           target="_blank"
-                           rel="noopener noreferrer" [routerLinkActive]="'active'">
-                            <em class="fa fa-external-link fa-1x me-2  icon-hide-mobile"></em>
-                            <span>{{ 'header.blogProjet'| translate }}</span></a>
-                    </li>
+
                     <li class="nav-item account-btn">
                         <button *ngIf="!isConnectedAsUser" mat-stroked-button (click)="handleClickGoLogin()">
                             <span>{{ 'header.logIn'| translate }}</span>
@@ -163,19 +148,7 @@
                            routerLinkActive="active-item"><span
                             class="ul-items-mobile">{{ 'header.organisations'| translate }}</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-decoration-none"
-                           href="{{'rudidatarennes.wiki'|getBackendProperty|async}}" target="_blank"
-                           rel="noopener noreferrer"
-                           [routerLinkActive]="'active-item'"><span
-                            class="ul-items-mobile">{{ 'header.documentation'| translate }}</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-decoration-none"
-                           href="{{'rudidatarennes.index'|getBackendProperty|async}}"
-                           rel="noopener noreferrer" [routerLinkActive]="'active'">
-                            <span class="ul-items-mobile">{{ 'header.blogProjet'| translate }}</span></a>
-                    </li>
+
                 </ul>
             </div>
         </nav>
