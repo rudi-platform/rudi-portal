@@ -10,7 +10,6 @@ import {LoginComponent} from './pages/login/login.component';
 import {NotAuthorizedComponent} from './pages/not-authorized/not-authorized.component';
 import {ResetPasswordComponent} from './pages/reset-password/reset-password.component';
 import {SignUpComponent} from './pages/sign-up/sign-up.component';
-import {SupportRudiComponent} from './pages/support-rudi/support-rudi.component';
 
 @NgModule({
     declarations:
@@ -19,7 +18,6 @@ import {SupportRudiComponent} from './pages/support-rudi/support-rudi.component'
             NotAuthorizedComponent,
             SignUpComponent,
             AccountValidationComponent,
-            SupportRudiComponent,
             ForgotPasswordComponent,
             ResetPasswordComponent,
         ],

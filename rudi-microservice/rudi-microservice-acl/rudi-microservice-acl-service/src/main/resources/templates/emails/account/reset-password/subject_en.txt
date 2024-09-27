@@ -1,1 +1,1 @@
-RUDI - Reset your password
+${projectName} - Reset your password

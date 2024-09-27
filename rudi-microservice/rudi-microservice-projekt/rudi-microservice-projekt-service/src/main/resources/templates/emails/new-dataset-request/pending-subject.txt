@@ -1,1 +1,1 @@
-RUDI - Nouvelle demande de données
+${projectName} - Nouvelle demande de données

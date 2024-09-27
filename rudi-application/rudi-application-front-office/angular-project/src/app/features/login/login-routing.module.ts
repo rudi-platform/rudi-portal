@@ -8,7 +8,6 @@ import {ForgotPasswordComponent} from './pages/forgot-password/forgot-password.c
 import {LoginComponent} from './pages/login/login.component';
 import {ResetPasswordComponent} from './pages/reset-password/reset-password.component';
 import {SignUpComponent} from './pages/sign-up/sign-up.component';
-import {SupportRudiComponent} from './pages/support-rudi/support-rudi.component';
 
 const routes: Routes = [
     {
@@ -41,12 +40,6 @@ const routes: Routes = [
         // Path reset-password
         path: 'reset-password',
         component: ResetPasswordComponent,
-        canActivate: mapToCanActivate([AuthGuard])
-    },
-    {
-        // Path support rudi
-        path: 'support-rudi',
-        component: SupportRudiComponent,
         canActivate: mapToCanActivate([AuthGuard])
     },
     {

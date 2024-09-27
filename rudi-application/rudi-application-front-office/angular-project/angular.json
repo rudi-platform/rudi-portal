@@ -35,8 +35,7 @@
                         "aot": true,
                         "assets": [
                             "src/favicon.ico",
-                            "src/assets",
-                            "src/robots.txt"
+                            "src/assets"
                         ],
                         "styles": [
                             "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
@@ -49,8 +48,7 @@
                             "src/styles.scss"
                         ],
                         "scripts": [
-                            "node_modules/cropperjs/dist/cropper.js",
-                            "src/assets/scripts/matomo.js"
+                            "node_modules/cropperjs/dist/cropper.js"
                         ],
                         "allowedCommonJsDependencies": [
                             "file-saver",

@@ -1,5 +1,11 @@
 @import "common-style";
 
+input::-ms-reveal,
+input::-ms-clear {
+    // cacher le buton pour afficher le mdp par défaut à Edge
+    display: none;
+}
+
 .main-container {
     @include card-container-bgcolor;
 }
@@ -135,5 +141,13 @@ mat-progress-spinner {
     color: var(--primary-text-light)
 }
 
+.cgu-container {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-top: -20px;
+}
 
-
+.contact-container {
+    padding: 0;
+}

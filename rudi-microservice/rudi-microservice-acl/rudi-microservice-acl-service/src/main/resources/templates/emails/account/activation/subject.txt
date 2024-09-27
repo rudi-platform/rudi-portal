@@ -1,1 +1,1 @@
-RUDI - Confirmation d'activation de votre compte
+${projectName} - Confirmation d'activation de votre compte

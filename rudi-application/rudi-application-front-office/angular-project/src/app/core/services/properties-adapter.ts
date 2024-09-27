@@ -38,13 +38,33 @@ export abstract class PropertiesAdapter<P> {
     }
 
     /**
-     * Les valeurs de la propriété sous forme de tableau.
+     * Les valeurs (string) de la propriété sous forme de tableau.
      * La propriété source doit déjà être sous forme de tableau JSON.
      */
     getStrings(key: string): Observable<string[]> {
         return this.getProperties().pipe(
             map(properties =>
                 get<P, string[], string[]>(key, properties, values => values)
+            ),
+        );
+    }
+    
+    getNumber(key: string): Observable<number> {
+        return this.getProperties().pipe(
+            map(properties =>
+                get<P, number, number>(key, properties, value => value)
+            ),
+        );
+    }
+
+    /**
+     * Les valeurs (numbers) de la propriété sous forme de tableau.
+     * La propriété source doit déjà être sous forme de tableau JSON.
+     */
+    getNumbers(key: string): Observable<number[]> {
+        return this.getProperties().pipe(
+            map(properties =>
+                get<P, number[], number[]>(key, properties, value => value)
             ),
         );
     }

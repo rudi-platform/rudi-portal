@@ -8,33 +8,26 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import org.rudi.facet.generator.model.GenerationFormat;
-import org.rudi.facet.generator.text.model.AbstractTemplateDataModel;
 import org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegistrationEntity;
 
 /**
  * @author fni18300
  *
  */
-public class AccountRegistrationDataModel extends AbstractTemplateDataModel {
+public class AccountRegistrationDataModel extends AbstractACLTemplateDataModel {
 
 	private AccountRegistrationEntity accountRegistration;
-	private String urlServer;
-	private String pathServer;
 
-	public AccountRegistrationDataModel(AccountRegistrationEntity accountRegistration, String urlServer,
-			String pathServer, @NotNull Locale locale, @NotNull String model) {
-		super(GenerationFormat.HTML, locale, model);
+	public AccountRegistrationDataModel(AccountRegistrationEntity accountRegistration,
+			Map<String, Object> additionalProperties, @NotNull Locale locale, @NotNull String model) {
+		super(additionalProperties, locale, model);
 		this.accountRegistration = accountRegistration;
-		this.urlServer = urlServer;
-		this.pathServer = pathServer;
 	}
 
 	@Override
 	protected void fillDataModel(Map<String, Object> data) {
+		super.fillDataModel(data);
 		data.put("account", accountRegistration);
-		data.put("urlServer", urlServer);
-		data.put("pathServer", pathServer);
 	}
 
 }

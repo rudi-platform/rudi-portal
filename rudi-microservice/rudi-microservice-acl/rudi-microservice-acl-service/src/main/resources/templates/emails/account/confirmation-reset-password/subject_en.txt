@@ -1,1 +1,1 @@
-RUDI - Password change confirmation
+${projectName} - Password change confirmation

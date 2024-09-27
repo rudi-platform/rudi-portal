@@ -3,6 +3,9 @@
  */
 package org.rudi.microservice.konsult.service.helper.sitemap;
 
+import static org.rudi.microservice.konsult.service.constant.BeanIds.SITEMAP_DATA_CACHE;
+import static org.rudi.microservice.konsult.service.constant.BeanIds.SITEMAP_RESOURCES_CACHE;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,8 +15,6 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.ListUtils;
 import org.ehcache.Cache;
 import org.rudi.common.core.DocumentContent;
@@ -28,11 +29,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.konsult.service.constant.BeanIds.SITEMAP_DATA_CACHE;
-import static org.rudi.microservice.konsult.service.constant.BeanIds.SITEMAP_RESOURCES_CACHE;
 
 /**
  * @author FNI18300
@@ -40,6 +42,8 @@ import static org.rudi.microservice.konsult.service.constant.BeanIds.SITEMAP_RES
 @Component
 @Slf4j
 public class SitemapHelper extends ResourcesHelper {
+
+	public static final String SITEMAP_RESOURCE_KEY = "sitemap";
 
 	private static final String CACHE_SITEMAP_DATA_KEY = "sitemap-data";
 
@@ -74,7 +78,7 @@ public class SitemapHelper extends ResourcesHelper {
 		this.sitemapCache = sitemapCache;
 		this.objectMapper = objectMapper;
 		this.urlListComputers = urlListComputers;
-		fillResourceMapping("sitemap", sitemapGeneratedFilename);
+		fillResourceMapping(sitemapGeneratedFilename, SITEMAP_RESOURCE_KEY);
 	}
 
 	protected SitemapDescriptionData loadSitemapDescription() throws IOException {
@@ -91,15 +95,6 @@ public class SitemapHelper extends ResourcesHelper {
 			}
 		}
 		return result;
-	}
-
-	@Override
-	protected DocumentContent getDocumentContent(String resourceName) throws IOException {
-		// On vérifie l'existence du fichier avant de le créer
-		if (Thread.currentThread().getContextClassLoader().getResource(getBasePackage() + resourceName) != null) {
-			return DocumentContent.fromResourcePath(getBasePackage() + resourceName);
-		}
-		return null;
 	}
 
 	public SitemapDescriptionData getSitemapDescriptionData() {
@@ -119,16 +114,15 @@ public class SitemapHelper extends ResourcesHelper {
 
 		for (SitemapEntryData sitemapEntryData : ListUtils.union(
 				Collections.singletonList(sitemapDescriptionData.getStaticSitemapEntries()),
-				sitemapDescriptionData.getSitemapEntries()
-		)) {
+				sitemapDescriptionData.getSitemapEntries())) {
 			// Parcours de la liste des KeyFigureComputer pour trouver celui qui correspond au KeyFigure
 			for (AbstractUrlListComputer computer : urlListComputers) {
 				try {
 					List<TUrl> urlList = computer.compute(sitemapEntryData, sitemapDescriptionData);
 					globalList.addAll(urlList);
 				} catch (AppServiceException e) {
-					log.error("Erreur lors de la construction de la liste d'URL de type {}",
-							sitemapEntryData.getType(), e);
+					log.error("Erreur lors de la construction de la liste d'URL de type {}", sitemapEntryData.getType(),
+							e);
 				}
 			}
 		}

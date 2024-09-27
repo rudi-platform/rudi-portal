@@ -4,7 +4,6 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {CustomizationService} from '@core/services/customization.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
-import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RedirectService} from '@core/services/redirect.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppInfo} from 'micro_service_modules/acl/acl-api/model/models';
@@ -36,6 +35,7 @@ export class FooterComponent implements OnInit {
 
     logoIsLoading: boolean;
     logoSrc: Base64EncodedLogo;
+    logoAlt: string;
 
     displayComponent: boolean;
     termsValues: Array<SafeHtml>;
@@ -50,15 +50,13 @@ export class FooterComponent implements OnInit {
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly domSanitizer: DomSanitizer,
         private readonly imageLogoService: ImageLogoService,
-        private readonly customizationService: CustomizationService,
-        private readonly propertiesMetierService: PropertiesMetierService
+        private readonly customizationService: CustomizationService
     ) {
         this.customizationDescriptionIsLoading = false;
         this.displayComponent = false;
         this.termsValues = [];
         this.logoIsLoading = false;
         this.initCustomizationDescription();
-        this.getUrlToRudi();
     }
 
     ngOnInit(): void {
@@ -106,7 +104,9 @@ export class FooterComponent implements OnInit {
             .subscribe({
                 next: (customizationDescription: CustomizationDescription) => {
                     this.customizationDescription = customizationDescription;
-                    this.initLogo(this.customizationDescription.footer_description.logo);
+                    this.logoAlt = customizationDescription.footer_description.footerLogo.logo_alt_text;
+                    this.initLogo(this.customizationDescription.footer_description.footerLogo.logo);
+                    this.footerLogoLink = this.customizationDescription.footer_description.footerLogo.url;
                     this.cmsTermsDescription = customizationDescription.cms_terms_description;
                     this.customizationDescriptionIsLoading = false;
                     this.initTerms();
@@ -134,14 +134,6 @@ export class FooterComponent implements OnInit {
                 this.logger.error(error);
                 this.logoSrc = DEFAULT_PICTO;
                 this.logoIsLoading = false;
-            }
-        });
-    }
-
-    getUrlToRudi(): void {
-        this.propertiesMetierService.get('front.index').subscribe({
-            next: (link: string) => {
-                this.footerLogoLink = link;
             }
         });
     }

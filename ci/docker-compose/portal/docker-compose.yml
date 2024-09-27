@@ -19,7 +19,7 @@ volumes:
 
 services:
   database:
-    image: postgres:10.15
+    image: postgis/postgis:15-master
     environment:
       - POSTGRES_USER=rudi
       - POSTGRES_PASSWORD=rudi

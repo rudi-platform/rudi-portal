@@ -1,1 +1,1 @@
-RUDI - Demande d'accès refusée
+${projectName} - Demande d'accès refusée

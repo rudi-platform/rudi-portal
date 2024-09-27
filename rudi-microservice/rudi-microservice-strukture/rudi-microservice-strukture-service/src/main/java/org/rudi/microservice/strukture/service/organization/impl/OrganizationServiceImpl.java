@@ -49,8 +49,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -85,12 +85,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	public User getOrganizationUserFromOrganizationUuid(UUID organizationUuid)
-			throws AppServiceForbiddenException {
-		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+	public User getOrganizationUserFromOrganizationUuid(UUID organizationUuid) throws AppServiceForbiddenException {
+		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganization(organizationUuid))){
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles)
+				|| struktureAuthorisationHelper.isAccessGrantedForUserOnOrganization(organizationUuid))) {
 			throw new AppServiceForbiddenException(
 					String.format("Authenticated user is not member of organization %s", organizationUuid));
 		}
@@ -173,13 +173,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Transactional // readOnly = false
 	public OrganizationMember addOrganizationMember(UUID organizationUuid, OrganizationMember organizationMember)
 			throws AppServiceException {
-		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 
 		// Verifier que l'utilisateur connecté a le droit d'agir
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid)) ){
-			throw new UserIsNotOrganizationAdministratorException(
-					String.format("L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) || struktureAuthorisationHelper
+				.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid))) {
+			throw new UserIsNotOrganizationAdministratorException(String.format(
+					"L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
 		}
 
 		val organizationEntity = getOrganizationEntity(organizationUuid);
@@ -204,13 +205,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	public List<OrganizationMember> getOrganizationMembers(UUID organizationUuid) throws AppServiceException {
-		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_MODERATOR_ACCESS();
+		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODERATOR_PROJEKT_ACCESS();
 
 		// Verifier que l'utilisateur connecté a le droit d'agir
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid)) ){
-			throw new UserIsNotOrganizationAdministratorException(
-					String.format("L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) || struktureAuthorisationHelper
+				.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid))) {
+			throw new UserIsNotOrganizationAdministratorException(String.format(
+					"L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
 		}
 		val organizationEntity = getOrganizationEntity(organizationUuid);
 		return organizationMemberMapper.entitiesToDto(organizationEntity.getMembers());
@@ -220,11 +222,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Transactional(rollbackFor = { CannotRemoveLastAdministratorException.class, RuntimeException.class })
 	// readOnly = false
 	public void removeOrganizationMembers(UUID organizationUuid, UUID userUuid) throws AppServiceException {
-		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 
 		// Vérification des droits pour l'utilisation de cette fonction
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid)) ){
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) || struktureAuthorisationHelper
+				.isAccessGrantedForUserOnOrganizationAsAdministrator(organizationUuid))) {
 			throw new AppServiceUnauthorizedException(
 					"L'utilisateur connecté n'a pas le droit de manipuler cette organisation");
 		}
@@ -263,11 +266,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 	public Page<OrganizationUserMember> searchOrganizationMembers(OrganizationMembersSearchCriteria searchCriteria,
 			Pageable pageable) throws AppServiceException {
 
-		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 
 		// Vérification des droits pour l'utilisation de cette fonction
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(searchCriteria.getOrganizationUuid())) ){
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) || struktureAuthorisationHelper
+				.isAccessGrantedForUserOnOrganizationAsAdministrator(searchCriteria.getOrganizationUuid()))) {
 			throw new AppServiceUnauthorizedException(
 					"L'utilisateur connecté n'a pas le droit de chercher des membres pour cette organisation");
 		}
@@ -298,8 +302,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_ACCESS();
 
 		// Vérifie que l'utilisateur connecté est bien administrateur de l'organisation
-		if( !(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles) ||
-				struktureAuthorisationHelper.isAccessGrantedForUserOnOrganization(organizationUuid)) ){
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsRoles)
+				|| struktureAuthorisationHelper.isAccessGrantedForUserOnOrganization(organizationUuid))) {
 			throw new AppServiceUnauthorizedException(
 					"L'utilisateur connecté n'a pas le droit de chercher des membres pour cette organisation");
 		}

@@ -15,11 +15,11 @@ export class KonsultRvaService extends RvaService {
         super();
     }
 
-    getAddressById(query: number): Observable<Address> {
+    getAddressById(query: string): Observable<Address> {
         throw new Error('Method not existing');
     }
 
-    getFullAddresses(query: string): Observable<Address[]> {
+    searchAddresses(query: string): Observable<Address[]> {
         return this.konsultService.searchAddresses(query);
     }
 }

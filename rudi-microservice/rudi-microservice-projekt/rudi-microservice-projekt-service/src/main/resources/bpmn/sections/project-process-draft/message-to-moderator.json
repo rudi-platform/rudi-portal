@@ -1,12 +1,12 @@
 {
 	"name": "message-to-moderator",
-	"label": "Message à l'attention des équipes Rudi :",
-	"help": "Message à l'attention des équipes Rudi :",
+	"label": "Message à l'attention de l'équipe ${teamName} :",
+	"help": "Message à l'attention de l'équipe ${teamName} :",
 	"readonly": false,
 	"fieldDefinitions": [
 		{
 			"name": "messageToModerator",
-			"label": "Message à l'attention des équipes Rudi",
+			"label": "Message à l'attention de l'équipe ${teamName}",
 			"type": "TEXT",
 			"readonly": false,
 			"required": false

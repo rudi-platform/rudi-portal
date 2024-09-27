@@ -3,8 +3,6 @@ import {Observable, Observer} from 'rxjs';
 
 export type Base64EncodedLogo = string;
 
-export const DEFAULT_LOGO: Base64EncodedLogo = '/assets/images/logo_rennes_metropole.svg';
-
 @Injectable({
     providedIn: 'root'
 })

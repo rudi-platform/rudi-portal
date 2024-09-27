@@ -6,6 +6,7 @@ import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.facet.rva.exception.ExternalApiRvaException;
 import org.rudi.facet.rva.exception.TooManyAddressesException;
 import org.rudi.rva.core.bean.Address;
+import org.rudi.rva.core.bean.AddressKind;
 
 public interface AddressService {
 	/**
@@ -16,7 +17,8 @@ public interface AddressService {
 	 * @throws ExternalApiRvaException       lorsque l'erreur vient de l'API RVA de RM
 	 * @throws AppServiceBadRequestException lorsque la taille du mot clé de la recherche < 4
 	 */
-	List<Address> getFullAddresses(String query) throws ExternalApiRvaException, AppServiceBadRequestException, TooManyAddressesException;
+	List<Address> searchAddresses(String query, AddressKind kind, Integer limit)
+			throws ExternalApiRvaException, AppServiceBadRequestException, TooManyAddressesException;
 
-	Address getAddressById(Integer idAddress) throws ExternalApiRvaException, TooManyAddressesException;
+	Address getAddressById(String idAddress) throws ExternalApiRvaException, TooManyAddressesException;
 }

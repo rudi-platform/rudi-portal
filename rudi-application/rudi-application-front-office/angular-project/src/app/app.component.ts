@@ -6,7 +6,7 @@ import {PageTitleService} from '@core/services/page-title.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {TranslateService} from '@ngx-translate/core';
 import {filter, map} from 'rxjs/operators';
-import {environment} from '../environments/environment';
+import { PropertiesMetierService } from './core/services/properties-metier.service';
 
 @Component({
     selector: 'app-root',
@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
         private readonly translate: TranslateService,
         private readonly router: Router,
         private readonly pageTitleService: PageTitleService,
+        private readonly propertiesService: PropertiesMetierService,
     ) {
         translate.setDefaultLang('fr');
         router.events.pipe(
@@ -36,11 +37,11 @@ export class AppComponent implements OnInit {
      * Méthode de chargement de scripts supplémentaires
      * @private
      */
-    private static loadScript(): void {
-        // Chargement du script de tracking avec tarteaucitron si URL définie
-        if (environment.tarteaucitronUrl) {
+    private static loadScript(scriptUrl: string): void {
+        // Chargement du script en asynchrone
+        if (scriptUrl) {
             const node = document.createElement('script');
-            node.src = environment.tarteaucitronUrl;
+            node.src = scriptUrl;
             node.type = 'text/javascript';
             node.async = true;
             document.getElementsByTagName('head')[0].appendChild(node);
@@ -49,6 +50,9 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
-        AppComponent.loadScript();
+        // appel aux properties back + passer le résultat au loadscript
+        this.propertiesService.getStrings('scripts').subscribe(scriptUrls => scriptUrls?.forEach(scriptUrl => 
+            AppComponent.loadScript(scriptUrl)
+        ));
     }
 }

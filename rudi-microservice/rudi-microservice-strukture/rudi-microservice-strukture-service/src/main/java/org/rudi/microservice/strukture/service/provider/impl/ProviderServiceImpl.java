@@ -23,6 +23,7 @@ import org.rudi.microservice.strukture.core.bean.AbstractAddress;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Provider;
 import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.service.helper.StruktureResourceHelper;
 import org.rudi.microservice.strukture.service.mapper.AbstractAddressMapper;
 import org.rudi.microservice.strukture.service.mapper.NodeProviderMapper;
 import org.rudi.microservice.strukture.service.mapper.ProviderFullMapper;
@@ -89,6 +90,7 @@ public class ProviderServiceImpl implements ProviderService {
 	private final NodeProviderMapper nodeProviderMapper;
 	private final AbstractAddressMapper abstractAddressMapper;
 	private final ResourceHelper resourceHelper;
+	private final StruktureResourceHelper strukureResourceHelper;
 
 	@Override
 	public Page<Provider> searchProviders(ProviderSearchCriteria searchCriteria, Pageable pageable) {
@@ -256,8 +258,7 @@ public class ProviderServiceImpl implements ProviderService {
 		return abstractAddressMapper.entityToDto(abstractAddressEntity);
 	}
 
-	private void assignAddressRole(AbstractAddress abstractAddress,
-			AbstractAddressEntity abstractAddressEntity) {
+	private void assignAddressRole(AbstractAddress abstractAddress, AbstractAddressEntity abstractAddressEntity) {
 		AddressRoleEntity addressRoleEntity = null;
 		if (abstractAddress.getAddressRole() != null && abstractAddress.getAddressRole().getUuid() != null) {
 			addressRoleEntity = addressRoleDao.findByUUID(abstractAddress.getAddressRole().getUuid());
@@ -295,25 +296,28 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public DocumentContent downloadMedia(@NotNull UUID providerUuid, @NotNull KindOfData kindOfData) throws AppServiceException {
+	public DocumentContent downloadMedia(@NotNull UUID providerUuid, @NotNull KindOfData kindOfData)
+			throws AppServiceException {
 		try {
-			return mediaService.getMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO);
+			final var logo = mediaService.getMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO);
+			if (logo == null) {
+				return strukureResourceHelper.getDefaultLogo();
+			}
+			return logo;
 		} catch (DataverseAPIException e) {
 			throw new AppServiceException(
-					String.format(
-							"Erreur lors du téléchargement du %s du fournisseur avec providerId = %s",
-							kindOfData.getValue(),
-							providerUuid),
+					String.format("Erreur lors du téléchargement du %s du fournisseur avec providerId = %s",
+							kindOfData.getValue(), providerUuid),
 					e);
 		}
 	}
 
 	@Override
-	public void uploadMedia(@NotNull UUID providerUuid, @NotNull KindOfData kindOfData, @NotNull Resource media) throws AppServiceException {
+	public void uploadMedia(@NotNull UUID providerUuid, @NotNull KindOfData kindOfData, @NotNull Resource media)
+			throws AppServiceException {
 		try {
 			getProvider(providerUuid, false);
-		}
-		catch (final EmptyResultDataAccessException e){
+		} catch (final EmptyResultDataAccessException e) {
 			throw new AppServiceNotFoundException(Provider.class, providerUuid);
 		}
 
@@ -321,12 +325,8 @@ public class ProviderServiceImpl implements ProviderService {
 			final File tempFile = resourceHelper.copyResourceToTempFile(media);
 			mediaService.setMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO, tempFile);
 		} catch (final DataverseAPIException | IOException e) {
-			throw new AppServiceException(
-					String.format(
-							"Erreur lors de l'upload du %s du fournisseur d'id %s",
-							kindOfData.getValue(),
-							providerUuid)
-					, e);
+			throw new AppServiceException(String.format("Erreur lors de l'upload du %s du fournisseur d'id %s",
+					kindOfData.getValue(), providerUuid), e);
 		}
 	}
 
@@ -335,12 +335,8 @@ public class ProviderServiceImpl implements ProviderService {
 		try {
 			mediaService.deleteMediaFor(MediaOrigin.PROVIDER, providerUuid, kindOfData);
 		} catch (final DataverseAPIException e) {
-			throw new AppServiceException(
-					String.format(
-							"Erreur lors de la suppression du %s du producteur d'id %s",
-							kindOfData.getValue(),
-							providerUuid)
-					, e);
+			throw new AppServiceException(String.format("Erreur lors de la suppression du %s du producteur d'id %s",
+					kindOfData.getValue(), providerUuid), e);
 		}
 	}
 

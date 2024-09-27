@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Reset your password</title>
+    <title>${projectName} - Reset your password</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,7 +21,7 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Hello,</p>
-<p>A request to reset your password for your Rudi account has been made. <br/>
+<p>A request to reset your password for your ${teamName} account has been made. <br/>
     If you are not the originator of this request, please ignore this email.
     To reset your password, click on the link below <a
             href="${urlServer}${pathServer}?token=${resetPasswordRequest.token}">here</a> or paste the following link
@@ -35,7 +35,7 @@
 </p>
 <br/>
 <p>See you soon,</p>
-<p>RUDI's team</p>
+<p>${teamName}'s team</p>
 <p><a href="${urlServer}">${urlServer}</a></p>
 </body>
 </html>

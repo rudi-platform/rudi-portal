@@ -1,1 +1,1 @@
-RUDI - Demande de publication acceptée
+${projectName} - Demande de publication acceptée

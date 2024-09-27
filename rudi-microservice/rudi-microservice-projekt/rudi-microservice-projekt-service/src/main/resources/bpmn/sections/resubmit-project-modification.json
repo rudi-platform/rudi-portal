@@ -1,5 +1,5 @@
 {
-	"help": "Celles-ci vont être soumises à modération auprès des équipes Rudi afin d’être publiées sur le catalogue des réutilisations.",
+	"help": "Celles-ci vont être soumises à modération auprès de l'équipe ${teamName} afin d’être publiées sur le catalogue des réutilisations.",
 	"fieldDefinitions": [
 		{
 			"name": "messageToModerator",

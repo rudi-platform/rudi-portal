@@ -1,5 +1,11 @@
 @import "common-style";
 
+input::-ms-reveal,
+input::-ms-clear {
+    // cacher le buton pour afficher le mdp par défaut à Edge
+    display: none;
+}
+
 .main-container {
     @include card-container-bgcolor;
     height: 110vh;

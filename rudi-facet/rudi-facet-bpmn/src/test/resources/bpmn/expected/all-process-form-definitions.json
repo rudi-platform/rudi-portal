@@ -1,64 +1,65 @@
 [
-	{
-		"processDefinitionId": "linked-dataset-process",
-		"userTaskId": "UserTask_1",
-		"actionName": "validated",
-		"formDefinition": {
-			"name": "linked-dataset-process__UserTask_1__validated",
-			"formSectionDefinitions": [
-				{
-					"sectionDefinition": {
-						"name": "linked-dataset-process__UserTask_1__validated",
-						"definition": "{\n\t\"fieldDefinitions\": [\n\t\t{\n\t\t\t\"name\": \"messageToProjectOwner\",\n\t\t\t\"label\": \"Message à l’attention du porteur de projet\",\n\t\t\t\"type\": \"TEXT\"\n\t\t}\n\t]\n}\n"
-					},
-					"readOnly": false,
-					"order": 1
-				}
-			]
-		}
-	},
-	{
-		"processDefinitionId": "linked-dataset-process",
-		"userTaskId": "UserTask_1",
-		"actionName": "canceled",
-		"formDefinition": {
-			"name": "linked-dataset-process__UserTask_1__canceled",
-			"formSectionDefinitions": [
-				{
-					"sectionDefinition": {
-						"name": "linked-dataset-process__UserTask_1__canceled",
-						"definition": "{\n\t\"fieldDefinitions\": [\n\t\t{\n\t\t\t\"name\": \"messageToProjectOwner\",\n\t\t\t\"label\": \"Message à l’attention du porteur de projet\",\n\t\t\t\"type\": \"TEXT\",\n\t\t\t\"required\": true\n\t\t}\n\t]\n}\n"
-					},
-					"readOnly": false,
-					"order": 1
-				}
-			]
-		}
-	},
-	{
-		"processDefinitionId": "information-request-process",
-		"userTaskId": "draft",
-		"formDefinition": {
-			"name": "information-request-process__draft",
-			"formSectionDefinitions": [
-				{
-					"sectionDefinition": {
-						"name": "matching-data",
-						"definition": "{\n\t\"fieldDefinitions\": []\n}\n"
-					},
-					"readOnly": false,
-					"order": 1
-				},
-				{
-					"sectionDefinition": {
-						"name": "consent",
-						"definition": "{\n\t\"label\": \"Section matérialisée par une card côté front (car label spécifié)\",\n\t\"fieldDefinitions\": [\n\t\t{\n\t\t\t\"name\": \"keepDataOnlyForProcessing\",\n\t\t\t\"label\": \"Je consens à ce que mes données d'identification et documents associés soient stockés par Rudi. Ces données sont conservées uniquement le temps nécessaire au traitement de la démarche, conformément à <a href='https://rudi.datarennes.fr/politique-de-confidentialite/' style='font-weight: bold; text-decoration: underline; color: #004680;'>notre politique de confidentialité.</a>\",\n\t\t\t\"type\": \"BOOLEAN\"\n\t\t}\t]}",
-						"label": "Section matérialisée par une card côté front (car label spécifié)"
-					},
-					"readOnly": false,
-					"order": 2
-				}
-			]
-		}
-	}
+  {
+    "processDefinitionId": "linked-dataset-process",
+    "formDefinition": {
+      "name": "linked-dataset-process__UserTask_1__validated",
+      "formSectionDefinitions": [
+        {
+          "sectionDefinition": {
+            "name": "linked-dataset-process__UserTask_1__validated",
+            "definition": "{\t\"label\": \"Equipe Rudi Test\",\t\"fieldDefinitions\": [\t\t{\t\t\t\"name\": \"messageToProjectOwner\",\t\t\t\"label\": \"Message à l’attention du porteur de projet de Equipe Rudi\",\t\t\t\"type\": \"TEXT\"\t\t}\t]}",
+            "label": "Equipe Rudi Test"
+          },
+          "readOnly": false,
+          "order": 1
+        }
+      ]
+    },
+    "userTaskId": "UserTask_1",
+    "actionName": "validated"
+  },
+  {
+    "processDefinitionId": "linked-dataset-process",
+    "formDefinition": {
+      "name": "linked-dataset-process__UserTask_1__canceled",
+      "formSectionDefinitions": [
+        {
+          "sectionDefinition": {
+            "name": "linked-dataset-process__UserTask_1__canceled",
+            "definition": "{\t\"fieldDefinitions\": [\t\t{\t\t\t\"name\": \"messageToProjectOwner\",\t\t\t\"label\": \"Message à l’attention du porteur de projet\",\t\t\t\"type\": \"TEXT\",\t\t\t\"required\": true\t\t}\t]}"
+          },
+          "readOnly": false,
+          "order": 1
+        }
+      ]
+    },
+    "userTaskId": "UserTask_1",
+    "actionName": "canceled"
+  },
+  {
+    "processDefinitionId": "information-request-process",
+    "formDefinition": {
+      "name": "information-request-process__draft",
+      "formSectionDefinitions": [
+        {
+          "sectionDefinition": {
+            "name": "matching-data",
+            "definition": "{\t\"fieldDefinitions\": []}"
+          },
+          "readOnly": false,
+          "order": 1
+        },
+        {
+          "sectionDefinition": {
+            "name": "consent",
+            "definition": "{\t\"label\": \"Section matérialisée par une card côté front (car label spécifié)\",\t\"fieldDefinitions\": [\t\t{\t\t\t\"name\": \"keepDataOnlyForProcessing\",\t\t\t\"label\": \"Je consens à ce que mes données d'identification et documents associés soient stockés par Rudi. Ces données sont conservées uniquement le temps nécessaire au traitement de la démarche, conformément à <a href='https:\/\/rudi.datarennes.fr\/politique-de-confidentialite\/' style='font-weight: bold; text-decoration: underline; color: #004680;'>notre politique de confidentialité.<\/a>\",\t\t\t\"type\": \"BOOLEAN\"\t\t}\t]}",
+            "label": "Section matérialisée par une card côté front (car label spécifié)"
+          },
+          "readOnly": false,
+          "order": 2
+        }
+      ]
+    },
+    "userTaskId": "draft"
+  }
 ]

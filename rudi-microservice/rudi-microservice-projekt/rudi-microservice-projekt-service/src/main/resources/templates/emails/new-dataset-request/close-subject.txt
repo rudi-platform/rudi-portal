@@ -1,1 +1,1 @@
- Rudi - Votre demande de nouvelles données
+ ${projectName} - Votre demande de nouvelles données

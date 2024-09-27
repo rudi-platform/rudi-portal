@@ -498,7 +498,7 @@ public class ACLHelper {
 	}
 
 	public void deleteProjectKey(UUID projectKeyStoreUuid, UUID projectKeyUuid) {
-		loadBalancedWebClient.post().uri(buildDeleteProjectKeyUrl(), Map.of(PROJECT_KEY_STORE_UUID_PARAMETER,
+		loadBalancedWebClient.delete().uri(buildDeleteProjectKeyUrl(), Map.of(PROJECT_KEY_STORE_UUID_PARAMETER,
 				projectKeyStoreUuid, PROJECT_KEY_UUID_PARAMETER, projectKeyUuid)).retrieve().toBodilessEntity().block();
 	}
 

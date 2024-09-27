@@ -2,7 +2,7 @@
 
     <a routerLink="/home">
         <img *ngIf="!logoIsLoading" class="header-logo" [src]="logo"
-             alt="Logo bleu orange beta de rennes metropole"/>
+             [alt]="logoAltTxt"/>
     </a>
 
     <div id="main-nav" [ngClass]="{

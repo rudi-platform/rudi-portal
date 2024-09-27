@@ -1,1 +1,1 @@
-RUDI - Demande de publication d'une réutilisation
+${projectName} - Demande de publication d'une réutilisation

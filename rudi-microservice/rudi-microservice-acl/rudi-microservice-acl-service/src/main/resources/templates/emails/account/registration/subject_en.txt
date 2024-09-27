@@ -1,1 +1,1 @@
-RUDI - Your account registration
+${projectName} - Your account registration

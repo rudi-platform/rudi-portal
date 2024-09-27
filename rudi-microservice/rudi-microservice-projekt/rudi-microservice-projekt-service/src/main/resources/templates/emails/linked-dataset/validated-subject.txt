@@ -1,1 +1,1 @@
-RUDI - Demande d'accès acceptée
+${projectName} - Demande d'accès acceptée

@@ -28,28 +28,7 @@ import {createWmtsBaseLayer, MapLayerFunction} from './map.layer.function';
 import {getDefaultCrs} from './map.media.layer.function';
 import {ADDRESS_STYLE, getHoveredStyle, LINE_STYLE, POINT_STYLE, POLYGON_STYLE} from './map.style.function';
 import MediaTypeEnum = Media.MediaTypeEnum;
-
-/**
- * Le nombre de pixels de "padding" autour d'une extent de géoémtrie sur laquelle la vue se centre
- */
-const PADDING_EXTENT = 40;
-
-/**
- * Niveau de zoom maximal quand on centre sur des géométries pour pas que ce soit trop zoomé
- */
-const MAX_ZOOM_EXTENT = 11;
-
-/**
- * Zoom par défaut sur arrivage de la carte
- */
-const DEFAULT_ZOOM = 13;
-
-/**
- * Coordonnées du point de centrage de la carte en WGS84 (ici Rennes)
- */
-const MAP_CENTER = [-1.662712, 48.114767];
-const MAP_CENTER_TOP_LEFT = [-1.751289, 48.168261];
-const MAP_CENTER_BOTTOM_RIGHT = [-1.534996, 48.062135];
+import { PropertiesMetierService } from '@app/core/services/properties-metier.service';
 
 @Component({
     selector: 'app-map',
@@ -58,12 +37,35 @@ const MAP_CENTER_BOTTOM_RIGHT = [-1.534996, 48.062135];
 })
 export class MapComponent implements AfterViewInit {
 
+    /**
+     * Coordonnées du point de centrage de la carte en WGS84 (Rennes par défaut)
+     */
+    mapCenter: number[] = [-1.662712, 48.114767];
+    mapCenterTopleft: number[] = [-1.751289, 48.168261];
+    mapCenterBottomRight: number[] = [-1.534996, 48.062135];
+    
+    /**
+     * Le nombre de pixels de "padding" autour d'une extent de géoémtrie sur laquelle la vue se centre
+     */
+    paddingExtent: number = 40;
+
+    /**
+     * Niveau de zoom maximal quand on centre sur des géométries pour pas que ce soit trop zoomé
+     */
+    maxZoomExtent: number = 11;
+
+    /**
+     * Zoom par défaut sur arrivage de la carte
+     */
+    configDefaultZoom: number = 13;
+
     constructor(
         private matIconRegistry: MatIconRegistry,
         private domSanitizer: DomSanitizer,
         private readonly displayMapService: DisplayMapService,
         private readonly logService: LogService,
-        private readonly mapLayerFunction: MapLayerFunction
+        private readonly mapLayerFunction: MapLayerFunction,
+        private readonly propertiesMetierService: PropertiesMetierService
     ) {
         this.matIconRegistry.addSvgIcon(
             'icon_centrage',
@@ -75,7 +77,7 @@ export class MapComponent implements AfterViewInit {
     mapId: string;
 
     @Input()
-    defaultZoom = DEFAULT_ZOOM;
+    defaultZoom = this.configDefaultZoom;
 
     @Input()
     boundingBox: Feature<Polygon>;
@@ -162,19 +164,44 @@ export class MapComponent implements AfterViewInit {
     initExtent: Extent;
     viewProjectionString: string;
 
+
+    ngOnInit(): void {
+        this.propertiesMetierService.getNumbers('mapInfo.defaultCenter').subscribe(point => {
+            this.mapCenter = point;
+        });
+        this.propertiesMetierService.getNumbers('mapInfo.defaultTopLeft').subscribe(point => {
+            this.mapCenterTopleft = point;
+        });
+        this.propertiesMetierService.getNumbers('mapInfo.defaultBottomRight').subscribe(point => {
+            this.mapCenterBottomRight = point;
+        });
+        this.propertiesMetierService.getNumber('mapInfo.paddingExtent').subscribe(num => {
+            this.paddingExtent = num;
+        });
+        this.propertiesMetierService.getNumber('mapInfo.maxZoomExtent').subscribe(num => {
+            this.maxZoomExtent = num;
+        });
+        this.propertiesMetierService.getNumber('mapInfo.defaultZoom').subscribe(num => {
+            this.configDefaultZoom = num;
+        });
+    }
+
     ngAfterViewInit(): void {
         if (this.map == null) {
             let projection: Observable<Projection>;
 
             // Affichage de données cartographiques d'un JDD récupération de la projection et register avec proj4
             if (this.media != null) {
-                const projectionString = getDefaultCrs(this.media);
+                let projectionString = getDefaultCrs(this.media);
+                if (projectionString === null) {
+                    projectionString = DEFAULT_VIEW_PROJECTION;
+                }
                 this.viewProjectionString = projectionString;
                 projection = this.displayMapService.registerAndGetProjection(projectionString).pipe(
                     tap(() => {
-                        this.centeredPoint = proj4(GPS_PROJECTION, projectionString, MAP_CENTER);
-                        const topLeft = proj4(GPS_PROJECTION, projectionString, MAP_CENTER_TOP_LEFT);
-                        const bottomRight = proj4(GPS_PROJECTION, projectionString, MAP_CENTER_BOTTOM_RIGHT);
+                        this.centeredPoint = proj4(GPS_PROJECTION, projectionString, this.mapCenter);
+                        const topLeft = proj4(GPS_PROJECTION, projectionString, this.mapCenterTopleft);
+                        const bottomRight = proj4(GPS_PROJECTION, projectionString, this.mapCenterBottomRight);
                         this.initExtent = boundingExtent([topLeft, bottomRight]);
                     })
                 );
@@ -183,9 +210,9 @@ export class MapComponent implements AfterViewInit {
             else {
                 projection = of(get(DEFAULT_VIEW_PROJECTION)).pipe(
                     tap(() => {
-                        this.centeredPoint = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, MAP_CENTER);
-                        const topLeft = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, MAP_CENTER_TOP_LEFT);
-                        const bottomRight = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, MAP_CENTER_BOTTOM_RIGHT);
+                        this.centeredPoint = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, this.mapCenter);
+                        const topLeft = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, this.mapCenterTopleft);
+                        const bottomRight = proj4(GPS_PROJECTION, DEFAULT_VIEW_PROJECTION, this.mapCenterBottomRight);
                         this.initExtent = boundingExtent([topLeft, bottomRight]);
                     })
                 );
@@ -470,8 +497,8 @@ export class MapComponent implements AfterViewInit {
         this.map.getView().fit(
             centeredElement,
             {
-                padding: [PADDING_EXTENT, PADDING_EXTENT, PADDING_EXTENT, PADDING_EXTENT],
-                maxZoom: MAX_ZOOM_EXTENT,
+                padding: [this.paddingExtent, this.paddingExtent, this.paddingExtent, this.paddingExtent],
+                maxZoom: this.maxZoomExtent,
                 duration: 1000
             }
         );

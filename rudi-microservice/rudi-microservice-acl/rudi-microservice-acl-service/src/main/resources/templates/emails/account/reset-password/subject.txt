@@ -1,1 +1,1 @@
-RUDI - Réinitialisation de votre mot de passe
+${projectName} - Réinitialisation de votre mot de passe

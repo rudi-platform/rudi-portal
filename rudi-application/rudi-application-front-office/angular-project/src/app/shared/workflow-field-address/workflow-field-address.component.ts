@@ -8,7 +8,7 @@ import {Observable, of} from 'rxjs';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
 import {mapEach} from '../utils/ObservableUtils';
 import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component';
-import {RvaAddress} from './workflow-field-address.model';
+import { Address } from 'micro_service_modules/api-rva';
 
 @Component({
     selector: 'app-workflow-field-address',
@@ -16,8 +16,8 @@ import {RvaAddress} from './workflow-field-address.model';
     styleUrls: ['./workflow-field-address.component.scss']
 })
 export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implements OnInit {
-    private selectedAddress: RvaAddress = null;
-    addressList$: Observable<RvaAddress[]>;
+    private selectedAddress: Address = null;
+    addressList$: Observable<Address[]>;
     userInputFormControl: AbstractControl;
     adressLoading: boolean;
     hasError = false;
@@ -81,18 +81,15 @@ export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implem
         this.formControl.valueChanges.subscribe(() => this.updateValidity(this.userInputFormControl));
     }
 
-    formatAddress(address: RvaAddress): string {
+    formatAddress(address: Address): string {
         return address?.label ?? '';
     }
 
-    private getAddressesFromApi(query: string): Observable<RvaAddress[]> {
+    private getAddressesFromApi(query: string): Observable<Address[]> {
         if (!RvaService.isValidQuery(query)) {
             return of([]); // Renvoie le tableau comme un élément dans un subscribe
         }
-        return this.addressMetierService.getFullAddresses(this.processQuery(query))
-            .pipe(
-                mapEach(anAddress => ({id: anAddress.idaddress, label: anAddress.addr3, addr2: anAddress.addr2} as RvaAddress))
-            );
+        return this.addressMetierService.searchAddresses(this.processQuery(query)).pipe();
     }
 
     /**
@@ -105,12 +102,12 @@ export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implem
     private processQuery(query: string): string {
         if (this.selectedAddress !== null) {
             // Si addr2 est inclus dans notre query
-            return (query.search(this.selectedAddress.addr2) !== -1) ? this.selectedAddress.addr2 : query;
+            return (query.search(this.selectedAddress.label) !== -1) ? this.selectedAddress.label : query;
         }
         return query;
     }
 
-    setSelectedAddress(selectedAddress: RvaAddress | undefined): void {
+    setSelectedAddress(selectedAddress: Address | undefined): void {
         this.selectedAddress = selectedAddress;
         this.formControl.setValue(this.selectedAddress?.id);
     }
@@ -134,17 +131,17 @@ export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implem
         return !userInputFormControl.value || this.formControl.value ? null : {checkRvaAddressValidator: true};
     }
 
-    getAddressById(addressId: number) {
+    getAddressById(addressId: string): Observable<Address> {
         return this.addressMetierService.getAddressById(addressId)
-            .pipe(map(anAddress => ({id: anAddress.idaddress, label: anAddress.addr3, addr2: anAddress.addr2} as RvaAddress))
+            .pipe(map(anAddress => ({id: anAddress.id, label: anAddress.label} as Address))
             );
     }
 
-    setAddressInReadOnlyForm(addressId: number) {
+    setAddressInReadOnlyForm(addressId: string) {
         this.hasError = false;
         this.adressLoading = true;
         this.getAddressById(addressId).subscribe({
-            next: (result: RvaAddress) => {
+            next: (result: Address) => {
                 this.formGroup.get(this.userInputFormControlName).clearValidators();
                 this.formGroup.get(this.userInputFormControlName).setValue(this.formatAddress(result));
                 this.hasError = false;

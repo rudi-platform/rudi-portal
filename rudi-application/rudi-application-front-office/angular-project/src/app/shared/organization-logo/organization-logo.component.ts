@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Base64EncodedLogo, DEFAULT_LOGO} from '@core/services/image-logo.service';
+import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {ProducersMetierService} from '@core/services/producers-metier.service';
 import {ProvidersMetierService} from '@core/services/providers-metier.service';
@@ -17,7 +17,6 @@ export class OrganizationLogoComponent {
     @Input() organizationType: OrganizationType;
     @Input() cssClass: string;
     @Input() isANewRequest;
-    defaultContent = DEFAULT_LOGO;
     content: Base64EncodedLogo;
     isLoading = false;
 
@@ -37,7 +36,7 @@ export class OrganizationLogoComponent {
                     this.isLoading = false;
                 },
                 error: () => {
-                    this.content = DEFAULT_LOGO;
+                    this.content = '/assets/images/rudi_picto_profil_user.png';
                     this.isLoading = false;
                 }
             });

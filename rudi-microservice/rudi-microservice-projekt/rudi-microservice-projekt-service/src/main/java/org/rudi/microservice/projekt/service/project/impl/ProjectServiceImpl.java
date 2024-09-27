@@ -491,13 +491,8 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		// Récupération du Keystore
-		ProjectKeystoreSearchCriteria criteria = new ProjectKeystoreSearchCriteria();
-		criteria.setProjectUuids(List.of(projectUuid));
-		Pageable pageable = utilPageable.getPageable(0, 1, null);
-		Page<ProjectKeystore> projectKeystores = aclHelper.searchProjectKeystores(criteria, pageable);
-
+		Optional<ProjectKeystore> pks = getProjectKeystoreUuidByProjectUuid(projectUuid);
 		ProjectKeystore projectKeystore;
-		Optional<ProjectKeystore> pks = projectKeystores.get().findFirst();
 		boolean containsKeystore = pks.isPresent();
 		if (containsKeystore) {
 			projectKeystore = pks.get();
@@ -515,7 +510,15 @@ public class ProjectServiceImpl implements ProjectService {
 		if (projectKeyUuid == null) {
 			throw new AppServiceBadRequestException("Project key uuid is required");
 		}
-		aclHelper.deleteProjectKey(projectUuid, projectKeyUuid);
+
+		Optional<ProjectKeystore> projectKeystoreOptional = getProjectKeystoreUuidByProjectUuid(projectUuid);
+		boolean containsKeystore = projectKeystoreOptional.isPresent();
+
+		if (!containsKeystore) {
+			throw new AppServiceBadRequestException("Aucun projet ne possède l'UUID fournit");
+		}
+
+		aclHelper.deleteProjectKey(projectKeystoreOptional.get().getUuid(), projectKeyUuid);
 	}
 
 	@Override
@@ -551,6 +554,13 @@ public class ProjectServiceImpl implements ProjectService {
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
 		// pour le moment les droits d'accès à cette fonction sont les mêmes que la fonction de création de projet
 		projektAuthorisationHelper.checkRightsInitProject(projectEntity);
+	}
+
+	protected Optional<ProjectKeystore> getProjectKeystoreUuidByProjectUuid(UUID projectUuid){
+		ProjectKeystoreSearchCriteria criteria = new ProjectKeystoreSearchCriteria();
+		criteria.setProjectUuids(List.of(projectUuid));
+		Pageable pageable = PageRequest.of(0, 1);
+		return aclHelper.searchProjectKeystores(criteria, pageable).get().findFirst();
 	}
 
 }

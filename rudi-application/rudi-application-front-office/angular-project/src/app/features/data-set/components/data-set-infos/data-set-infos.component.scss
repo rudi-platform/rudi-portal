@@ -22,6 +22,12 @@
 .rudi-panel-data-language {
     border-radius: 4px;
     border: solid 1px var(--blocks-and-menus-outline);
+    padding: 5px;
+
+    .table{
+
+        margin-bottom: 0;
+    }
 
     .rudi-panel-data-data-language {
         font-size: 12px;

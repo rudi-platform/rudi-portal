@@ -54,15 +54,13 @@ public class CmsController implements CmsApi {
 	}
 
 	/**
-	 * GET /cms/resources/{resourcePath} : Téléchargement d&#39;une resource du CMS
-	 * Téléchargement d&#39;une resource du CMS
+	 * GET /cms/resources/{resourcePath} : Téléchargement d&#39;une resource du CMS Téléchargement d&#39;une resource du CMS
 	 *
 	 * @param resourcePath (required)
-	 * @return (status code 200)
-	 * or Internal server error (status code 500)
+	 * @return (status code 200) or Internal server error (status code 500)
 	 */
 	@Override
-	public ResponseEntity<Resource> downloadResource(String resourcePath) throws Exception {
+	public ResponseEntity<Resource> downloadCmsResource(String resourcePath) throws Exception {
 		DocumentContent documentContent = cmsService.downloadResource(resourcePath);
 
 		return controllerHelper.downloadableResponseEntity(documentContent);

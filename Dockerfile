@@ -57,3 +57,11 @@ ADD rudi-microservice/rudi-microservice-strukture/rudi-microservice-strukture-fa
 FROM rudi_base as rudi-microservice-template
 ADD rudi-microservice/rudi-microservice-template/rudi-microservice-template-facade/target/rudi-microservice-template-facade.jar /opt/rudi/microservice.jar
 
+FROM alpine:latest as extract
+ADD rudi-application\rudi-application-front-office\target\rudi-application-front-office-angular-dist.zip .
+RUN unzip rudi-application-front-office-angular-dist.zip
+
+FROM nginx:1.27.1-alpine as rudi-application-front-office
+COPY ci/docker/front-office/rudi.conf /etc/nginx/conf.d/
+COPY --from=extract ./angular-project/  /usr/share/nginx/html
+

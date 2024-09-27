@@ -62,13 +62,11 @@ curl "${host}:${port}/oauth/token" \
     --data-urlencode 'grant_type=password' \
     --data-urlencode 'username=rudi' \
     --data-urlencode 'password=rudi@123' \
-    --data-urlencode 'client_id=rudi' \
     --location --verbose
 ```
 
-- Le _username_ doit être présent en tant que user dans la base du µService ACL.<br/>
-- Le _client_id_ doit être présent en tant que user de type _ROBOT_ dans la base du µService ACL.<br/>
-- Le header _Authorization_ donc contenir _base64(<client_id>:<client_password>)_
+- Le  _username_  doit être présent en tant que user dans la base du µService ACL.<br/>
+- Le header  _Authorization_  doit contenir  _base64(<username>:<user_password>)_ 
 
 Requête avec [grant_type=client_credentials][client-credentials] :
 
@@ -80,7 +78,8 @@ curl "${host}:${port}/oauth/token" \
   --location --verbose
 ```
 
-- Le header _Authorization_ donc contenir _base64(<client_id>:<client_password>)_
+- Le  _client_id_  doit être présent en tant que user de type  _API_  dans la base du µService ACL.<br/>
+- Le header  _Authorization_  doit contenir  _base64(<client_id>:<client_password>)_ 
 
 Réponse :
 
@@ -136,3 +135,11 @@ Tous les composants se trouvent dans le package `org.springframework.security.oa
 - [password-grant]: https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
 - [client-credentials]: https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
 - [GitHub Rennes Métropole]: https://github.com/rudi-platform/rudi-documentation/blob/main/articles/_authentification/authentification.md
+
+# Tips
+
+Récupération d'un header Authorization en ligne de commande :
+
+```shell
+`echo -n "$login:$password" | base64 -w 0`
+```

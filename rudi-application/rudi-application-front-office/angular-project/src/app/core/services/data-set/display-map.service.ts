@@ -163,12 +163,12 @@ export class DisplayMapService {
      */
     searchAddresses(input: string): Observable<SearchAutocompleteItem<Address>[]> {
         if (input != null && input !== '') {
-            return this.konsultRvaService.getFullAddresses(input).pipe(
+            return this.konsultRvaService.searchAddresses(input).pipe(
                 map((addresses: Address[]) =>
                     addresses.map((address: Address) => {
                         return {
-                            label: address.addr3,
-                            value: address
+                            label: address.label,
+                            value: address,
                         };
                     })
                 )
@@ -191,7 +191,7 @@ export class DisplayMapService {
             params[key] = value;
         });
         return this.konsultMetierService.callServiceMetadataMedia(mediaUrl, params).pipe(
-            switchMap((blob: Blob) => readFile(blob)),
+            switchMap((response: any) => readFile(response.body)),
         );
     }
 
@@ -207,7 +207,7 @@ export class DisplayMapService {
             params[key] = value;
         });
         return this.konsultMetierService.callServiceMetadataMedia(mediaUrl, params).pipe(
-            switchMap((blob: Blob) => this.toJson(blob)),
+            switchMap((response: any) => this.toJson(response.body)),
         );
     }
 
@@ -218,7 +218,7 @@ export class DisplayMapService {
     downloadGeojson(mediaUrl: string): Observable<JSON> {
 
         return this.konsultMetierService.callServiceMetadataMedia(mediaUrl).pipe(
-            switchMap((blob: Blob) => this.toJson(blob)),
+            switchMap((response: any) => this.toJson(response.body)),
         );
     }
 

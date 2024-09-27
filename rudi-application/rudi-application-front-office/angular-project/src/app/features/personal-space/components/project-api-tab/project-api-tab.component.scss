@@ -90,17 +90,13 @@
 .table-keys {
     margin-top: 3em;
 }
-.delete-icon{
-    margin-right: 1em;
-    width: 1.5em;
-    cursor: pointer;
-}
+
 .table-header{
     font-size: 18px;
     font-weight: 600;
     color:var(--primary-text);
     //overide the mat table margin css
-    padding: 0px !important
+    padding: 0 !important;
 }
 
 .fake-btn-status {
@@ -133,7 +129,11 @@ td {
     width: 40%;
 }
 
-.first-row, third-row {
+.third-row{
+    text-align: center;
+}
+
+.first-row, .third-row {
     width: 25%;
 }
 

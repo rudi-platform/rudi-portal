@@ -3,6 +3,12 @@
  */
 package org.rudi.facet.bpmn.service;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -12,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 
@@ -51,6 +58,7 @@ import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.workflow.AssetDescription2TestWorkflowHelper;
 import org.rudi.facet.bpmn.mapper.workflow.AssetDescriptionMapper2Test;
+import org.rudi.facet.bpmn.service.impl.FormTemplateConfiguration;
 import org.rudi.facet.bpmn.service.impl.TaskService1TestImpl;
 import org.rudi.facet.bpmn.service.impl.TaskService2TestImpl;
 import org.rudi.facet.generator.model.GenerationFormat;
@@ -61,11 +69,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.annotation.Rollback;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 
 /**
  * @author FNI18300
@@ -81,6 +84,9 @@ class TaskServiceUT {
 
 	@Autowired
 	private InitializationService initializationService;
+
+	@Autowired
+	private FormTemplateConfiguration formTemplateConfiguration;
 
 	@MockBean
 	private UtilContextHelper utilContextHelper;
@@ -284,7 +290,8 @@ class TaskServiceUT {
 		Task t2 = test1TaskService.startTask(t1);
 		assertNotNull(t2);
 
-		ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(), PageRequest.of(0, 10));
+		ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(),
+				PageRequest.of(0, 10));
 		assertNotNull(ts);
 		assertEquals(ts.getTotalElements(), tsCount + 1);
 
@@ -403,7 +410,9 @@ class TaskServiceUT {
 	// dans la même classe
 	@Test
 	void createOrUpdateAllSectionAndProcessFormDefinitions() throws IOException, JSONException {
-		final var processFormDefinitions = formService.createOrUpdateAllSectionAndFormDefinitions();
+		Map<String, Object> properties = formService.getFormTemplateProperties();
+
+		final var processFormDefinitions = formService.createOrUpdateAllSectionAndFormDefinitions(properties);
 		removeLineFeeds(processFormDefinitions);
 
 		// On fixe les UUID aléatoires
@@ -443,5 +452,14 @@ class TaskServiceUT {
 			formSectionDefinition.setUuid(null);
 			formSectionDefinition.getSectionDefinition().setUuid(null);
 		});
+	}
+
+	@Test
+	void testFormTemplateConfiguration() {
+		Map<String, Object> namedProperties = formTemplateConfiguration.getNamedProperties();
+		assertNotNull(namedProperties);
+		assertTrue(namedProperties.containsKey("test"));
+		assertTrue(namedProperties.containsKey("testDot"));
+		assertTrue(namedProperties.containsKey("testDotAllYamlSnake"));
 	}
 }

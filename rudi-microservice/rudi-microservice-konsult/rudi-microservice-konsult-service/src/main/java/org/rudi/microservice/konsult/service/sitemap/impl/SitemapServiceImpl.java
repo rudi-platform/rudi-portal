@@ -32,6 +32,7 @@ public class SitemapServiceImpl implements SitemapService {
 
 	@Override
 	public void initService() {
-		sitemapHelper.fillResourceMapping(sitemapHelper.getSitemapGeneratedFilename(), "sitemap");
+		sitemapHelper.fillResourceMapping(sitemapHelper.getSitemapGeneratedFilename(),
+				SitemapHelper.SITEMAP_RESOURCE_KEY);
 	}
 }

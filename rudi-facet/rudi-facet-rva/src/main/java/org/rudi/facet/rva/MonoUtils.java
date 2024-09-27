@@ -2,7 +2,6 @@ package org.rudi.facet.rva;
 
 import org.rudi.facet.rva.exception.ExternalApiRvaException;
 import org.rudi.facet.rva.exception.TooManyAddressesException;
-import org.rudi.rva.core.bean.FullAddressesResponse;
 import org.springframework.core.io.buffer.DataBufferLimitException;
 
 import reactor.core.Exceptions;
@@ -12,10 +11,9 @@ public class MonoUtils {
 	private MonoUtils() {
 	}
 
-	public static FullAddressesResponse blockOrThrow(Mono<FullAddressesResponse> mono)
-			throws ExternalApiRvaException, TooManyAddressesException {
+	public static <T> T blockOrThrow(Mono<T> mono) throws ExternalApiRvaException, TooManyAddressesException {
 		var response = MonoUtils.internalBlockOrThrow(mono);
-		if (response == null || response.getRva().getAnswer().getAddresses() == null) { // Si pas d'entrée addresses dans la reponse (et non pas d'éléments dans addresses)
+		if (response == null) { // Si pas d'entrée addresses dans la reponse (et non pas d'éléments dans addresses)
 			throw new ExternalApiRvaException(
 					new Throwable("Un problème est survenu lors de l'appel (paramètres manquants ou incorrects)"));
 		}

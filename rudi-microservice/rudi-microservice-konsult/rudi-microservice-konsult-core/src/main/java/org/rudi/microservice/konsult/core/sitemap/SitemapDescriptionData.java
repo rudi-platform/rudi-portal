@@ -3,6 +3,7 @@
  */
 package org.rudi.microservice.konsult.core.sitemap;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.Data;
@@ -13,7 +14,10 @@ import lombok.Data;
  * @author PFO23835
  */
 @Data
-public class SitemapDescriptionData {
+public class SitemapDescriptionData implements Serializable {
+
+	private static final long serialVersionUID = -4543692429285168416L;
+
 	private int maxUrlCount;
 	private int maxUrlSize;
 	private StaticSitemapEntryData staticSitemapEntries;

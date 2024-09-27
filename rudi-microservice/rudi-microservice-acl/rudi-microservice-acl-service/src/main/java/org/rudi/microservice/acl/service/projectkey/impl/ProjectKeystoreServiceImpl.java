@@ -51,7 +51,7 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 	private static final String LOWER_CASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
 	private static final String SPECIAL_CHARECTER = "!@#$";
 	private static final String NUMBERS = "1234567890";
-	private static final int LENGTH = 20;
+	private static final int LENGTH = 25;
 
 	private Random random = null;
 
@@ -72,7 +72,6 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 	private final ProjectKeyValidator projectKeyValidator;
 
 	private final PasswordHelper passwordHelper;
-
 
 	@Override
 	@Transactional(readOnly = false)
@@ -164,10 +163,6 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 		return random;
 	}
 
-	private String buildPassword(UUID projectKeystoreUuid, String password) {
-		return projectKeystoreUuid.toString() + ":" + UserType.API.name() + ":" + password;
-	}
-
 	private UserEntity createProjectKeyUSer(UUID projectKeystoreUuid, ProjectKey projectKey, String password) {
 		UserEntity user = new UserEntity();
 		user.setUuid(UUID.randomUUID());
@@ -175,7 +170,7 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 		user.setLogin(UUID.randomUUID().toString());
 		user.setCompany(projectKeystoreUuid.toString());
 		user.setType(UserType.API);
-		user.setPassword(passwordHelper.encodePassword(buildPassword(projectKeystoreUuid, password)));
+		user.setPassword(passwordHelper.encodePassword(password));
 		user = userDao.save(user);
 		return user;
 	}
@@ -201,8 +196,7 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 	@Override
 	public Page<ProjectKeystore> searchProjectKeys(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable) {
 		var entities = projectKeystoreCustomDao.searchUsers(searchCriteria, pageable);
-		return projectKeystoreMapper.entitiesToDto(entities,
-				pageable);
+		return projectKeystoreMapper.entitiesToDto(entities, pageable);
 	}
 
 	@Override
@@ -210,7 +204,6 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 		ProjectKeystoreEntity entity = getProjectKeystoreEntity(projectKeystoreUuid);
 		return projectKeystoreMapper.entityToDto(entity);
 	}
-
 
 	protected ProjectKeystoreEntity getProjectKeystoreEntity(UUID uuid) throws AppServiceBadRequestException {
 		ProjectKeystoreEntity result = projectKeystoreDao.findByUuid(uuid);

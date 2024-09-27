@@ -1,1 +1,1 @@
-RUDI - Création de votre compte
+${projectName} - Création de votre compte

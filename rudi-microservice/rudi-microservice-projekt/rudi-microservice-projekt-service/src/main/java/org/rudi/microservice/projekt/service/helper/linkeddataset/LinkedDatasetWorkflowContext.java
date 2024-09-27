@@ -22,6 +22,7 @@ import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
 import org.rudi.facet.kaccess.bean.Metadata;
@@ -113,7 +114,7 @@ public class LinkedDatasetWorkflowContext
 	 */
 	@SuppressWarnings("unused") // Utilisé par linked-dataset-process.bpmn20.xml
 	public List<String> computePotentialProducersOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
-			String subject, String body) {
+			String subject, String body) throws AppServiceException {
 		log.debug("computePotentialProducersOwners...");
 		EMailData eMailData = null;
 		// On Calcul les données de EmailData que si un subject et un body ont été
@@ -125,9 +126,9 @@ public class LinkedDatasetWorkflowContext
 		List<String> assigneeEmails = new ArrayList<>();
 		LinkedDatasetEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		if (assetDescription != null) {
-			Metadata metadata = null;
-			try { // Dataset exists ?
-				metadata = datasetService.getDataset(assetDescription.getDatasetUuid());
+			try {
+				// Dataset exists ?
+				Metadata metadata = datasetService.getDataset(assetDescription.getDatasetUuid());
 				final var organization = metadata.getProducer();
 				final var uuid = organization.getOrganizationId();
 				Collection<OrganizationMember> members = organizationHelper.getOrganizationMembers(uuid);
@@ -137,9 +138,14 @@ public class LinkedDatasetWorkflowContext
 				if (log.isInfoEnabled()) {
 					log.info("Assignees: {}", StringUtils.join(assignees, ", "));
 				}
+			} catch (DataverseAPIException e) {
+				throw new AppServiceException(String.format("Unable to retrieve dataset information for dataset %s",
+						assetDescription.getDatasetUuid()), e);
+			}
+			try {
 				if (eMailData != null) {
-					//On rajoute le nom de l'utilisateur ou de l'organisateur ayant initié le projet.
-					injectData(executionEntity,"userName", getUserDenomination(assetDescription.getInitiator()));
+					// On rajoute le nom de l'utilisateur ou de l'organisateur ayant initié le projet.
+					injectData(executionEntity, "userName", getUserDenomination(assetDescription.getInitiator()));
 
 					sendEMail(executionEntity, assetDescription, eMailData, assigneeEmails, null);
 				}
@@ -187,15 +193,14 @@ public class LinkedDatasetWorkflowContext
 	private String getUserDenomination(String inititator) throws GetOrganizationException {
 		User u = getAclHelper().getUserByLogin(inititator);
 		if (u != null && u.getType().equals(UserType.PERSON)) {
-			return String.format("%s %s",u.getLastname(), u.getFirstname()).trim();
-		}
-		else {
+			return String.format("%s %s", u.getLastname(), u.getFirstname()).trim();
+		} else {
 			Organization o = organizationHelper.getOrganization(UUID.fromString(inititator));
-			if(o != null){
+			if (o != null) {
 				return o.getName();
 			}
 		}
-		log.error("Aucun utilisateur trouvé et aucune organisation non plus {}",inititator);
+		log.error("Aucun utilisateur trouvé et aucune organisation non plus {}", inititator);
 		return StringUtils.EMPTY;
 	}
 

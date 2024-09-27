@@ -101,7 +101,9 @@ public class CustomizationHelper extends ResourcesHelper {
 
 		data.getFooterDescription().getSocialNetworks().forEach(socialNetwork -> socialNetwork.setIcon(fillResourceMapping(socialNetwork.getIcon(), UUID.randomUUID().toString())));
 
-		data.getFooterDescription().setLogo(fillResourceMapping(data.getFooterDescription().getLogo(), UUID.randomUUID().toString()));
+		data.getFooterDescription().getFooterLogo().setLogo(fillResourceMapping(data.getFooterDescription().getFooterLogo().getLogo(), UUID.randomUUID().toString()));
+		data.getFooterDescription().getFooterLogo().setUrl(data.getFooterDescription().getFooterLogo().getUrl());
+		data.getFooterDescription().getFooterLogo().setLogoAltText(data.getFooterDescription().getFooterLogo().getLogoAltText());
 
 		return data;
 	}

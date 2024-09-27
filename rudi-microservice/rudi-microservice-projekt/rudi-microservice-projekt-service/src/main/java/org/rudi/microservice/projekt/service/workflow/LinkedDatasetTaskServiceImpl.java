@@ -16,7 +16,6 @@ import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
-import org.rudi.facet.bpmn.service.FormService;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.facet.organization.bean.Organization;
@@ -48,22 +47,19 @@ public class LinkedDatasetTaskServiceImpl extends
 	public static final String PROCESS_DEFINITION_ID = "linked-dataset-process";
 
 	private final ProjectCustomDao projectCustomDao;
-	private final FormService formService;
 
 	@Autowired
 	private ProjektAuthorisationHelper projektAuthorisationHelper;
 	@Autowired
 	private OrganizationHelper organizationHelper;
 
-
 	public LinkedDatasetTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
 			LinkedDatasetDao assetDescriptionDao, LinkedDatasetWorkflowHelper assetDescriptionHelper,
-			LinkedDatasetAssigmentHelper assigmentHelper, ProjectCustomDao projectCustomDao, FormService formService) {
+			LinkedDatasetAssigmentHelper assigmentHelper, ProjectCustomDao projectCustomDao) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
 				assetDescriptionHelper, assigmentHelper);
 		this.projectCustomDao = projectCustomDao;
-		this.formService = formService;
 	}
 
 	@Override
@@ -86,7 +82,6 @@ public class LinkedDatasetTaskServiceImpl extends
 	@Override
 	public void loadBpmn() throws IOException {
 		super.loadBpmn();
-		formService.createOrUpdateAllSectionAndFormDefinitions();
 	}
 
 	@Override
@@ -104,21 +99,22 @@ public class LinkedDatasetTaskServiceImpl extends
 		// Réécriture de l'initiator : initator de la demande de jeux de donnée = owner du projet associé
 		ProjectEntity projectEntity = projectCustomDao.findProjectByLinkedDatasetUuid(assetDescriptionEntity.getUuid());
 		if (projectEntity != null) {
-			if(projectEntity.getOwnerType().equals(OwnerType.USER)){
+			if (projectEntity.getOwnerType().equals(OwnerType.USER)) {
 				User user = getAssignmentHelper().getUserByUuid(projectEntity.getOwnerUuid());
 				if (user != null) {
 					assetDescriptionEntity.setInitiator(user.getLogin());
 				}
-			}
-			else {
-				//chargement de l'orga
-				try{
+			} else {
+				// chargement de l'orga
+				try {
 					Organization organization = organizationHelper.getOrganization(projectEntity.getOwnerUuid());
-					if(organization != null){
+					if (organization != null) {
 						assetDescriptionEntity.setInitiator(organization.getUuid().toString());
 					}
-				}catch (GetOrganizationException e){
-					log.error("Une erreur est survenue lors du chargement de l'organization d'uuid {} owner du projet {}",projectEntity.getUuid(), projectEntity.getUuid(),e);
+				} catch (GetOrganizationException e) {
+					log.error(
+							"Une erreur est survenue lors du chargement de l'organization d'uuid {} owner du projet {}",
+							projectEntity.getUuid(), projectEntity.getUuid(), e);
 				}
 			}
 		}

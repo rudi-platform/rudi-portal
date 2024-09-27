@@ -20,10 +20,6 @@
 				"isRelative": true
 			},
 			{
-				"location": "https://doc.rudi.fr/",
-				"isRelative": false
-			},
-			{
 				"location": "/login",
 				"isRelative": true
 			}

@@ -92,3 +92,9 @@
     }
 }
 
+::ng-deep {
+    .file-preview-thumbnail, .file-preview-description, .file-preview-actions {
+        z-index: unset !important;
+    }
+
+}

@@ -10,6 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.rudi.common.core.DocumentContent;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class ResourcesHelper {
 	protected abstract String getBasePackage();
 
@@ -18,6 +21,8 @@ public abstract class ResourcesHelper {
 	protected abstract Cache<String, DocumentContent> getCache();
 
 	private final BidiMap<String, String> resourceMapping = new DualHashBidiMap<>();
+
+	private static final String PATH_DELIMITER = "/";
 
 	public DocumentContent loadResources(String resourceUuid) throws IOException {
 		DocumentContent result = null;
@@ -29,7 +34,7 @@ public abstract class ResourcesHelper {
 			return result;
 		}
 
-		//Si la ressource est déjà dans le cache, on la retourne directement.
+		// Si la ressource est déjà dans le cache, on la retourne directement.
 		if (getCache().containsKey(resourceUuid)) {
 			// Récupération de la ressource dans le cache
 			result = getCache().get(resourceUuid);
@@ -43,7 +48,7 @@ public abstract class ResourcesHelper {
 			}
 		}
 
-		String uri = resourceName.replace("../", "/");
+		String uri = resourceName.replace("../", PATH_DELIMITER);
 		File f = new File(getBaseDirectory(), uri);
 		if (f.exists() && f.isFile()) {
 			String mimeType = URLConnection.guessContentTypeFromName(f.getName());
@@ -59,7 +64,13 @@ public abstract class ResourcesHelper {
 	}
 
 	protected DocumentContent getDocumentContent(String resourceName) throws IOException {
-		return DocumentContent.fromResourcePath(getBasePackage() + resourceName);
+		String path = computeResourcePath(resourceName);
+		return DocumentContent.fromResourcePath(path, resourceName);
+	}
+
+	protected String computeResourcePath(String resourceName) {
+		return StringUtils.join(StringUtils.removeEnd(getBasePackage(), PATH_DELIMITER), PATH_DELIMITER,
+				StringUtils.removeStart(resourceName, PATH_DELIMITER));
 	}
 
 	public String fillResourceMapping(String value, String key) {
@@ -72,6 +83,5 @@ public abstract class ResourcesHelper {
 		// Soit la clé insérée précédemment, soit celle déjà présente.
 		return resourceMapping.getKey(value);
 	}
-
 
 }

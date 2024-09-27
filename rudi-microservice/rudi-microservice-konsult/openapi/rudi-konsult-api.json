@@ -101,6 +101,52 @@
 				}
 			}
 		},
+		"/properties/scripts/{scriptName}": {
+			"get": {
+				"tags": [
+					"konsult"
+				],
+				"summary": "Téléchargement d'un script autorisé",
+				"description": "Téléchargement d'un script autorisée",
+				"operationId": "downloadScript",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "scriptName",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "La ressource demandée est introuvable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
 		"/datasets/metadatas": {
 			"get": {
 				"tags": [
@@ -606,7 +652,7 @@
 				],
 				"summary": "Téléchargement d'une resource du CMS",
 				"description": "Téléchargement d'une resource du CMS",
-				"operationId": "downloadResource",
+				"operationId": "downloadCmsResource",
 				"parameters": [
 					{
 						"in": "query",
@@ -770,6 +816,53 @@
 					},
 					"401": {
 						"description": "Opération réservée aux administrateurs",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/robots/{resource-name}": {
+			"get": {
+				"tags": [
+					"konsult"
+				],
+				"summary": "Récupération de la resource demandée",
+				"description": "Récupération de la resource démandée par le paramètre",
+				"operationId": "getRobotsRessourceByName",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "resource-name",
+						"description": "Nom de la resource",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Retourne la ressource demandée",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "La ressource demandée est introuvable",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1052,9 +1145,6 @@
 					"front": {
 						"type": "object",
 						"properties": {
-							"index": {
-								"type": "string"
-							},
 							"contact": {
 								"type": "string"
 							},
@@ -1069,7 +1159,51 @@
 							},
 							"tableDisplayMaxFileSize": {
 								"type": "number"
+							},
+							"teamName": {
+								"type": "string"
+							},
+							"projectName": {
+								"type": "string"
 							}
+						}
+					},
+					"mapInfo": {
+						"type": "object",
+						"properties": {
+							"defaultCenter": {
+								"type": "array",
+								"items": {
+									"type": "number"
+								}
+							},
+							"defaultTopLeft": {
+								"type": "array",
+								"items": {
+									"type": "number"
+								}
+							},
+							"defaultBottomRight": {
+								"type": "array",
+								"items": {
+									"type": "number"
+								}
+							},
+							"paddingExtent": {
+								"type": "number"
+							},
+							"maxZoomExtent": {
+								"type": "number"
+							},
+							"defaultZoom": {
+								"type": "number"
+							}
+						}
+					},
+					"scripts": {
+						"type": "array",
+						"items": {
+							"type": "string"
 						}
 					}
 				}

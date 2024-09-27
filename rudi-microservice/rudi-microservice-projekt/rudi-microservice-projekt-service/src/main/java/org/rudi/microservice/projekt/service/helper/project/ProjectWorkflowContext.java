@@ -3,8 +3,6 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +35,6 @@ import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.service.helper.AbstractProjektWorkflowContext;
 import org.rudi.microservice.projekt.service.helper.project.processor.ProjectTaskUpdateProjectProcessor;
-import org.rudi.microservice.projekt.service.helper.project.validator.ProjectValidator;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
 import org.rudi.microservice.projekt.service.mapper.NewDatasetRequestMapper;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
@@ -51,6 +48,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -80,8 +78,7 @@ public class ProjectWorkflowContext
 			FormHelper formHelper, TaskService<NewDatasetRequest> newDatasetRequestTaskService,
 			NewDatasetRequestMapper newDatasetRequestMapper, TaskService<LinkedDataset> linkedDatasetTaskService,
 			LinkedDatasetMapper linkedDatasetMapper, ACLHelper aclHelper1, OrganizationHelper organizationHelper,
-			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors, ProjectDao projectDao,
-			List<ProjectValidator> projectValidators) {
+			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.newDatasetRequestTaskService = newDatasetRequestTaskService;
 		this.newDatasetRequestMapper = newDatasetRequestMapper;

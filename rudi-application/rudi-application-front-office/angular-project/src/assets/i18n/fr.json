@@ -3,7 +3,7 @@
     "home": {
         "heroSection": {
             "title1": "Portail de partage et d'accès aux données territoriales",
-            "title2": "de Rennes Métropole",
+            "title2": "de {projectName}",
             "searchbarPlaceholder": "Rechercher un jeu de données..."
         },
         "themesSection": {
@@ -15,14 +15,14 @@
         },
         "projectValuesSection": {
             "title1": "Les fonctionnalités",
-            "title2": "Rudi ",
-            "description": "Découvrez comment Rudi peut vous être utile, que vous soyez producteur de données, porteur de projet, usager des services de Rennes Métropole, ou en tant qu'autre collectivité."
+            "title2": "de {projectName}",
+            "description": "Découvrez comment {projectName} peut vous être utile, que vous soyez producteur de données, porteur de projet, usager des services de {teamName}, ou en tant qu'autre collectivité."
         },
         "projectsSection": {
             "title1": "Découvrez",
             "title2": "les réutilisations",
-            "subtitle": "Les réutilisations RUDI",
-            "description": "Les données du catalogue Rudi peuvent être réutilisées librement ou sur demande pour réaliser des projets et des services nouveaux. Consultez les réutilisations soumises par les autres utilisateurs et renseignez vos propres projets ",
+            "subtitle": "Les réutilisations {projectName}",
+            "description": "Les données du catalogue {projectName} peuvent être réutilisées librement ou sur demande pour réaliser des projets et des services nouveaux. Consultez les réutilisations soumises par les autres utilisateurs et renseignez vos propres projets ",
             "seeMoreProjects": "Voir toutes les réutilisations",
             "viaOurForm": "via notre formulaire."
         },
@@ -76,7 +76,7 @@
             "descriptionField": "Description",
             "descriptionFieldHint": "Vous n'avez pas trouvé le jeu de données dont vous avez besoin pour réaliser votre réutilisation ? Expliquer votre besoin en complétant ce formulaire. Votre demande sera ensuite étudiée afin d'y répondre au mieux. Vous serez contacté par l'animateur via votre adresse mail de contact."
         },
-        "buttonSubmitParagraph1": "Vous préparez une réutilisation et vous avez besoin d'accompagnement ou de données spécifiques pour la mettre en œuvre ? \nVotre réutilisation est finalisée et vous avez mobilisé de la donnée provenant de RUDI ?",
+        "buttonSubmitParagraph1": "Vous préparez une réutilisation et vous avez besoin d'accompagnement ou de données spécifiques pour la mettre en œuvre ? \nVotre réutilisation est finalisée et vous avez mobilisé de la donnée provenant de Rudi ?",
         "buttonSubmitParagraph2": "Cliquez ici pour commencer la soumission de votre réutilisation.",
         "addDatasetPopup": {
             "title1": "Ajouter un jeu de données",
@@ -94,7 +94,7 @@
                     "1": "Nouvelle",
                     "2": "réutilisation"
                 },
-                "description": "Renseignez le formulaire ci-dessous afin de soumettre votre réutilisation à l'équipe Rudi. Les 2 premières étapes vous permettent de contextualiser votre réutilisation. La dernière étape vous permet de demander l'accès à des jeux de données. Une fois créée, votre réutilisation sera envoyée en modération aux équipes RUDI.",
+                "description": "Renseignez le formulaire ci-dessous afin de soumettre votre réutilisation à l'équipe Rudi. Les 2 premières étapes vous permettent de contextualiser votre réutilisation. La dernière étape vous permet de demander l'accès à des jeux de données. Une fois créée, votre réutilisation sera envoyée en modération à l'équipe Rudi.",
                 "step1": {
                     "label": "Réutilisation",
                     "header-title": "Réutilisation",
@@ -243,7 +243,7 @@
     "header": {
         "creationPortal": "Portail en cours de création.",
         "appointment": "Pour en savoir plus, rendez-vous sur ",
-        "site": "le site de présentation du projet RUDI",
+        "site": "le site de présentation du projet Rudi",
         "versionBeta": "VERSION BETA 1.0",
         "catalogue": "Catalogue",
         "organisations": "Organisations",
@@ -266,17 +266,7 @@
         }
     },
     "footer": {
-        "rudiCopyright": "© RUDI - Version : ",
-        "accessibilte": "Accessibilité",
-        "cgu": "CGU",
-        "conditionsUtilisation": "Conditions d'utilisation",
-        "mentionLegale": "Mentions légales",
-        "reseau": "Suivez-nous sur",
-        "twitter": "Twitter",
-        "ou": "ou",
-        "linkedin": "LinkedIn",
-        "politiqueConfidentialite": "Politique de confidentialité",
-        "tousDroits": "Tous droits réservés",
+        "rudiCopyright": "© {projectName} - Version : ",
         "contactezNous": "Contactez-nous",
         "version": "Version : ",
         "ccByCa": "CC-BY-SA",
@@ -326,7 +316,7 @@
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
-        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée. Si besoin, <a href=\"https://rudi.fr/contact/\">contactez-nous</a>."
+        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée."
     },
     "common": {
         "modifier": "Modifier",
@@ -379,8 +369,7 @@
         "adresseMail": "Adresse e-mail",
         "password": "Mot de passe",
         "ConfirmPassword": "Confirmation de mot de passe",
-        "lu": "J'ai lu et j'accepte",
-        "cgu": "les conditions générales d'utilisation du service",
+        "lu": "J'ai lu et j'accepte les",
         "subscribeToNotifications": "J'accepte d'être contacté(e) par l'équipe Rudi concernant mon utilisation de la plateforme et pour être informé(e) des nouveautés et des évènements à venir.",
         "sinscrire": "S'inscrire",
         "connceter": "Se connecter",
@@ -403,11 +392,11 @@
         "errorLoginNotMail": "Le champ login n'est pas au format : adresse e-mail",
         "errorLoginAlreadyExists": "Le login renseigné est déjà associé à un compte utilisateur",
         "errorPasswordLength": "Le mot de passe renseigné ne respecte pas les contraintes de longueur",
-        "infoName": "Votre nom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d’accès et vos réutilisations effectuées sur Rudi.",
-        "infoFirstName": "Votre prénom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d’accès et vos réutilisations effectuées sur Rudi.",
+        "infoName": "Votre nom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d’accès et vos réutilisations effectuées sur {projectName}.",
+        "infoFirstName": "Votre prénom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d’accès et vos réutilisations effectuées sur {projectName}.",
         "rgpd": {
             "title": "Protection des données personnelles",
-            "p1": "Les données personnelles vous concernant recueillies dans ce formulaire seront utilisées uniquement pour la gestion de votre compte Rudi et afin de vous contacter concernant l'utilisation du service et ses évolutions. Ces données seront supprimées en l'absence d'utilisation de votre compte durant 24 mois.",
+            "p1": "Les données personnelles vous concernant recueillies dans ce formulaire seront utilisées uniquement pour la gestion de votre compte {projectName} et afin de vous contacter concernant l'utilisation du service et ses évolutions. Ces données seront supprimées en l'absence d'utilisation de votre compte durant 24 mois.",
             "p2": "Conformément au Règlement général sur la protection des données (RGPD) (UE) n°2016/679 du 27 avril 2016 et à la loi n°2018-493 du 20 juin 2018 relative à la protection des données personnelles, vous pouvez accéder aux données vous concernant ou demander leur effacement. Vous disposez également d'un droit d’opposition, d’un droit de rectification et d’un droit à la limitation du traitement de vos données.",
             "p3": {
                 "1": "Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter le Délégué à la protection des données de Rennes (Ville et Métropole) via le formulaire de contact",
@@ -421,11 +410,11 @@
     },
     "snackbarTemplate": {
         "successIncription": "Votre compte a bien été créé. Pour vous connecter, vous devez maintenant activer votre compte en cliquant sur le lien contenu dans le mail que nous venons de vous envoyer. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter",
-        "successIncriptionLinkText": "l'équipe technique de Rudi",
-        "successAccountValidation": "Votre compte est bien activé, vous pouvez maintenant vous connecter au portail Rudi.",
+        "successIncriptionLinkText": "l'équipe technique de {projectName}-{teamName}",
+        "successAccountValidation": "Votre compte est bien activé, vous pouvez maintenant vous connecter au portail {projectName}.",
         "errorAccountValidationStart": "Une erreur est survenue. Veuillez renouveler la création de votre compte en cliquant ",
         "errorAccountValidationEnd": "Vous pouvez saisir la même adresse mail que précédemment.",
-        "successResetPassword": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter au portail Rudi.",
+        "successResetPassword": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter au portail {projectName}.",
         "resetPasswordError": "Le délai de réinitialisation de votre mot de passe est dépassé. Nous vous invitons à renouveler votre demande en cliquant ",
         "ici": "ici",
         "successInitPassword": "Un mail de réinitialisation de votre mot de passe vous a été envoyé. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter "
@@ -620,7 +609,7 @@
             "creation": {
                 "title1": "Demande",
                 "title2": "d'accès",
-                "subtitle": "Rudi vous permet de savoir si des données personnelles vous concernant sont présentes dans ce jeu de données. Pour cela, vous êtes invités à saisr des informations complémentaires pour vous identifier en toute sécurité. Une fois votre présence confirmée par le producteur de données, vous pourrez consulter vos données dans votre espace personnel.",
+                "subtitle": "Le portail {projectName} vous permet de savoir si des données personnelles vous concernant sont présentes dans ce jeu de données. Pour cela, vous êtes invités à saisr des informations complémentaires pour vous identifier en toute sécurité. Une fois votre présence confirmée par le producteur de données, vous pourrez consulter vos données dans votre espace personnel.",
                 "requestTitle": "Vos informations d'identification",
                 "mandatoryInformation": "Informations obligatoires",
                 "cancel": "Annuler",
@@ -636,7 +625,7 @@
                 },
                 "deletionError": "Erreur lors de la suppression de la demande après une erreur de lancement du workflow",
                 "worflowError": "Une erreur a eu lieu lors du démarrage du workflow de la demande d'information",
-                "errorToUser": "Une erreur est survenue lors de la prise en compte des informations renseignées. Merci de renouveler votre demande. Si le problème persiste, veuillez contacter un administrateur Rudi.",
+                "errorToUser": "Une erreur est survenue lors de la prise en compte des informations renseignées. Merci de renouveler votre demande. Si le problème persiste, veuillez contacter un administrateur du portail {projectName}",
                 "error": {
                     "errorUpload": "Erreur lors de l'upload de la pièce-jointe.",
                     "errorLookupAttachment": "L'information n'a pas été renseignée.",
@@ -663,7 +652,7 @@
                 "attachment": {
                     "popin": {
                         "title": "Consulter un document d'identification",
-                        "alert": "Vous vous apprêtez à consulter un document contenant des informations d'identification d'un utilisateur de Rudi.",
+                        "alert": "Vous vous apprêtez à consulter un document contenant des informations d'identification d'un utilisateur de {projectName}.",
                         "consentText": "Je certifie être habilité(e), dans le cadre de mes fonctions, à traiter ce type de document. Je m'engage à ne pas conserver le document ni les données qu'il contient pour d'autres finalités que le traitement de la présente demande.",
                         "cancel": "Annuler",
                         "download": "Confirmer"
@@ -712,9 +701,9 @@
                 "addMember": "Ajouter un membre",
                 "addPopin": {
                     "title": "Ajouter un membre",
-                    "subTitle": "Attention : seules les personnes ayant déjà créé un compte sur Rudi peuvent être ajoutées à une organisation.",
-                    "descriptionMail": "Veuillez renseigner l'adresse email du compte Rudi de la personne que vous souhaitez ajouter à votre organisation",
-                    "descriptionRole": "Saisissez le rôle que vous souhaitez attribuer à ce membre. Un éditeur peut agir sur Rudi au nom de cette organisation. Un administrateur peut gérer l'organisation et ses membres",
+                    "subTitle": "Attention : seules les personnes ayant déjà créé un compte sur {projectName} peuvent être ajoutées à une organisation.",
+                    "descriptionMail": "Veuillez renseigner l'adresse email du compte {projectName} de la personne que vous souhaitez ajouter à votre organisation",
+                    "descriptionRole": "Saisissez le rôle que vous souhaitez attribuer à ce membre. Un éditeur peut agir sur {projectName} au nom de cette organisation. Un administrateur peut gérer l'organisation et ses membres",
                     "success": "L'utilisateur a bien été ajouté à l’organisation."
                 },
                 "updatePopin": {
@@ -724,12 +713,12 @@
                     "mail": "Adresse e-mail",
                     "descriptionMail": "Veuillez renseigner l’adresse e-mail du membre pour lequel vous souhaitez modifier le rôle",
                     "role": "Rôle",
-                    "descriptionRole": "Indiquez le nouveau rôle à attribuer à ce membre. Un éditeur peut agir sur Rudi au nom de l'organisation. Un administrateur peut gérer l'organisation et ses membres.",
+                    "descriptionRole": "Indiquez le nouveau rôle à attribuer à ce membre. Un éditeur peut agir sur {projectName} au nom de l'organisation. Un administrateur peut gérer l'organisation et ses membres.",
                     "success": "Le rôle de l’utilisateur a bien été modifié."
                 },
                 "updatePassword": {
                     "title": "Modifier le mot de passe",
-                    "text": " Chaque organisation dispose d'un mot de passe, utilisé pour attribuer certaines autorisations sur Rudi. Seuls les administrateurs peuvent modifier le mot de passe.",
+                    "text": " Chaque organisation dispose d'un mot de passe, utilisé pour attribuer certaines autorisations sur {projectName}. Seuls les administrateurs peuvent modifier le mot de passe.",
                     "text2": "Informations obligatoires à renseigner. ",
                     "passwordOld": "Ancien mot de passe ",
                     "descriptionPasswordOld": "Veuillez renseigner ici votre mot de passe actuel de votre organisation.",
@@ -1165,7 +1154,8 @@
             "project": "Réutilisation"
         },
         "projectDetails": {
-            "headerTitle": "Demande de publication",
+            "headerTitlePublication": "Demande de publication",
+            "headerTitleModification": "Demande de modification",
             "projectTab": {
                 "title": "Réutilisation",
                 "modifiedProject": "Réutilisation modifiée",
@@ -1216,7 +1206,7 @@
         },
         "myActivity": {
             "title": "Mon activité",
-            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur Rudi : vos projets et réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
+            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur {projectName} : vos projets et réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
             "linkText": "Cliquez ici pour en savoir plus.",
             "tab1": "Mes réutilisations",
             "tab2": "Mes demandes"
@@ -1227,7 +1217,7 @@
             "confidentiality": "Confidentialité",
             "status": "Statut de la réutilisation",
             "numberOfDataset": "Jeux de données",
-            "noResult": "Vous n'avez pas encore créé de réutilisation dans Rudi. Les formulaires de création de réutilisation sont accessibles en cliquant ",
+            "noResult": "Vous n'avez pas encore créé de réutilisation sur {projectName}. Les formulaires de création de réutilisation sont accessibles en cliquant ",
             "here": " ici",
             "resultTilte": "réutilisation(s)"
         },
@@ -1252,8 +1242,8 @@
             "re-use": "Type de réutilisation",
             "updateMyReuse": "Modifier la réutilisation",
             "myReuseRecap": "Récapitulatif de votre utilisation : ",
-            "msgToModeratorLabel": "Message à l'attention des équipes Rudi : ",
-            "updateMyReuseHint": "Vous vous appretez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                            être soumise à la modération auprès des équipes Rudi afin d'être publiée sur le catalogue des réutilisations.",
+            "msgToModeratorLabel": "Message à l'attention de l'équipe {projectName} : ",
+            "updateMyReuseHint": "Vous vous appretez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                            être soumise à la modération auprès de l'équipe {projectName} afin d'être publiée sur le catalogue des réutilisations.",
             "basicInfos": {
                 "projectType": "Type de réutilisation",
                 "creationDate": "Date de création",
@@ -1307,7 +1297,7 @@
                 "update": {
                     "title": "Modifier les informations",
                     "text": "Vous vous apprêtez à modifier les informations de votre réutilisation. Celle-ci sera mise à jour de façon irrémédiable au clic sur “Confirmer”.",
-                    "text2": "Vos modifications vont être soumises à modération auprès des équipes Rudi afin d'être publiées sur le catalogue des réutilisations. \n Êtes-vous sûr(e) de vouloir soumettre vos modifications ?",
+                    "text2": "Vos modifications vont être soumises à modération auprès de l'équipe {projectName} afin d'être publiées sur le catalogue des réutilisations. \n Êtes-vous sûr(e) de vouloir soumettre vos modifications ?",
                     "confirmationPopup": {
                         "cancel": "Annuler",
                         "validate": "Confirmer"
@@ -1316,7 +1306,7 @@
                     "error": "Modification echouée."
                 },
                 "deletion": {
-                    "impossible": "Vous ne pouvez pas retirer ce jeu de données de votre projet car votre demande n'a pas encore été traitée par l'équipe Rudi.",
+                    "impossible": "Vous ne pouvez pas retirer ce jeu de données de votre projet car votre demande n'a pas encore été traitée par l'équipe {projectName}.",
                     "title": "Retirer un jeu de données",
                     "text1": "Vous souhaitez retirer un jeu de données de votre réutilisation ? Cliquer sur confirmer.",
                     "text2": "Attention dans le cas d'un jeu de données à accès restreint, vous ne pourrez plus accéder au jeu de données pour cette réutilisation.",
@@ -1402,13 +1392,17 @@
                     "consumerKeyDescription": "Votre Consumer Key est le login à renseigner pour vous authentifier lorsque vous requêtez des API.",
                     "consumerSecretLabel": "Consumer Secret",
                     "consumerSecretDescription": "Votre Consumer Secret est le mot de passe à renseigner pour vous authentifier lorsque vous requêtez des API.",
-                    "confirmDescription": "Je confirme avoir stocké ces informations dans un coffre-fort de mot de passe. Les identifiants ainsi générés ne peuvent pas être restitués après la fermeture de la présente fenêtre mais peut être révoqué à tout instant en revenant dans la présente page.",
+                    "confirmDescription": "Je confirme avoir stocké ces informations dans un coffre-fort de mot de passe. Les identifiants ainsi générés ne peuvent pas être restitués après la fermeture de la présente fenêtre mais peuvent être révoqués à tout instant en revenant dans la présente page.",
                     "expirationDateLabel": "Date d'expiration",
                     "expirationDateDescription": "Le mois et l'année sélectionnés ici, correspondent à la date d’expiration de votre paire de clés. Une paire de clé est valable 1 an, vous pourrez la révoquer à tout depuis votre espace personnel.",
                     "passwordLabel": "Mot de passe",
                     "passwordDescription": "Veuillez renseigner votre mot de passe utilisateur.",
-                    "passwordError": "Le mot de passe est erroné. Veuillez corriger."
+                    "passwordError": "Le mot de passe que vous avez saisi n’est pas valide."
                 }
+            },
+            "deleteKeyDialog": {
+                "title": "Suppression de votre paire de clé",
+                "description": "Vous vous apprêtez à supprimer votre paire de clé. À la suite d'une suppression, la paire de clé ne pourra plus être utilisée."
             }
         },
         "projectDatasets": {
@@ -1424,14 +1418,6 @@
                 "dialog-title": "Commentaire"
             }
         },
-        "dialogDatasets": {
-            "title": "Souscrire",
-            "description": "Veuillez sélectionner le ou les jeux de données auxquels vous souhaitez souscrire. Plus d'informations sont disponibles sur ",
-            "tableTitle": "Jeux de données",
-            "link": " doc.rudi.fr.",
-            "textOwner": "Saisissez le mot de passe de votre compte.",
-            "textUser": "Saisissez le mot de passe de votre organisation."
-        },
         "selfdataDatasets": {
             "title1": "Mes données",
             "title2": "personnelles",
@@ -1445,7 +1431,7 @@
             "access": "Accès",
             "newRequest": "Nouvelles données",
             "selfdata": "Données personnelles",
-            "explainationText": "Rudi vous aide à exercer vos droits numériques sur vos données personnelles : droit à l'information, droit d'accès, droit de rectification... Cette page liste les jeux de données référencés dans Rudi qui sont susceptibles de contenir des informations vous concernant. Cliquez sur un jeu de données pour consulter les actions possibles.",
+            "explainationText": "{projectName} vous aide à exercer vos droits numériques sur vos données personnelles : droit à l'information, droit d'accès, droit de rectification... Cette page liste les jeux de données référencés sur {projectName} qui sont susceptibles de contenir des informations vous concernant. Cliquez sur un jeu de données pour consulter les actions possibles.",
             "linkText": "Cliquez ici pour en savoir plus.",
             "resultText": "jeux de données contenant des données personnelles",
             "graphic": {
@@ -1466,26 +1452,26 @@
                 "title": "Demande d’accès",
                 "subTitle": "Comment accéder aux données me concernant ?",
                 "btnSeeRequestDetailsLabel": "Voir le détail de ma demande",
-                "text": "Rudi vous permet de savoir si des données personnelles vous concernant sont présentes dans ce jeu de données. Pour cela, vous pourrez être invité à saisir des informations complémentaires et/ou à transmettre des documents pour vous identifier en toute sécurité. Une fois votre présence confirmée par le producteur de données, vous pourrez consulter vos données dans votre espace personnel.",
+                "text": "{projectName} vous permet de savoir si des données personnelles vous concernant sont présentes dans ce jeu de données. Pour cela, vous pourrez être invité à saisir des informations complémentaires et/ou à transmettre des documents pour vous identifier en toute sécurité. Une fois votre présence confirmée par le producteur de données, vous pourrez consulter vos données dans votre espace personnel.",
                 "buttonLabel": "Accéder à mes données"
             },
             "rectificationRequest": {
                 "title": "Demande de rectification",
                 "subTitle": "Comment corriger des informations me concernant ?",
-                "text": "Votre situation a changé ou vous constatez une anomalie dans les informations vous concernant. Rudi vous permet de le signaler auprès du producteur pour demander la mise à jour de vos données.",
+                "text": "Votre situation a changé ou vous constatez une anomalie dans les informations vous concernant. {projectName} vous permet de le signaler auprès du producteur pour demander la mise à jour de vos données.",
                 "buttonLabel": "Signaler un changement"
             },
             "deletionRequest": {
                 "title": "Demande d’effacement",
                 "subTitle": "Comment demander la suppression de mes données ?",
                 "buttonLabel": "Supprimer mes données",
-                "text": "Conformément au RGPD, vous disposez d&apos;un droit d&apos;effacement des données vous concernant contenues dans ce jeu de données. Rudi vous permet de transmettre facilement une demande d&apos;effacement au producteur de données.",
+                "text": "Conformément au RGPD, vous disposez d&apos;un droit d&apos;effacement des données vous concernant contenues dans ce jeu de données. {projectName} vous permet de transmettre facilement une demande d&apos;effacement au producteur de données.",
                 "noDeletableDataSubtitle": "Il n’est pas possible de faire une demande d'effacement sur ce jeu de données."
             }
         },
         "selfdataRequestBasicDetails": {
             "title": "Comprendre mes droits",
-            "description": "Au travers d'une démarche novatrice, Rudi vous permet d'exercer avec aisance vos droits relatifs aux données à caractère personnel. Ces droits découlent du règlement européen de la protection des données.",
+            "description": "Au travers d'une démarche novatrice, {projectName} vous permet d'exercer avec aisance vos droits relatifs aux données à caractère personnel. Ces droits découlent du règlement européen de la protection des données.",
             "buttonLabel": "En savoir plus"
         },
         "matchingData": {
@@ -1493,7 +1479,7 @@
         },
         "myAccount": {
             "title": "Mon compte",
-            "description1": "Vous trouverez sur cette page le récapitulatif des informations concernant votre compte Rudi. L'onglet \"Mes organisations\" vous permet de consulter et gérer les organisations auxquelles vous êtes rattaché, ainsi que de créer une nouvelle organisation. ",
+            "description1": "Vous trouverez sur cette page le récapitulatif des informations concernant votre compte {projectName}. L'onglet \"Mes organisations\" vous permet de consulter et gérer les organisations auxquelles vous êtes rattaché, ainsi que de créer une nouvelle organisation. ",
             "linkText": "Cliquez ici pour en savoir plus.",
             "myProfil": {
                 "tabTitle": "Mon profil",

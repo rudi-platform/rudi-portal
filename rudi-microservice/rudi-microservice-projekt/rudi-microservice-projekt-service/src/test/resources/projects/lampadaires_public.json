@@ -81,7 +81,6 @@
 	"owner_uuid": "ca4a5ae2-c88f-415f-8c56-762bc7c2fd97",
 	"contact_email": "mm@test.fr",
 	"owner_type": "USER",
-	"is_a_reuse": false,
 	"reutilisation_status": {
 		"code":"PROJECT",
 		"label":"Réutilisation en projet",

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatIconRegistry} from '@angular/material/icon';
-import {DomSanitizer} from '@angular/platform-browser';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PASSWORD_REGEX} from '@core/const';
 import {AccountService} from '@core/services/account.service';
@@ -17,6 +17,10 @@ import {Level} from '@shared/notification-template/notification-template.compone
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
 import {RudiValidators} from '@shared/validators/rudi-validators';
 import {ConfirmedValidator} from './confirmed-validator';
+import { CmsTermsDescription, CustomizationDescription, KonsultService } from 'micro_service_modules/konsult/konsult-api';
+import { CustomizationService } from '@app/core/services/customization.service';
+import { CmsAsset, PagedCmsAssets } from 'micro_service_modules/api-cms';
+import { LogService } from '@app/core/services/log.service';
 
 const ICON_INFO: string = '../assets/icons/icon_info.svg';
 
@@ -70,6 +74,12 @@ export class SignUpComponent implements OnInit {
     errorCaptchaInput = false;
     @ViewChild(RudiCaptchaComponent) rudiCaptcha: RudiCaptchaComponent;
 
+    cguTermsValue: SafeHtml;
+
+    cmsTermsDescription: CmsTermsDescription;
+    customizationDescriptionIsLoading: boolean;
+    displayComponent: boolean;
+
     constructor(private formBuilder: FormBuilder,
                 private routeHistoryService: RouteHistoryService,
                 private authenticationService: AuthenticationService,
@@ -83,11 +93,18 @@ export class SignUpComponent implements OnInit {
                 private readonly domSanitizer: DomSanitizer,
                 private readonly captchaCheckerService: CaptchaCheckerService,
                 private readonly route: ActivatedRoute,
+                private readonly konsultService: KonsultService,
+                private readonly customizationService: CustomizationService,
+                private readonly logger: LogService,
     ) {
         this.matIconRegistry.addSvgIcon(
             'icon-info',
             this.domSanitizer.bypassSecurityTrustResourceUrl(ICON_INFO)
         );
+        this.customizationDescriptionIsLoading = false;
+        this.displayComponent = false;
+        this.cguTermsValue = null;
+        this.initCustomizationDescription();
     }
 
     /**
@@ -134,6 +151,46 @@ export class SignUpComponent implements OnInit {
         );
     }
 
+    private initCustomizationDescription(): void {
+        this.customizationDescriptionIsLoading = true;
+        this.customizationService.getCustomizationDescription()
+            .subscribe({
+                next: (customizationDescription: CustomizationDescription) => {
+                    this.cmsTermsDescription = customizationDescription.cms_terms_description;
+                    this.customizationDescriptionIsLoading = false;
+                    this.initCguTerms();
+                },
+                error: (error) => {
+                    this.logger.error(error);
+                    this.customizationDescriptionIsLoading = false;
+                }
+            });
+    }
+
+    private initCguTerms(): void {
+        this.konsultService.renderAssets(
+            'TERMS',
+            this.cmsTermsDescription.template_simple,
+            [this.cmsTermsDescription.cgu_category],
+            [],
+            this.translateService.currentLang,
+            0,
+            1
+        ).subscribe({
+            next: (pagedCmsAssets: PagedCmsAssets): void => {
+                this.displayComponent = pagedCmsAssets.total > 0;
+                if (this.displayComponent) {
+                    pagedCmsAssets.elements.forEach((cmsAsset: CmsAsset) => {
+                        this.cguTermsValue = this.domSanitizer.bypassSecurityTrustHtml(cmsAsset.content);
+                    });
+                }
+            },
+            error(err): void {
+                this.logService.error(err);
+                this.displayComponent = false;
+            }
+        });
+    }
     /**
      * Methode permettant l'inscription
      */

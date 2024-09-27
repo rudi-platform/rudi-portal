@@ -18,7 +18,9 @@ import org.springframework.core.io.Resource;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DocumentContent {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentContent.class);
 
@@ -105,12 +107,19 @@ public class DocumentContent {
 	/**
 	 * Permet de transformer une resource en Document content via son path
 	 *
-	 * @param path Le chemin vers le fichier que l'on souhaite transformer en DocumentContent
+	 * @param path         Le chemin vers le fichier que l'on souhaite transformer en DocumentContent
+	 * @param resourceName le nom de la resource recherchée (pour les logs en cas d'erreur)
 	 * @return un document content contenant le fichier au path indiqué.
 	 * @throws IOException en cas de problème avec la lecture du fichier
 	 */
-	public static DocumentContent fromResourcePath(String path) throws IOException {
+	public static DocumentContent fromResourcePath(String path, String resourceName) throws IOException {
 		URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+
+		// On vérifie l'existence du fichier avant de le créer
+		if (url == null) {
+			log.error("Error while loading resource {}, path {} doesn't exist. Please check config", resourceName,
+					path);
+		}
 
 		try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);) {
 			String file = url.getFile();

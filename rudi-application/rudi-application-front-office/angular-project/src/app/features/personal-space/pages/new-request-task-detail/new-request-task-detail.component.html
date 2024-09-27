@@ -19,11 +19,6 @@
                 <app-project-detail [isNewRequest]="true"></app-project-detail>
             </ng-template>
         </app-tab>
-        <app-tab [label]="'personalSpace.requestDetail.tabs.history' | translate" [icon]="'historique'">
-            <ng-template>
-                <app-linked-dataset-history></app-linked-dataset-history>
-            </ng-template>
-        </app-tab>
         <app-banner-button *ngFor="let action of actions"
                            (click)="openPopinForAction(action)">{{action.label}}</app-banner-button>
         <ng-container appTabsLayout>

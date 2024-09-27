@@ -1,0 +1,21 @@
+{
+	"front": {
+		"contact": "https://rudi.fr/contact/",
+		"apiDocumentation": "https://rudi-platform.github.io/rudi-documentation/api/authentification/",
+		"apiDocumentationService": "https://rudi-platform.github.io/rudi-documentation/",
+		"docRudi": "https://doc.rudi.fr/",
+		"tableDisplayMaxFileSize": "1000000000"
+	},
+	"mapInfo": {
+		"defaultCenter": [-1.662712, 48.114767],
+		"defaultTopLeft": [-1.751289, 48.168261],
+		"defaultBottomRight": [-1.534996, 48.062135],
+		"paddingExtent" : 40,
+		"maxZoomExtent" : 11,
+		"defaultZoom" : 13
+	},
+	"scripts": [
+		"https://tarteaucitron.dummy.io/load.js?domain=rudi.rennesmetropole.fr&uuid=a3f8b2a7fa074f263a2843fcc069679d92167c5d",
+		"/konsult/v1/properties/scripts/matomo.js"
+	]
+}

@@ -32,6 +32,7 @@ import org.rudi.microservice.selfdata.service.helper.selfdatamatchingdata.Selfda
 import org.rudi.microservice.selfdata.service.selfdata.workflow.SelfdataInformationRequestTaskService;
 import org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest.SelfdataInformationRequestDao;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataInformationRequestEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,10 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 		implements SelfdataInformationRequestTaskService {
 
 	public static final String PROCESS_DEFINITION_ID = "selfdata-information-request-process";
+
+	@Value("${rudi.team.confidentialityPoliticUrl:}")
+	private String confidentialityPoliticUrl;
+
 	private final FormService formService;
 	private final FormHelper formHelper;
 	private final TaskQueryService<SelfdataTaskSearchCriteria> taskQueryService;
@@ -116,7 +121,8 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 	@PostConstruct
 	public void loadBpmn() throws IOException {
 		super.loadBpmn();
-		formService.createOrUpdateAllSectionAndFormDefinitions();
+		Map<String, Object> properties = formService.getFormTemplateProperties();
+		formService.createOrUpdateAllSectionAndFormDefinitions(properties);
 	}
 
 	@Override

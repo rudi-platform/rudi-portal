@@ -1,10 +1,10 @@
 @import "common-style";
 @import "add-link-to-project";
 
-.comment-action, .delete-action {
+.comment-action {
     border-radius: 50%;
     border: 1px solid var(--blocks-and-menus-outline);
-    
+
     &:hover {
         stroke: var(--secondary-color);
         background-color: var(--primary-color);
@@ -15,9 +15,6 @@
     }
 }
 
-.delete-action {
-    margin-left: 10px;
-}
 
 .add-link-button {
     &:hover {

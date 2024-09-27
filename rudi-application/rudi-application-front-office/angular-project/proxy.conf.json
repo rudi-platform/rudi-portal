@@ -77,5 +77,13 @@
             "^/medias": ""
         },
         "changeOrigin": true
+    },
+    "/robots.txt": {
+    	"target": "http://localhost:8082/konsult/v1/robots/robots",
+        "secure": false,
+        "pathRewrite": {
+            "^/robots.txt": ""
+        },
+        "changeOrigin": true
     }
 }

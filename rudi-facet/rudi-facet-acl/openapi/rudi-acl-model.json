@@ -345,6 +345,11 @@
 				"description": "Object conteneur d'une clé d'accès d'un projet",
 				"type": "object",
 				"properties": {
+					"uuid": {
+						"description": "UUID de la clé",
+						"format": "uuid",
+						"type": "string"
+					},
 					"name": {
 						"description": "Nom de la clé",
 						"type": "string"

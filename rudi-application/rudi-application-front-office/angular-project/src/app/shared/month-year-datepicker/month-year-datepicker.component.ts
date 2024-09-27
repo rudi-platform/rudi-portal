@@ -98,7 +98,7 @@ export class MonthYearDatepickerComponent implements OnInit {
 
     private set ctrlValue(date: Moment) {
         // on souhaite que la valeur du Control soit toujours au premier jour du mois si on donne une valeur au component
-        const normalized: Moment = date.startOf('month');
+        const normalized: Moment = date.startOf('month').utc(true);
         const control = this.formGroup.get(this.controlName);
         control.setValue(normalized);
         control.markAsDirty();
@@ -110,7 +110,7 @@ export class MonthYearDatepickerComponent implements OnInit {
      */
     chosenYearHandler(date: Moment): void {
         this.ctrlValue = date.month(moment().month());
-        if (this.startDate){
+        if (this.startDate) {
             this.ctrlValue = date.month(this.startDate.month());
         }
     }

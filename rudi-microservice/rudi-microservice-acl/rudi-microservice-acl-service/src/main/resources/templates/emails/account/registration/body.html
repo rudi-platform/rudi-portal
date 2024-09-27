@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<title>Confirmation de cr&eacute;ation de compte</title>
+<title>${projectName} - Confirmation de cr&eacute;ation de compte</title>
 <style type="text/css">
 body {font-family: Montserrat; font-size:12px; color:#004680;}
 a {font-weight: bold;color:#004680;}
@@ -10,7 +10,7 @@ a:hover { color:#004680; }
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-<p>Nous vous confirmons la bonne cr&eacute;ation de votre compte sur le portail RUDI. <br/>
+<p>Nous vous confirmons la bonne cr&eacute;ation de votre compte sur le portail ${projectName}. <br/>
 Pour finaliser sa cr&eacute;ation, nous vous remercions de confirmer votre adresse e-mail. 
 Pour cela, veuillez cliquer <a href="${urlServer}${pathServer}?token=${account.token}">ici</a> ou coller le lien suivant dans votre navigateur  : <em>${urlServer}${pathServer}?token=${account.token}</em>
 </p>
@@ -25,7 +25,7 @@ Si vous n'avez formul&eacute; aucune demande en ce sens, aucune action suppl&eac
 </p>
 <br/>
 <p>A tr&egrave;s bient&ocirc;t,</p>
-<p>L'&eacute;quipe RUDI</p>
+<p>L'&eacute;quipe ${teamName}</p>
 <p><a href="${urlServer}">${urlServer}</a><p>
 </body>
 </html>

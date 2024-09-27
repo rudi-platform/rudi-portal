@@ -23,6 +23,7 @@
 			},
 			"CmsCategory": {
 				"type": "object",
+				"x-implements": ["java.io.Serializable"],
 				"properties": {
 				    "id": {
 						"type": "string"
@@ -43,6 +44,7 @@
 			},
 			"CmsAsset": {
 				"type": "object",
+				"x-implements": ["java.io.Serializable"],
 				"properties": {
 					"id": {
 						"type": "string"

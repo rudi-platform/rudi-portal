@@ -309,6 +309,9 @@
 					"main_logo": {
 						"type": "string"
 					},
+					"main_logo_alt_text": {
+						"type": "string"
+					},
 					"hero_description": {
 						"$ref": "#/components/schemas/HeroDescription"
 					},
@@ -350,12 +353,27 @@
 					}
 				}
 			},
-			"FooterDescription": {
-				"description": "Elements du footer",
+			"FooterLogo": {
+				"description": "Logo du footer",
 				"type": "object",
 				"properties": {
 					"logo": {
 						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"logo_alt_text": {
+						"type": "string"
+					}
+				}
+			},
+			"FooterDescription": {
+				"description": "Elements du footer",
+				"type": "object",
+				"properties": {
+					"footerLogo": {
+						"$ref": "#/components/schemas/FooterLogo"
 					},
 					"socialNetworks": {
 						"type": "array",

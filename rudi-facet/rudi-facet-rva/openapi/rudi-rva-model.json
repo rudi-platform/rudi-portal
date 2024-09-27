@@ -24,36 +24,15 @@
 			"Address": {
 				"type": "object",
 				"properties": {
-					"zipcode": {
+					"id": {
+						"type": "string"
+					},
+					"label": {
 						"type": "string"
 					},
 					"insee": {
 						"type": "string"
 					},
-					"idaddress": {
-						"type": "integer"
-					},
-					"idlane": {
-						"type": "integer"
-					},
-					"number": {
-						"type": "integer"
-					},
-					"extension": {
-						"type": "string"
-					},
-					"building": {
-						"type": "string"
-					},
-					"addr1": {
-						"type": "string"
-					},
-					"addr2": {
-						"type": "string"
-					},
-					"addr3": {
-						"type": "string"
-					},
 					"x": {
 						"type": "string"
 					},
@@ -62,76 +41,9 @@
 					}
 				}
 			},
-			"Commune": {
-				"type": "object",
-				"properties": {
-					"idCommune": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					}
-				}
-			},
-			"Section": {
-				"type": "object",
-				"properties": {
-					"idSection": {
-						"type": "string"
-					},
-					"codeCommune": {
-						"type": "string"
-					},
-					"codeSection": {
-						"type": "string"
-					}
-				}
-			},
-			"Parcelle": {
-				"type": "object",
-				"properties": {
-					"idParcelle": {
-						"type": "string"
-					},
-					"codeSection": {
-						"type": "string"
-					},
-					"typeProjection": {
-						"type": "string"
-					},
-					"numero": {
-						"type": "string"
-					},
-					"x": {
-						"type": "string"
-					},
-					"y": {
-						"type": "string"
-					},
-					"adresses": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/Address"
-						}
-					}
-				}
-			},
-			"FullAddresses": {
-				"type": "object",
-				"properties": {
-					"addresses": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/Address"
-						}
-					},
-					"lanes": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/Address"
-						}
-					}
-				}
+			"AddressKind": {
+				"type": "string",
+				"enum": ["HOUSE_NUMBER", "STREET", "LOCALITY", "MUNICIPALITY"]
 			},
 			"ApiError": {
 				"type": "object",
@@ -143,77 +55,6 @@
 					"label": {
 						"type": "string",
 						"description": "Error label"
-					}
-				}
-			},
-			"MapItem": {
-				"properties": {
-					"firstname": {
-						"type": "string"
-					},
-					"lastname": {
-						"type": "string"
-					}
-				}
-			},
-			"RvaMap": {
-				"description": "a (key, MapItem) map. `default`is an example key",
-				"properties": {
-					"default": {
-						"$ref": "#/components/schemas/MapItem"
-					}
-				},
-				"additionalProperties": {
-					"$ref": "#/components/schemas/MapItem"
-				}
-			},
-			"ApplicationConfig": {
-				"description": "Propriétés de l'application",
-				"type": "object",
-				"properties": {
-					"version": {
-						"type": "string"
-					}
-				}
-			},
-			"FullAddressesResponse": {
-				"type": "object",
-				"properties": {
-					"rva": {
-						"type": "object",
-						"properties": {
-							"request": {
-								"type": "string"
-							},
-							"answer": {
-								"$ref": "#/components/schemas/FullAddressesAnswer"
-							}
-						}
-					}
-				}
-			},
-			"FullAddressesAnswer": {
-				"type": "object",
-				"properties": {
-					"addresses": {
-						"type": "array",
-						"items": {
-							"$ref": "#/components/schemas/Address"
-						}
-					},
-					"status": {
-						"$ref": "#/components/schemas/Status"
-					}
-				}
-			},
-			"Status": {
-				"type": "object",
-				"properties": {
-					"code": {
-						"type": "string"
-					},
-					"message": {
-						"type": "string"
 					}
 				}
 			}

@@ -505,11 +505,6 @@
 								},
 								"minItems": 0
 							},
-							"is_a_reuse": {
-									"description": "true si le projet est en fait une réutilisation",
-									"type": "boolean",
-									"readOnly": true
-								},
 							"reutilisation_status": {
 									"$ref": "#/components/schemas/ReutilisationStatus"
 							}

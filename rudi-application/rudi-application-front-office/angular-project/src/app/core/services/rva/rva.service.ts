@@ -12,9 +12,9 @@ export abstract class RvaService {
         return query.length > RvaService.MIN_QUERY_LENGTH;
     }
 
-    abstract getFullAddresses(query: string): Observable<Address[]>;
+    abstract searchAddresses(query: string): Observable<Address[]>;
 
 
-    abstract getAddressById(query: number): Observable<Address>;
+    abstract getAddressById(query: string): Observable<Address>;
 
 }

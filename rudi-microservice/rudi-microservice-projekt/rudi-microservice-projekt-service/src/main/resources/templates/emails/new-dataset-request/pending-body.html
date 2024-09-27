@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Nouvelle demande d'accès</title>
+    <title>${projectName} - Nouvelle demande d'accès</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,7 +21,7 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-<p>Un porteur de projet vient de demander l'ajout de nouveaux jeux de données au catalogue Rudi. <br/>
+<p>Un porteur de projet vient de demander l'ajout de nouveaux jeux de données au catalogue ${teamName}. <br/>
 Il s'agit <#if userName??>de ${userName!""}, pour le<#else>du</#if> projet ${project.title}.<br/>
 La demande de nouveaux jeux de données est : ${asset.title} : ${asset.description} <br/>
 Vous pouvez consulter cette demande en vous connectant à votre espace personnel en cliquant
@@ -29,7 +29,7 @@ Vous pouvez consulter cette demande en vous connectant à votre espace personnel
 
 <br/>
 <p>A tr&egrave;s bient&ocirc;t,</p>
-<p>L'&eacute;quipe RUDI</p>
+<p>L'&eacute;quipe ${teamName}</p>
 <p><a href="${urlServer}">${urlServer}</a></p>
 </body>
 </html>

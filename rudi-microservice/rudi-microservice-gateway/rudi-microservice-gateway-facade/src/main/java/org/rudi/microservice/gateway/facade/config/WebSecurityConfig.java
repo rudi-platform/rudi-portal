@@ -35,7 +35,7 @@ public class WebSecurityConfig {
 	private static final String[] SB_PERMIT_ALL_URL = {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
 			"/authenticate", "/authenticate/**", "/refresh_token", "/oauth/**", "/acl/v1/kaptcha", "/konsult/v1/cms/**",
-			"/konsult/v1/sitemap/{resource}" };
+			"/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/scripts/**", "/konsult/v1/robots/{resource}" };
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;

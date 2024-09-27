@@ -47,7 +47,7 @@ export class ProjectTaskDetailComponent
     isLoadingOpenDataset: boolean;
     isLoadingRestrictedDataset: boolean;
     isLoadingNewDatasetRequest: boolean;
-
+    headerLibelle: string;
     isUpdateInProgress = false;
     idTask: string;
 
@@ -84,6 +84,7 @@ export class ProjectTaskDetailComponent
         super(dialog, translateService, snackBarService, taskWithDependenciesService, projectTaskMetierService, logger);
         iconRegistry.addSvgIcon('project-svg-icon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
+        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitlePublication')
     }
 
 
@@ -115,6 +116,11 @@ export class ProjectTaskDetailComponent
                     } else {
                         this.pageTitleService.setPageTitleFromUrl('/personal-space/my-notifications');
                     }
+
+                    if(taskWithDependencies.asset.project_status == ProjectStatus.Validated){
+                        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitleModification')
+                    }
+
                     this.taskWithDependencies = taskWithDependencies;
                 }),
                 injectDependencies({

@@ -52,13 +52,17 @@ export function getVersion(media: Media): string {
  * @param key la clé d'entrée
  */
 function getConnectorParameter(media: Media, key: string): string {
-    const parameter = media.connector.connector_parameters
-        .filter((entry) => entry.key === key)[0];
+    if(media.connector.connector_parameters){
+        const parameter = media.connector?.connector_parameters
+            .filter((entry) => entry.key === key)[0];
 
-    if (parameter == null) {
+        if (parameter == null) {
+            return null;
+        }
+
+        return parameter.value;
+    } else {
         return null;
     }
-
-    return parameter.value;
 }
 

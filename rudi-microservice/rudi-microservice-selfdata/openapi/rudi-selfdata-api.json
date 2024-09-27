@@ -925,14 +925,14 @@
 				}
 			}
 		},
-		"/rva-address-manager/full-addresses": {
+		"/rva-address-manager/addresses": {
 			"get": {
 				"tags": [
 					"selfdata"
 				],
-				"summary": "Liste des addresses rva commençant par une query",
-				"description": "Liste des addresses rva commençant par une query",
-				"operationId": "getFullAddresses",
+				"summary": "Liste des addresses commençant par une query",
+				"description": "Liste des addresses commençant par une query",
+				"operationId": "searchAddresses",
 				"parameters": [
 					{
 						"in": "query",
@@ -963,7 +963,7 @@
 				}
 			}
 		},
-		"/rva-address-manager/address-by-id": {
+		"/rva-address-manager/addresses/{address-id}": {
 			"get": {
 				"tags": [
 					"selfdata"
@@ -973,11 +973,12 @@
 				"operationId": "getAddressById",
 				"parameters": [
 					{
-						"in": "query",
-						"name": "addressId",
+						"in": "path",
+						"name": "address-id",
 						"description": "id rva de l'adresse",
+						"required": true,
 						"schema": {
-							"type": "integer"
+							"type": "string"
 						}
 					}
 				],

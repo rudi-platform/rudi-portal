@@ -15,11 +15,11 @@ export class SelfdataRvaService extends RvaService {
         super();
     }
 
-    getAddressById(query: number): Observable<Address> {
+    getAddressById(query: string): Observable<Address> {
         return this.selfdataService.getAddressById(query);
     }
 
-    getFullAddresses(query: string): Observable<Address[]> {
-        return this.selfdataService.getFullAddresses(query);
+    searchAddresses(query: string): Observable<Address[]> {
+        return this.selfdataService.searchAddresses(query);
     }
 }

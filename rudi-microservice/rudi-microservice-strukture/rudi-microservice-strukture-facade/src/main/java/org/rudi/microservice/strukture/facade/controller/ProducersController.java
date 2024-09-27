@@ -29,7 +29,6 @@ public class ProducersController implements ProducersApi {
 	private final ControllerHelper controllerHelper;
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", " + MODULE_STRUKTURE + ", " + USER + ")")
 	public ResponseEntity<Resource> downloadProducerMediaByType(UUID producerUuid, KindOfData kindOfData)
 			throws Exception {
 		final DocumentContent documentContent = producerService.downloadMedia(producerUuid, kindOfData);

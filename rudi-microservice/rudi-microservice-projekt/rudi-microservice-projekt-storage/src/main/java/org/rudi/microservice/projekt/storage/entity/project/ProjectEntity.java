@@ -18,7 +18,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.rudi.common.storage.entity.SkosConceptCodeColumn;
 import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
@@ -202,24 +201,4 @@ public class ProjectEntity extends AbstractAssetDescriptionEntity {
 		}
 		return super.equals(obj);
 	}
-
-	/**
-	 * @return <code>true</code> si le projet est en fait une réutilisation
-	 */
-	@Transient
-	public boolean isAReuse() {
-		// FIXME Redéfinir les règles de gestion en fonction du ProjectStatus et du ReutilisationStatus et du type de JDD concerné
-		// Le booleen restrictedLinkeddatasetModificationAllowed de ReutilisationStatus est utilisable pour déterminer une partie des critères
-		// TODO Renommer ce booleen "is_a_reuse" pour qu'il ne soit plus ambigu
-
-		// false => toutes les réutilisations sont vues comme des projets et pas des réutilisations terminées.
-		return false;
-	}
-
-	// Utilisé par le mapper MapStruct ProjectMapper
-	@Transient
-	public boolean getIsAReuse() {
-		return isAReuse();
-	}
-
 }

@@ -50,6 +50,7 @@ export class HeaderComponent implements OnInit {
 
     logoIsLoading: boolean;
     logo: Base64EncodedLogo;
+    logoAltTxt: string;
 
     constructor(
         private location: Location,
@@ -168,6 +169,7 @@ export class HeaderComponent implements OnInit {
         this.customizationService.getCustomizationDescription()
             .pipe(
                 switchMap((customizationDescription: CustomizationDescription) => {
+                    this.logoAltTxt = customizationDescription.main_logo_alt_text;
                     return this.konsultService.downloadCustomizationResource(customizationDescription.main_logo);
                 }),
                 switchMap((blob: Blob) => {

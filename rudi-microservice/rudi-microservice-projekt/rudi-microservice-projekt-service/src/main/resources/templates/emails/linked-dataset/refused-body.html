@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
-        <title>TODO</title>
+        <title>${projectName} - </title>
         <style type="text/css">
             body {font-family: Montserrat; font-size:12px; color:#004680;}
             a {font-weight: bold;color:#004680;}
@@ -15,12 +15,12 @@
                 Le producteur de données ${producer.getName()} a refusé votre demande d'accès au jeu de données
                 ${asset.description} pour cette raison : ${messageToProjectOwner} <p>
             <p>
-                Vous pouvez contacter l'équipe Rudi afin d'échanger sur la procédure à suivre pour reformuler une demande en cliquant
-                <a href="https://rudi.datarennes.fr/portail-beta-contact/">ici</a>.
+                Vous pouvez contacter l'équipe ${teamName} afin d'échanger sur la procédure à suivre pour reformuler une demande en cliquant
+                <a href="${urlContact}">ici</a>.
             </p>
             <p>
                 A très bientôt, <br>
-                L'équipe RUDI <br>
+                L'équipe ${teamName} <br>
                 <a href="${urlServer}">${urlServer}</a>
             </p>
         </div>

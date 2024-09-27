@@ -50,13 +50,14 @@ public class StruktureAuthorisationHelper {
 	private static final Map<String, Boolean> ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS = new HashMap<>();
 	static {
 		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
-		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR,
+				Boolean.TRUE);
 		ADMINISTRATOR_MODULE_KALIM_STRUKTURE_ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_KALIM, Boolean.TRUE);
 	}
 
 	@Getter
 	private static final Map<String, Boolean> ADMINISTRATOR_ACCESS = new HashMap<>();
-	static{
+	static {
 		ADMINISTRATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
 	}
 
@@ -70,6 +71,19 @@ public class StruktureAuthorisationHelper {
 		ADMINISTRATOR_MODERATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
 		ADMINISTRATOR_MODERATOR_ACCESS.put(RoleCodes.MODULE_STRUKTURE, Boolean.TRUE);
 		ADMINISTRATOR_MODERATOR_ACCESS.put(RoleCodes.MODERATOR, Boolean.TRUE);
+	}
+
+	/**
+	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur, au modérateur et au profil technique du module
+	 */
+	@Getter
+	private static final Map<String, Boolean> ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS = new HashMap<>();
+	static {
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_STRUKTURE_ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_STRUKTURE, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_PROJEKT, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODERATOR, Boolean.TRUE);
 	}
 
 	public static final String NOT_USER = "NOT_USER";
@@ -90,7 +104,6 @@ public class StruktureAuthorisationHelper {
 	private static final List<String> TRANSVERSAL_ROLES = Arrays.asList(RoleCodes.ADMINISTRATOR, RoleCodes.ANONYMOUS,
 			RoleCodes.MODERATOR, NOT_USER);
 
-
 	private boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
 		if (user == null) { // NOSONAR il faut pouvoir traiter le cas où le user n'est pas positionné (pour les TU par exemple)
 			throw new AppServiceUnauthorizedException("No user");
@@ -101,7 +114,6 @@ public class StruktureAuthorisationHelper {
 		List<String> userRoles = user.getRoles().stream().map(Role::getCode).collect(Collectors.toList());
 		return CollectionUtils.isNotEmpty(CollectionUtils.intersection(userRoles, acceptedRoles));
 	}
-
 
 	/**
 	 * Vérifie les droits d'accès de l'utilisateur: possède-t-il l'un des roles techniques ou transverses définis dans la map ?
@@ -127,14 +139,16 @@ public class StruktureAuthorisationHelper {
 	}
 
 	/**
-	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité organization : l'utilisateur doit avoir le rôle "USER" et être owner ou membre de l'organisation
+	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité organization : l'utilisateur doit avoir le rôle "USER" et être owner ou membre de
+	 * l'organisation
+	 * 
 	 * @param organizationUuid uuid de l'organization concernée
 	 * @return true si l'utilisateur a accès
 	 */
-	public boolean isAccessGrantedForUserOnOrganization(UUID organizationUuid){
+	public boolean isAccessGrantedForUserOnOrganization(UUID organizationUuid) {
 		try {
 			User user = aclHelper.getAuthenticatedUser();
-			if(organizationUuid != null && hasAnyRole(user, List.of(RoleCodes.USER))) {
+			if (organizationUuid != null && hasAnyRole(user, List.of(RoleCodes.USER))) {
 				return user.getUuid() != null
 						&& organizationMembersHelper.isAuthenticatedUserOrganizationMember(organizationUuid);
 
@@ -145,7 +159,9 @@ public class StruktureAuthorisationHelper {
 		}
 	}
 
-	public boolean isAccessGrantedForUserOnOrganizationAsAdministrator(UUID organizationUuid) throws AppServiceException {
-		return isAccessGrantedForUserOnOrganization(organizationUuid) && organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
+	public boolean isAccessGrantedForUserOnOrganizationAsAdministrator(UUID organizationUuid)
+			throws AppServiceException {
+		return isAccessGrantedForUserOnOrganization(organizationUuid)
+				&& organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
 	}
 }

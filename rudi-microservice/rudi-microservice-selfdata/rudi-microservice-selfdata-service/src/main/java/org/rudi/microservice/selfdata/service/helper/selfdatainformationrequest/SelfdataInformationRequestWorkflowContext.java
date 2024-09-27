@@ -17,7 +17,6 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
-import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
@@ -51,24 +50,26 @@ import lombok.extern.slf4j.Slf4j;
 @Component(value = "selfdataInformationRequestWorkflowContext")
 @Transactional(readOnly = true)
 @Slf4j
-public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowContext<SelfdataInformationRequestEntity, SelfdataInformationRequestDao, SelfdataInformationRequestAssigmentHelper> {
+public class SelfdataInformationRequestWorkflowContext extends
+		AbstractWorkflowContext<SelfdataInformationRequestEntity, SelfdataInformationRequestDao, SelfdataInformationRequestAssigmentHelper> {
 
 	private static final String SEND_EMAIL_ERROR = "Failed to send email to {} from {}";
 
 	@Value("${role.moderator:MODERATOR}")
 	private String moderatorRole;
 
-	@Value("${email.urlServer:}")
-	private String urlServer;
 	private final DatasetService datasetService;
 	private final OrganizationHelper organizationHelper;
 	private final SelfdataProviderHelper selfdataProviderHelper;
 	private final SelfdataPairingUtils selfdataPairingUtils;
 	private final SelfdataMatchingDataHelper selfdataMatchingDataHelper;
 
-	protected SelfdataInformationRequestWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
-			SelfdataInformationRequestDao assetDescriptionDao, SelfdataInformationRequestAssigmentHelper assignmentHelper,
-			ACLHelper aclHelper, FormHelper formHelper, DatasetService datasetService, OrganizationHelper organizationHelper, SelfdataProviderHelper selfdataProviderHelper, SelfdataPairingUtils selfdataPairingUtils, SelfdataMatchingDataHelper selfdataMatchingDataHelper) {
+	protected SelfdataInformationRequestWorkflowContext(EMailService eMailService,
+			TemplateGeneratorImpl templateGenerator, SelfdataInformationRequestDao assetDescriptionDao,
+			SelfdataInformationRequestAssigmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper,
+			DatasetService datasetService, OrganizationHelper organizationHelper,
+			SelfdataProviderHelper selfdataProviderHelper, SelfdataPairingUtils selfdataPairingUtils,
+			SelfdataMatchingDataHelper selfdataMatchingDataHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.datasetService = datasetService;
 		this.organizationHelper = organizationHelper;
@@ -84,7 +85,8 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
 		log.debug("WkC - Update {} to status {}", processInstanceBusinessKey, statusValue);
 		Status status = Status.valueOf(statusValue);
-		SelfdataInformationRequestStatus assetStatus = SelfdataInformationRequestStatus.valueOf(selfdataInformationRequestStatusValue);
+		SelfdataInformationRequestStatus assetStatus = SelfdataInformationRequestStatus
+				.valueOf(selfdataInformationRequestStatusValue);
 		if (processInstanceBusinessKey != null && functionalStatusValue != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			SelfdataInformationRequestEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
@@ -106,12 +108,12 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 	/**
 	 * Retourne la liste des moderateurs candidats pour la tâche
 	 *
-	 * @param scriptContext   le context
+	 * @param scriptContext le context
 	 * @return la liste des moderateurs qui voient la demande d'information soumise par l'utilisateur
 	 */
 	@SuppressWarnings("unused") // Utilisé par selfdata-information-request-process.bpmn20.xml
-	public List<String> computeModerators(ScriptContext scriptContext, ExecutionEntity executionEntity,
-			String subject, String body) {
+	public List<String> computeModerators(ScriptContext scriptContext, ExecutionEntity executionEntity, String subject,
+			String body) {
 		SelfdataInformationRequestEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		log.debug("computePotentialModerators...");
 		// On renvoie le rôle MODERATOR qui servira dans les scripts pour récuperer tous les membres ayant ce rôle
@@ -154,11 +156,12 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 							assignees.add(user.getLogin());
 							assigneeEmails.add(lookupEMailAddress(user));
 						} else {
-							log.warn("Member with user uuid \"{}\" does not exist as user in ACL", member.getUserUuid());
+							log.warn("Member with user uuid \"{}\" does not exist as user in ACL",
+									member.getUserUuid());
 						}
 					});
 				}
-				log.info("liste des producers owner : {}",assignees);
+				log.info("liste des producers owner : {}", assignees);
 
 				if (eMailData != null) {
 					sendEMail(executionEntity, assetDescription, eMailData, assigneeEmails, null);
@@ -201,8 +204,8 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 	 * @return l'initiateur de la tâche
 	 */
 	@SuppressWarnings("unused") // Utilisé par selfdata-information-request-process.bpmn20.xml
-	public List<String> getInitiator(ScriptContext scriptContext, ExecutionEntity executionEntity,
-			String subject, String body) {
+	public List<String> getInitiator(ScriptContext scriptContext, ExecutionEntity executionEntity, String subject,
+			String body) {
 		SelfdataInformationRequestEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		log.debug("getInitiator inside a list...");
 		// On renvoie l'initiateur de la task
@@ -215,14 +218,14 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 	/**
 	 * sendEmailToUser envoie un email à un User
 	 *
-	 * @param executionEntity l'entité d'execution
+	 * @param executionEntity  l'entité d'execution
 	 * @param assetDescription AssetDescription
-	 * @param userList liste d'utilisateurs
-	 * @param subject sujet du mail
-	 * @param body body du mail
+	 * @param userList         liste d'utilisateurs
+	 * @param subject          sujet du mail
+	 * @param body             body du mail
 	 */
-	private void sendEmailToUser(ExecutionEntity executionEntity, SelfdataInformationRequestEntity assetDescription, List<String> userList,
-			String subject, String body) {
+	private void sendEmailToUser(ExecutionEntity executionEntity, SelfdataInformationRequestEntity assetDescription,
+			List<String> userList, String subject, String body) {
 		EMailData eMailData = null;
 		// On Calcul les données de EmailData que si un subject et un body ont été
 		// fournis
@@ -241,7 +244,7 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 					}
 				}
 			}
-			log.info("email sent to users : {}",userList);
+			log.info("email sent to users : {}", userList);
 
 			if (eMailData != null) {
 				sendEMail(executionEntity, assetDescription, eMailData, assigneeEmails, null);
@@ -254,14 +257,14 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 	/**
 	 * sendEmailToUsersByRole envoie un email à un tous les users d'un rôle
 	 *
-	 * @param executionEntity l'entité d'execution
-	 * @param assetDescription  AssetDescription
-	 * @param userRole Role des utilisateurs ciblés par le mail
-	 * @param subject sujet du mail
-	 * @param body body du mail
+	 * @param executionEntity  l'entité d'execution
+	 * @param assetDescription AssetDescription
+	 * @param userRole         Role des utilisateurs ciblés par le mail
+	 * @param subject          sujet du mail
+	 * @param body             body du mail
 	 */
-	private void sendEmailToUsersByRole(ExecutionEntity executionEntity, SelfdataInformationRequestEntity assetDescription, List<String> userRole,
-			String subject, String body) {
+	private void sendEmailToUsersByRole(ExecutionEntity executionEntity,
+			SelfdataInformationRequestEntity assetDescription, List<String> userRole, String subject, String body) {
 		EMailData eMailData = null;
 		List<User> users;
 		// On Calcul les données de EmailData que si un subject et un body ont été
@@ -297,7 +300,7 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @return token d'appariement pour un user ou null si l'utilisateur n'est pas dans le JDD
-	 * @throws InvalidDataException Invalides datas
+	 * @throws InvalidDataException  Invalides datas
 	 * @throws DataverseAPIException exception dataverse
 	 */
 	@Transactional()
@@ -318,7 +321,8 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 		final UUID datasetUuid = assetDescription.getDatasetUuid();
 		final Metadata dataset = datasetService.getDataset(datasetUuid);
 		final List<MatchingData> matchingDataList = selfdataPairingUtils.getMatchingDataList(dataset);
-		List<MatchingField> matchingDataFields = selfdataPairingUtils.extractMatchingDataFromFormData(informationRequestMap, matchingDataList);
+		List<MatchingField> matchingDataFields = selfdataPairingUtils
+				.extractMatchingDataFromFormData(informationRequestMap, matchingDataList);
 		// Dechiffrement des matchingData.
 		selfdataMatchingDataHelper.decrypt(matchingDataFields);
 
@@ -326,12 +330,14 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 		NodeProviderInfo providerInfo;
 		providerInfo = selfdataPairingUtils.getNodeProviderInfo(dataset);
 		MatchingDescription matchingDescription;
-		matchingDescription = selfdataProviderHelper.sendMatchingDataForPairing(providerInfo.getUrl(), datasetUuid, citizenLogin, matchingDataFields);
+		matchingDescription = selfdataProviderHelper.sendMatchingDataForPairing(providerInfo.getUrl(), datasetUuid,
+				citizenLogin, matchingDataFields);
 		boolean userPresent = matchingDescription != null;
 		SelfdataTokenTupleEntity entitySaved = null;
 		if (userPresent) {
 			// Stockage du token
-			entitySaved = selfdataPairingUtils.savePairingTokenForUser(UUID.fromString(matchingDescription.getToken()), user.getUuid(), datasetUuid, providerInfo.getUuid());
+			entitySaved = selfdataPairingUtils.savePairingTokenForUser(UUID.fromString(matchingDescription.getToken()),
+					user.getUuid(), datasetUuid, providerInfo.getUuid());
 		}
 
 		// Suppression des données pivots après traitement de la demande
@@ -340,10 +346,5 @@ public class SelfdataInformationRequestWorkflowContext extends AbstractWorkflowC
 		// MAJ de l'entity et renvoie du token ou null si utilisateur non présent dans JDD
 		assetDescription.setUserPresent(userPresent);
 		return userPresent ? entitySaved.getToken().toString() : null;
-	}
-
-	@Override
-	protected void addEmailDataModelData(EMailDataModel<SelfdataInformationRequestEntity, SelfdataInformationRequestAssigmentHelper> eMailDataModel) {
-		eMailDataModel.addData("urlServer", urlServer);
 	}
 }

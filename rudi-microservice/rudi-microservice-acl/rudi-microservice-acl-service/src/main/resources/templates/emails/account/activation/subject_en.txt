@@ -1,1 +1,1 @@
-RUDI - Account activation confirmation email
+${projectName} - Account activation confirmation email

@@ -5,13 +5,13 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
+import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {SharedModule} from '@shared/shared.module';
 import {ProjectModule} from '../project/project.module';
 import {D3BarChartComponent} from './components/d3-bar-chart/d3-bar-chart.component';
 import {D3LineAndPlotChartComponent} from './components/d3-line-and-plot-chart/d3-line-and-plot-chart.component';
 import {GenerateKeysDialogComponent} from './components/generate-keys-dialog/generate-keys-dialog.component';
 import {GenericDataComponent} from './components/generic-data/generic-data.component';
-import {LinkedDatasetHistoryComponent} from './components/linked-dataset-history/linked-dataset-history.component';
 import {MatchingDataCardComponent} from './components/matching-data-card/matching-data-card.component';
 import {MyProfilComponent} from './components/my-profil/my-profil.component';
 import {MyLinkedDatasetsComponent} from './components/my-requests-tables/my-linked-datasets/my-linked-datasets.component';
@@ -56,6 +56,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
 
 @NgModule({
     declarations: [
+        RemoveKeysDialogComponent,
         MyAccountComponent,
         MyNotificationsComponent,
         TasksComponent,
@@ -73,7 +74,6 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         ProjectApiTabComponent,
         ProjectDatasetsTabComponent,
         ProjectTasksComponent,
-        LinkedDatasetHistoryComponent,
         ProjectInformationComponent,
         SelfdataInformationRequestTaskDetailComponent,
         SelfdataMainInformationComponent,

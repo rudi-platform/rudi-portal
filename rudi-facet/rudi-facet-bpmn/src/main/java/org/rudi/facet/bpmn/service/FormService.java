@@ -5,6 +5,7 @@ package org.rudi.facet.bpmn.service;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.FormDefinition;
@@ -56,12 +57,21 @@ public interface FormService {
 
 	/**
 	 * Crée ou met à jour toutes les sections définies dans les fichiers JSON
-	 * <pre>bpmn/sections/`processDefinitionId`__`userTaskId`__`actionName`.json</pre>
+	 * 
+	 * <pre>
+	 * bpmn/sections/`processDefinitionId`__`userTaskId`__`actionName`.json
+	 * </pre>
 	 * <p>
 	 * Ainsi que tous les formulaires définis dans les fichiers JSON
-	 * <pre>bpmn/forms/`processDefinitionId`__`userTaskId`__`actionName`.json</pre>
+	 * 
+	 * <pre>
+	 * bpmn/forms/`processDefinitionId`__`userTaskId`__`actionName`.json
+	 * </pre>
 	 *
 	 * @return toutes les formulaires créés ou mis à jour
 	 */
-	Collection<ProcessFormDefinition> createOrUpdateAllSectionAndFormDefinitions() throws IOException;
+	Collection<ProcessFormDefinition> createOrUpdateAllSectionAndFormDefinitions(Map<String, Object> parameters)
+			throws IOException;
+
+	Map<String, Object> getFormTemplateProperties();
 }

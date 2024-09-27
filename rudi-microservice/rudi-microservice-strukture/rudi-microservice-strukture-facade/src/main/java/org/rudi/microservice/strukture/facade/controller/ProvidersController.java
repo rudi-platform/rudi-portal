@@ -1,5 +1,13 @@
 package org.rudi.microservice.strukture.facade.controller;
 
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,10 +33,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 
 @RestController
 @RequiredArgsConstructor
@@ -101,6 +105,8 @@ public class ProvidersController implements ProvidersApi {
 	}
 
 	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", "
+			+ MODULE_STRUKTURE + ", " + USER + ")")
 	public ResponseEntity<Void> deleteProviderMediaByType(UUID providerUuid, KindOfData kindOfData)
 			throws AppServiceException {
 		providerService.deleteMedia(providerUuid, kindOfData);
@@ -169,6 +175,8 @@ public class ProvidersController implements ProvidersApi {
 	}
 
 	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", "
+			+ MODULE_STRUKTURE + ", " + USER + ")")
 	public ResponseEntity<Void> uploadProviderMediaByType(UUID providerUuid, KindOfData kindOfData, Resource body)
 			throws Exception {
 		providerService.uploadMedia(providerUuid, kindOfData, body);

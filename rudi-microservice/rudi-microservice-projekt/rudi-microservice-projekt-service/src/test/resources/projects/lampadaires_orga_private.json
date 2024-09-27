@@ -81,7 +81,6 @@
 	"owner_uuid": "efea45a2-d6de-4d68-b655-904cef04722b",
 	"contact_email": "jj@test.fr",
 	"owner_type": "ORGANIZATION",
-	"is_a_reuse": false,
 	"reutilisation_status": {
 		"code":"PROJECT",
 		"label":"Réutilisation en projet",

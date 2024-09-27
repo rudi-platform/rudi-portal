@@ -12,4 +12,7 @@ public class BeanIds {
 	public static final String SITEMAP_CACHE_MANAGER = "sitemapCacheManager";
 	public static final String SITEMAP_RESOURCES_CACHE = "sitemapResources";
 	public static final String SITEMAP_DATA_CACHE = "sitemapData";
+
+	public static final String ROBOTS_CACHE_MANAGER = "robotsCacheManager";
+	public static final String ROBOTS_RESOURCES_CACHE = "robotsResources";
 }

@@ -1,1 +1,1 @@
-Rudi - Demande de modification de votre réutilisation refusée
+${projectName} - Demande de modification de votre réutilisation refusée

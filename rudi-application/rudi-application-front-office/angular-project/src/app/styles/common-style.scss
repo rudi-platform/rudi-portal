@@ -224,6 +224,8 @@ mat-toolbar a:hover {
 
 /****Banner / Toolbar container style *****/
 @mixin button-blue() {
+    --mdc-protected-button-container-color: var(--primary-color);
+    --mdc-protected-button-label-text-color: var(--banner-solid-color);
     background-color: var(--primary-color);
     color: var(--banner-solid-color);
     font-weight: 600;

@@ -2,129 +2,137 @@
     <mat-sidenav>
     </mat-sidenav>
     <mat-sidenav-content>
-        <div class="container-fluid"
-             [ngClass]="{
+        <div [ngClass]="{
                 'p-small': mediaSize.isDeviceMobile,
                 'p-large': mediaSize.isDeviceDesktop
             }"
+             class="container-fluid"
         >
             <div>
                 <div class="d-flex justify-content-center">
-                    <span class="signup-header-title">{{'signup.sinscrire'|translate}}</span>
+                    <span class="signup-header-title">{{ 'signup.sinscrire'|translate }}</span>
                 </div>
                 <mat-card
                     [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
 
                     <mat-card-title class="d-flex justify-content-center">
-                        <p class="signup-text-title">{{'signup.labelInscription'|translate}}</p>
+                        <p class="signup-text-title">{{ 'signup.labelInscription'|translate }}</p>
                     </mat-card-title>
 
                     <mat-card-content>
                         <form [formGroup]="signupForm">
                             <div class="d-flex">
-                                <mat-label class="mat-error">{{'signup.etoile'|translate}}</mat-label>
-                                <mat-label class="ms-1">{{'signup.infoObligatoire'|translate}}</mat-label>
+                                <mat-label class="mat-error">{{ 'signup.etoile'|translate }}</mat-label>
+                                <mat-label class="ms-1">{{ 'signup.infoObligatoire'|translate }}</mat-label>
                             </div>
 
                             <div class="d-flex justify-content-center">
                                 <div class="signup-form-container">
 
                                     <mat-form-field>
-                                        <mat-label>{{'signup.nom'|translate}}</mat-label>
-                                        <input type="text" matInput placeholder="{{'signup.nom'|translate}}"
-                                               formControlName="nom" autocomplete="off">
+                                        <mat-label>{{ 'signup.nom'|translate }}</mat-label>
+                                        <input autocomplete="off" formControlName="nom" matInput
+                                               placeholder="{{'signup.nom'|translate}}" type="text">
                                         <mat-hint class="mt-1 signup-hint">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em> {{'signup.infoName'|translate}}
+                                            <em class="fa fa-info-circle fa-2x me-2"></em> {{ 'signup.infoName'|translate }}
                                         </mat-hint>
                                     </mat-form-field>
 
                                     <mat-form-field>
-                                        <mat-label>{{'signup.prenom'|translate}}</mat-label>
-                                        <input type="text" matInput placeholder="{{'signup.prenom'|translate}}"
-                                               formControlName="prenom" autocomplete="off">
-                                        <mat-hint class="mt-1 signup-hint" >
-                                            <em class="fa fa-info-circle fa-2x me-2"></em> {{'signup.infoFirstName'|translate}}
+                                        <mat-label>{{ 'signup.prenom'|translate }}</mat-label>
+                                        <input autocomplete="off" formControlName="prenom" matInput
+                                               placeholder="{{'signup.prenom'|translate}}" type="text">
+                                        <mat-hint class="mt-1 signup-hint">
+                                            <em class="fa fa-info-circle fa-2x me-2"></em> {{ 'signup.infoFirstName'|translate }}
                                         </mat-hint>
                                     </mat-form-field>
 
 
-                                    <mat-form-field hideRequiredMarker >
-                                        <mat-label>{{'signup.adresseMail'|translate}} <span
-                                            class="mat-error">{{'signup.etoile'|translate}}</span></mat-label>
-                                        <input type="email" matInput
-                                               placeholder="{{'signup.adresseMail'|translate}}"
-                                               formControlName="adresseEmail" required autocomplete="off">
-                                        <mat-error class="mt-1"
-                                                   *ngIf="formControls.adresseEmail.errors?.email">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'signup.emailError'|translate}}
+                                    <mat-form-field hideRequiredMarker>
+                                        <mat-label>{{ 'signup.adresseMail'|translate }} <span
+                                            class="mat-error">{{ 'signup.etoile'|translate }}</span></mat-label>
+                                        <input autocomplete="off" formControlName="adresseEmail"
+                                               matInput
+                                               placeholder="{{'signup.adresseMail'|translate}}" required type="email">
+                                        <mat-error *ngIf="formControls.adresseEmail.errors?.email"
+                                                   class="mt-1">
+                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.emailError'|translate }}
                                         </mat-error>
                                     </mat-form-field>
 
 
                                     <mat-form-field hideRequiredMarker>
-                                        <mat-label>{{'signup.password'|translate}} <span
-                                            class="mat-error">{{'signup.etoile'|translate}}</span></mat-label>
-                                        <input matInput [type]="hidePassword ? 'password' : 'text'" id="password"
-                                               placeholder="{{'signup.password'|translate}}"
-                                               formControlName="password" autocomplete="off"
+                                        <mat-label>{{ 'signup.password'|translate }} <span
+                                            class="mat-error">{{ 'signup.etoile'|translate }}</span></mat-label>
+                                        <input [type]="hidePassword ? 'password' : 'text'" autocomplete="off"
+                                               formControlName="password"
+                                               id="password"
+                                               matInput placeholder="{{'signup.password'|translate}}"
                                                required>
-                                        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
-                                                [attr.aria-label]="'Hide password'"
-                                                [attr.aria-pressed]="hidePassword">
+                                        <button (click)="hidePassword = !hidePassword"
+                                                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword"
+                                                mat-icon-button
+                                                matSuffix>
                                             <mat-icon
-                                                class="hidePassword">{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                                class="hidePassword">{{ hidePassword ? 'visibility_off' : 'visibility' }}
+                                            </mat-icon>
                                         </button>
-                                        <mat-error class="mt-1"
-                                            *ngIf="formControls.password.errors?.minlength">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'signup.passwordErrorPre'|translate}} {{passwordMinLength}} {{'signup.passwordErrorPost'|translate}}
+                                        <mat-error *ngIf="formControls.password.errors?.minlength"
+                                                   class="mt-1">
+                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordErrorPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordErrorPost'|translate }}
                                         </mat-error>
-                                        <mat-error class="mt-1"
-                                            *ngIf="formControls.password.errors?.required">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'signup.passwordRequired'|translate}}
+                                        <mat-error *ngIf="formControls.password.errors?.required"
+                                                   class="mt-1">
+                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordRequired'|translate }}
                                         </mat-error>
                                     </mat-form-field>
-                                    <p class="password-msg">{{'signup.passwordMsgPre'|translate}} {{passwordMinLength}} {{'signup.passwordMsgPost'|translate}}</p>
+                                    <p class="password-msg">{{ 'signup.passwordMsgPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordMsgPost'|translate }}</p>
                                     <p class="pb-3">
                                         <app-password-strength [password]="signupForm.value.password"
                                                                class="text-center"></app-password-strength>
                                     </p>
 
                                     <mat-form-field hideRequiredMarker>
-                                        <mat-label>{{'signup.ConfirmPassword'|translate}} <span
-                                            class="mat-error">{{'signup.etoile'|translate}}</span></mat-label>
-                                        <input id="confirm_password" matInput
-                                               [type]="hideConfirmPassword ? 'password' : 'text'"
-                                               placeholder="{{'signup.ConfirmPassword'|translate}}"
-                                               formControlName="confirmPassword" required autocomplete="off">
-                                        <button mat-icon-button matSuffix
-                                                (click)="hideConfirmPassword = !hideConfirmPassword"
+                                        <mat-label>{{ 'signup.ConfirmPassword'|translate }} <span
+                                            class="mat-error">{{ 'signup.etoile'|translate }}</span></mat-label>
+                                        <input [type]="hideConfirmPassword ? 'password' : 'text'" autocomplete="off"
+                                               formControlName="confirmPassword"
+                                               id="confirm_password"
+                                               matInput placeholder="{{'signup.ConfirmPassword'|translate}}" required>
+                                        <button (click)="hideConfirmPassword = !hideConfirmPassword"
                                                 [attr.aria-label]="'Hide confirmPassword'"
-                                                [attr.aria-pressed]="hideConfirmPassword">
+                                                [attr.aria-pressed]="hideConfirmPassword"
+                                                mat-icon-button
+                                                matSuffix>
                                             <mat-icon
-                                                class="hidePassword">{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                                class="hidePassword">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
+                                            </mat-icon>
                                         </button>
                                         <mat-error *ngIf="formControls.confirmPassword.errors?.required" class="mt-1">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'signup.passwordConfirmRequired'|translate}}
+                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordConfirmRequired'|translate }}
                                         </mat-error>
-                                        <mat-error *ngIf="formControls.confirmPassword.errors?.confirmedValidator" class="mt-1">
-                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'signup.passwordConfirmError'|translate}}
+                                        <mat-error *ngIf="formControls.confirmPassword.errors?.confirmedValidator"
+                                                   class="mt-1">
+                                            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordConfirmError'|translate }}
                                         </mat-error>
                                     </mat-form-field>
 
-                                    <div class="form-group form-check mt-4">
+                                    <div class="form-group form-check cgu-container">
                                         <mat-checkbox class="signup-checkbox signup-checkbox-align"
                                                       formControlName="cgu">
                                         </mat-checkbox>
-                                        <span class="signup-agree me-2">{{'signup.lu'|translate}}</span>
-                                        <a href="{{'front.cgu'|getBackendProperty|async}}"
-                                           rel="noopener noreferrer" class="signup-cgu">{{'signup.cgu'|translate}}</a>
-                                        <span class="required-symbol mat-error">&nbsp;*</span>
+                                        <div class="d-flex mt-2">
+                                            <span class="signup-agree">{{ 'signup.lu'|translate }}</span>
+                                            <div [innerHTML]="cguTermsValue"
+                                                 [ngClass]="'rudi-label-lien-mobile-mention'"></div>
+                                            <span class="required-symbol mat-error">*</span>
+                                        </div>
                                     </div>
 
-                                    <div class="form-group form-check">
+                                    <div class="form-group form-check contact-container">
                                         <mat-checkbox class="signup-checkbox signup-checkbox-align"
                                                       formControlName="subscribeToNotifications"></mat-checkbox>
-                                        <span>{{'signup.subscribeToNotifications'|translate}}</span>
+                                        <span>{{ 'signup.subscribeToNotifications'|translate }}</span>
                                     </div>
 
                                     <app-rudi-captcha *ngIf="enableCaptchaOnPage"
@@ -136,16 +144,16 @@
                     </mat-card-content>
 
                     <mat-card-actions class="d-flex align-items-center flex-column mx-0">
-                        <button type="submit" class="signup-btn-inscription mb-3"
+                        <button (click)="handleClickSignup()" [disabled]="!isValid"
                                 [ngClass]="{
                                     'signup-btn-desktop': mediaSize.isDeviceDesktop,
                                     'signup-btn-mobile': mediaSize.isDeviceMobile
-                                }" mat-flat-button
-                                (click)="handleClickSignup()" [disabled]="!isValid">
-                            {{'signup.sinscrire'|translate}}
+                                }" class="signup-btn-inscription mb-3"
+                                mat-flat-button type="submit">
+                            {{ 'signup.sinscrire'|translate }}
                         </button>
-                        <mat-progress-spinner *ngIf="loading" class="me-auto mt-2" mode="indeterminate"
-                                              diameter="30"></mat-progress-spinner>
+                        <mat-progress-spinner *ngIf="loading" class="me-auto mt-2" diameter="30"
+                                              mode="indeterminate"></mat-progress-spinner>
                         <!-- Box erreur captcha -->
                         <app-error-box *ngIf="errorCaptchaInput"
                                        [text]="'authentification.error-captcha' | translate"
@@ -159,9 +167,9 @@
 
                 <!--connexion -->
                 <div class="d-flex justify-content-center mb-2">
-                    <span class="text-center">{{'signup.compteExistant'|translate}}</span>
+                    <span class="text-center">{{ 'signup.compteExistant'|translate }}</span>
                     <span class="text-center ms-1 link-bold-underlined-colored pointer"
-                          routerLink="/login">{{'signup.pSeconnecter'|translate}}</span>
+                          routerLink="/login">{{ 'signup.pSeconnecter'|translate }}</span>
                 </div>
 
             </div>
@@ -169,26 +177,26 @@
             <mat-divider class="mt-6"></mat-divider>
 
             <div id="rgpd">
-                <h3>{{'signup.rgpd.title'|translate}}</h3>
+                <h3>{{ 'signup.rgpd.title'|translate }}</h3>
 
                 <p>
-                    {{'signup.rgpd.p1'|translate}}
+                    {{ 'signup.rgpd.p1'|translate }}
                 </p>
                 <p>
-                    {{'signup.rgpd.p2'|translate}}
+                    {{ 'signup.rgpd.p2'|translate }}
                 </p>
                 <p>
-                    {{'signup.rgpd.p3.1'|translate}} "<a
-                    href="https://e-demarches.rennes.fr/Rennes/workflow_url?ECITIZ_ACTIVITY_PATH=Demandeur&USAGER_PROCESS=CONTACT">{{'signup.rgpd.p3.2'|translate}}</a>"
-                    {{'signup.rgpd.p3.3'|translate}} (<a
+                    {{ 'signup.rgpd.p3.1'|translate }} "<a
+                    href="https://e-demarches.rennes.fr/Rennes/workflow_url?ECITIZ_ACTIVITY_PATH=Demandeur&USAGER_PROCESS=CONTACT">{{ 'signup.rgpd.p3.2'|translate }}</a>"
+                    {{ 'signup.rgpd.p3.3'|translate }} (<a
                     href="https://metropole.rennes.fr">https://metropole.rennes.fr</a>)
-                    {{'signup.rgpd.p3.4'|translate}} :
+                    {{ 'signup.rgpd.p3.4'|translate }} :
                 </p>
                 <p>
-                    {{'signup.rgpd.p4'|translate}}
+                    {{ 'signup.rgpd.p4'|translate }}
                 </p>
                 <p>
-                    {{'signup.rgpd.p5'|translate}} : <a href="https://www.cnil.fr">https://www.cnil.fr</a>
+                    {{ 'signup.rgpd.p5'|translate }} : <a href="https://www.cnil.fr">https://www.cnil.fr</a>
                 </p>
             </div>
 

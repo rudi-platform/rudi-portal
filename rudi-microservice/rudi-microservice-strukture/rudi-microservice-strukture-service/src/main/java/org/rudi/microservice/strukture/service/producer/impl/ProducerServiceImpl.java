@@ -19,6 +19,7 @@ import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.bean.MediaOrigin;
 import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
+import org.rudi.microservice.strukture.service.helper.StruktureResourceHelper;
 import org.rudi.microservice.strukture.service.producer.ProducerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,28 +37,31 @@ public class ProducerServiceImpl implements ProducerService {
 
 	private final MediaService mediaService;
 	private final StruktureAuthorisationHelper struktureAuthorisationHelper;
+	private final StruktureResourceHelper strukureResourceHelper;
 
 	@Value("${rudi.producer.attachement.allowed.types:image/jpeg,image/png}")
 	List<String> allowedLogoType;
 
 	@Override
-	public DocumentContent downloadMedia(@NotNull UUID producerUuid, @NotNull KindOfData kindOfData) throws AppServiceException {
+	public DocumentContent downloadMedia(@NotNull UUID producerUuid, @NotNull KindOfData kindOfData)
+			throws AppServiceException {
 		try {
-			return mediaService.getMediaFor(MediaOrigin.PRODUCER, producerUuid, KindOfData.LOGO);
+			final var logo = mediaService.getMediaFor(MediaOrigin.PRODUCER, producerUuid, KindOfData.LOGO);
+			if (logo == null) {
+				return strukureResourceHelper.getDefaultLogo();
+			}
+			return logo;
 		} catch (DataverseAPIException e) {
 			throw new AppServiceException(
-					String.format(
-							"Erreur lors du téléchargement du %s du producteur avec producerUuid = %s",
-							kindOfData.getValue(),
-							producerUuid),
+					String.format("Erreur lors du téléchargement du %s du producteur avec producerUuid = %s",
+							kindOfData.getValue(), producerUuid),
 					e);
 		}
 	}
 
-
 	/**
-	 * Upload un media sous la forme d'un document content pour un producer ciblé par son UUID.
-	 * Le media cible chez le producteur est détermié par le kindOfData
+	 * Upload un media sous la forme d'un document content pour un producer ciblé par son UUID. Le media cible chez le producteur est détermié par le
+	 * kindOfData
 	 *
 	 * @param producerUuid    uuid du producteur de donnée à qui on souhaite changer le "kindOfData"
 	 * @param kindOfData      type de data ciblée par la requête (EXEMPLE : LOGO)
@@ -65,8 +69,10 @@ public class ProducerServiceImpl implements ProducerService {
 	 * @throws AppServiceException en cas d'erreur sur l'upload
 	 */
 	@Override
-	public void uploadMedia(UUID producerUuid, KindOfData kindOfData, DocumentContent documentContent) throws AppServiceException {
-		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+	public void uploadMedia(UUID producerUuid, KindOfData kindOfData, DocumentContent documentContent)
+			throws AppServiceException {
+		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
 		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole))
@@ -80,39 +86,32 @@ public class ProducerServiceImpl implements ProducerService {
 				ContentTypeUtils.checkMediaType(documentContent.getContentType(), allowedLogoType);
 			}
 
-			File tempFile = File.createTempFile(UUID.randomUUID().toString(), "." + FilenameUtils.getExtension(documentContent.getFileName()));
+			File tempFile = File.createTempFile(UUID.randomUUID().toString(),
+					"." + FilenameUtils.getExtension(documentContent.getFileName()));
 			FileUtils.copyInputStreamToFile(documentContent.getFileStream(), tempFile);
 			mediaService.setMediaFor(MediaOrigin.PRODUCER, producerUuid, kindOfData, tempFile);
 		} catch (final DataverseAPIException | IOException e) {
-			throw new AppServiceException(
-					String.format(
-							"Erreur lors de l'upload du %s du producteur d'id %s",
-							kindOfData.getValue(),
-							producerUuid)
-					, e);
+			throw new AppServiceException(String.format("Erreur lors de l'upload du %s du producteur d'id %s",
+					kindOfData.getValue(), producerUuid), e);
 		}
 	}
 
-
 	@Override
 	public void deleteMedia(UUID producerUuid, KindOfData kindOfData) throws AppServiceException {
-		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
+		Map<String, Boolean> accessRightsByRole = StruktureAuthorisationHelper
+				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
-		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole)) &&
-				!(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(producerUuid))) {
+		if (!(struktureAuthorisationHelper.isAccessGrantedByRole(accessRightsByRole))
+				&& !(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(producerUuid))) {
 			throw new AppServiceUnauthorizedException(StruktureAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 
 		try {
 			mediaService.deleteMediaFor(MediaOrigin.PRODUCER, producerUuid, kindOfData);
 		} catch (final DataverseAPIException e) {
-			throw new AppServiceException(
-					String.format(
-							"Erreur lors de la suppression du %s du producteur d'id %s",
-							kindOfData.getValue(),
-							producerUuid)
-					, e);
+			throw new AppServiceException(String.format("Erreur lors de la suppression du %s du producteur d'id %s",
+					kindOfData.getValue(), producerUuid), e);
 		}
 	}
 

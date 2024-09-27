@@ -1,5 +1,5 @@
 {
-	"help": "Vous vous apprêtez à soumettre votre réutilisation. Celle-ci va être soumise à modération auprès des équipes Rudi afin d’être publiée sur le catalogue des réutilisations",
+	"help": "Vous vous apprêtez à soumettre votre réutilisation. Celle-ci va être soumise à modération auprès de l'équipe ${teamName} afin d’être publiée sur le catalogue des réutilisations",
 	"fieldDefinitions": [
 		{
 			"name": "messageToModerator",

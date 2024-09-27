@@ -2,10 +2,13 @@ package org.rudi.microservice.apigateway.facade.config.gateway.filters;
 
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.service.swagger.SwaggerHelper;
 import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
 import org.rudi.facet.kaccess.bean.Media;
@@ -20,6 +23,7 @@ import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.PathContainer;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -79,25 +83,46 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 			throw new IllegalStateException("Invalid host: " + routeUri.toString());
 		}
 
+		// on récupère les paramètres issus de l'url déclarée
 		String oQuery = prepareRawQuery(routeUri);
 		log.debug("RerouteToRequestUrlFilter with {} and {}", oQuery, uri.getQuery());
+
+		// on récupère les paramètres issus de l'appel
+		String iQuery = prepareQueryParam(exchange);
 
 		checkParameters(exchange, uri);
 
 		URI mergedUrl = UriComponentsBuilder.fromUri(uri).scheme(routeUri.getScheme()).host(routeUri.getHost())
-				.port(routeUri.getPort()).path(routeUri.getPath()).query(oQuery).build(encoded).toUri();
+				.port(routeUri.getPort()).path(routeUri.getPath()).query(StringUtils.join(List.of(oQuery, iQuery), '&'))
+				.build(encoded).toUri();
 		exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR, mergedUrl);
 		return chain.filter(exchange);
 	}
 
 	protected String prepareRawQuery(URI routeUri) {
 		String oQuery = routeUri.getRawQuery();
-		try {
-			return URLDecoder.decode(oQuery.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
-		} catch (Exception e) {
-			log.warn("Failed to decode uri " + oQuery, e);
-			return oQuery;
+		if (StringUtils.isNotEmpty(oQuery)) {
+			try {
+				return URLDecoder.decode(oQuery.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
+			} catch (Exception e) {
+				log.warn("Failed to decode uri " + oQuery, e);
+				return oQuery;
+			}
 		}
+		return StringUtils.EMPTY;
+	}
+
+	protected String prepareQueryParam(ServerWebExchange exchange) {
+		List<String> params = new ArrayList<>();
+		MultiValueMap<String, String> parameters = exchange.getRequest().getQueryParams();
+		for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+			String key = entry.getKey();
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				params.add(key + '=' + value);
+			}
+		}
+		return StringUtils.join(params, '&');
 	}
 
 	protected void checkParameters(ServerWebExchange exchange, URI uri) {

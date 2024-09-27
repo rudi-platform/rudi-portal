@@ -16,6 +16,8 @@ public class CustomizationDescriptionData {
 
 	private String mainLogo;
 
+	private String mainLogoAltText;
+
 	private HeroDescriptionData heroDescription;
 
 	private ProjectsDescriptionData projectsDescription;

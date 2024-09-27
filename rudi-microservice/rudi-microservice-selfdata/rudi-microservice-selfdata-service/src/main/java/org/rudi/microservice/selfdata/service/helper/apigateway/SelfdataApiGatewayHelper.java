@@ -1,6 +1,5 @@
 package org.rudi.microservice.selfdata.service.helper.apigateway;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.microservice.apigateway.core.bean.Api;
 import org.rudi.microservice.selfdata.service.exception.MissingApiForMediaException;
@@ -28,10 +27,13 @@ public class SelfdataApiGatewayHelper {
 
 	public ClientResponse datasets(Api api, String token, MultiValueMap<String, String> queryParams)
 			throws AppServiceNotFoundException {
-		if (api == null || CollectionUtils.isEmpty(api.getMethods())) {
-			throw new IllegalArgumentException("api and api method is required");
+		String apiHttpMethod = api.getMethods().get(0).getValue();
+		HttpMethod httpMethod = HttpMethod.resolve(apiHttpMethod);
+		if (httpMethod == null) {
+			throw new IllegalArgumentException(
+					String.format("Valid api method is required : no valid http method found for %s", apiHttpMethod));
 		}
-		var mono = apigatewayWebClient.method(HttpMethod.resolve(api.getMethods().get(0).getValue()))
+		var mono = apigatewayWebClient.method(httpMethod)
 				.uri(uriBuilder -> uriBuilder.path(apigatewayProperties.getDatasetApiPath())
 						.queryParam("globalId", api.getGlobalId()).queryParam("mediaId", api.getMediaId())
 						.queryParam("contract", api.getContract()).queryParams(queryParams).build())

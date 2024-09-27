@@ -1,1 +1,1 @@
-RUDI - Nouvelle demande d'accès
+${projectName} - Nouvelle demande d'accès

@@ -13,6 +13,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import org.activiti.engine.ProcessEngine;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Section;
@@ -24,6 +25,7 @@ import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
+import org.rudi.facet.bpmn.service.FormService;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
@@ -32,6 +34,7 @@ import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.helper.project.ProjectAssigmentHelper;
 import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
+import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +58,9 @@ public class ProjectTaskServiceImpl extends
 
 	@Autowired
 	private ProjektAuthorisationHelper projektAuthorisationHelper;
+
+	@Autowired
+	private FormService formService;
 
 	public ProjectTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
@@ -81,6 +87,8 @@ public class ProjectTaskServiceImpl extends
 	@PostConstruct
 	public void loadBpmn() throws IOException {
 		super.loadBpmn();
+		Map<String, Object> properties = formService.getFormTemplateProperties();
+		formService.createOrUpdateAllSectionAndFormDefinitions(properties);
 	}
 
 	@Override
@@ -115,11 +123,28 @@ public class ProjectTaskServiceImpl extends
 	 */
 	@Override
 	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity) throws IllegalArgumentException {
-		if (getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getId()) != null
-				&& !(assetDescriptionEntity.getStatus().equals(Status.DRAFT)
-						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
-			throw new IllegalArgumentException("Invalid state for project " + assetDescriptionEntity.getId());
+		// Vérifie s'il existe une tâche associée à cet asset
+		boolean taskExists = getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getId()) != null;
+
+		// Vérifie si l'état de l'asset est DRAFT (création de project)
+		boolean isDraft = assetDescriptionEntity.getStatus().equals(Status.DRAFT);
+
+		// Vérifie si l'état est COMPLETED (pas de workflow en cours, le dernier workflow sur le projet est terminé) et s'il n'y a pas de dataset restreint
+		boolean isCompletedAndNoRestrictedDataset = assetDescriptionEntity.getStatus().equals(Status.COMPLETED)
+				&& !isAnyRestrictedDatasetOnProjekt(assetDescriptionEntity);
+
+		// Si une tâche existe et que l'état n'est ni DRAFT, ni COMPLETED avec un dataset non restreint, on lève une exception
+		if (taskExists && !(isDraft || isCompletedAndNoRestrictedDataset)) {
+			throw new IllegalArgumentException(
+					"Invalid status or dataset type for project " + assetDescriptionEntity.getUuid());
 		}
+	}
+
+	private boolean isAnyRestrictedDatasetOnProjekt(ProjectEntity assetDescriptionEntity) {
+		return assetDescriptionEntity.getLinkedDatasets().stream()
+				.anyMatch(a -> CollectionUtils.containsAny(
+						List.of(DatasetConfidentiality.RESTRICTED, DatasetConfidentiality.SELFDATA),
+						a.getDatasetConfidentiality()));
 	}
 
 	/**

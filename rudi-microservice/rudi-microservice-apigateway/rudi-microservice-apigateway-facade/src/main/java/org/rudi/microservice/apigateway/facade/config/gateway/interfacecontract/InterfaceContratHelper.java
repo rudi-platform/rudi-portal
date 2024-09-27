@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.SerializableParameter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,14 +30,6 @@ import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.parameter.StringParameterDataValidator;
 import org.springframework.stereotype.Component;
 
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.parameters.SerializableParameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,7 +108,7 @@ public class InterfaceContratHelper {
 				valid = true;
 			}
 		} else if (parameter instanceof BodyParameter) {
-
+			log.error("Validation des paramètres de type body parameter non implémenté.");
 		} else {
 			// cas non prévu on bloque pas
 			valid = true;

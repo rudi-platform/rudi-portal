@@ -1,8 +1,9 @@
 {
+	"label": "${teamName} ${test}",
 	"fieldDefinitions": [
 		{
 			"name": "messageToProjectOwner",
-			"label": "Message à l’attention du porteur de projet",
+			"label": "Message à l’attention du porteur de projet de ${teamName}",
 			"type": "TEXT"
 		}
 	]

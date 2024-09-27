@@ -4,6 +4,7 @@
 package org.rudi.facet.bpmn.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,14 +19,14 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.FormDefinition;
 import org.rudi.bpmn.core.bean.FormSectionDefinition;
 import org.rudi.bpmn.core.bean.ProcessFormDefinition;
 import org.rudi.bpmn.core.bean.SectionDefinition;
-import org.rudi.common.core.json.JsonResourceReader;
-import org.rudi.common.service.helper.ResourceHelper;
+import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.bpmn.bean.form.FormDefinitionSearchCriteria;
 import org.rudi.facet.bpmn.bean.form.ProcessFormDefinitionSearchCriteria;
 import org.rudi.facet.bpmn.bean.form.SectionDefinitionSearchCriteria;
@@ -44,6 +45,7 @@ import org.rudi.facet.bpmn.mapper.form.FormSectionDefinitionMapper;
 import org.rudi.facet.bpmn.mapper.form.ProcessFormDefinitionMapper;
 import org.rudi.facet.bpmn.mapper.form.SectionDefinitionMapper;
 import org.rudi.facet.bpmn.service.FormService;
+import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,11 +61,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @AllArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
+@Transactional(readOnly = true)
 public class FormServiceImpl implements FormService {
 
 	private static final String FORM_DEFINITION_FILE_NAME_SEPARATOR = "__";
+
 	private final SectionDefinitionDao sectionDefintionDao;
 
 	private final SectionDefinitionCustomDao sectionDefintionCustomDao;
@@ -84,12 +87,14 @@ public class FormServiceImpl implements FormService {
 
 	private final ProcessFormDefinitionMapper processFormDefinitionMapper;
 
-	private final ResourceHelper resourceHelper;
+	private final TemplateGeneratorImpl templateGenerator;
+
+	private final FormTemplateConfiguration formTemplateConfiguration;
 
 	private final SectionAdaptor sectionAdaptor = this.new SectionAdaptor();
 	private final FormAdaptor formAdaptor = this.new FormAdaptor();
 	private final ProcessFormAdaptor processFormAdaptor = this.new ProcessFormAdaptor();
-	private final JsonResourceReader jsonResourceReader;
+
 	private final DefinitionResources definitionResources;
 
 	@Override
@@ -112,8 +117,26 @@ public class FormServiceImpl implements FormService {
 		return sectionDefinitionMapper.entityToDto(entity);
 	}
 
-	private SectionDefinition createOrUpdateSectionDefinition(SectionDefinition section) {
+	private SectionDefinition createOrUpdateSectionDefinition(SectionDefinition section,
+			Map<String, Object> parameters) {
+		section.setLabel(templatize(section.getLabel(), parameters));
+		section.setHelp(templatize(section.getHelp(), parameters));
+		section.setDefinition(templatize(section.getDefinition(), parameters));
 		return sectionAdaptor.createOrUpdateElement(section);
+	}
+
+	private String templatize(String content, Map<String, Object> parameters) {
+		String result = content;
+		if (StringUtils.isNotEmpty(content) && content.contains("${")) {
+			try {
+				TemplateSectionDataModel templateSectionDataModel = new TemplateSectionDataModel(content, parameters);
+				DocumentContent document = templateGenerator.generateDocument(templateSectionDataModel);
+				result = FileUtils.readFileToString(document.getFile(), StandardCharsets.UTF_8);
+			} catch (Exception e) {
+				log.warn("Failed to templatize " + content, e);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -343,13 +366,14 @@ public class FormServiceImpl implements FormService {
 
 	@Override
 	@Transactional // readOnly = false
-	public Collection<ProcessFormDefinition> createOrUpdateAllSectionAndFormDefinitions() throws IOException {
+	public Collection<ProcessFormDefinition> createOrUpdateAllSectionAndFormDefinitions(Map<String, Object> parameters)
+			throws IOException {
 
 		final Collection<SectionDefinition> sectionDefinitions = definitionResources.getSections();
 		final Map<String, SectionDefinition> createdOrUpdatedSectionsByName = new HashMap<>(sectionDefinitions.size());
 		for (final var sectionDefinition : sectionDefinitions) {
 			final String referencedSectionName = sectionDefinition.getName();
-			final var createdOrUpdatedSection = createOrUpdateSectionDefinition(sectionDefinition);
+			final var createdOrUpdatedSection = createOrUpdateSectionDefinition(sectionDefinition, parameters);
 			createdOrUpdatedSectionsByName.put(referencedSectionName, createdOrUpdatedSection);
 		}
 
@@ -397,6 +421,11 @@ public class FormServiceImpl implements FormService {
 		throw new InvalidParameterException(
 				"Form name does not match process form definition naming convention \"<processDefinitionId>__<userTaskId>[__<actionName>]\" : "
 						+ formName);
+	}
+
+	@Override
+	public Map<String, Object> getFormTemplateProperties() {
+		return formTemplateConfiguration.getNamedProperties();
 	}
 
 	interface AbstractFormElementAdaptor<T, C> {

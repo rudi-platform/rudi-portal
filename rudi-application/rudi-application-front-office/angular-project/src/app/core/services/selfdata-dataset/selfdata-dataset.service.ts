@@ -174,11 +174,11 @@ export class SelfdataDatasetService {
     getMyMatchingData(data: MatchingData): Observable<MatchingDataView> {
         const matchingData: MatchingDataView = {};
         if (data.type === FieldType.Address) {
-            const idRva = parseInt(data.value);
+            const idRva = data.value;
             return this.getAddressById(idRva).pipe(
                 switchMap(address => {
                         matchingData.label = data.label;
-                        matchingData.value = address.addr3;
+                        matchingData.value = address.id;
                         return of(matchingData);
                     }
                 ));
@@ -187,7 +187,7 @@ export class SelfdataDatasetService {
         }
     }
 
-    getAddressById(addressId: number): Observable<Address> {
+    getAddressById(addressId: string): Observable<Address> {
         return this.addressMetierService.getAddressById(addressId);
     }
 }

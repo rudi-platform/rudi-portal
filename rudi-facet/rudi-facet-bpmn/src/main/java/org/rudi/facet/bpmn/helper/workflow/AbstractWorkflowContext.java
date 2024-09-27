@@ -31,6 +31,7 @@ import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.bpmn.service.impl.FormTemplateConfiguration;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.email.exception.EMailException;
 import org.rudi.facet.email.model.EMailDescription;
@@ -40,6 +41,7 @@ import org.rudi.facet.generator.text.impl.TemplateGeneratorConstants;
 import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AccessLevel;
@@ -79,6 +81,10 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	@Getter(value = AccessLevel.PROTECTED)
 	private final FormHelper formHelper;
+
+	@Getter(value = AccessLevel.PROTECTED)
+	@Autowired
+	private FormTemplateConfiguration formTemplateConfiguration;
 
 	protected AbstractWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
 			D assetDescriptionDao, A assignmentHelper, ACLHelper aclHelper, FormHelper formHelper) {
@@ -381,6 +387,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 		Locale l = Locale.FRENCH;
 		EMailDataModel eMailDataModel = new EMailDataModel(assignmentHelper, executionEntity, assetDescription,
 				formHelper, roleName, l, emailPart);
+		eMailDataModel.addAllData(formTemplateConfiguration.getNamedProperties());
 		addEmailDataModelData(eMailDataModel);
 		return eMailDataModel;
 	}
@@ -444,6 +451,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 		}
 	}
 
+	@SuppressWarnings("unused") // paramètre lié à l'appel fait dans le workflow
 	public void resetFormData(ScriptContext context, ExecutionEntity executionEntity, String userKey, String actionName,
 			String sectionName) {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
@@ -460,9 +468,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 								if (CollectionUtils.isNotEmpty(value.getFields())) {
 									value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
 								}
-							}, () -> {
-								log.error("No section {} found in form: {}", sectionName, userKey);
-							});
+							}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
 					assetDescriptionEntity.setData(getFormHelper().deshydrateData(data));
 					getAssetDescriptionDao().save(assetDescriptionEntity);
 

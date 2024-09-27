@@ -37,6 +37,7 @@ public class WebSecurityConfig {
 			// URL public
 			"/konsult/v1/application-information", "/konsult/v1/healthCheck", "/konsult/v1/cms/**",
 			"/konsult/v1/customizations", "/konsult/v1/customizations/**", "/konsult/v1/sitemap/{resource}",
+			"/konsult/v1/robots/{resource}",
 			// swagger ui / openapi
 			"/konsult/v3/api-docs/**", "/konsult/swagger-ui/**", "/konsult/swagger-ui.html",
 			"/konsult/swagger-resources/**", "/configuration/ui", "/configuration/security", "/webjars/**" };

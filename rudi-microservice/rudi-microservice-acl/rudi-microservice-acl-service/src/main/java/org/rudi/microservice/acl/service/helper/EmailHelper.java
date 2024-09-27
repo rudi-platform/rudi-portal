@@ -3,7 +3,13 @@
  */
 package org.rudi.microservice.acl.service.helper;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.io.FileUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.email.EMailService;
@@ -30,10 +36,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author fni18300
@@ -58,8 +61,14 @@ public class EmailHelper {
 	@Value("${email.accountcreation.registration.body}")
 	private String accountCreationRegistrationBody;
 
-	@Value("${email.urlServer:http://www.rudi.bzh}")
+	@Value("${email.urlServer}")
 	private String urlServer;
+
+	@Value("${email.projectName}")
+	private String projectName;
+
+	@Value("${email.teamName}")
+	private String teamName;
 
 	@Value("${email.accountvalidation.path:/login/accountValidation}")
 	private String accountValidationPath;
@@ -110,14 +119,16 @@ public class EmailHelper {
 				return;
 			}
 
+			Map<String, Object> additionalProperties = computeAdditionnalProperties(null);
+
 			// génération du sujet
 			AccountCreationConfirmationDataModel dataModelSubject = new AccountCreationConfirmationDataModel(user,
-					urlServer, locale, accountCreationActivationSubject);
+					additionalProperties, locale, accountCreationActivationSubject);
 			DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
 
 			// génération du corps
-			AccountCreationConfirmationDataModel dataModelBody = new AccountCreationConfirmationDataModel(user, urlServer,
-					locale, accountCreationActivationBody);
+			AccountCreationConfirmationDataModel dataModelBody = new AccountCreationConfirmationDataModel(user,
+					additionalProperties, locale, accountCreationActivationBody);
 			DocumentContent body = templateGenerator.generateDocument(dataModelBody);
 
 			// Création du modèle de courrier
@@ -151,21 +162,23 @@ public class EmailHelper {
 			return;
 		}
 
+		Map<String, Object> additionalProperties = computeAdditionnalProperties(accountValidationPath);
+
 		// génération du sujet
-		AccountRegistrationDataModel dataModelSubject = new AccountRegistrationDataModel(account, urlServer, accountValidationPath,
+		AccountRegistrationDataModel dataModelSubject = new AccountRegistrationDataModel(account, additionalProperties,
 				locale, accountCreationRegistrationSubject);
 		DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
 
 		// génération du corps
-		AccountRegistrationDataModel dataModelBody = new AccountRegistrationDataModel(account, urlServer, accountValidationPath,
+		AccountRegistrationDataModel dataModelBody = new AccountRegistrationDataModel(account, additionalProperties,
 				locale, accountCreationRegistrationBody);
 		DocumentContent body = templateGenerator.generateDocument(dataModelBody);
 
 		// Création du modèle de courrier
-			EMailDescription eMailDescription = new EMailDescription(to,
-					FileUtils.readFileToString(subject.getFile(), StandardCharsets.UTF_8), body);
-			// envoie du courriel
-			eMailService.sendMailAndCatchException(eMailDescription);
+		EMailDescription eMailDescription = new EMailDescription(to,
+				FileUtils.readFileToString(subject.getFile(), StandardCharsets.UTF_8), body);
+		// envoie du courriel
+		eMailService.sendMailAndCatchException(eMailDescription);
 	}
 
 	private String lookupEmail(AccountRegistrationEntity account) {
@@ -194,17 +207,17 @@ public class EmailHelper {
 
 	public User lookupUserByEmail(String email) {
 		UserEntity currentUser = userDao.findByLogin(email);
-		//On part du principe que l'email est le login
-		if(currentUser == null) {
+		// On part du principe que l'email est le login
+		if (currentUser == null) {
 			UserSearchCriteria criteria = new UserSearchCriteria();
 			criteria.setUserEmail(email);
 			Pageable pageable = PageRequest.of(0, 1);
 			Page<UserEntity> userPage = userCustomDao.searchUsers(criteria, pageable);
-			if(userPage != null) {
+			if (userPage != null) {
 				currentUser = userPage.stream().findFirst().orElse(null);
 			}
 		}
-		if(currentUser != null) {
+		if (currentUser != null) {
 			return userMapper.entityToDto(currentUser);
 		}
 		return null;
@@ -212,12 +225,16 @@ public class EmailHelper {
 
 	public void sendTokenToChangePassword(ResetPasswordRequestEntity passwordObject, String email, Locale locale) {
 		try {
-			//Géneration du sujet
-			ResetPasswordRequestDataModel dataModelSubject = new ResetPasswordRequestDataModel(passwordObject, urlServer, resetPasswordPath, locale, changePasswordSubject);
+			Map<String, Object> additionalProperties = computeAdditionnalProperties(resetPasswordPath);
+
+			// Géneration du sujet
+			ResetPasswordRequestDataModel dataModelSubject = new ResetPasswordRequestDataModel(passwordObject,
+					additionalProperties, locale, changePasswordSubject);
 			DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
 			log.info(NO_EMAIL_ADDRESS_FOR, email);
 			// génération du corps
-			ResetPasswordRequestDataModel dataModelBody = new ResetPasswordRequestDataModel(passwordObject, urlServer, resetPasswordPath, locale,changePasswordBody);
+			ResetPasswordRequestDataModel dataModelBody = new ResetPasswordRequestDataModel(passwordObject,
+					additionalProperties, locale, changePasswordBody);
 			DocumentContent body = templateGenerator.generateDocument(dataModelBody);
 
 			// Création du modèle de courrier
@@ -241,14 +258,16 @@ public class EmailHelper {
 				return;
 			}
 
+			Map<String, Object> additionalProperties = computeAdditionnalProperties(null);
+
 			// génération du sujet
-			final var dataModelSubject = new AccountCreationConfirmationDataModel(user,
-					urlServer, locale, confirmationChangePasswordSubject);
+			final var dataModelSubject = new AccountCreationConfirmationDataModel(user, additionalProperties, locale,
+					confirmationChangePasswordSubject);
 			DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
 
 			// génération du corps
-			final var dataModelBody = new AccountCreationConfirmationDataModel(user, urlServer,
-					locale, confirmationChangePasswordBody);
+			final var dataModelBody = new AccountCreationConfirmationDataModel(user, additionalProperties, locale,
+					confirmationChangePasswordBody);
 			DocumentContent body = templateGenerator.generateDocument(dataModelBody);
 
 			// Création du modèle de courrier
@@ -261,5 +280,16 @@ public class EmailHelper {
 			// On ne renvoie pas d'exception car on ne veut pas bloquer la création de compte (mail informatif seulement)
 			log.error("Cannot send password change confirmation mail", e);
 		}
+	}
+
+	protected Map<String, Object> computeAdditionnalProperties(String pathServer) {
+		Map<String, Object> additionalProperties = new HashMap<>();
+		additionalProperties.put("projectName", projectName);
+		additionalProperties.put("teamName", teamName);
+		additionalProperties.put("urlServer", urlServer);
+		if (pathServer != null) {
+			additionalProperties.put("pathServer", pathServer);
+		}
+		return additionalProperties;
 	}
 }

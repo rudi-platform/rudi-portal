@@ -72,7 +72,7 @@ public class ResourceHelper {
 		// d'extraction de type mime
 		if (mimeType == null || resource.getFilename() == null) {
 			Tika tika = new Tika();
-			mimeType = tika.detect(resourceFile);
+			mimeType = tika.detect(fileName);
 			if (mimeType == null) {
 				mimeType = DEFAULT_MIME_TYPE;
 			}
