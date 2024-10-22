@@ -1,15 +1,20 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.map.parameter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.tika.utils.StringUtils;
 import org.rudi.facet.dataset.bean.InterfaceContract;
 import org.rudi.facet.kaccess.bean.Connector;
 import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
+import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.service.integration.impl.validator.Error307Builder;
 import org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.AbstractConnectorParametersValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.InterfaceContractConnectorValidator;
@@ -23,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class ConnectorValidator {
 	private final List<AbstractConnectorParametersValidator> connectorParameterValidators;
 	private final List<InterfaceContractConnectorValidator> interfaceContactConnectorValidators;
+
+	private final UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
 
 	public Set<IntegrationRequestErrorEntity> validate(Connector connector) {
 		Set<IntegrationRequestErrorEntity> integrationRequestsErrors = new HashSet<>();
@@ -47,6 +54,18 @@ public class ConnectorValidator {
 						.ifPresent(validator -> integrationRequestsErrors
 								.addAll(validator.validate(parameterInner, connector.getInterfaceContract())));
 			}
+		}
+
+		if (StringUtils.isEmpty(connector.getUrl())) {
+			final var errorMessage = String.format(IntegrationError.ERR_308.getMessage(),
+					RudiMetadataField.MEDIA_CONNECTOR_URL.getLocalName());
+			integrationRequestsErrors
+					.add(new IntegrationRequestErrorEntity(UUID.randomUUID(), IntegrationError.ERR_308.getCode(),
+							errorMessage, RudiMetadataField.MEDIA_CONNECTOR_URL.getLocalName(), LocalDateTime.now()));
+
+		} else if (!urlValidator.isValid(connector.getUrl())) {
+			integrationRequestsErrors.add(new Error307Builder().fieldValue(connector.getUrl())
+					.field(RudiMetadataField.MEDIA_CONNECTOR_URL).build());
 		}
 		return integrationRequestsErrors;
 	}

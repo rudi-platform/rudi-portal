@@ -1,9 +1,9 @@
-package org.rudi.microservice.strukture.core.bean;
-
-import lombok.Data;
+package org.rudi.microservice.strukture.core.bean.criteria;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import lombok.Data;
 
 /**
  * 

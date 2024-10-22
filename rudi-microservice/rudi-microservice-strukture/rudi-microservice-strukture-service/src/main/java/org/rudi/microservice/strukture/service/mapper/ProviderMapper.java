@@ -24,16 +24,19 @@ public interface ProviderMapper extends AbstractMapper<ProviderEntity, Provider>
 	@InheritInverseConfiguration
 	@Mapping(target = "addresses", source = "addresses", ignore = true)
 	@Mapping(target = "nodeProviders", source = "nodeProviders", ignore = true)
+	@Mapping(target = "linkedProducers", source = "linkedProducers", ignore = true)
 	ProviderEntity dtoToEntity(Provider dto);
 
 	@Override
 	@Mapping(target = "addresses", source = "addresses", ignore = true)
 	@Mapping(target = "nodeProviders", source = "nodeProviders", ignore = true)
+	@Mapping(target = "linkedProducers", source = "linkedProducers", ignore = true)
 	Provider entityToDto(ProviderEntity entity);
 
 	@Override
 	@Mapping(target = "addresses", source = "addresses", ignore = true)
 	@Mapping(target = "nodeProviders", source = "nodeProviders", ignore = true)
+	@Mapping(target = "linkedProducers", source = "linkedProducers", ignore = true)
 	void dtoToEntity(Provider dto, @MappingTarget ProviderEntity entity);
 
 }

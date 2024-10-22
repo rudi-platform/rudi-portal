@@ -40,10 +40,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author FNI18300
  */
 @Service
+@Slf4j
 public class ProjectTaskServiceImpl extends
 		AbstractTaskServiceImpl<ProjectEntity, Project, ProjectDao, ProjectWorkflowHelper, ProjectAssigmentHelper> {
 
@@ -123,8 +126,7 @@ public class ProjectTaskServiceImpl extends
 	 */
 	@Override
 	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity) throws IllegalArgumentException {
-		// Vérifie s'il existe une tâche associée à cet asset
-		boolean taskExists = getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getId()) != null;
+		super.checkEntityStatus(assetDescriptionEntity);
 
 		// Vérifie si l'état de l'asset est DRAFT (création de project)
 		boolean isDraft = assetDescriptionEntity.getStatus().equals(Status.DRAFT);
@@ -133,8 +135,11 @@ public class ProjectTaskServiceImpl extends
 		boolean isCompletedAndNoRestrictedDataset = assetDescriptionEntity.getStatus().equals(Status.COMPLETED)
 				&& !isAnyRestrictedDatasetOnProjekt(assetDescriptionEntity);
 
-		// Si une tâche existe et que l'état n'est ni DRAFT, ni COMPLETED avec un dataset non restreint, on lève une exception
-		if (taskExists && !(isDraft || isCompletedAndNoRestrictedDataset)) {
+		// Si l'état n'est ni DRAFT, ni [COMPLETED avec un dataset non restreint], on lève une exception
+		if (!isDraft && !isCompletedAndNoRestrictedDataset) {
+			log.error(
+					"Invalid status for project {} : project is draft = {}, project is completed without restricted dataset = {}",
+					assetDescriptionEntity.getUuid(), isDraft, isCompletedAndNoRestrictedDataset);
 			throw new IllegalArgumentException(
 					"Invalid status or dataset type for project " + assetDescriptionEntity.getUuid());
 		}

@@ -1,18 +1,18 @@
-<div class="first-section-container"
-     [ngClass]="{'first-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
+<div [ngClass]="{'first-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
                         'first-section-container-tablet': mediaSize.isMd,
                         'first-section-container-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl
-                        }">
-    <a class="button-redirect"
-       [ngClass]="{'button-redirect-mobile': mediaSize.isXs || mediaSize.isSm, 'button-redirect-tablet': mediaSize.isMd, 'button-redirect-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+                        }"
+     class="first-section-container">
+    <a [ngClass]="{'button-redirect-mobile': mediaSize.isXs || mediaSize.isSm, 'button-redirect-tablet': mediaSize.isMd, 'button-redirect-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+       class="button-redirect"
        href="{{'front.contact'|getBackendProperty|async}}"
        rel="noopener noreferrer">{{ 'footer.contactezNous'|translate }}</a>
 
 
-    <div class="social-media-section-container"
-         [ngClass]="{'social-media-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
+    <div [ngClass]="{'social-media-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
                         'social-media-section-container-tablet': mediaSize.isMd,
                         'social-media-section-container-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+         class="social-media-section-container"
     >
         <app-social-media-section
             *ngIf="!customizationDescriptionIsLoading"
@@ -25,29 +25,29 @@
     [ngClass]="{'mat-divider-horizontal': mediaSize.isDeviceDesktop, 'mat-divider-horizontal-mobile': mediaSize.isDeviceMobile}"
     xmlns="http://www.w3.org/1999/html"></mat-divider>
 
-<div class="second-section-container"
-     [ngClass]="{'second-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
+<div [ngClass]="{'second-section-container-mobile': mediaSize.isXs || mediaSize.isSm,
                         'second-section-container-tablet': mediaSize.isMd,
-                        'second-section-container-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
-    <div class="copyright-section"
-         [ngClass]="{'copyright-section-mobile': mediaSize.isXs || mediaSize.isSm,
+                        'second-section-container-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+     class="second-section-container">
+    <div [ngClass]="{'copyright-section-mobile': mediaSize.isXs || mediaSize.isSm,
                         'copyright-section-tablet': mediaSize.isMd,
-                        'copyright-section-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
+                        'copyright-section-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+         class="copyright-section">
         <p>{{ 'footer.propulsePar'|translate }}</p>
 
         <div class="d-flex">
             <div class="footer-logo-container navbar-brand me-2">
-                <div class="footer-logo-link" (click)="redirectToRudi()">
-                    <img *ngIf="!logoIsLoading" class="footer-logo" [src]="logoSrc"
-                         [alt]="logoAlt"/>
+                <div (click)="redirectToRudi()" class="footer-logo-link">
+                    <img *ngIf="!logoIsLoading" [alt]="logoAlt" [src]="logoSrc"
+                         class="footer-logo"/>
                 </div>
             </div>
             <div>
                 <div class="footer-primary-text">{{ 'footer.ccByCa'|translate }}</div>
-                <div class="d-flex align-items-center justify-content-center copyright-title"
-                     [ngClass]="{'copyright-title-mobile': mediaSize.isXs || mediaSize.isSm,
+                <div [ngClass]="{'copyright-title-mobile': mediaSize.isXs || mediaSize.isSm,
                         'copyright-title-tablet': mediaSize.isMd,
-                        'copyright-title-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
+                        'copyright-title-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+                     class="d-flex align-items-center justify-content-center copyright-title">
                     <span
                         class="footer-primary-text rudi-version-label">{{ 'footer.rudiCopyright' | translate }}</span>
                     <span class="footer-primary-text">{{ appInfo?.version }}</span>
@@ -55,10 +55,12 @@
             </div>
         </div>
     </div>
-    <div class="terms-section"
-         [ngClass]="{'terms-section-mobile': mediaSize.isXs || mediaSize.isSm,
+    <div [ngClass]="{'terms-section-mobile': mediaSize.isXs || mediaSize.isSm,
                         'terms-section-tablet': mediaSize.isMd,
-                        'terms-section-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
+                        'terms-section-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
+         class="terms-section">
+        <a class="rudi-label-lien-mobile-mention"
+           href="{{'front.docRudi'|getBackendProperty|async}}">{{ 'footer.documentation' | translate }}</a>
         <div *ngFor="let term of termsValues" [innerHTML]="term"
              [ngClass]="'rudi-label-lien-mobile-mention'"></div>
 

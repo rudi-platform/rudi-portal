@@ -15,6 +15,7 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
@@ -50,8 +51,10 @@ public class NewDatasetRequestWorkflowContext extends
 
 	public NewDatasetRequestWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
 			NewDatasetRequestDao assetDescriptionDao, NewDatasetRequestAssigmentHelper assignmentHelper,
-			ACLHelper aclHelper, FormHelper formHelper, ProjectCustomDao projectCustomDao, OrganizationHelper organizationHelper) {
-		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
+			ACLHelper aclHelper, FormHelper formHelper, ProjectCustomDao projectCustomDao,
+			OrganizationHelper organizationHelper, RolesHelper rolesHelper) {
+		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper,
+				rolesHelper);
 		this.projectCustomDao = projectCustomDao;
 		this.organizationHelper = organizationHelper;
 	}
@@ -116,14 +119,16 @@ public class NewDatasetRequestWorkflowContext extends
 	 * @param roleCode        le code d'un rôle destinataire
 	 */
 	@Override
-	public void sendEMailToRole(ScriptContext scriptContext, ExecutionEntity executionEntity, EMailData eMailData, String roleCode) {
+	public void sendEMailToRole(ScriptContext scriptContext, ExecutionEntity executionEntity, EMailData eMailData,
+			String roleCode) {
 		AssetDescriptionEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
-		try{
-			//On rajoute le nom de l'utilisateur ou de l'organisateur ayant initié le projet.
-			injectData(executionEntity,"userName", getUserDenomination(assetDescription.getInitiator()));
-		}catch (AppServiceException e) {
-			log.warn("une erreur est survenur lors du chargement de l'organisation: {}",assetDescription.getInitiator());
+		try {
+			// On rajoute le nom de l'utilisateur ou de l'organisateur ayant initié le projet.
+			injectData(executionEntity, "userName", getUserDenomination(assetDescription.getInitiator()));
+		} catch (AppServiceException e) {
+			log.warn("une erreur est survenur lors du chargement de l'organisation: {}",
+					assetDescription.getInitiator());
 		}
 
 		super.sendEMailToRole(scriptContext, executionEntity, eMailData, roleCode);
@@ -132,15 +137,14 @@ public class NewDatasetRequestWorkflowContext extends
 	private String getUserDenomination(String inititator) throws GetOrganizationException {
 		User u = getAclHelper().getUserByLogin(inititator);
 		if (u != null && u.getType().equals(UserType.PERSON)) {
-			return String.format("%s %s",u.getLastname(), u.getFirstname()).trim();
-		}
-		else {
+			return String.format("%s %s", u.getLastname(), u.getFirstname()).trim();
+		} else {
 			Organization o = organizationHelper.getOrganization(UUID.fromString(inititator));
-			if(o != null){
+			if (o != null) {
 				return o.getName();
 			}
 		}
-		log.error("Aucun utilisateur trouvé et aucune organisation non plus {}",inititator);
+		log.error("Aucun utilisateur trouvé et aucune organisation non plus {}", inititator);
 		return StringUtils.EMPTY;
 	}
 }

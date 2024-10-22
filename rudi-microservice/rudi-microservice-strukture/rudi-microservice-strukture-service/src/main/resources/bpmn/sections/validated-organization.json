@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à accepter la demande de rattachement de l'organisation au noeud producteur. Après approbation, celle-ci sera publiée sur le catalogue des organisations",
+	"fieldDefinitions": [
+		{
+			"name": "messageToOrganizationCreator",
+			"label": "Message à l’attention du demandeur",
+			"type": "TEXT",
+			"required": false
+		}
+	]
+}

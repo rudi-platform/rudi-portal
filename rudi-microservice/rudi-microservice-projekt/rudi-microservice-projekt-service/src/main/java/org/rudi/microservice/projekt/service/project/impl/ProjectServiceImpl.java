@@ -68,6 +68,7 @@ import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
+import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
@@ -484,6 +485,9 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
+		if(project.getProjectStatus() != ProjectStatus.VALIDATED) {
+			throw  new AppServiceBadRequestException("Project Status is not validated");
+		}
 		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
 
 		if (projectKeyCredential.getProjectKey() == null || projectKeyCredential.getProjectKey().getName() == null) {
@@ -509,6 +513,10 @@ public class ProjectServiceImpl implements ProjectService {
 		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
 		if (projectKeyUuid == null) {
 			throw new AppServiceBadRequestException("Project key uuid is required");
+		}
+
+		if(project.getProjectStatus() != ProjectStatus.VALIDATED) {
+			throw  new AppServiceBadRequestException("Project Status is not validated");
 		}
 
 		Optional<ProjectKeystore> projectKeystoreOptional = getProjectKeystoreUuidByProjectUuid(projectUuid);

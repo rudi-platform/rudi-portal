@@ -1,4 +1,4 @@
-## RUDI - FACET - KMEDIA
+# Rudi - Facet - Kmedia
 
 Cette facette permet d'offrir un mécanisme d'accès au dataverse RUDI Media.
 
@@ -8,7 +8,7 @@ L'ajout de cette facette dans un µservice peut nécessiter la configuration des
 * _dataverse.api.url_
 * _dataverse.api.rudi.media.data.alias_
 
-### Dataverse rudi
+## Dataverse rudi
 
 Sur le serveur dataverse, on a créé un dataverse  __RUDI Media Root__  qui contient 2 dataverses "fils" :
 
@@ -18,14 +18,14 @@ Sur le serveur dataverse, on a créé un dataverse  __RUDI Media Root__  qui con
 La structure du dataverse est définie uniquement au niveau de RUDI Media Root. Les dataverses fils héritent
 automatiquement de sa configuration.
 
-#### Media
+### Media
 
 Les données exposées par kaccess sont définies dans le fichier  __rudi-kmedia-model.yml__
 
 Cette API définit l'objet  __Media__ , qui correspond à un media de RUDI.
 C'est cet objet qui est stocké dans le dataverse RUDI Media.
 
-#### Champs du dataverse RUDI Media
+### Champs du dataverse RUDI Media
 
 On utilise les champs suivants du bloc citation qui est le bloc fourni par défaut par le dataverse :
 
@@ -37,7 +37,7 @@ On utilise les champs suivants du bloc citation qui est le bloc fourni par défa
 * title : provider/producer + "nom du producteur/fournisseur"
 * description : logo de + "nom du producteur/fournisseur"
 
-#### Examples de commandes
+### Examples de commandes
 
 * Chargement des informations d'un dataset en fonction de son persistentId :
 
@@ -49,7 +49,7 @@ curl -H "X-Dataverse-key:
 
 curl -O -J -H "X-Dataverse-key:{{dataverse_token_api}}" http://{{hote dataverse}}:8095/api/access/datafile/581
 
-### Documentation
+## Documentation
 
 Pour interroger le dataverse, kaccess utilise l'API du dataverse : [API guide](https://guides.dataverse.org/en/5.1/api/index.html)
 

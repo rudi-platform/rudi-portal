@@ -1,0 +1,286 @@
+@startuml
+
+abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSuperclass>>  {
+	{field} {static} +CODE_COLUMN_LENGTH : int
+	{field} {static} +CODE_COLUMN_NAME : String
+	{field} +@Column("code") code : String
+	{field} +@Column("label") label : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuperclass>>  {
+	{field} +@Column("id") @Id id : Long
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("uuid") uuid : java.util.UUID
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder {
+	{field} -id : Long
+	{field} -uuid : java.util.UUID
+	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
+	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +toString () : String
+	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSuperclass>>  {
+	{field} +@Column("closing_date") closingDate : java.time.LocalDateTime
+	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
+	{field} +@Column("order_") order : int
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<MappedSuperclass>>  {
+	{field} +@Column("lang") lang : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("text") text : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.common.storage.entity.HibernateEntityHelper {
+	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+}
+
+
+interface org.rudi.common.storage.entity.PositionedStatus {
+	{method}  {abstract} +isFinal () : boolean
+	{method}  {abstract} +isInitial () : boolean
+}
+
+
+class org.rudi.common.storage.entity.SkosConceptCodeColumn {
+	{field} {static} +LENGTH : int
+	{field} {static} +NAME : String
+	{field} {static} +TABLE_NAME : String
+}
+
+
+enum org.rudi.common.storage.entity.StatusPosition {
+	{field} +FINAL
+	{field} +INITIAL
+	{field} +INTERMEDIATE
+}
+
+
+class org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegistrationEntity <<Entity>>  <<Table>>  {
+ {TableName=account_registration}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
+	{field} +@Column("firstname") firstname : String
+	{field} +hasSubscribeToNotifications : boolean
+	{field} +@Column("lastname") lastname : String
+	{field} +@Column("login") login : String
+	{field} +@Column("password") password : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("token") token : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hasSubscribeToNotifications () : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+interface org.rudi.microservice.acl.storage.entity.accountupdate.HasToken {
+	{method}  {abstract} +getCreationDate () : java.time.LocalDateTime
+	{method}  {abstract} +getToken () : java.util.UUID
+}
+
+
+class org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity <<Entity>>  <<Table>>  {
+ {TableName=reset_password_request}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("token") token : java.util.UUID
+	{field} +@Column("user_uuid") userUuid : java.util.UUID
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity <<Entity>>  <<Table>>  {
+ {TableName=abstract_address}
+ {TableSchema=acl_data}
+--
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.address.AddressRoleEntity <<Entity>>  <<Table>>  {
+ {TableName=address_role}
+ {TableSchema=acl_data}
+--
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+enum org.rudi.microservice.acl.storage.entity.address.AddressType {
+	{field} +EMAIL
+	{field} +PHONE
+	{field} +POSTAL
+}
+
+
+class org.rudi.microservice.acl.storage.entity.address.EmailAddressEntity <<Entity>>  <<Table>>  {
+ {TableName=email_address}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("email") email : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.address.PostalAddressEntity <<Entity>>  <<Table>>  {
+ {TableName=postal_address}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("additionalIdentification") additionalIdentification : String
+	{field} +@Column("distributionService") distributionService : String
+	{field} +@Column("locality") locality : String
+	{field} +@Column("recipientIdentification") recipientIdentification : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("streetNumber") streetNumber : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.address.TelephoneAddressEntity <<Entity>>  <<Table>>  {
+ {TableName=telephone_address}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("phone_number") phoneNumber : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity <<Entity>>  <<Table>>  {
+ {TableName=project_key}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
+	{field} +@Column("expiration_date") expirationDate : java.time.LocalDateTime
+	{field} +@Column("name") name : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeystoreEntity <<Entity>>  <<Table>>  {
+ {TableName=project_keystore}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("project_uuid") projectUuid : java.util.UUID
+	{field} {static} -serialVersionUID : long
+	{method} +addProjectKey ( paramProjectKeyEntity1 : org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity ) : void
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +removeProjectKeyByUUID ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.role.RoleEntity <<Entity>>  <<Table>>  {
+ {TableName=role}
+ {TableSchema=acl_data}
+--
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.acl.storage.entity.user.UserEntity <<Entity>>  <<Table>>  {
+ {TableName=user_}
+ {TableSchema=acl_data}
+--
+	{field} +@Column("account_locked") accountLocked : boolean
+	{field} +@Column("company") company : String
+	{field} +@Column("failed_attempt") failedAttempt : int
+	{field} +@Column("firstname") firstname : String
+	{field} +hasSubscribeToNotifications : boolean
+	{field} +@Column("last_connexion") lastConnexion : java.time.LocalDateTime
+	{field} +@Column("last_failed_attempt") lastFailedAttempt : java.time.LocalDateTime
+	{field} +@Column("lastname") lastname : String
+	{field} +@Column("login") login : String
+	{field} +@Column("password") password : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("type") type : org.rudi.common.core.security.UserType
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +incrementFailedAttempts () : void
+	{method} +lockAccount () : void
+	{method} +lookupAddress ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity
+	{method} +lookupRole ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.acl.storage.entity.role.RoleEntity
+	{method} +removeAddress ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity
+	{method} +removeRole ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.acl.storage.entity.role.RoleEntity
+	{method} +resetFailedAttempt () : void
+	{method} +toString () : String
+	{method} +unlockAccount () : void
+}
+
+
+
+
+org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.common.storage.entity.AbstractStampedEntity --|>  org.rudi.common.storage.entity.AbstractLabelizedEntity
+org.rudi.common.storage.entity.AbstractTranslationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegistrationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity ..|>  org.rudi.microservice.acl.storage.entity.accountupdate.HasToken
+org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity -->  org.rudi.microservice.acl.storage.entity.address.AddressRoleEntity :  @ManyToOne\naddressRole
+org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity -->  org.rudi.microservice.acl.storage.entity.address.AddressType :  @Column("type")\ntype
+org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.address.AddressRoleEntity -->  org.rudi.microservice.acl.storage.entity.address.AddressType :  @Column("type")\ntype
+org.rudi.microservice.acl.storage.entity.address.AddressRoleEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
+org.rudi.microservice.acl.storage.entity.address.EmailAddressEntity --|>  org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity
+org.rudi.microservice.acl.storage.entity.address.PostalAddressEntity --|>  org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity
+org.rudi.microservice.acl.storage.entity.address.TelephoneAddressEntity --|>  org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity
+org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity -->  org.rudi.microservice.acl.storage.entity.user.UserEntity :  @ManyToOne\nclient
+org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeystoreEntity "1" o-- "0..*"  org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeyEntity :  @OneToMany\nprojectKeys
+org.rudi.microservice.acl.storage.entity.projectkey.ProjectKeystoreEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.acl.storage.entity.role.RoleEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
+org.rudi.microservice.acl.storage.entity.user.UserEntity "1" o-- "0..*"  org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity :  @OneToMany\naddresses
+org.rudi.microservice.acl.storage.entity.user.UserEntity "1" o-- "0..*"  org.rudi.microservice.acl.storage.entity.role.RoleEntity :  @ManyToMany\nroles
+org.rudi.microservice.acl.storage.entity.user.UserEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+
+hide methods
+
+@enduml

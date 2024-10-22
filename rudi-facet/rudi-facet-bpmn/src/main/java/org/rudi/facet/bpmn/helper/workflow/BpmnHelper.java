@@ -109,12 +109,13 @@ public class BpmnHelper {
 		}
 	}
 
-	public org.activiti.engine.task.Task queryTaskByAssetId(Long assetId) {
+	public org.activiti.engine.task.Task queryTaskByAssetId(Class assetType, Long assetId) {
 		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
 		TaskQuery taskQuery = taskService.createTaskQuery();
 
 		// Recherche au niveau du process et non de la tâche. La tâche ne contient pas le meId.
-		taskQuery.or().processVariableValueEquals(TaskConstants.ME_ID, assetId)
+		taskQuery.processVariableValueEquals(TaskConstants.ME_TYPE, assetType.getName()).or()
+				.processVariableValueEquals(TaskConstants.ME_ID, assetId)
 				.processVariableValueEquals(TaskConstants.ME_ID, assetId.intValue()).endOr();
 
 		List<org.activiti.engine.task.Task> tasks = taskQuery.list();

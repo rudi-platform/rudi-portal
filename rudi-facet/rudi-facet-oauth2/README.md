@@ -1,4 +1,5 @@
-## RUDI - FACET - OAUTH2
+# Rudi - Facet - OAuth2
+
 Cette facette permet de simplifier l'authentification d'un module vers un autre.
 
 Cette facette peut-être utilisée par une autre (telle que _rudi-facet-providers) pour permettre l'accès à un autre µservice.

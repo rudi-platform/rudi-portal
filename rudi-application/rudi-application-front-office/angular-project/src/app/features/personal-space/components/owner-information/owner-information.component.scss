@@ -1,0 +1,26 @@
+.project-owner{
+
+    padding: 16px 24px;
+
+    .title {
+        font-weight: bold;
+        display: block;
+    }
+
+    .section-title {
+        @extend .title;
+        font-size: 18px;
+    }
+
+    .section-sub-title {
+        @extend .title;
+        font-size: 15px;
+        margin-bottom: 16px;
+    }
+
+    .section-content {
+        padding: 0;
+    }
+}
+
+

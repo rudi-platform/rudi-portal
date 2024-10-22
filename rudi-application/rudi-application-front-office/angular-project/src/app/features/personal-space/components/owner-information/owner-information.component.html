@@ -1,0 +1,13 @@
+<mat-card class="project-owner">
+    <mat-card-title class="section-title">
+        {{ title }}
+    </mat-card-title>
+    <mat-card-subtitle class="section-sub-title">
+        {{ name }}
+    </mat-card-subtitle>
+    <mat-card-content class="section-content">
+        <app-clipboard-field
+            [content]="email"
+        ></app-clipboard-field>
+    </mat-card-content>
+</mat-card>

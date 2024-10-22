@@ -470,11 +470,12 @@ a {
     }
 }
 
-.delete-btn{
+.action-btn-icon {
     --mdc-fab-container-color: unset !important;
     --mat-fab-foreground-color: var(--primary-color) !important;
     box-shadow: unset !important;
-    &:hover{
+
+    &:hover {
         transition: 0.2s;
         --mat-fab-foreground-color: var(--secondary-color) !important;
         --mdc-fab-container-color: var(--primary-color) !important;

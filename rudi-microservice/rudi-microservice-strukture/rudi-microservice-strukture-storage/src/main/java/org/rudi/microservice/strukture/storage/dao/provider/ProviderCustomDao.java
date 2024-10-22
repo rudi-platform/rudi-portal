@@ -1,6 +1,6 @@
 package org.rudi.microservice.strukture.storage.dao.provider;
 
-import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,0 +1,180 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"description": "API Public Providers Rudi",
+		"version": "0.0.1",
+		"title": "rudi-providers-api",
+		"termsOfService": "http://swagger.io/terms/",
+		"contact": {
+			"email": "contact@rudi.fr"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"paths": {
+	},
+	"components": {
+		"schemas": {
+			"AbstractLongIdDto": {
+				"type": "object",
+				"properties": {
+					"uuid": {
+						"type": "string",
+						"format": "uuid",
+						"readOnly": true
+					}
+				}
+			},
+			"AssetDescription": {
+				"type": "object",
+				"properties": {
+					"object_type": {
+						"type": "string"
+					},
+					"uuid": {
+						"type": "string",
+						"format": "uuid"
+					}
+				},
+				"discriminator": {
+					"propertyName": "object_type",
+					"mapping": {
+						"Organization": "#/components/schemas/Organization"
+					}
+				}
+			},
+			"OrganizationStatus": {
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"VALIDATED"
+				]
+			},
+			"Organization": {
+				"description": "Organisation",
+				"type": "object",
+				"required": [
+					"name",
+					"openingDate",
+					"password",
+					"description"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AssetDescription"
+					},
+					{
+						"properties": {
+							"name": {
+								"description": "Nom",
+								"type": "string"
+							},
+							"organizationStatus": {
+								"$ref": "#/components/schemas/OrganizationStatus"
+							},
+							"password": {
+								"type": "string",
+								"description": "Mot de passe de l'utilisateur ROBOT associé à l'organisation"
+							},
+							"openingDate": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Date de début d'activité"
+							},
+							"closingDate": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Une date de fin d'activité"
+							},
+							"description": {
+								"type": "string"
+							},
+							"url": {
+								"type": "string"
+							}
+						}
+					}
+				]
+			},
+			"OrganizationMember": {
+				"description": "Membre d'une organisation",
+				"type": "object",
+				"required": [
+					"role"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AbstractLongIdDto"
+					},
+					{
+						"properties": {
+							"user_uuid": {
+								"description": "UUID de l'utilisateur dans ACL",
+								"type": "string",
+								"format": "uuid"
+							},
+							"login": {
+								"description": "Login de l'utilisateur dans ACL",
+								"type": "string"
+							},
+							"role": {
+								"$ref": "#/components/schemas/OrganizationRole"
+							},
+							"added_date": {
+								"description": "Date d'ajout du membre dans l'organisation",
+								"type": "string",
+								"format": "date-time"
+							}
+						}
+					}
+				]
+			},
+			"OrganizationRole": {
+				"description": "Rôle dans une organisation",
+				"type": "string",
+				"enum": [
+					"EDITOR",
+					"ADMINISTRATOR"
+				]
+			},
+			"PagedList": {
+				"description": "Liste paginée d'éléments",
+				"type": "object",
+				"required": [
+					"total",
+					"elements"
+				],
+				"properties": {
+					"total": {
+						"description": "Nombre total d'éléments pour cette recherche (peut être supérieur au nombre d'éléments de la page courante)",
+						"type": "integer",
+						"format": "int64"
+					}
+				}
+			},
+			"PagedOrganizationList": {
+				"description": "Liste paginée d'organisations",
+				"type": "object",
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PagedList"
+					},
+					{
+						"properties": {
+							"elements": {
+								"description": "Organisations de la page courante pour cette recherche",
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Organization"
+								}
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}

@@ -3,15 +3,25 @@
  */
 package org.rudi.microservice.apigateway.service.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.service.exception.AppServiceException;
@@ -25,8 +35,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.RequiredArgsConstructor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author FNI18300
@@ -45,7 +53,8 @@ class EncryptDecryptUtil {
 
 	@Test
 	@Disabled("This test is build to produce data to test decryption dataset")
-	void encrypt_ispum() throws AppServiceException, IOException, GeneralSecurityException {
+	void encrypt_and_decrypt_ipsum_with_default_key()
+			throws AppServiceException, IOException, GeneralSecurityException {
 		final var spec = RudiAlgorithmSpec.DEFAULT;
 
 		final var basefile = "ipsum.json";
@@ -75,22 +84,66 @@ class EncryptDecryptUtil {
 
 	@Test
 	@Disabled("This test is build to produce data to test decryption dataset")
-	void encrypt_ispum2() throws AppServiceException, IOException, GeneralSecurityException {
-		final var spec = RudiAlgorithmSpec.DEFAULT;
-
+	void encrypt_file_with_default_key() throws AppServiceException, IOException, GeneralSecurityException {
+		// *** Paramètres à adapter *** //
+		// ** fichier à déposer dans src/test/resources par exemple, le temps du chiffrement
 		final var basefile = "ipsum.txt";
-		final Resource resource = resourceHelper.getResourceFromAdditionalLocationOrFromClasspath(basefile);
-		final InputStream ipsum = resource.getInputStream();
+		String outputFilename = "ipsum_crypted.txt";
+		// *** Fin paramètres à adapter *** //
 
-		final var mediaCipherOperator = new MediaCipherOperator(spec);
+		// default key configured in encryptionService
 		final var publicKey = encryptionService.getPublicEncryptionKey(null);
 
-		assertNotNull(publicKey);
+		generateEncryptedFile(basefile, publicKey, outputFilename);
+	}
 
-		try (FileOutputStream fout = new FileOutputStream("ipsum_crypted.txt")) {
+	@Test
+	@Disabled("This test is build to produce data to test decryption dataset with a specific public key")
+	void encrypt_file_with_specific_public_key() throws AppServiceException, IOException, GeneralSecurityException {
+
+		// *** Paramètres à adapter *** //
+		// ** fichier à déposer dans src/test/resources par exemple, le temps du chiffrement
+		final var basefile = "centres-de-vote.csv";
+		// ** clé publique sans \r, et sans \n à la fin
+		final var publicKey = buildPublicKeyFromString(
+				"-----BEGIN PUBLIC KEY-----\n" + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAghPWM8uvwedCrBbOT4Zb\n"
+						+ "VmVgwdI3GzT0IjsthtjReYCe3ghc17SjZvww+vGioyDOHiiTiDkvIgffV8xGWoCI\n"
+						+ "V54U//2s3iGYpNH0R0s/xII2bOfzvCOawF4ZXka5nxaq/oeEfDboZw8Z/BQmlTnL\n"
+						+ "4ih2qsOHPGgmWX+TNL9+s2ISCVOvkvlPw5IilSssqNotVOva14TL6eKoQsRtSqvX\n"
+						+ "nXyEwManGtAo0g/j2UuPPxbgHatdfgnxUWgXn6Gaf76NTQIQ+0LycJZlWj4KysSX\n"
+						+ "Kd83eaB6P0DWMEYMZv6Dr0ruykVJNoxMv8sxbcYiATK5mxIdo74X89KlmtGKE88g\n" + "RwIDAQAB\n"
+						+ "-----END PUBLIC KEY-----");
+		// ** Nom du fichier à generer - peut être l'UUID de media pour être deposé dans nodestub/endpoints
+		final String outputFilename = "032c8a03-9968-49be-8ccf-dac417c2dd9b";
+		// *** Fin paramètres à adapter *** //
+
+		generateEncryptedFile(basefile, publicKey, outputFilename);
+
+	}
+
+	private void generateEncryptedFile(String basefile, PublicKey publicKey, String outputFilename)
+			throws GeneralSecurityException, IOException {
+		final Resource resource = resourceHelper.getResourceFromAdditionalLocationOrFromClasspath(basefile);
+		final InputStream ipsum = resource.getInputStream();
+		final var spec = RudiAlgorithmSpec.DEFAULT;
+		final var mediaCipherOperator = new MediaCipherOperator(spec);
+		assertNotNull(publicKey);
+		try (FileOutputStream fout = new FileOutputStream(outputFilename)) {
 			mediaCipherOperator.encrypt(ipsum, publicKey, fout);
 		}
 
 	}
 
+	private PublicKey buildPublicKeyFromString(String publicKey)
+			throws InvalidKeySpecException, NoSuchAlgorithmException, UnsupportedEncodingException {
+
+		String pubKeyPEM = publicKey.replace("-----BEGIN PUBLIC KEY-----\n", "").replace("-----END PUBLIC KEY-----",
+				"");
+
+		byte[] keyBytes = Base64.decodeBase64(pubKeyPEM.getBytes("utf-8"));
+		X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		return keyFactory.generatePublic(spec);
+
+	}
 }

@@ -16,12 +16,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMemberSort;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
@@ -29,6 +30,7 @@ import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -82,6 +84,12 @@ class OrganizationMembersPartitionerHelperTestUT {
 		organization.setOpeningDate(LocalDateTime.now());
 		organization.setDescription("organisation");
 		organization.setName("mon organisation");
+		organization.setInitiator("initiator@mail.fr");
+		organization.setCreationDate(LocalDateTime.now());
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setMembers(members);
 		organizationDao.save(organization);
 
@@ -135,6 +143,12 @@ class OrganizationMembersPartitionerHelperTestUT {
 		organization.setOpeningDate(LocalDateTime.now());
 		organization.setDescription("organisation");
 		organization.setName("mon organisation");
+		organization.setInitiator("initiator@mail.fr");
+		organization.setCreationDate(LocalDateTime.now());
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setMembers(members);
 		organizationDao.save(organization);
 

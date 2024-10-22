@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {Status} from 'micro_service_modules/api-bpmn';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 
 @Injectable({
@@ -20,7 +21,7 @@ export class DataSetActionsAuthorizationService {
             case 'REJECTED':
                 return true;
             case 'VALIDATED' :
-                return project.reutilisation_status.dataset_set_modification_allowed;
+                return project.reutilisation_status.dataset_set_modification_allowed && project.status === Status.Completed;
             case 'IN_PROGRESS':
             case 'CANCELLED':
             case 'DISENGAGED':

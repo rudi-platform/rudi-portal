@@ -1,8 +1,10 @@
+# Rudi - Facet - doks
+
 Facet de gestion de documents.
 
-# Mise en place
+## Mise en oeuvre
 
-## Facade
+### Facade
 
 Ajouter le package `org.rudi.facet.crypto` dans la *AppFacadeApplication* du microservice.
 
@@ -10,7 +12,7 @@ Exemple
 avec [la facade de selfdata](../../rudi-microservice/rudi-microservice-selfdata/rudi-microservice-selfdata-facade/src/main/java/org/rudi/microservice/selfdata/facade/AppFacadeApplication.java)
 .
 
-## Contrôleur
+### Contrôleur
 
 Ajouter un endpoint sur un contrôleur pour uploader le document et un autre pour le télécharger.
 
@@ -28,7 +30,7 @@ spring.servlet.multipart.max-file-size=10MB
 spring.servlet.multipart.max-request-size=10MB
 ```
 
-## Base de données
+### Base de données
 
 Cette facet manipule des entités JPA.
 

@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.collections4.ListUtils;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.bean.User;
-import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
+import org.rudi.microservice.strukture.service.mapper.OrganizationMapper;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @Component
 @Transactional
@@ -28,6 +32,7 @@ public class OrganizationHelper {
 
 	private final OrganizationDao organizationDao;
 	private final OrganizationMembersHelper organizationMembersHelper;
+	private final OrganizationMapper organizationMapper;
 
 	/**
 	 * Recherche des utilisateurs ACL qui sont administrateurs de l'organisation passée en paramètre
@@ -56,5 +61,18 @@ public class OrganizationHelper {
 					total.addAll(element);
 					return total;
 				});
+	}
+
+
+	@Nonnull
+	public OrganizationEntity getOrganizationEntity(UUID uuid) throws AppServiceNotFoundException {
+		if (uuid == null) {
+			throw new IllegalArgumentException("UUID required");
+		}
+		val entity = organizationDao.findByUuid(uuid);
+		if (entity == null) {
+			throw new AppServiceNotFoundException(OrganizationEntity.class, uuid);
+		}
+		return entity;
 	}
 }

@@ -1,0 +1,39 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "MultiPoint",
+                "coordinates": [
+                    [ 14.5041, 46.0434 ],
+                    [ 14.5367, 45.8631 ]
+                ]
+            },
+            "properties": {
+                "fid": 1,
+                "other": [
+                    { "color": "blue" },
+                    { "color": "red" }
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "MultiPoint",
+                "coordinates": [
+                    [ 15.5041, 44.0434 ],
+                    [ 15.5367, 43.8631 ]
+                ]
+            },
+            "properties": {
+                "fid": 2,
+                "other": [
+                    { "color": "mauve" },
+                    { "color": "pink" }
+                ]
+            }
+        }
+    ]
+}

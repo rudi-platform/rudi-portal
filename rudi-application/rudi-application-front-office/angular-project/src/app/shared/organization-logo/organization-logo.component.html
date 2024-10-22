@@ -1,8 +1,10 @@
 <div>
     <app-loader [active]="isLoading" [allPage]="false" [isTransparent]="true" [noText]="true"></app-loader>
     <ng-container *ngIf="!isLoading">
-        <img *ngIf="content" [alt]="name | translate" [src]="content" [class]="cssClass">
-        <img *ngIf="!content && isANewRequest" src='/assets/images/rudi_picto_nouvelle_demande.svg' alt="{{'project.detail.newRequestLogo'|translate}}" [class]="cssClass">
-        <img *ngIf="!content && !isANewRequest" [src]="content" alt="{{'project.detail.defaultLogo'|translate}}" [class]="cssClass">
+        <img *ngIf="content" [alt]="name | translate" [class]="cssClass" [src]="content">
+        <img *ngIf="!content && isANewRequest" [class]="cssClass"
+             alt="{{'project.detail.newRequestLogo'|translate}}" src='/assets/images/rudi_picto_nouvelle_demande.svg'>
+        <img *ngIf="!content && !isANewRequest" [class]="cssClass" alt="{{'project.detail.defaultLogo'|translate}}"
+             src='/assets/images/rudi_picto_profil_user.png'>
     </ng-container>
 </div>

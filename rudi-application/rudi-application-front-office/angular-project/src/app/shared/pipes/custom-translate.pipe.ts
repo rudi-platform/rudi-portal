@@ -23,21 +23,21 @@ export class CustomTranslatePipe extends TranslatePipe implements PipeTransform 
             next: teamName => this.teamName = teamName,
             error: err => {
                 this.logger.error(err);
-                this.teamName = "Rudi";
+                this.teamName = 'Rudi';
             }
-        })
+        });
         this.getBackendPropertyPipe.transform('front.projectName').subscribe({
             next: projectName => this.projectName = projectName,
             error: err => {
                 this.logger.error(err);
-                this.projectName = "Rudi";
+                this.projectName = 'Rudi';
             }
-        })
+        });
     }
 
     transform(value: any, ...args: any[]): any {
         return super.transform(value, {
-            ...args,
+            ...args[0],
             teamName: this.teamName,
             projectName: this.projectName
         });

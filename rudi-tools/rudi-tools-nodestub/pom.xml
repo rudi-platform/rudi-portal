@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-tools</artifactId>
-		<version>3.0.4</version>
+		<version>3.1.0</version>
 	</parent>
 	<artifactId>rudi-tools-nodestub</artifactId>
 	<name>rudi-tools-nodestub</name>
@@ -50,6 +50,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-microservice-kalim-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rudi-microservice-strukture-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -174,7 +180,9 @@
 								MetadataList=org.rudi.facet.kaccess.bean.MetadataList,
 								Report=org.rudi.microservice.kalim.core.bean.Report,
 								Method=org.rudi.microservice.kalim.core.bean.Method,
-								ApiError=org.rudi.microservice.kalim.core.bean.ApiError
+								ApiError=org.rudi.microservice.kalim.core.bean.ApiError,
+								StruktureReport=org.rudi.microservice.strukture.core.bean.Report,
+								StruktureMethod=org.rudi.microservice.strukture.core.bean.Method
 							</schemaMappings>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>

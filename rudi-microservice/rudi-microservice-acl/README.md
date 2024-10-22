@@ -1,4 +1,4 @@
-# µService ACL
+# Rudi - µService ACL
 
 Le µService ACL implémente plusieurs types d'authentification :
 
@@ -7,7 +7,7 @@ Le µService ACL implémente plusieurs types d'authentification :
 
 Le choix d'un type d'authentification est libre, quel que soit le cas d'usage.
 
-# JWT
+## JWT
 
 1 entry point :
 
@@ -39,7 +39,7 @@ curl "${host}:${port}/acl/v1/users/me" \
   --header 'Authorization:Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJydWRpIiwiY29ubmVjdGVkVXNlciI6eyJsb2dpbiI6InJ1ZGkiLCJ0eXBlIjoiUk9CT1QiLCJmaXJzdG5hbWUiOiJydWRpIiwibGFzdG5hbWUiOiJydWRpIiwiZW1haWwiOm51bGwsIm9yZ2FuaXphdGlvbiI6InJ1ZGkiLCJyb2xlcyI6WyJBRE1JTklTVFJBVE9SIl19LCJleHAiOjE2MzM0NDAyMDEsImlhdCI6MTYzMzQzNjYwMX0.IaHjl2eIRqPhqnH8rSKSANSa7htTHCJvVPNTJ-MOpmVa5xfd1ZMPDzQFavM5KS2RCZZkiBYxG9-GKFwYWu-vew'
 ```
 
-# OAuth2
+## OAuth2
 
 Implémentation du protocole [OAuth2][OAuth2].
 
@@ -51,7 +51,7 @@ Implémentation du protocole [OAuth2][OAuth2].
 
 Plus d'informations sur les paramètres acceptés ici : <https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/>.
 
-## Obtenir un access_token
+### Obtenir un access_token
 
 Requête avec [grant_type=password][password-grant] :
 
@@ -93,7 +93,7 @@ Réponse :
 }
 ```
 
-## Valider un access token
+### Valider un access token
 
 Requête :
 
@@ -121,7 +121,7 @@ Réponse :
 }
 ```
 
-## Composants Spring
+### Composants Spring
 
 Tous les composants se trouvent dans le package `org.springframework.security.oauth2.provider.endpoint`.
 
@@ -129,14 +129,18 @@ Tous les composants se trouvent dans le package `org.springframework.security.oa
 * `/oauth/token_key` → **TokenKeyEndpoint**
 * `/oauth/check_token` → **CheckTokenEndpoint**
 
-# Voir aussi
+## Diagramme de classes
+
+![Diagramme de classes](readme/rudi-microservice-acl-storage-entities.png)
+
+## Voir aussi
 
 - [OAuth2]: https://www.oauth.com/
 - [password-grant]: https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
 - [client-credentials]: https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
 - [GitHub Rennes Métropole]: https://github.com/rudi-platform/rudi-documentation/blob/main/articles/_authentification/authentification.md
 
-# Tips
+## Tips
 
 Récupération d'un header Authorization en ligne de commande :
 

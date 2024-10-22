@@ -56,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, D extends AssetDescriptionDao<E>, A extends AssignmentHelper<E>> {
 
-	private static final String WK_C_FAILED_TO_SEND_MAIL_FOR = "WkC - Failed to send mail for ";
+	public static final String WK_C_FAILED_TO_SEND_MAIL_FOR = "WkC - Failed to send mail for ";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractWorkflowContext.class);
 

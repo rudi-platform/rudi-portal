@@ -2,10 +2,11 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
+import {CustomizationService} from '@app/core/services/customization.service';
+import {LogService} from '@app/core/services/log.service';
 import {PASSWORD_REGEX} from '@core/const';
 import {AccountService} from '@core/services/account.service';
-import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
@@ -14,20 +15,22 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Level} from '@shared/notification-template/notification-template.component';
+import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
 import {RudiValidators} from '@shared/validators/rudi-validators';
+import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
+import {CmsTermsDescription, CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {ConfirmedValidator} from './confirmed-validator';
-import { CmsTermsDescription, CustomizationDescription, KonsultService } from 'micro_service_modules/konsult/konsult-api';
-import { CustomizationService } from '@app/core/services/customization.service';
-import { CmsAsset, PagedCmsAssets } from 'micro_service_modules/api-cms';
-import { LogService } from '@app/core/services/log.service';
 
 const ICON_INFO: string = '../assets/icons/icon_info.svg';
 
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
-    styleUrls: ['./sign-up.component.scss']
+    styleUrls: ['./sign-up.component.scss'],
+    providers: [
+        CustomTranslatePipe
+    ]
 })
 export class SignUpComponent implements OnInit {
 
@@ -82,11 +85,9 @@ export class SignUpComponent implements OnInit {
 
     constructor(private formBuilder: FormBuilder,
                 private routeHistoryService: RouteHistoryService,
-                private authenticationService: AuthenticationService,
                 private snackBarService: SnackBarService,
                 private translateService: TranslateService,
                 private breakpointObserver: BreakpointObserverService,
-                private router: Router,
                 private accountService: AccountService,
                 private propertiesService: PropertiesMetierService,
                 private readonly matIconRegistry: MatIconRegistry,
@@ -96,6 +97,7 @@ export class SignUpComponent implements OnInit {
                 private readonly konsultService: KonsultService,
                 private readonly customizationService: CustomizationService,
                 private readonly logger: LogService,
+                private readonly customTranslatePipe: CustomTranslatePipe
     ) {
         this.matIconRegistry.addSvgIcon(
             'icon-info',
@@ -191,6 +193,7 @@ export class SignUpComponent implements OnInit {
             }
         });
     }
+
     /**
      * Methode permettant l'inscription
      */
@@ -209,9 +212,9 @@ export class SignUpComponent implements OnInit {
                     this.propertiesService.get('front.contact').subscribe(contactLink => {
                         this.snackBarService.openSnackBar({
                             level: Level.SUCCESS,
-                            message: `${this.translateService.instant('snackbarTemplate.successIncription')}
+                            message: `${this.customTranslatePipe.transform('snackbarTemplate.successIncription')}
                                         <a href="${contactLink}">
-                                            ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
+                                            ${this.customTranslatePipe.transform('snackbarTemplate.successIncriptionLinkText')}
                                         </a>`,
                             keepBeforeSecondRouteChange: true
                         });

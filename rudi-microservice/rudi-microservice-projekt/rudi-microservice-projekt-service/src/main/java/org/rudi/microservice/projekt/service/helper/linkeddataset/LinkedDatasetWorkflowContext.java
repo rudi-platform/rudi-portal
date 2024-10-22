@@ -19,6 +19,7 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
@@ -60,8 +61,9 @@ public class LinkedDatasetWorkflowContext
 	public LinkedDatasetWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
 			LinkedDatasetDao assetDescriptionDao, LinkedDatasetAssigmentHelper assignmentHelper, ACLHelper aclHelper,
 			FormHelper formHelper, DatasetService datasetService, OrganizationHelper organizationHelper,
-			ProjectCustomDao projectCustomDao) {
-		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
+			ProjectCustomDao projectCustomDao, RolesHelper rolesHelper) {
+		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper,
+				rolesHelper);
 		this.datasetService = datasetService;
 		this.organizationHelper = organizationHelper;
 		this.projectCustomDao = projectCustomDao;

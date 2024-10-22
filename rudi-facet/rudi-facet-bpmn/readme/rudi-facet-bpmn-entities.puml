@@ -1,0 +1,227 @@
+@startuml
+
+abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSuperclass>>  {
+	{field} {static} +CODE_COLUMN_LENGTH : int
+	{field} {static} +CODE_COLUMN_NAME : String
+	{field} +@Column("code") code : String
+	{field} +@Column("label") label : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuperclass>>  {
+	{field} +@Column("id") @Id id : Long
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("uuid") uuid : java.util.UUID
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder {
+	{field} -id : Long
+	{field} -uuid : java.util.UUID
+	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
+	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +toString () : String
+	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSuperclass>>  {
+	{field} +@Column("closing_date") closingDate : java.time.LocalDateTime
+	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
+	{field} +@Column("order_") order : int
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<MappedSuperclass>>  {
+	{field} +@Column("lang") lang : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("text") text : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.common.storage.entity.HibernateEntityHelper {
+	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+}
+
+
+interface org.rudi.common.storage.entity.PositionedStatus {
+	{method}  {abstract} +isFinal () : boolean
+	{method}  {abstract} +isInitial () : boolean
+}
+
+
+class org.rudi.common.storage.entity.SkosConceptCodeColumn {
+	{field} {static} +LENGTH : int
+	{field} {static} +NAME : String
+	{field} {static} +TABLE_NAME : String
+}
+
+
+enum org.rudi.common.storage.entity.StatusPosition {
+	{field} +FINAL
+	{field} +INITIAL
+	{field} +INTERMEDIATE
+}
+
+
+class org.rudi.facet.bpmn.entity.form.FormDefinitionEntity <<Entity>>  <<Table>>  {
+ {TableName=form_definition}
+--
+	{field} +@Column("name") name : String
+	{field} {static} -serialVersionUID : long
+	{method} +addFormSectionDefinition ( paramFormSectionDefinitionEntity1 : org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity ) : void
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +lookupFormSectionDefinition ( paramUUID1 : java.util.UUID ) : org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity
+	{method} +toString () : String
+}
+
+
+class org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity <<Entity>>  <<Table>>  {
+ {TableName=form_section_definition}
+--
+	{field} +@Column("order_") order : int
+	{field} +@Column("read_only") readOnly : boolean
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.facet.bpmn.entity.form.ProcessFormDefinitionEntity <<Entity>>  <<Table>>  {
+ {TableName=process_form_definition}
+--
+	{field} +@Column("action_name") actionName : String
+	{field} +@Column("process_definition_id") processDefinitionId : String
+	{field} +@Column("revision") revision : Integer
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("user_task_id") userTaskId : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity <<Entity>>  <<Table>>  {
+ {TableName=section_definition}
+--
+	{field} +@Column("definition") definition : String
+	{field} +@Column("help") help : String
+	{field} +@Column("label") label : String
+	{field} +@Column("name") name : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity <<MappedSuperclass>>  {
+	{field} +@Column("assignee") assignee : String
+	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
+	{field} +@Column("data") data : String
+	{field} +@Column("description") description : String
+	{field} +@Column("functional_status") functionalStatus : String
+	{field} +@Column("initiator") initiator : String
+	{field} +@Column("process_definition_key") processDefinitionKey : String
+	{field} +@Column("process_definition_version") processDefinitionVersion : Integer
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("status") status : org.rudi.bpmn.core.bean.Status
+	{field} +@Column("updated_date") updatedDate : java.time.LocalDateTime
+	{field} +@Column("updator") updator : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder {
+	{field} -assignee : String
+	{field} -creationDate : java.time.LocalDateTime
+	{field} -data : String
+	{field} -description : String
+	{field} -functionalStatus : String
+	{field} -initiator : String
+	{field} -processDefinitionKey : String
+	{field} -processDefinitionVersion : Integer
+	{field} -status : org.rudi.bpmn.core.bean.Status
+	{field} -updatedDate : java.time.LocalDateTime
+	{field} -updator : String
+	{method} +assignee ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method}  {abstract} +build () : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
+	{method} +creationDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +data ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +description ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +functionalStatus ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +initiator ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +processDefinitionKey ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +processDefinitionVersion ( paramInteger1 : Integer ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method}  {abstract} #self () : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +status ( paramStatus1 : org.rudi.bpmn.core.bean.Status ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +toString () : String
+	{method} +updatedDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+	{method} +updator ( paramString1 : String ) : org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder
+}
+
+
+interface org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity {
+	{method}  {abstract} +getAssignee () : String
+	{method}  {abstract} +getCreationDate () : java.time.LocalDateTime
+	{method}  {abstract} +getData () : String
+	{method}  {abstract} +getDescription () : String
+	{method}  {abstract} +getFunctionalStatus () : String
+	{method}  {abstract} +getInitiator () : String
+	{method}  {abstract} +getProcessDefinitionKey () : String
+	{method}  {abstract} +getProcessDefinitionVersion () : Integer
+	{method}  {abstract} +getStatus () : org.rudi.bpmn.core.bean.Status
+	{method}  {abstract} +getUpdatedDate () : java.time.LocalDateTime
+	{method}  {abstract} +getUpdator () : String
+	{method}  {abstract} +setAssignee ( paramString1 : String ) : void
+	{method}  {abstract} +setCreationDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : void
+	{method}  {abstract} +setData ( paramString1 : String ) : void
+	{method}  {abstract} +setDescription ( paramString1 : String ) : void
+	{method}  {abstract} +setFunctionalStatus ( paramString1 : String ) : void
+	{method}  {abstract} +setInitiator ( paramString1 : String ) : void
+	{method}  {abstract} +setProcessDefinitionKey ( paramString1 : String ) : void
+	{method}  {abstract} +setProcessDefinitionVersion ( paramInteger1 : Integer ) : void
+	{method}  {abstract} +setStatus ( paramStatus1 : org.rudi.bpmn.core.bean.Status ) : void
+	{method}  {abstract} +setUpdatedDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : void
+	{method}  {abstract} +setUpdator ( paramString1 : String ) : void
+}
+
+
+
+
+org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.common.storage.entity.AbstractStampedEntity --|>  org.rudi.common.storage.entity.AbstractLabelizedEntity
+org.rudi.common.storage.entity.AbstractTranslationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.form.FormDefinitionEntity "1" o-- "0..*"  org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity :  @OneToMany\nformSectionDefinitions
+org.rudi.facet.bpmn.entity.form.FormDefinitionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity -->  org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity :  @ManyToOne\nsectionDefinition
+org.rudi.facet.bpmn.entity.form.FormSectionDefinitionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.form.ProcessFormDefinitionEntity -->  org.rudi.facet.bpmn.entity.form.FormDefinitionEntity :  @ManyToOne\nformDefinition
+org.rudi.facet.bpmn.entity.form.ProcessFormDefinitionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity ..|>  org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity
+org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder --|>  org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+
+hide methods
+
+@enduml

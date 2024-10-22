@@ -28,7 +28,7 @@ public abstract class ChildFieldSpec extends FieldSpec {
 	@Override
 	public FieldTypeClass getTypeClass() {
 		if (allowControlledVocabulary()) {
-			return FieldTypeClass.CONTROLLEDVOCABULARY;
+			return FieldTypeClass.CONTROLLED_VOCABULARY;
 		} else if (CollectionUtils.isNotEmpty(getDirectChildren())) {
 			return FieldTypeClass.COMPOUND;
 		}

@@ -28,7 +28,8 @@ export class BackPaginationComponent {
     readonly maxPageMobile = 5;
 
     constructor(
-        private readonly breakpointObserver: BreakpointObserverService, ) {
+        private readonly breakpointObserver: BreakpointObserverService
+    ) {
         this.mediaSize = this.breakpointObserver.getMediaSize();
     }
 

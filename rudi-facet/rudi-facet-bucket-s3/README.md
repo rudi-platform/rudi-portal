@@ -1,4 +1,8 @@
-# I - Intégration de la facette Bucket S3
+# Rudi - Facet - Bucket S3
+
+Service d'accès à un bucket de type S3
+
+## Intégration de la facette Bucket S3
 
 La facette met à disposition un service de stockage objet selon le protocole s3
 

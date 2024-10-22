@@ -8,7 +8,8 @@
 
     <div *ngIf="!isLoading">
         <app-tabs>
-            <app-tab [icon]="'icon-reutilisation'" [label]="'personalSpace.projectDetails.projectTab.title' | translate">
+            <app-tab [icon]="'icon-reutilisation'"
+                     [label]="'personalSpace.projectDetails.projectTab.title' | translate">
                 <ng-template>
                     <div class="project-details-container">
                         <div class="project-metadata-container">
@@ -21,20 +22,24 @@
 
 
                             <mat-accordion>
-                                <mat-expansion-panel [expanded]="!hasSections" class="project-modified-expansion" (opened)="panelInitialTaskOpenState.set(true)" (closed)="panelInitialTaskOpenState.set(false)">
+                                <mat-expansion-panel [expanded]="!hasSections" class="project-modified-expansion"
+                                                     (opened)="panelInitialTaskOpenState.set(true)"
+                                                     (closed)="panelInitialTaskOpenState.set(false)">
                                     <mat-expansion-panel-header>
-                                        <mat-panel-title class="expansion-title"> {{ 'personalSpace.projectDetails.projectTab.currentProject' | translate }} </mat-panel-title>
+                                        <mat-panel-title
+                                            class="expansion-title"> {{ 'personalSpace.projectDetails.projectTab.currentProject' | translate }}
+                                        </mat-panel-title>
                                     </mat-expansion-panel-header>
                                     <hr>
-                                            <app-project-main-informations
-                                                [project]="dependencies.project"
-                                                (updateForm)="updateProjectTask($event)"
-                                                [isProjectUpdatable]="dependencies.project?.project_status === ProjectStatus.Rejected"
-                                                [isLoading]="childrenIsLoading"
-                                                [isUpdating]="isUpdateInProgress"
-                                                [showTitle]="false"
-                                                [dialogDescription]="'personalSpace.project.tabs.update.text' | translate"
-                                            ></app-project-main-informations>
+                                    <app-project-main-informations
+                                        [project]="dependencies.project"
+                                        (updateForm)="updateProjectTask($event)"
+                                        [isProjectUpdatable]="dependencies.project?.project_status === ProjectStatus.Rejected"
+                                        [isLoading]="childrenIsLoading"
+                                        [isUpdating]="isUpdateInProgress"
+                                        [showTitle]="false"
+                                        [dialogDescription]="'personalSpace.project.tabs.update.text' | translate"
+                                    ></app-project-main-informations>
                                 </mat-expansion-panel>
                             </mat-accordion>
 
@@ -77,19 +82,10 @@
 
                         </div>
 
-                        <mat-card class="project-owner">
-                            <mat-card-title class="section-title">
-                                {{ 'personalSpace.projectDetails.projectOwner' | translate }}
-                            </mat-card-title>
-                            <mat-card-subtitle class="section-sub-title">
-                                {{ dependencies.ownerInfo.name }}
-                            </mat-card-subtitle>
-                            <mat-card-content class="section-content">
-                                <app-clipboard-field
-                                    [content]="dependencies.project.contact_email"
-                                ></app-clipboard-field>
-                            </mat-card-content>
-                        </mat-card>
+                        <app-owner-information [title]="'personalSpace.projectDetails.projectOwner' | translate"
+                                               [email]="dependencies.project.contact_email"
+                                               [name]="dependencies.ownerInfo.name"
+                        ></app-owner-information>
 
                     </div>
                 </ng-template>
@@ -102,7 +98,7 @@
             </app-tab>
 
             <app-banner-button [projectIsUpdating]="isUpdateInProgress" *ngFor="let action of actions"
-                               (click)="openPopinForAction(action, isUpdateInProgress, this.currentTask)">
+                               (click)="openPopinForAction(action, isUpdateInProgress)">
                 {{ action.label }}
             </app-banner-button>
 

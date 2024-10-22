@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reactivestreams.Publisher;
+import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.facet.crypto.FirstBlock;
 import org.rudi.facet.crypto.MediaCipherOperator;
 import org.rudi.facet.crypto.RudiAlgorithmSpec;
@@ -38,6 +39,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -206,11 +208,18 @@ public class DatasetDecryptGatewayFilterFactory
 		@Override
 		public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
 			HttpHeaders httpHeaders = exchange.getResponse().getHeaders();
+			Pair<UUID, UUID> datasetIdentifiers = extractDatasetIdentifiers(exchange);
 			handleContentType(httpHeaders);
 			handleContentDisposition(httpHeaders);
-			int size = handleContentLength(httpHeaders);
+			int size = 0;
+			try {
+				size = handleContentLength(httpHeaders);
+			} catch (Exception e) {
+				log.error("Unable to handle content length for resource {}", datasetIdentifiers, e);
+				exchange.getResponse().setStatusCode(HttpStatus.LENGTH_REQUIRED);
+				return exchange.getResponse().setComplete();
+			}
 
-			Pair<UUID, UUID> datasetIdentifiers = extractDatasetIdentifiers(exchange);
 			LocalDateTime mediaUpdateDate = null;
 			final PrivateKey privateKey;
 			final MediaCipherOperator mediaCipherOperator;
@@ -235,13 +244,16 @@ public class DatasetDecryptGatewayFilterFactory
 			}
 		}
 
-		private int handleContentLength(HttpHeaders httpHeaders) {
+		private int handleContentLength(HttpHeaders httpHeaders) throws AppServiceBadRequestException {
+			if (httpHeaders == null || !httpHeaders.containsKey(HttpHeaders.CONTENT_LENGTH)) {
+				throw new AppServiceBadRequestException("Unknown content-length in required encrypted source");
+			}
 			context.setTotalLengthToRead(httpHeaders.getContentLength());
 
 			// on récupère un peu de context
 			int size = RudiAlgorithmSpec.DEFAULT.getMaximumBlockSizeInBytes();
 			long newContentLength = context.getTotalLengthToRead() - size - 16;
-			httpHeaders.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(newContentLength));
+			httpHeaders.setContentLength(newContentLength);
 			log.info("Content length: Change {} from {} header to {}", HttpHeaders.CONTENT_LENGTH,
 					context.getTotalLengthToRead(), newContentLength);
 			return size;
@@ -253,7 +265,7 @@ public class DatasetDecryptGatewayFilterFactory
 				String contentTypeValue = httpHeaders.getFirst(HttpHeaders.CONTENT_TYPE);
 				newMimeType = StringUtils.remove(contentTypeValue, MIME_TYPE_CRYPT_SUFFIXE);
 			}
-			if (StringUtils.isEmpty(newMimeType)) {
+			if (StringUtils.isNotEmpty(newMimeType)) {
 				log.info("Content type: Change {} from {} header to {}", HttpHeaders.CONTENT_TYPE,
 						httpHeaders.getFirst(HttpHeaders.CONTENT_TYPE), newMimeType);
 				httpHeaders.set(HttpHeaders.CONTENT_TYPE, newMimeType);

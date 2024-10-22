@@ -270,7 +270,8 @@
         "contactezNous": "Contactez-nous",
         "version": "Version : ",
         "ccByCa": "CC-BY-SA",
-        "propulsePar": "Propulsé par :"
+        "propulsePar": "Propulsé par :",
+        "documentation": "Documentation"
     },
     "authentification": {
         "title": "Bienvenue",
@@ -1151,7 +1152,23 @@
             "selfdata": "Données personnelles",
             "explainationText": "Vous trouverez sur cette page l'ensemble des demandes qui vous ont été adressées et qui nécessitent une action de votre part : demande d'accès à vos données, notifications sur vos réutilisations ou suites à vos demandes envoyées.",
             "linkText": "Cliquez ici pour en savoir plus.",
-            "project": "Réutilisation"
+            "project": "Réutilisation",
+            "organization": "Organisation",
+            "linkedProducer": "Organisation"
+        },
+        "organizationDetails": {
+            "declaration": "Déclaration d'organisation",
+            "demande": "Demande",
+            "description": "Description",
+            "url": "Url de l'organisation",
+            "adresse": "Adresse",
+            "nodeProvider": "Noeud fournisseur",
+            "identifiant": "Identifiant de l'organisation",
+            "nom": "Nom de l'organisation",
+            "supplier": "Demandeur"
+        },
+        "linkedProducerDetails": {
+            "rattachement": "Demande de rattachement"
         },
         "projectDetails": {
             "headerTitlePublication": "Demande de publication",
@@ -1302,7 +1319,7 @@
                         "cancel": "Annuler",
                         "validate": "Confirmer"
                     },
-                    "success": "Votre réutilisation a été mis à jour.",
+                    "success": "Votre réutilisation a été mise à jour.",
                     "error": "Modification echouée."
                 },
                 "deletion": {
@@ -1336,7 +1353,7 @@
         },
         "requestDetail": {
             "requestDate": "Demande d'accès reçue le",
-            "requestDateWithParam": "Demande d'accès reçue le {date}",
+            "accessRequest": "Demande d'accès",
             "title": "Demande",
             "datasetTitle": "Titre du jeu de données",
             "endDate": "Date de fin d'accès",

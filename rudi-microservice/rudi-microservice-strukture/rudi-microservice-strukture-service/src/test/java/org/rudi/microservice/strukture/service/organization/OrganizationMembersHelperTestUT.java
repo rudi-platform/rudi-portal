@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.MissingParameterException;
@@ -23,8 +24,8 @@ import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
-import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.exception.UserIsAlreadyOrganizationMemberException;
 import org.rudi.microservice.strukture.service.exception.UserNotFoundException;
@@ -33,6 +34,7 @@ import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -85,8 +87,14 @@ class OrganizationMembersHelperTestUT {
 		OrganizationEntity organization = new OrganizationEntity();
 		organization.setUuid(UUID.randomUUID());
 		organization.setOpeningDate(LocalDateTime.now());
+		organization.setCreationDate(LocalDateTime.now());
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setDescription("organisation");
 		organization.setName("mon organisation");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setMembers(Set.of(organizationMember));
 		organizationDao.save(organization);
 
@@ -104,16 +112,25 @@ class OrganizationMembersHelperTestUT {
 
 		User user = new User().login(authenticatedUser.getLogin()).uuid(UUID.randomUUID());
 
+		LocalDateTime now = LocalDateTime.now();
+
 		OrganizationMemberEntity organizationMember = new OrganizationMemberEntity();
 		organizationMember.setUserUuid(user.getUuid());
 		organizationMember.setRole(OrganizationRole.EDITOR);
-		organizationMember.setAddedDate(LocalDateTime.now());
+		organizationMember.setAddedDate(now);
+
 
 		OrganizationEntity organization = new OrganizationEntity();
 		organization.setUuid(UUID.randomUUID());
-		organization.setOpeningDate(LocalDateTime.now());
+		organization.setOpeningDate(now);
+		organization.setCreationDate(now);
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setDescription("organisation");
 		organization.setName("mon organisation");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setMembers(Set.of(organizationMember));
 		organizationDao.save(organization);
 
@@ -130,12 +147,19 @@ class OrganizationMembersHelperTestUT {
 		authenticatedUser.setLogin("login");
 
 		User user = new User().login(authenticatedUser.getLogin()).uuid(UUID.randomUUID());
+		LocalDateTime now = LocalDateTime.now();
 
 		OrganizationEntity organization = new OrganizationEntity();
 		organization.setUuid(UUID.randomUUID());
-		organization.setOpeningDate(LocalDateTime.now());
+		organization.setOpeningDate(now);
+		organization.setCreationDate(now);
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setDescription("organisation");
 		organization.setName("mon organisation");
+		organization.setInitiator("initiator@mail.fr");
 		organizationDao.save(organization);
 
 		when(aclHelper.getUserByLogin(any())).thenReturn(user);
@@ -400,6 +424,7 @@ class OrganizationMembersHelperTestUT {
 	public void checkUserIsNotMember() {
 		UUID uuid1 = UUID.randomUUID();
 		UUID uuid2 = UUID.randomUUID();
+		LocalDateTime now = LocalDateTime.now();
 
 		OrganizationMemberEntity member1 = new OrganizationMemberEntity();
 		member1.setAddedDate(LocalDateTime.now());
@@ -418,8 +443,15 @@ class OrganizationMembersHelperTestUT {
 
 		OrganizationEntity organization = new OrganizationEntity();
 		organization.setUuid(UUID.randomUUID());
-		organization.setOpeningDate(LocalDateTime.now());
+		organization.setOpeningDate(now);
+		organization.setCreationDate(now);
+		organization.setFunctionalStatus("Validée");
+		organization.setStatus(Status.COMPLETED);
+		organization.setOrganizationStatus(OrganizationStatus.VALIDATED);
+		organization.setProcessDefinitionKey("organization-process");
 		organization.setName("Blablabla pookie xD");
+		organization.setDescription("Blablabla ?");
+		organization.setInitiator("initiator@mail.fr");
 
 		organization.getMembers().add(member1);
 

@@ -9,12 +9,17 @@ import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
+import {Level} from '@shared/notification-template/notification-template.component';
+import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss']
+    styleUrls: ['./login.component.scss'],
+    providers: [
+        CustomTranslatePipe
+    ]
 })
 export class LoginComponent implements OnInit {
 
@@ -113,6 +118,7 @@ export class LoginComponent implements OnInit {
                 private readonly translateService: TranslateService,
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly captchaCheckerService: CaptchaCheckerService,
+                private readonly customTranslatePipe: CustomTranslatePipe
     ) {
     }
 
@@ -133,7 +139,11 @@ export class LoginComponent implements OnInit {
 
         const snackBarParam = this.snackBarParam;
         if (snackBarParam) {
-            this.snackBarService.openSnackBar(this.translateService.instant(snackBarParam));
+            this.snackBarService.openSnackBar({
+                message: this.customTranslatePipe.transform(snackBarParam),
+                level: Level.SUCCESS,
+                keepBeforeSecondRouteChange: true
+            }, 3000);
         }
     }
 

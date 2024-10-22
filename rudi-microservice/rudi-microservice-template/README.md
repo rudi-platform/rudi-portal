@@ -1,3 +1,7 @@
+# Rudi - µService Template
+
+Ce projet est un template permettant la génération d'un nouveau µService.
+
 Suite à la création d'un nouveau microservice, mettre à jour les fichiers suivants :
 
 - [ ] ansible/roles/rudi/tasks/main.yml

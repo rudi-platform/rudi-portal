@@ -1,0 +1,172 @@
+@startuml
+
+abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSuperclass>>  {
+	{field} {static} +CODE_COLUMN_LENGTH : int
+	{field} {static} +CODE_COLUMN_NAME : String
+	{field} +@Column("code") code : String
+	{field} +@Column("label") label : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuperclass>>  {
+	{field} +@Column("id") @Id id : Long
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("uuid") uuid : java.util.UUID
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder {
+	{field} -id : Long
+	{field} -uuid : java.util.UUID
+	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
+	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +toString () : String
+	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSuperclass>>  {
+	{field} +@Column("closing_date") closingDate : java.time.LocalDateTime
+	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
+	{field} +@Column("order_") order : int
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<MappedSuperclass>>  {
+	{field} +@Column("lang") lang : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("text") text : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.common.storage.entity.HibernateEntityHelper {
+	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+}
+
+
+interface org.rudi.common.storage.entity.PositionedStatus {
+	{method}  {abstract} +isFinal () : boolean
+	{method}  {abstract} +isInitial () : boolean
+}
+
+
+class org.rudi.common.storage.entity.SkosConceptCodeColumn {
+	{field} {static} +LENGTH : int
+	{field} {static} +NAME : String
+	{field} {static} +TABLE_NAME : String
+}
+
+
+enum org.rudi.common.storage.entity.StatusPosition {
+	{field} +FINAL
+	{field} +INITIAL
+	{field} +INTERMEDIATE
+}
+
+
+class org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity <<Entity>>  <<Table>>  {
+ {TableName=skos_concept}
+ {TableSchema=kos_data}
+--
+	{field} +@Column("concept_icon") conceptIcon : String
+	{field} +@Column("concept_role") conceptRole : String
+	{field} +@Column("concept_uri") conceptUri : String
+	{field} {static} -serialVersionUID : long
+	{method} +addSkosRelation ( paramSkosRelationConceptEntity1 : org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity ) : void
+	{method} +clearSkosRelations () : void
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity <<Entity>>  <<Table>>  {
+ {TableName=skos_concept_translation}
+ {TableSchema=kos_data}
+--
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity <<Entity>>  <<Table>>  {
+ {TableName=skos_relation_concept}
+ {TableSchema=kos_data}
+--
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("type") type : org.rudi.microservice.kos.core.bean.SkosRelationType
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity <<Entity>>  <<Table>>  {
+ {TableName=skos_scheme}
+ {TableSchema=kos_data}
+--
+	{field} +@Column("role") role : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("uri") uri : String
+	{method} +addTopConcept ( paramSkosConceptEntity1 : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity ) : void
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +lookupSkosConcept ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity
+	{method} +removeTopConcept ( paramUUID1 : java.util.UUID ) : void
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.kos.storage.entity.skos.SkosSchemeTranslationEntity <<Entity>>  <<Table>>  {
+ {TableName=skos_scheme_translation}
+ {TableSchema=kos_data}
+--
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+
+
+org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.common.storage.entity.AbstractStampedEntity --|>  org.rudi.common.storage.entity.AbstractLabelizedEntity
+org.rudi.common.storage.entity.AbstractTranslationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\nalternateLabels
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\nconceptDefinition
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\nconceptExample
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\nhiddenLabels
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\npreferedLabels
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity :  @ManyToMany\nscopeNote
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity :  @OneToMany\nrelationConcepts
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity -->  org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity :  @ManyToOne\nofScheme
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
+org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity --|>  org.rudi.common.storage.entity.AbstractTranslationEntity
+org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity -->  org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity :  @ManyToOne\ntarget
+org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity :  @ManyToMany\ntopConcepts
+org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity "1" o-- "0..*"  org.rudi.microservice.kos.storage.entity.skos.SkosSchemeTranslationEntity :  @OneToMany\nschemeLabels
+org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
+org.rudi.microservice.kos.storage.entity.skos.SkosSchemeTranslationEntity --|>  org.rudi.common.storage.entity.AbstractTranslationEntity
+
+hide methods
+
+@enduml

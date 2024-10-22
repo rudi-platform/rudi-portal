@@ -1,2 +1,4 @@
-## RUDI - FACET - ORGANIZATION
-Cette facette permet de simplifier l'accès aux données du µStrukture pour ce qui concerne les organisations.
+# Rudi - Facet - Organization
+
+Cette facette permet de simplifier l'accès aux données du µStrukture pour les éléments propres aux organisations (Organization).
+

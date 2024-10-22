@@ -1,21 +1,23 @@
 package org.rudi.microservice.strukture.storage.entity.provider;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.commons.collections4.CollectionUtils;
-import org.rudi.common.storage.entity.AbstractStampedEntity;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-import org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.rudi.common.storage.entity.AbstractStampedEntity;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+import org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Providers entity
@@ -36,6 +38,10 @@ public class ProviderEntity extends AbstractStampedEntity {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "provider_fk")
 	private Set<NodeProviderEntity> nodeProviders;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = LinkedProducerEntity.PROVIDER_FK)
+	private Set<LinkedProducerEntity> linkedProducers;
 
 	/**
 	 * Supprime un noeud de la liste

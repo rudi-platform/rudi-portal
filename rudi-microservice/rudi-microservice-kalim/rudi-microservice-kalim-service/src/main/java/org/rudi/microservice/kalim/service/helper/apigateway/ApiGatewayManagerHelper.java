@@ -202,11 +202,18 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 			Page<Api> existingApis = apiGatewayHelper.searchApis(searchCriteria, Pageable.unpaged());
 
 			// Récupération des infos du fournisseur, du noeud, du producteur
-			Provider provider = providerHelper
-					.getProviderByUUID(metadata.getMetadataInfo().getMetadataProvider().getOrganizationId());
-			NodeProvider nodeProvider = CollectionUtils.isNotEmpty(provider.getNodeProviders())
-					? provider.getNodeProviders().get(0)
-					: null;
+			Provider provider = null;
+			NodeProvider nodeProvider = null;
+			if (metadata.getMetadataInfo() != null && metadata.getMetadataInfo().getMetadataProvider() != null) {
+				provider = providerHelper
+						.getProviderByUUID(metadata.getMetadataInfo().getMetadataProvider().getOrganizationId());
+				if (provider != null) {
+					nodeProvider = CollectionUtils.isNotEmpty(provider.getNodeProviders())
+							? provider.getNodeProviders().get(0)
+							: null;
+				}
+			}
+			// Récupération des infos du producteur
 			Organization producer = organizationHelper.getOrganization(metadata.getProducer().getOrganizationId());
 
 			for (Media media : metadata.getAvailableFormats()) {

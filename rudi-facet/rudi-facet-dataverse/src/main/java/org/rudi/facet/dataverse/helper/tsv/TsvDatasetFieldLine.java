@@ -130,7 +130,7 @@ class TsvDatasetFieldLine extends TsvLine {
 	@Override
 	public String toString() {
 		return StringUtils.joinWith("\t",
-				firstColumn,
+				TsvLine.FIRST_COLUMN,
 				name,
 				title,
 				description,
@@ -153,7 +153,7 @@ class TsvDatasetFieldLine extends TsvLine {
 	protected String getHashString() {
 		return name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();

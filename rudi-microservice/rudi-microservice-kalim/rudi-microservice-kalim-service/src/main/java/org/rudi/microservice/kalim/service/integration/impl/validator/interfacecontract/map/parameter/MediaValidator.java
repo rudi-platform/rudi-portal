@@ -23,10 +23,7 @@ public class MediaValidator extends AbstractMetadataValidator<List<Media>> {
 
 		for (Media media : mediaList) {
 			// Tous les Connector présents dans les MEDIA du JDD
-			if (media.getMediaType() == Media.MediaTypeEnum.SERVICE) {
-				// Seuls les media SERVICE nous intéressent
-				integrationRequestsErrors.addAll(connectorValidator.validate(media.getConnector()));
-			}
+			integrationRequestsErrors.addAll(connectorValidator.validate(media.getConnector()));
 		}
 
 		return integrationRequestsErrors;

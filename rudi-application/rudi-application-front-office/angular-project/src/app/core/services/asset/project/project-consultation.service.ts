@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/notification-template/notification-template.component';
+import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {Status} from 'micro_service_modules/api-bpmn';
 import {Metadata} from 'micro_service_modules/api-kaccess';
@@ -21,7 +21,7 @@ export class ProjectConsultationService {
         private readonly projektMetierService: ProjektMetierService,
         private readonly konsultMetierService: KonsultMetierService,
         private readonly snackBarService: SnackBarService,
-        private readonly translateService: TranslateService,
+        private readonly customTranslatePipe: CustomTranslatePipe
     ) {
     }
 
@@ -78,7 +78,7 @@ export class ProjectConsultationService {
             return true;
         }
         this.snackBarService.openSnackBar({
-            message: this.translateService.instant('personalSpace.project.tabs.deletion.impossible'),
+            message: this.customTranslatePipe.transform('personalSpace.project.tabs.deletion.impossible'),
             level: Level.ERROR,
         });
         return false;

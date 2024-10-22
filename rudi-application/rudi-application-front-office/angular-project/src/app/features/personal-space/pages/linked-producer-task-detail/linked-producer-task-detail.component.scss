@@ -1,0 +1,23 @@
+@import "bootstrap/scss/bootstrap-grid";
+
+
+.producer-link-details-container {
+
+    display: flex;
+    @extend .row;
+
+
+    .producer-link-information-container {
+        padding-bottom: 24px;
+        @extend .col-sm-12;
+        @extend .col-md-12;
+        @extend .col-lg-8;
+    }
+
+    .owner-information-container {
+        @extend .col-sm-12;
+        @extend .col-md-12;
+        @extend .col-lg-4;
+
+    }
+}

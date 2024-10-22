@@ -1,15 +1,14 @@
-## RUDI - FACET - EMAIL
+# RUDI - Facet - Email
 
 Cette facette permet d'ajouter simplement un service d'envoi de courriel.
 
 L'ajout de la facette requière de compléter dans la classe _AppFacadeApplication_ la liste des packages scannés :
 
-<pre>
+```
 @SpringBootApplication(scanBasePackages = { "org.rudi.facet.email" ...})
+```
 
-</pre>
-
-### Propriétés de la facette
+## Propriétés de la facette
 
 L'ajout de cette facette dans un µservice nécessite la configuration des propriétés _obligatoires_ suivantes :
 

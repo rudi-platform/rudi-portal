@@ -19,6 +19,7 @@ import {User} from 'micro_service_modules/acl/acl-api';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Confidentiality, OwnerType, Project, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
+import {Organization} from 'micro_service_modules/strukture/strukture-model';
 import {Observable, throwError} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
 import {ReuseProjectCommonComponent} from '../../components/reuse-project-common/reuse-project-common.component';
@@ -115,7 +116,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                     });
                 }
                 if (dependencies.organizations?.length) {
-                    this.organizationItems = dependencies.organizations.map(organization => ({
+                    this.organizationItems = dependencies.organizations.map((organization: Organization) => ({
                         name: organization.name,
                         uuid: organization.uuid
                     }));

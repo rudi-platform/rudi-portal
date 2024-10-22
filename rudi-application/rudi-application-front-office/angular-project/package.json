@@ -25,7 +25,7 @@
         "generate:all-microservices": "npm run generate:strukture && npm run generate:konsult && npm run generate:acl && npm run generate:kos && npm run generate:projekt && npm run generate:selfdata && npm run generate:konsent",
         "generate:strukture": "npm run generate:strukture-model && npm run generate:strukture-api",
         "generate:strukture-api": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-microservice/rudi-microservice-strukture/openapi/rudi-strukture-api.json -o micro_service_modules/strukture/api-strukture -c openapitools.json -t ./template",
-        "generate:strukture-model": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-microservice/rudi-microservice-strukture/openapi/rudi-strukture-model.json -o micro_service_modules/strukture/strukture-model",
+        "generate:strukture-model": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-microservice/rudi-microservice-strukture/openapi/rudi-strukture-model.json -o micro_service_modules/strukture/strukture-model -c openapitools.json -t ./template",
         "generate:acl": "npm run generate:acl-model && npm run generate:acl-api",
         "generate:acl-api": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-microservice/rudi-microservice-acl/openapi/rudi-acl-api.json -o micro_service_modules/acl/acl-api -t ./template",
         "generate:acl-model": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-microservice/rudi-microservice-acl/openapi/rudi-acl-model.json -o micro_service_modules/acl/acl-model",

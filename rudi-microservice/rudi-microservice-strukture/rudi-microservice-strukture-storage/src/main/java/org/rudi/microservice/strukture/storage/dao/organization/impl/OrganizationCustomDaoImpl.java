@@ -13,6 +13,7 @@ import org.rudi.common.storage.dao.PredicateListBuilder;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -43,6 +44,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		final var searchCriteria = builder.getSearchCriteria();
 		builder.addIsNotNull(searchCriteria.getActive(), organization -> organization.get("closing_date"));
 		builder.add(searchCriteria.getUserUuid(), (organization, userUuid) -> organization.join("members").get("userUuid").in(userUuid));
+		builder.add(searchCriteria.getOrganizationStatus(), OrganizationStatus::valueOf, (organization, status) -> organization.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS).in(status));
 	}
 
 

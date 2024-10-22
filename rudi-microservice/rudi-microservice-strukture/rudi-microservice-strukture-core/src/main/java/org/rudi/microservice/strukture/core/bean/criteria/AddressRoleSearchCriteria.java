@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.rudi.microservice.strukture.core.bean;
+package org.rudi.microservice.strukture.core.bean.criteria;
+
+import org.rudi.microservice.strukture.core.bean.AddressType;
 
 import lombok.Data;
 

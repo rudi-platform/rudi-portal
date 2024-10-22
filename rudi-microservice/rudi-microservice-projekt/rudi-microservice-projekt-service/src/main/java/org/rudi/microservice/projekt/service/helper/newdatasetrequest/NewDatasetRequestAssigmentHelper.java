@@ -6,7 +6,7 @@ package org.rudi.microservice.projekt.service.helper.newdatasetrequest;
 import java.util.Arrays;
 import java.util.List;
 
-import org.rudi.facet.bpmn.helper.workflow.AbstractAssignmentHelper;
+import org.rudi.microservice.projekt.service.helper.AbstractProjektAssigmentHelper;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class NewDatasetRequestAssigmentHelper extends AbstractAssignmentHelper<NewDatasetRequestEntity> {
+public class NewDatasetRequestAssigmentHelper extends AbstractProjektAssigmentHelper<NewDatasetRequestEntity> {
 
 	@Override
 	public List<String> computeAssignees(NewDatasetRequestEntity assetDescription, String roleName) {

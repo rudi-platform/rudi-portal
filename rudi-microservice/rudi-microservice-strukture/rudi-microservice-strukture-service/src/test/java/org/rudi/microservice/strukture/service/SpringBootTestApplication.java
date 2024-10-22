@@ -8,19 +8,22 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 /**
  * Classe application pour les tests unitaires de la couche service
  */
-@SpringBootApplication(scanBasePackages = { 
-		"org.rudi.common.core", 
+@SpringBootApplication(scanBasePackages = {
+		"org.rudi.common.facade",
 		"org.rudi.common.service",
-		"org.rudi.common.storage", 
-		"org.rudi.facet.acl", 
-		"org.rudi.facet.email", 
-		"org.rudi.facet.generator",
-		"org.rudi.facet.dataverse", 
+		"org.rudi.common.storage",
+		"org.rudi.common.core",
+		"org.rudi.facet.acl",
+		"org.rudi.facet.dataverse",
 		"org.rudi.facet.kmedia",
 		"org.rudi.facet.kaccess",
+		"org.rudi.facet.email",
 		"org.rudi.facet.projekt.helper",
-		"org.rudi.microservice.strukture.service", 
-		"org.rudi.microservice.strukture.storage",
+		"org.rudi.facet.generator",
+		"org.rudi.facet.bpmn",
+		"org.rudi.microservice.strukture.core",
+		"org.rudi.microservice.strukture.service",
+		"org.rudi.microservice.strukture.storage"
 		})
 public class SpringBootTestApplication {
 

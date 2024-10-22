@@ -1,16 +1,16 @@
 import {MatDialog} from '@angular/material/dialog';
-import {AssetDescription} from 'micro_service_modules/api-bpmn';
-import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {LogService} from '@core/services/log.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TaskMetierService} from '@core/services/tasks/task-metier.service';
 import {TaskWithDependenciesService} from '@core/services/tasks/task-with-dependencies-service';
+import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {TaskWithDependencies} from '@shared/utils/task-utils';
 import {WorkflowFormDialogInputData} from '@shared/workflow-form-dialog/types';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
+import {AssetDescription} from 'micro_service_modules/api-bpmn';
 import {Action, Task} from 'micro_service_modules/projekt/projekt-api';
 
 export abstract class TaskDetailComponent<A extends AssetDescription, D, T extends TaskWithDependencies<A, D>, C> {
@@ -49,7 +49,7 @@ export abstract class TaskDetailComponent<A extends AssetDescription, D, T exten
         });
     }
 
-    openPopinForAction(action: Action, disable = false, updatedTask?: Task): void {
+    openPopinForAction(action: Action, disable = false): void {
         if (disable) {
             return;
         }
@@ -69,26 +69,15 @@ export abstract class TaskDetailComponent<A extends AssetDescription, D, T exten
             .afterClosed()
             .subscribe(data => {
                 if (data.closeEvent === CloseEvent.VALIDATION) {
-                    this.doAction(action, updatedTask);
+                    this.doAction(action);
                 }
             });
     }
 
     protected abstract goBackToList(): Promise<boolean>;
 
-    private doAction(action: Action, updatedTask?: Task): void {
-        if(updatedTask){
-            let actions: Action[];
-            actions = updatedTask.actions.map(element => {
-                if (element.name === action.name){
-                     return {...element, form: {...element.form, sections: [{...element.form.sections[0], fields: [{...element.form.sections[0].fields[0], values: action.form?.sections[0]?.fields[0].values ?? undefined}]}]}};
-                } else {
-                     return element;
-                }
-            });
-            updatedTask = {...updatedTask, actions};
-        }
-        this.taskMetierService.doAction(action, updatedTask ?? this.taskWithDependencies.task).subscribe({
+    private doAction(action: Action): void {
+        this.taskMetierService.doAction(action, this.taskWithDependencies.task).subscribe({
             complete: () => {
                 this.translateService.get('task.success').subscribe(message => {
                     this.snackBarService.openSnackBar({

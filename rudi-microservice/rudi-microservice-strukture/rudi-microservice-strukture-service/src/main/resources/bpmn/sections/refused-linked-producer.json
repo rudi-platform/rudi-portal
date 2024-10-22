@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à refuser la demande de rattachement de l’organisation au noeud producteur. Merci d’indiquer ci-dessous la raison du refus.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToAttachmentInitiator",
+			"label": "Message à l’attention du demandeur",
+			"type": "TEXT",
+			"required": true
+		}
+	]
+}

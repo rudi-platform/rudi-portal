@@ -48,6 +48,14 @@
 		{
 			"name": "miscellaneous",
 			"description": "Services divers"
+		},
+		{
+			"name": "task",
+			"description": "Services de gestion de tâches"
+		},
+		{
+			"name": "linked-producer",
+			"description": "Service de gestion du rattachement d'un producer à un provider"
 		}
 	],
 	"paths": {
@@ -1487,7 +1495,8 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "rudi-strukture-model.json#/components/schemas/Organization"
+									"type": "string",
+									"format": "uuid"
 								}
 							}
 						}
@@ -1538,6 +1547,14 @@
 						"required": false,
 						"schema": {
 							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUserUuidParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "organization_status",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationStatus"
 						}
 					},
 					{
@@ -1674,6 +1691,40 @@
 					},
 					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/{uuid}/owner-info": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Donne à partir de l'Uuid d'une organisation, les informations du owner ayant fait la demande",
+				"description": "Donne à partir de l'Uuid d'une organisation, les informations du owner ayant fait la demande",
+				"operationId": "getOrganizationOwnerInfo",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"description": "UUID de l'organisation recherchée",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-strukture-model.json#/components/schemas/OwnerInfo"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2013,6 +2064,14 @@
 						}
 					},
 					{
+						"in": "query",
+						"name": "organization_status",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationStatus"
+						}
+					},
+					{
 						"$ref": "#/components/parameters/OffsetParam"
 					},
 					{
@@ -2035,6 +2094,1163 @@
 					},
 					"500": {
 						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/tasks": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Recherche des tâches",
+				"description": "Recherche des tâches",
+				"operationId": "searchTasks",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"description": "Nom de la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "description",
+						"description": "Description de la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "process-definition-keys",
+						"description": "Type du processus",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"description": "etat de la tâche",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Status"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "fonctional-status",
+						"description": "Etat fonctionnel",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "organization-status",
+						"description": "etat de la tâche",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationStatus"
+						}
+					},
+					{
+						"in": "query",
+						"name": "asAdmin",
+						"description": "En tant qu'admin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "organization-uuid",
+						"description": "UUID de l'Organization pour filtrer les tâches",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/tasks/{task-id}": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Chargement d'une tâche",
+				"description": "Chargement d'une tâche",
+				"operationId": "getTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/draft-form": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Chargement de formulaire draft s'il existe",
+				"description": "Chargement de formulaire draft s'il existe",
+				"operationId": "lookupOrganizationDraftForm",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Form"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/{task-id}/claim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Claim d'une tâche",
+				"description": "Claim d'une tâche",
+				"operationId": "claimOrganizationTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/{task-id}/unclaim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Unclaim d'une tâche",
+				"description": "Unclaim d'une tâche",
+				"operationId": "unclaimOrganizationTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/{task-id}/do-it/{action-name}": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Fait avancer la tâche",
+				"description": "Fait avancer la tâche à partir d'une action",
+				"operationId": "doItOrganization",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "action-name",
+						"description": "Nom de l'action à réaliser",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Mets à jour une tâche",
+				"description": "Mets à jour une tâche et l'asset associée",
+				"operationId": "updateOrganizationTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"task"
+				],
+				"summary": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"description": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"operationId": "createOrganizationDraft",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-strukture-model.json#/components/schemas/Organization"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/start": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Démarre la tâche",
+				"description": "Démarre la tâche",
+				"operationId": "startOrganizationTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/tasks/{task-id}/historic": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"description": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"operationId": "getOrganizationTaskHistoryByTaskId",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "asAdmin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/linked-producers/{uuid}": {
+			"get": {
+				"tags": [
+					"linked-producers"
+				],
+				"summary": "Demande de rattachement d'une organisation à un provider",
+				"description": "Demande de rattachement d'une organisation à un provider.",
+				"operationId": "getLinkedProducer",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"description": "UUID du producer link recherché",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-strukture-model.json#/components/schemas/LinkedProducer"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"linked-producers"
+				],
+				"summary": "Demande de rattachement d'une organisation à un provider",
+				"description": "Demande de rattachement d'une organisation à un provider.",
+				"operationId": "attachProducer",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"description": "UUID de l'organization que l'on souhaite rattacher à son fournisseur.",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/linked-producers/{uuid}/owner-info": {
+			"get": {
+				"tags": [
+					"linked-producers"
+				],
+				"summary": "Donne à partir du linkedProducer Uuid, les informations du owner ayant fait la demande",
+				"description": "Donne à partir du linkedProducer Uuid, les informations du owner ayant fait la demande",
+				"operationId": "getLinkedProducerOwnerInfo",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"description": "UUID de linkedProducer recherché",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-strukture-model.json#/components/schemas/OwnerInfo"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/draft-form": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Chargement de formulaire draft s'il existe",
+				"description": "Chargement de formulaire draft s'il existe",
+				"operationId": "lookupLinkedProducerDraftForm",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Form"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/{task-id}/claim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Claim d'une tâche",
+				"description": "Claim d'une tâche",
+				"operationId": "claimLinkedProducerTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/{task-id}/unclaim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Unclaim d'une tâche",
+				"description": "Unclaim d'une tâche",
+				"operationId": "unclaimLinkedProducerTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/{task-id}/do-it/{action-name}": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Fait avancer la tâche",
+				"description": "Fait avancer la tâche à partir d'une action",
+				"operationId": "doItLinkedProducer",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "action-name",
+						"description": "Nom de l'action à réaliser",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Mets à jour une tâche",
+				"description": "Mets à jour une tâche et l'asset associée",
+				"operationId": "updateLinkedProducerTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"task"
+				],
+				"summary": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"description": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"operationId": "createLinkedProducerDraft",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-strukture-model.json#/components/schemas/LinkedProducer"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/start": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Démarre la tâche",
+				"description": "Démarre la tâche",
+				"operationId": "startLinkedProducerTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-producers/tasks/{task-id}/historic": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"description": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"operationId": "getLinkedProducerTaskHistoryByTaskId",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "asAdmin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
 			}

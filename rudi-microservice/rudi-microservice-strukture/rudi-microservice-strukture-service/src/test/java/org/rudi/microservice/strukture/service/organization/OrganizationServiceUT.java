@@ -1,13 +1,14 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,15 +21,17 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
-import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
+import org.rudi.microservice.strukture.core.bean.Feature;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationRole;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.Point;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
@@ -53,6 +56,8 @@ import static org.mockito.Mockito.when;
 @StruktureSpringBootTest
 class OrganizationServiceUT {
 
+	private final List<OrganizationEntity> createdOrganizations = new ArrayList<>();
+
 	@Autowired
 	private OrganizationService organizationService;
 
@@ -73,22 +78,18 @@ class OrganizationServiceUT {
 
 	@MockBean
 	DatasetService datasetService;
+	@Autowired
+	private OrganizationDataFactory organizationDataFactory;
 
 	private Organization createOrganizationDto() {
 		Organization organization = new Organization();
 		organization.setName("Fruity Loops");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 		return organization;
-	}
-
-	private User createUserROBOT() {
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		userOrganisation.setType(UserType.ROBOT);
-		return userOrganisation;
 	}
 
 	private void mockExternalCalls() throws AppServiceException {
@@ -116,18 +117,13 @@ class OrganizationServiceUT {
 		organization.setName("Ableton Live");
 		organization.setDescription("DAW très bien");
 		organization.setUrl("http://www.ableton.com");
+		organization.setInitiator("initiator@mail.fr");
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 
 		LocalDateTime date2 = LocalDateTime.of(2025, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setClosingDate(date2);
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		userOrganisation.setPassword("Azertyu1op!123456");
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		return organizationService.createOrganization(organization);
 	}
@@ -155,15 +151,19 @@ class OrganizationServiceUT {
 
 	@AfterEach
 	void tearDown() {
-		organizationDao.deleteAll();
+		for (OrganizationEntity o : createdOrganizations){
+			organizationDao.delete(o);
+		}
 	}
 
 	@Test
+	@DisplayName("Création d'une organization - champs minimums")
 	void createOrganization() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("Ableton Live");
 		organization.setDescription("DAW très bien");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setUrl("http://www.ableton.com");
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
@@ -171,11 +171,6 @@ class OrganizationServiceUT {
 
 		LocalDateTime date2 = LocalDateTime.of(2023, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setClosingDate(date2);
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 
@@ -189,25 +184,26 @@ class OrganizationServiceUT {
 		assertEquals(organization.getClosingDate(), inDb.getClosingDate());
 		assertEquals(organization.getDescription(), inDb.getDescription());
 		assertEquals(organization.getUrl(), inDb.getUrl());
+
+		organizationDao.delete(inDb);
 	}
 
 	@Test
+	@DisplayName("Création d'une organization - teste sur le nom")
 	void createOrganization_name_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("Nom OK");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		assertNotNull(created);
 	}
 
 	@Test
+	@DisplayName("Test d'une organization avec un nom trop long")
 	void createOrganization_name_KO() {
 
 		Organization organization = new Organization();
@@ -216,62 +212,51 @@ class OrganizationServiceUT {
 						+ "Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long");
 		organization.setOpeningDate(LocalDateTime.now());
 
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
-
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
 	}
 
 	@Test
+	@DisplayName("Création organization - opening date uniquement sans end date")
 	void createOrganization_openingDate_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("OpeningDate OK");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		assertNotNull(created);
 	}
 
 	@Test
+	@DisplayName("Création d'une organization sans opening date - KO")
 	void createOrganization_openingDate_KO() {
 
 		Organization organization = new Organization();
 		organization.setName("Opening date is missing");
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
 	}
 
 	@Test
+	@DisplayName("Création d'une organization avec une description OK")
 	void createOrganization_description_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("Description OK");
 		organization.setDescription("Ceci est ma description, courte.");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		assertNotNull(created);
 	}
 
 	@Test
+	@DisplayName("Création d'une organzation avec une description trop longue")
 	void createOrganization_description_KO() {
 
 		Organization organization = new Organization();
@@ -287,32 +272,37 @@ class OrganizationServiceUT {
 						+ "hein ? Apagnan enfin ça s'écrit pas comme ça je crois");
 		organization.setOpeningDate(LocalDateTime.now());
 
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
+		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
+	}
+
+	@Test
+	@DisplayName("Création d'une organzation sans description")
+	void createOrganization_no_description_KO() {
+
+		Organization organization = new Organization();
+		organization.setName("Description KO");
+		organization.setOpeningDate(LocalDateTime.now());
 
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
 	}
 
 	@Test
+	@DisplayName("Création d'une organization avec une URL valide")
 	void createOrganization_url_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("Url OK");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setUrl("https://mavieskoa.com");
 		organization.setOpeningDate(LocalDateTime.now());
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		assertNotNull(created);
 	}
 
 	@Test
+	@DisplayName("Création d'une organization avec une URL trop longue")
 	void createOrganization_url_KO() {
 
 		Organization organization = new Organization();
@@ -321,19 +311,14 @@ class OrganizationServiceUT {
 				"https://mavieskoa?query=recherche+trop+longue+faut+pas+faire+ca+surtout+que+je+renvoie+oui.com");
 		organization.setOpeningDate(LocalDateTime.now());
 
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
-
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
 	}
 
 	@Test
+	@DisplayName("Recherche d'organnization")
 	void searchOrganization() throws AppServiceBadRequestException {
 		Organization organization = createOrganizationDto();
-		User organizationUser = createUserROBOT();
-		when(aclHelper.createUser(any())).thenReturn(organizationUser);
+
 		Organization created = organizationService.createOrganization(organization);
 		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
 		criteria.setUuid(created.getUuid());
@@ -344,16 +329,15 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Update name d'une organization")
 	void updateOrganization() throws AppServiceException {
 
 		Organization organization = new Organization();
 		organization.setName("Novation");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
 
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		created.setName("Teenage Engineering");
@@ -367,24 +351,25 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Suppression d'une organization")
 	void deleteOrganization() throws AppServiceException {
+
+		long initialValue = organizationDataFactory.countAll();
 
 		Organization organization = new Organization();
 		organization.setName("Sloclap");
+		organization.setDescription("Une description OK");
+		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(UUID.randomUUID());
-		userOrganisation.setLogin(UUID.randomUUID().toString());
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
 
 		Organization created = organizationService.createOrganization(organization);
 		organizationService.deleteOrganization(created.getUuid());
 
-		assertTrue(CollectionUtils.isEmpty(organizationDao.findAll()));
+		assertThat(organizationDao.findAll()).as("On doit avoir le même nombre d'organization qu'au début du test").hasSize((int) initialValue);
 	}
 
 	@Test
+	@DisplayName("Ajout d'un membre à une organisation - personalisation de la date d'ajout")
 	void addOrganisationMember_added_date_custom_OK() throws Exception {
 		mockAuthenticationData();
 		mockExternalCalls();
@@ -494,7 +479,7 @@ class OrganizationServiceUT {
 		organizationService.addOrganizationMember(savedOrganization.getUuid(), editor1);
 
 		var oldMembers = organizationService.getOrganizationMembers(savedOrganization.getUuid());
-		assertThat(oldMembers.size()).as("Il y a 3 membres, les 2 ajoutés + le ROBOT").isEqualTo(4);
+		assertThat(oldMembers.size()).as("Il y a 3 membres : les 3 ajoutés").isEqualTo(3);
 
 		// Suppression d'un ADMINISTRATOR
 		organizationService.removeOrganizationMembers(savedOrganization.getUuid(), admin1.getUserUuid());
@@ -526,9 +511,9 @@ class OrganizationServiceUT {
 		organizationService.addOrganizationMember(savedOrganization.getUuid(), admin1);
 
 		var oldMembers = organizationService.getOrganizationMembers(savedOrganization.getUuid());
-		assertThat(oldMembers.size()).as("Il y a 2 membres, l'admin + le ROBOT").isEqualTo(2);
+		assertThat(oldMembers.size()).as("Il y a 1 membre").isEqualTo(1);
 
-		// Tentative de uppression de l'ADMINISTRATOR
+		// Tentative de suppression de l'ADMINISTRATOR
 		// On ne peut supprimer le dernier ADMIN
 		assertThrows(CannotRemoveLastAdministratorException.class,
 				() -> organizationService.removeOrganizationMembers(savedOrganization.getUuid(), admin1.getUserUuid()));
@@ -540,6 +525,7 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Update organization member : check member infos - KO")
 	void updateOrganizationMember_KO_when_updating_another_member_from_memberDtoInfo() throws AppServiceException {
 
 		Organization organization = createTestOrganization();
@@ -560,6 +546,7 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Update organization member : check orga infos - KO")
 	void updateOrganizationMember_KO_when_updating_the_member_to_another_organization() throws AppServiceException {
 
 		Organization organization = createTestOrganization();
@@ -580,6 +567,7 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Update organization member : check access rights - KO")
 	void updateOrganizationMember_unauthorized_when_not_administrator_of_organization() throws AppServiceException {
 
 		Organization organization = createTestOrganization();
@@ -598,6 +586,7 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@DisplayName("Delete organization member : check access rights - KO")
 	void removeOrganizationMembers_does_not_delete_members_if_it_fails() throws AppServiceException {
 		mockAuthenticationData();
 		mockExternalCalls();
@@ -619,5 +608,48 @@ class OrganizationServiceUT {
 
 		// On ne doit avoir supprimé aucun membre
 		assertEquals(oldMembers, newMembers);
+	}
+
+	@Test
+	@DisplayName("Création d'une organisation avec une position.")
+	void mappingTest() throws AppServiceBadRequestException {
+		Organization organization = new Organization();
+		organization.setName("Ableton Live");
+		organization.setDescription("DAW très bien");
+		organization.setUrl("http://www.ableton.com");
+		organization.setInitiator("initiator@mail.fr");
+		organization.setAddress("some address");
+
+		Feature feature = new Feature();
+		Point point = new Point();
+
+		List<BigDecimal> coordinates = List.of(BigDecimal.valueOf(48.132819955157245), BigDecimal.valueOf(-1.6390905740588901));
+		point.setType("Point");
+		point.setCoordinates(coordinates);
+
+		feature.setType("Feature");
+		feature.setGeometry(point);
+
+		organization.setPosition(feature);
+
+		String featureString = feature.toString();
+
+		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
+		organization.setOpeningDate(date);
+
+		LocalDateTime date2 = LocalDateTime.of(2025, Month.APRIL, 14, 23, 38, 12, 0);
+		organization.setClosingDate(date2);
+
+		Organization created = organizationService.createOrganization(organization);
+		OrganizationEntity organizationEntity = organizationDao.findByUuid(created.getUuid());
+
+		assertThat(organizationEntity)
+				.as("L'entité ne doit pas être null")
+				.isNotNull()
+				.as("La position ne doit pas être null non plus.")
+				.matches(o -> o.getPosition() != null)
+				.as("La position doit petre la même que celle renseignée")
+				.matches(o -> o.getPosition().getCoordinates() != null)
+		;
 	}
 }

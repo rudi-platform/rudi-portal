@@ -1,0 +1,300 @@
+@startuml
+
+abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSuperclass>>  {
+	{field} {static} +CODE_COLUMN_LENGTH : int
+	{field} {static} +CODE_COLUMN_NAME : String
+	{field} +@Column("code") code : String
+	{field} +@Column("label") label : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuperclass>>  {
+	{field} +@Column("id") @Id id : Long
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("uuid") uuid : java.util.UUID
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder {
+	{field} -id : Long
+	{field} -uuid : java.util.UUID
+	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
+	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +toString () : String
+	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSuperclass>>  {
+	{field} +@Column("closing_date") closingDate : java.time.LocalDateTime
+	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
+	{field} +@Column("order_") order : int
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<MappedSuperclass>>  {
+	{field} +@Column("lang") lang : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("text") text : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.common.storage.entity.HibernateEntityHelper {
+	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+}
+
+
+interface org.rudi.common.storage.entity.PositionedStatus {
+	{method}  {abstract} +isFinal () : boolean
+	{method}  {abstract} +isInitial () : boolean
+}
+
+
+class org.rudi.common.storage.entity.SkosConceptCodeColumn {
+	{field} {static} +LENGTH : int
+	{field} {static} +NAME : String
+	{field} {static} +TABLE_NAME : String
+}
+
+
+enum org.rudi.common.storage.entity.StatusPosition {
+	{field} +FINAL
+	{field} +INITIAL
+	{field} +INTERMEDIATE
+}
+
+
+abstract class org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualEntity <<MappedSuperclass>>  {
+	{field} {static} +CODE_COLUMN_LENGTH : int
+	{field} {static} +CODE_COLUMN_NAME : String
+	{field} +@Column("code") code : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+abstract class org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity <<MappedSuperclass>>  {
+	{field} +@Column("closing_date") closingDate : java.time.OffsetDateTime
+	{field} +@Column("opening_date") openingDate : java.time.OffsetDateTime
+	{field} +@Column("order_") order : int
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+enum org.rudi.microservice.konsent.storage.entity.common.OwnerType {
+	{field} +ORGANIZATION
+	{field} +USER
+}
+
+
+enum org.rudi.microservice.konsent.storage.entity.common.RetentionUnit {
+	{field} +MONTH
+	{field} +WEEK
+	{field} +YEAR
+}
+
+
+enum org.rudi.microservice.konsent.storage.entity.common.TargetType {
+	{field} +DATASET
+	{field} +PROJECT
+}
+
+
+enum org.rudi.microservice.konsent.storage.entity.common.TreatmentStatus {
+	{field} +DRAFT
+	{field} +VALIDATED
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity <<Entity>>  <<Table>>  {
+ {TableName=consent}
+ {TableSchema=konsent_data}
+--
+	{field} +@Column("consent_date") consentDate : java.time.OffsetDateTime
+	{field} +@Column("consent_hash") consentHash : String
+	{field} +@Column("expiration_date") expirationDate : java.time.OffsetDateTime
+	{field} +@Column("owner_uuid") ownerUuid : java.util.UUID
+	{field} +@Column("revoke_hash") revokeHash : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("storage_key") storageKey : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.data.DataManagerEntity <<Entity>>  <<Table>>  {
+ {TableName=data_manager}
+ {TableSchema=konsent_data}
+--
+	{field} +@Column("address_1") address1 : String
+	{field} +@Column("address_2") address2 : String
+	{field} +@Column("email") email : String
+	{field} +@Column("name") name : String
+	{field} +@Column("phone_number") phoneNumber : String
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.data.DataRecipientEntity <<Entity>>  <<Table>>  {
+ {TableName=data_recipient}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity <<Entity>>  <<Table>>  {
+ {TableName=dictionary_entry}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity <<Entity>>  <<Table>>  {
+ {TableName=treatment}
+ {TableSchema=konsent_data}
+--
+	{field} {static} +FIELD_OWNER_TYPE : String
+	{field} {static} +FIELD_OWNER_UUID : String
+	{field} {static} +FIELD_STATUS : String
+	{field} {static} +FIELD_VERSION : String
+	{field} +@Column("creation_date") creationDate : java.time.OffsetDateTime
+	{field} +@Column("name") name : String
+	{field} +@Column("owner_uuid") ownerUuid : java.util.UUID
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("target_uuid") targetUuid : java.util.UUID
+	{field} +@Column("updated_date") updatedDate : java.time.OffsetDateTime
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.InvolvedPopulationCategoryEntity <<Entity>>  <<Table>>  {
+ {TableName=involved_population_category}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.PurposeEntity <<Entity>>  <<Table>>  {
+ {TableName=purpose}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.RetentionEntity <<Entity>>  <<Table>>  {
+ {TableName=retention}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("value_") value : Integer
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.SecurityMeasureEntity <<Entity>>  <<Table>>  {
+ {TableName=security_measure}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity <<Entity>>  <<Table>>  {
+ {TableName=treatment_version}
+ {TableSchema=konsent_data}
+--
+	{field} +@Column("creation_date") creationDate : java.time.OffsetDateTime
+	{field} +@Column("data_recipient_detail") dataRecipientDetail : String
+	{field} +@Column("obsolete_date") obsoleteDate : java.time.OffsetDateTime
+	{field} +@Column("outside_ue_transfert") outsideUETransfert : String
+	{field} +@Column("security_measure_detail") securityMeasureDetail : String
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("treatment_hash") treatmentHash : String
+	{field} +@Column("updated_date") updatedDate : java.time.OffsetDateTime
+	{field} +@Column("version") version : Integer
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
+}
+
+
+class org.rudi.microservice.konsent.storage.entity.treatmentversion.TypologyTreatmentEntity <<Entity>>  <<Table>>  {
+ {TableName=typology_treatment}
+ {TableSchema=konsent_data}
+--
+	{field} {static} -serialVersionUID : long
+}
+
+
+
+
+org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.common.storage.entity.AbstractStampedEntity --|>  org.rudi.common.storage.entity.AbstractLabelizedEntity
+org.rudi.common.storage.entity.AbstractTranslationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity :  @ManyToMany\nlabels
+org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualEntity
+org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity -->  org.rudi.microservice.konsent.storage.entity.common.OwnerType :  @Column("owner_type")\nownerType
+org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity -->  org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity :  @ManyToOne\ntreatment
+org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity -->  org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity :  @ManyToOne\ntreatmentVersion
+org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.data.DataManagerEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.data.DataRecipientEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity --|>  org.rudi.common.storage.entity.AbstractTranslationEntity
+org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity :  @OneToMany\nversions
+org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity -->  org.rudi.microservice.konsent.storage.entity.common.OwnerType :  @Column("owner_type")\nownerType
+org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity -->  org.rudi.microservice.konsent.storage.entity.common.TargetType :  @Column("target_type")\ntargetType
+org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity -->  org.rudi.microservice.konsent.storage.entity.common.TreatmentStatus :  @Column("status")\nstatus
+org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.InvolvedPopulationCategoryEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.PurposeEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.RetentionEntity -->  org.rudi.microservice.konsent.storage.entity.common.RetentionUnit :  @Column("unit")\nunit
+org.rudi.microservice.konsent.storage.entity.treatmentversion.RetentionEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.SecurityMeasureEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DataRecipientEntity :  @ManyToMany\ndataRecipients
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity :  @ManyToMany\ndatas
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity :  @ManyToMany\noperationTreatmentNatures
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity :  @ManyToMany\ntitles
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity :  @ManyToMany\nusages
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity "1" o-- "0..*"  org.rudi.microservice.konsent.storage.entity.treatmentversion.SecurityMeasureEntity :  @ManyToMany\nsecurityMeasures
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.common.TreatmentStatus :  @Column("status")\nstatus
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.data.DataManagerEntity :  @ManyToOne\ndataProtectionOfficer
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.data.DataManagerEntity :  @ManyToOne\nmanager
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.treatmentversion.InvolvedPopulationCategoryEntity :  @ManyToOne\ninvolvedPopulation
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.treatmentversion.PurposeEntity :  @ManyToOne\npurpose
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.treatmentversion.RetentionEntity :  @ManyToOne\nretention
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity -->  org.rudi.microservice.konsent.storage.entity.treatmentversion.TypologyTreatmentEntity :  @ManyToOne\ntypology
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.konsent.storage.entity.treatmentversion.TypologyTreatmentEntity --|>  org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity
+
+hide methods
+
+@enduml

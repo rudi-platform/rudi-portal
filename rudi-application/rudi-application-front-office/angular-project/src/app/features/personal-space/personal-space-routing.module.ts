@@ -4,6 +4,10 @@ import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
 import {AuthGuardService as AuthGuard} from '@core/services/auth-guard.service';
 import {OwnerGuardService} from '@core/services/owner-guard.service';
 import {UserGuardService} from '@core/services/user-guard.service';
+import {
+    LinkedProducerTaskDetailComponent
+} from '@features/personal-space/pages/linked-producer-task-detail/linked-producer-task-detail.component';
+import {OrganizationTaskDetailComponent} from '@features/personal-space/pages/organization-task-detail/organization-task-detail.component';
 import {ProjectDetailComponent} from './components/project-detail/project-detail.component';
 import {DatasetTaskDetailComponent} from './pages/dataset-task-detail/dataset-task-detail.component';
 import {MyAccountComponent} from './pages/my-account/my-account.component';
@@ -81,6 +85,18 @@ const routes: Routes = [
         // Path to see a project task detail
         path: 'project-task-detail/:taskId',
         component: ProjectTaskDetailComponent,
+        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+    },
+    {
+        // Path to see an organization task detail
+        path: 'organization-task-detail/:taskId',
+        component: OrganizationTaskDetailComponent,
+        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+    },
+    {
+        // Path to see a producer link task detail
+        path: 'linked-producer-task-detail/:taskId',
+        component: LinkedProducerTaskDetailComponent,
         canActivate: mapToCanActivate([AuthGuard, UserGuardService])
     }
 ];

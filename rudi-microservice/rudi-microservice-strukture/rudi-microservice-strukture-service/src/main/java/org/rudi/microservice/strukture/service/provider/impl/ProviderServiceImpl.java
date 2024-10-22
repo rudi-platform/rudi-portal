@@ -22,7 +22,7 @@ import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.microservice.strukture.core.bean.AbstractAddress;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Provider;
-import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.service.helper.StruktureResourceHelper;
 import org.rudi.microservice.strukture.service.mapper.AbstractAddressMapper;
 import org.rudi.microservice.strukture.service.mapper.NodeProviderMapper;
@@ -81,8 +81,8 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private final MediaService mediaService;
 	private final ProviderDao providerDao;
-	private final NodeProviderDao nodeProviderDao;
 	private final ProviderCustomDao providerCustomDao;
+	private final NodeProviderDao nodeProviderDao;
 	private final AbstractAddressDao abstractAddressDao;
 	private final AddressRoleDao addressRoleDao;
 	private final ProviderMapper providerMapper;

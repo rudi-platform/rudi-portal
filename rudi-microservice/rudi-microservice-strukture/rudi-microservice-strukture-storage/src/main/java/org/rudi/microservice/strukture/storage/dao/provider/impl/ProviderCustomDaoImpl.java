@@ -1,8 +1,21 @@
 package org.rudi.microservice.strukture.storage.dao.provider.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
@@ -13,18 +26,6 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Repository custom pour les producteurs

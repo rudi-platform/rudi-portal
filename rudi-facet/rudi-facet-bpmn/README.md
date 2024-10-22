@@ -1,4 +1,8 @@
-# I - Intégration de la facette BPMN
+# Rudi - Facet - BPMN
+
+Facette de mise en oeuvre des processus 
+
+## Intégration de la facette BPMN
 
 La facette manipule les concepts suivants :
 
@@ -20,15 +24,17 @@ L'intégration de la facette BPMN nécessite les développements suivants :
 * Etendre la classe  _AbstractAssignmentHelper_  pour définir les modalités d'affectation des utilisateurs
 * Etendre la casses  _AbstactAssetDescriptionHelper_  pour spécialiser ce helper vis à vis du mapper créé
 
-# II - Design des processus
+![Diagramme de classes](readme/rudi-facet-bpmn-entities.png)
 
-## II.1 - Créer un processus dans la base
+## Design des processus
+
+### Créer un processus dans la base
 
 Le seul moyen de créer un nouveau processus ou une nouvelle version d'un processus est d'utiliser la méthode  _InitializationService.updateProcessDefinition_  en passant le fichier *.bpmn20.xml (Attention de bien respecter l'extension).
 
 Pour lister les processus déclarés (avec les différentes versions):  _InitializationService.searchProcessDefinitions_ 
 
-## II.2 - Bien modéliser
+### Bien modéliser
 
 Pour bien modéliser un processus, il est recommandé à chaque étape, de mettre à jour les données de l'Asset correspondant et notamment :
 * son état '_Activiti_'
@@ -36,7 +42,7 @@ Pour bien modéliser un processus, il est recommandé à chaque étape, de mettr
 * la date de mise à jour
 Des méthodes utilitaires sont disponibles pour cela (Cf. ci-dessous)
 
-## II.3 - Interactions des processus avec l'Asset
+### Interactions des processus avec l'Asset
 
 La classe WorkflowContext propose un certain nombre de méthodes utilitaires :
 
@@ -133,7 +139,7 @@ Les paramètres de la méthode sont :
 * Le sujet du courriell
 * Le corps du courriel
 
-# III - Configuration des champs de formulaire d'une étape
+## Configuration des champs de formulaire d'une étape
 
 ![Gestion des formulaires](readme/FormDefinition.png)
 
@@ -200,7 +206,7 @@ Le flux json est constitué comme suit:
 }
 ```
 
-## Initialisation automatique
+### Initialisation automatique
 
 Pour associer automatiquement des formulaires à des étapes, il suffit d'ajouter les définitions JSON dans les dossiers
 suivants dans le classpath :

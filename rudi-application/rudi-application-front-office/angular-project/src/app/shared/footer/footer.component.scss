@@ -33,13 +33,15 @@
     font-weight: 400;
 }
 
-.rudi-label-lien-mobile-mention, .term-link {
+.rudi-label-lien-mobile-mention {
+    font-weight: 600;
     font-size: 13px;
-    color: var(--primary-color);
+    color: var(--primary-text);
     margin: 0 9px 0 6px;
     text-decoration: none !important;
 
     &:hover {
+        cursor: pointer;
         color: var(--accent-color-svg);
         text-decoration: none !important;
     }

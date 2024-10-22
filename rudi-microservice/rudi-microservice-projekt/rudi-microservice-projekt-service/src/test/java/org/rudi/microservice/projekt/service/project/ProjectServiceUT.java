@@ -1,5 +1,14 @@
 package org.rudi.microservice.projekt.service.project;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -52,6 +61,7 @@ import org.rudi.microservice.projekt.core.bean.OwnerType;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
+import org.rudi.microservice.projekt.core.bean.ProjectStatus;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
@@ -76,14 +86,6 @@ import org.springframework.data.domain.Pageable;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Class de test de la couche service
@@ -1229,6 +1231,8 @@ class ProjectServiceUT {
 		createEntities(project);
 		mockAuthenticatedUserToCreateProject(project);
 		final Project createdProject = projectService.createProject(project);
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		projectService.updateProject(createdProject);
 
 		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of()));
@@ -1250,6 +1254,8 @@ class ProjectServiceUT {
 		createEntities(project);
 		mockAuthenticatedUserToCreateProject(project);
 		final Project createdProject = projectService.createProject(project);
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		projectService.updateProject(createdProject);
 
 		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));
@@ -1314,6 +1320,8 @@ class ProjectServiceUT {
 		mockAuthenticatedUserToCreateProject(project);
 
 		final Project createdProject = projectService.createProject(project);
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		projectService.updateProject(createdProject);
 		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
 
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));

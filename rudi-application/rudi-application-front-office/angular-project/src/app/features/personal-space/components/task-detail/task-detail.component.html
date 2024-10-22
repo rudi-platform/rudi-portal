@@ -9,7 +9,7 @@
                 <label class="data-label">{{'personalSpace.requestDetail.datasetTitle'|translate}}</label> <br>
                 <span class="data-value">{{requestDisplayData?.datasetTitle}}</span>
             </div>
-            <div class="vertical-space">
+            <div class="vertical-space" *ngIf="requestDisplayData?.receivedDate">
                 <label class="data-label">{{'personalSpace.requestDetail.requestDate'|translate}}</label> <br>
                 <span class="data-value">{{requestDisplayData?.receivedDate?.toLocaleDateString()}}</span>
             </div>
@@ -17,7 +17,7 @@
                 <label class="data-label">{{'personalSpace.requestDetail.endDate'|translate}}</label> <br>
                 <span class="data-value">{{formatEndDate(requestDisplayData?.endDate)}}</span>
             </div>
-            <div class="vertical-space">
+            <div class="vertical-space" *ngIf="requestDisplayData?.comment && requestDisplayData?.comment.trim() !== ''">
                 <label class="data-label">{{'personalSpace.requestDetail.comment'|translate}}</label> <br>
                 <span class="data-value">{{requestDisplayData?.comment}}</span>
             </div>

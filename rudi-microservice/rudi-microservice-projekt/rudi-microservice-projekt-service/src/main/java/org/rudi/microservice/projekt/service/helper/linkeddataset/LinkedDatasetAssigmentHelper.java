@@ -6,7 +6,7 @@ package org.rudi.microservice.projekt.service.helper.linkeddataset;
 import java.util.Arrays;
 import java.util.List;
 
-import org.rudi.facet.bpmn.helper.workflow.AbstractAssignmentHelper;
+import org.rudi.microservice.projekt.service.helper.AbstractProjektAssigmentHelper;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class LinkedDatasetAssigmentHelper extends AbstractAssignmentHelper<LinkedDatasetEntity> {
+public class LinkedDatasetAssigmentHelper extends AbstractProjektAssigmentHelper<LinkedDatasetEntity> {
 
 	@Override
 	public List<String> computeAssignees(LinkedDatasetEntity assetDescription, String roleName) {

@@ -6,7 +6,6 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable, of} from 'rxjs';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
-import {mapEach} from '../utils/ObservableUtils';
 import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component';
 import { Address } from 'micro_service_modules/api-rva';
 

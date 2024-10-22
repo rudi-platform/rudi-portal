@@ -23,6 +23,10 @@ export class ProcessDefinitionKeyTranslatePipe implements PipeTransform {
             result = this.translateService.instant('personalSpace.myNotifications.selfdata');
         } else if (value === ProcessDefinitionEnum.PROJECT_PROCESS) {
             result = this.translateService.instant('personalSpace.myNotifications.project');
+        } else if (value === ProcessDefinitionEnum.ORGANIZATION_PROCESS) {
+            result = this.translateService.instant('personalSpace.myNotifications.organization');
+        } else if (value === ProcessDefinitionEnum.LINKED_PRODUCER_PROCESS) {
+            result = this.translateService.instant('personalSpace.myNotifications.linkedProducer');
         } else {
             result = '-';
         }

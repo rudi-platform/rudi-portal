@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.0.4</version>
+	<version>3.1.0</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -39,29 +39,29 @@
 		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<springfox.version>3.0.0</springfox.version>
 		<openapi.version>1.8.0</openapi.version>
-		<openapi.plugin.version>7.6.0</openapi.plugin.version>
+		<openapi.plugin.version>7.9.0</openapi.plugin.version>
 		<openapi.jackson.version>0.2.6</openapi.jackson.version>
 		<jackson-datatype.version>2.15.2</jackson-datatype.version>
-		<jackson-core.version>2.17.2</jackson-core.version>
+		<jackson-core.version>2.18.0</jackson-core.version>
 		<apache.directory.api.version>2.1.7</apache.directory.api.version>
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
 		<mapstruct.version>1.6.2</mapstruct.version>
 		<lombok.version>1.18.20</lombok.version>
 		<swagger.codegen.version>3.0.21</swagger.codegen.version>
-		<swagger.version>2.2.23</swagger.version>
+		<swagger.version>2.2.25</swagger.version>
 		<flyway.version>9.19.4</flyway.version>
 		<freemarker.version>2.3.33</freemarker.version>
-		<jetbrains.annotations.version>24.1.0</jetbrains.annotations.version>
+		<jetbrains.annotations.version>26.0.1</jetbrains.annotations.version>
 		<mockwebserver.version>4.12.0</mockwebserver.version>
-		<nimbus.jose.jwt.version>9.41.1</nimbus.jose.jwt.version>
+		<nimbus.jose.jwt.version>9.41.2</nimbus.jose.jwt.version>
 		<freemarker.version>2.3.31</freemarker.version>
 		<jsoup.version>1.18.1</jsoup.version>
 		<activiti.version>7.1.0.M6</activiti.version>
-		<log4j.version>2.24.0</log4j.version>
+		<log4j.version>2.24.1</log4j.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<geotools.version>22.2</geotools.version>
-		<tika.version>2.9.2</tika.version>
+		<tika.version>3.0.0</tika.version>
 		<s3.version>2.6.0</s3.version>
 		<gson.version>2.8.9</gson.version>
 		<xdocreport.version>2.0.6</xdocreport.version>
@@ -75,7 +75,7 @@
 		<jsonassert.version>1.5.3</jsonassert.version>
 		<boucycastle.version>1.78.1</boucycastle.version>
 		<activation.version>1.1.1</activation.version>
-		<reactor-test.version>3.6.10</reactor-test.version>
+		<reactor-test.version>3.6.11</reactor-test.version>
 		<h2.version>2.3.232</h2.version>
 		<maven-replacer-plugin.version>1.4.1</maven-replacer-plugin.version>
 		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -83,16 +83,20 @@
 		<version-maven-plugin.version>2.17.1</version-maven-plugin.version>
 		<!-- avec surefire 2.12.4, le test du microservice provider n'est pas
 		lancé -->
-		<maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.10.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 		<ant.plugin.version>3.1.0</ant.plugin.version>
 		<maven-scr-plugin.version>1.0.10</maven-scr-plugin.version>
 		<build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
 		<jaxb2-maven-plugin.version>2.4</jaxb2-maven-plugin.version>
-		<json-smart.version>2.4.11</json-smart.version>
+
+		<plantuml-generator-maven-plugin.version>3.0.1</plantuml-generator-maven-plugin.version>
+		<plantuml-maven-plugin.version>0.2.12</plantuml-maven-plugin.version>
+
+		<json-smart.version>2.5.1</json-smart.version>
 
 		<!-- Configuration SONAR -->
 		<sonar.projectKey>${env.SONAR_KEY}${project.artifactId}</sonar.projectKey>
@@ -871,8 +875,13 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-epsg-hsql</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-geojsondatastore</artifactId>
 				<version>${geotools.version}</version>
 			</dependency>
+
 
 		</dependencies>
 	</dependencyManagement>
@@ -1203,5 +1212,108 @@
 			<id>prod</id>
 		</profile>
 
+		<profile>
+			<id>generateuml</id>
+			<activation>
+				<property>
+					<name>generateUml</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>plantuml-generator-maven-plugin</artifactId>
+							<groupId>de.elnarion.maven</groupId>
+							<version>${plantuml-generator-maven-plugin.version}</version>
+							<executions>
+								<!-- generation fichier interpretable par
+								plantuml -->
+								<execution>
+									<id>generate-diagram-puml</id>
+									<goals>
+										<goal>generate</goal>
+									</goals>
+									<phase>generate-test-sources</phase>
+									<configuration>
+										<outputDirectory>
+											${project.build.directory}/../../readme</outputDirectory>
+										<outputFilename>
+											${project.name}-entities.puml</outputFilename>
+										<hideMethods>true</hideMethods>
+										<scanPackages>
+											<scanPackage>org.rudi</scanPackage>
+										</scanPackages>
+										<whitelistRegexp>.*\.entity\..*</whitelistRegexp> <!--
+										seulement les packages org.rudi.*entity* -->
+										<addJPAAnnotations>true</addJPAAnnotations>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+
+						<plugin>
+							<!-- generation de l'image associée au PUML-->
+							<groupId>com.github.davidmoten</groupId>
+							<artifactId>plantuml-maven-plugin</artifactId>
+							<version>${plantuml-maven-plugin.version}</version>
+							<executions>
+								<execution>
+									<id>generate-diagram-puml-png</id>
+									<phase>generate-test-sources</phase>
+									<goals>
+										<goal>generate</goal>
+									</goals>
+									<configuration>
+										<sources>
+											<!-- correspond au repertoire de
+											sortie de generate-diagram-puml -->
+											<directory>
+												${project.build.directory}/../../readme/</directory>
+											<includes>
+												<include>*.puml</include>
+											</includes>
+										</sources>
+										<outputDirectory>
+											${project.build.directory}/../../readme/</outputDirectory>
+										<formats>
+											<format>png</format>
+										</formats>
+										<preserveDirectoryStructure>false</preserveDirectoryStructure>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-clean-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>delete-extra-files</id>
+									<phase>generate-test-sources</phase>
+									<goals>
+										<goal>clean</goal>
+									</goals>
+									<configuration>
+										<excludeDefaultDirectories>true</excludeDefaultDirectories>
+
+										<filesets>
+											<fileset>
+												<!-- outputDirectory de
+												generate-diagram-puml-png -->
+												<directory>../readme/</directory>
+												<includes>
+													<include>index.md</include>
+												</includes>
+											</fileset>
+										</filesets>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
 	</profiles>
 </project>

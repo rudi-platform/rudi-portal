@@ -1,6 +1,9 @@
-package org.rudi.microservice.strukture.core.bean;
+package org.rudi.microservice.strukture.core.bean.criteria;
 
 import java.util.UUID;
+
+import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
+import org.rudi.microservice.strukture.core.bean.OrganizationRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

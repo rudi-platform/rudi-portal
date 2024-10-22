@@ -1,7 +1,7 @@
 <div class="jdds-section-container">
     <h2 class="title">{{ 'home.jddSection.title' | translate }}</h2>
 
-    <app-loader [isTransparent]="true" [allPage]="false" [active]="isLoading"></app-loader>
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="isLoading"></app-loader>
 
     <div class="desktop-jdds-list" *ngIf="!isLoading">
         <ng-container *ngFor="let item of jdds">

@@ -1,8 +1,12 @@
-# Installation locale
+# Rudi - Tools - NodeStub
+
+Bouchon pour un noeud producteur.
+
+## Installation locale
 
 Pour faire fonctionner le NodeStub sur un poste de dev local, il faut ajuster certains points.
 
-## URL du NodeProvider
+### URL du NodeProvider
 
 Dans le schéma `strukture_data`, ouvrir la table `provider` et noter l'UUID du fournisseur portant le code `'NODE_STUB'`
 .
@@ -13,7 +17,7 @@ Ouvrir la table `node_provider` et se placer sur la ligne portant cet UUID. Remp
 http://localhost:28001/nodestub
 ```
 
-## Création des dossiers locaux
+### Création des dossiers locaux
 
 Pour créer ses rapports d'intégration, le NodeStub a besoin de pouvoir écrire dans le dossier défini par la propriété 
 

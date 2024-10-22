@@ -1,6 +1,6 @@
 <div class="hero-section-container">
     <div class="hero-left-picto-container">
-        <app-loader [isTransparent]="true" [allPage]="false" [active]="loadingLeftPicto"></app-loader>
+        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="loadingLeftPicto"></app-loader>
         <img [src]="leftPictoSrc$ | async" alt="hero-section-left-picto"/>
     </div>
 
@@ -26,7 +26,7 @@
     </div>
 
     <div class="hero-right-picto-container">
-        <app-loader [isTransparent]="true" [allPage]="false" [active]="loadingRightPicto"></app-loader>
+        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="loadingRightPicto"></app-loader>
         <img [src]="rightPictoSrc$ | async" alt="hero-section-right-picto"/>
     </div>
 </div>

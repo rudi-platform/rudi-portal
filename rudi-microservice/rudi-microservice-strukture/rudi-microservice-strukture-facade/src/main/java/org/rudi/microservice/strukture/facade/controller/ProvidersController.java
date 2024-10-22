@@ -21,7 +21,7 @@ import org.rudi.microservice.strukture.core.bean.AbstractAddress;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Provider;
 import org.rudi.microservice.strukture.core.bean.ProviderPageResult;
-import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.ProvidersApi;
 import org.rudi.microservice.strukture.service.provider.ProviderService;
 import org.springframework.core.io.Resource;

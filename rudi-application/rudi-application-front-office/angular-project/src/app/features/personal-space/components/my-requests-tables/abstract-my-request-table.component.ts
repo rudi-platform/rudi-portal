@@ -3,12 +3,12 @@
  */
 import {Component} from '@angular/core';
 import {Sort} from '@angular/material/sort';
-import {Observable} from 'rxjs';
 import {MyRequestsService} from '@core/services/my-requests/my-requests.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {BackPaginationSort} from '@shared/back-pagination/back-pagination-sort';
 import {SortTableInterface} from '@shared/back-pagination/sort-table-interface';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
+import {Observable} from 'rxjs';
 import {RequestItem} from './request-item';
 
 @Component({
@@ -70,11 +70,16 @@ export abstract class AbstractMyRequestTableComponent {
     loadContent(sortTableInterface: SortTableInterface): void {
         const wantedPage = sortTableInterface?.page;
         this.searchIsRunning = true;
-
         this.getMyElements(this.getOffset(wantedPage), this.ITEMS_PER_PAGE, sortTableInterface.order).subscribe({
             next: (elements: RequestItem[]) => {
+                if (sortTableInterface.order?.startsWith('-')) {
+                    this.backPaginationSort.currentSort = sortTableInterface.order.slice(1);
+                    this.backPaginationSort.currentSortAsc = false;
+                } else {
+                    this.backPaginationSort.currentSort = sortTableInterface.order;
+                    this.backPaginationSort.currentSortAsc = true;
+                }
                 this.backPaginationSort.currentPage = wantedPage;
-                this.backPaginationSort.currentSort = sortTableInterface.order;
                 this.elements = elements;
                 this.searchIsRunning = false;
             },
@@ -90,11 +95,7 @@ export abstract class AbstractMyRequestTableComponent {
      * @param sort le tri à appliquer sur la restitution
      */
     sortTable(sort: Sort): void {
-        if (!sort.active || sort.direction === '') {
-            return;
-        } else {
-            this.loadContent(this.backPaginationSort.sortTable(sort));
-        }
+        this.loadContent(this.backPaginationSort.sortTable(sort));
     }
 
     /**

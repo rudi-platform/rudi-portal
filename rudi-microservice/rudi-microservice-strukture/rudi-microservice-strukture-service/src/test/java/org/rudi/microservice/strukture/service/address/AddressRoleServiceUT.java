@@ -1,9 +1,5 @@
 package org.rudi.microservice.strukture.service.address;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,16 +8,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.strukture.core.bean.AddressRole;
-import org.rudi.microservice.strukture.core.bean.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.AddressType;
+import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Class de test du service AddressRoleService
- *
  */
 @StruktureSpringBootTest
 class AddressRoleServiceUT {
@@ -105,6 +105,14 @@ class AddressRoleServiceUT {
 
 	@Test
 	void testCRUDAddressRole() {
+		AddressRoleSearchCriteria criteria = new AddressRoleSearchCriteria();
+		criteria.setType(AddressType.PHONE);
+		criteria.setActive(true);
+		int initialCountPhone = addressRoleService.searchAddressRoles(criteria).size();
+
+		criteria.setType(AddressType.EMAIL);
+		criteria.setActive(true);
+		int initialCountEmail = addressRoleService.searchAddressRoles(criteria).size();
 
 		assertNotNull(addressRoleService);
 		assertNotNull(roleMailHotline);
@@ -152,19 +160,23 @@ class AddressRoleServiceUT {
 		assertEquals(nbAddressRole + 1, addressRoles.size());
 
 		// recherche tous critères
-		AddressRoleSearchCriteria criteria = new AddressRoleSearchCriteria();
+		criteria = new AddressRoleSearchCriteria();
 		criteria.setType(AddressType.PHONE);
 		criteria.setActive(true);
 		addressRoles = addressRoleService.searchAddressRoles(criteria);
-		assertEquals(1, addressRoles.size());
+		assertEquals(1 + initialCountPhone, addressRoles.size());
 		assertEquals(updatedAddressRole.getUuid(), addressRoles.get(0).getUuid());
 
 		// recherche par type
 		criteria = new AddressRoleSearchCriteria();
 		criteria.setType(AddressType.EMAIL);
 		addressRoles = addressRoleService.searchAddressRoles(criteria);
-		assertEquals(1, addressRoles.size());
-		assertEquals(roleMailHotline.getUuid(), addressRoles.get(0).getUuid());
+		assertThat(addressRoles)
+				.as("La taille doit être la même qu'à létat initial")
+				.matches(a -> initialCountEmail == a.size()).as("L'uuid du role mail hotline doit être présent")
+				.anyMatch(a -> a.getUuid().equals(roleMailHotline.getUuid()));
+		assertEquals(initialCountEmail, addressRoles.size());
+
 
 		// suppression d'un role d'adresse
 		// --------------------------------

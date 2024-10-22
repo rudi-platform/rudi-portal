@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.0.4</version>
+		<version>3.1.0</version>
 	</parent>
 
 	<artifactId>rudi-facet-bpmn</artifactId>
@@ -52,10 +52,18 @@
 			<artifactId>springfox-swagger2</artifactId>
 		</dependency>
 		<!-- Activiti -->
-		<!-- https://mvnrepository.com/artifact/org.activiti/activiti-spring-boot-starter -->
+		<!--
+		https://mvnrepository.com/artifact/org.activiti/activiti-spring-boot-starter -->
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rudi-common-service</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -76,7 +84,8 @@
 					<generateApiDocumentation>false</generateApiDocumentation>
 					<generateApis>false</generateApis>
 					<generateModels>true</generateModels>
-					<templateDirectory>${resource-generation-directory}/openapi/generation/
+					<templateDirectory>
+						${resource-generation-directory}/openapi/generation/
 					</templateDirectory>
 					<verbose>false</verbose>
 					<typeMappings>
@@ -94,7 +103,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${resource-directory}/openapi/rudi-bpmn-model.json
+							<inputSpec>
+								${resource-directory}/openapi/rudi-bpmn-model.json
 							</inputSpec>
 						</configuration>
 					</execution>
@@ -111,6 +121,99 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- Export des classes de datafactory pour les tests des
+			microservices -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
+
+
+	<profiles>
+		<profile>
+			<id>generateuml</id>
+			<activation>
+				<property>
+					<name>generateUml</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>plantuml-generator-maven-plugin</artifactId>
+						<groupId>de.elnarion.maven</groupId>
+
+						<executions>
+							<execution>
+								<id>generate-diagram-md</id>
+								<configuration>
+									<outputDirectory>
+										${project.build.directory}/..</outputDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-diagram-puml</id>
+								<configuration>
+									<outputDirectory>
+										${project.build.directory}/../readme</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.github.davidmoten</groupId>
+						<artifactId>plantuml-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>generate-diagram-puml-png</id>
+								<configuration>
+									<sources>
+										<directory>
+											${project.build.directory}/../readme/</directory>
+									</sources>
+									<outputDirectory>
+										${project.build.directory}/../readme/</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>delete-extra-files</id>
+								<configuration>
+									<filesets>
+										<fileset>
+											<!-- outputDirectory de
+											generate-diagram-puml-png -->
+											<directory>readme/</directory>
+											<includes>
+												<include>index.md</include>
+											</includes>
+										</fileset>
+									</filesets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

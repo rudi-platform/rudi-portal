@@ -6,14 +6,14 @@
         </ng-container>
     </div>
     <div class="logo-container">
-        <app-loader [isTransparent]="true" [allPage]="false" [active]="loadingLogo"></app-loader>
+        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="loadingLogo"></app-loader>
         <img [src]="logoSrc" [alt]="'home.keyFiguresSection.altLogo' | translate">
     </div>
 </div>
 
 <ng-template #figureKeyTemplate let-count="count" let-label="label">
     <div class="figure-key">
-        <span class="count">{{count | number:'': 'fr-FR'}}</span>
-        <span class="label">{{label}}</span>
+        <span class="count">{{ count | number:'': 'fr-FR' }}</span>
+        <span class="label">{{ label }}</span>
     </div>
 </ng-template>

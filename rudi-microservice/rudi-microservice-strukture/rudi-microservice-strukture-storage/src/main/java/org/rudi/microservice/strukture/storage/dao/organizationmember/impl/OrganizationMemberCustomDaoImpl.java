@@ -9,7 +9,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.organizationmember.OrganizationMemberCustomDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;

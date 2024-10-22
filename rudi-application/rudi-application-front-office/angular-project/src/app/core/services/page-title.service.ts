@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Title} from '@angular/platform-browser';
+import {LogService} from '@core/services/log.service';
 import {TranslateService} from '@ngx-translate/core';
+import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
 import {Observable} from 'rxjs';
 import {defaultIfEmpty, filter, map, switchMap, take} from 'rxjs/operators';
 
@@ -10,10 +12,13 @@ const DEFAULT_PAGE_TITLE = 'Rudi';
     providedIn: 'root'
 })
 export class PageTitleService {
+    projectName: string;
 
     constructor(
         private readonly angularTitleService: Title,
         private readonly translateService: TranslateService,
+        private readonly getBackendProperty: GetBackendPropertyPipe,
+        private readonly logger: LogService
     ) {
     }
 
@@ -21,17 +26,25 @@ export class PageTitleService {
      * @param titles Tous les titres possibles, le premier non "falsy" est utilisé
      */
     public setPageTitle(...titles: string[]): void {
-        for (const title of titles) {
-            if (title) {
-                this.angularTitleService.setTitle(title + ' - ' + DEFAULT_PAGE_TITLE);
-                return;
+        this.getBackendProperty.transform('front.projectName').subscribe({
+            next: projectName => {
+                this.projectName = projectName;
+                for (const title of titles) {
+                    if (title) {
+                        this.angularTitleService.setTitle(title + ' - ' + this.projectName);
+                    }
+                }
+            },
+            error: err => {
+                this.logger.error(err);
+                this.projectName = DEFAULT_PAGE_TITLE;
+                this.setDefaultPageTitle();
             }
-        }
-        this.setDefaultPageTitle();
+        });
     }
 
     private setDefaultPageTitle(): void {
-        this.angularTitleService.setTitle(DEFAULT_PAGE_TITLE);
+        this.angularTitleService.setTitle(this.projectName);
     }
 
     /**

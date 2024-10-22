@@ -1,7 +1,7 @@
 <app-page>
     <app-task-detail-header [headingLoading]="headingLoading"
                             [pageSubTitle]="dependencies?.datasetTitle"
-                            [pageTitle]="'personalSpace.requestDetail.requestDateWithParam' |translate : {date: dependencies?.receivedDate.format('DD/MM/YYYY')}"
+                            [pageTitle]="'personalSpace.requestDetail.accessRequest' |translate"
                             [icon]="'restricted-dataset'">
     </app-task-detail-header>
     <app-tabs *ngIf="task">
@@ -16,7 +16,8 @@
             </ng-template>
         </app-tab>
         <app-banner-button *ngFor="let action of actions"
-                           (click)="openPopinForAction(action)">{{action.label}}</app-banner-button>
+                           (click)="openPopinForAction(action)">{{ action.label }}
+        </app-banner-button>
         <ng-container appTabsLayout>
             <div class="detail-wrapper">
                 <div class="onglet-wrapper">

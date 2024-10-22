@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum IntegrationError {
 
 	ERR_101("ERR-101", "Le format du fichier transmis est incorrect"),
-	ERR_102("ERR-102", "La balise '%s' est inconnue"), ERR_103("ERR-103", "Le paramètre '%s' est manquant"),
+	ERR_102("ERR-102", "La balise '%s' est inconnue"),
+	ERR_103("ERR-103", "Le paramètre '%s' est manquant"),
 	ERR_104("ERR-104", "Le jeu de données '%s' n'existe pas"),
 	ERR_105("ERR-105",
 			"Erreur inconnue: l’erreur na pas été reconnue, veuillez contacter l’administrateur Rudi afin d’analyser l’erreur."),

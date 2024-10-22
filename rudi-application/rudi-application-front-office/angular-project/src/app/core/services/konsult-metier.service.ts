@@ -35,7 +35,7 @@ export class KonsultMetierService {
     constructor(
         private readonly konsultService: KonsultService,
         protected httpClient: HttpClient,
-        @Optional()@Inject(BASE_PATH) basePath: string,
+        @Optional() @Inject(BASE_PATH) basePath: string,
         @Optional() configuration: Configuration
     ) {
         KonsultMetierService.loadCustomMimeType();
@@ -52,12 +52,12 @@ export class KonsultMetierService {
 
         if (typeof value === 'object') {
             if (Array.isArray(value)) {
-                value.forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+                value.forEach(elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
             } else if (value instanceof Date) {
-                    httpParams = httpParams.append(key,
-                        value.toISOString().substr(0, 10));
+                httpParams = httpParams.append(key,
+                    value.toISOString().substring(0, 10));
             } else {
-                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                Object.keys(value).forEach(k => httpParams = this.addToHttpParamsRecursive(
                     httpParams, value[k], key != null ? `${key}.${k}` : k));
             }
         } else if (key != null) {
@@ -144,7 +144,9 @@ export class KonsultMetierService {
     /**
      * Fonction qui permet de recuperer la methode downloadMetadataMedia du server
      */
-    downloadMetadataMedia(mediaUrl: string, options?: {httpHeaderAccept?: 'application/octet-stream' | 'application/json'}): Observable<HttpResponse<Blob>> {
+    downloadMetadataMedia(mediaUrl: string, options?: {
+        httpHeaderAccept?: 'application/octet-stream' | 'application/json'
+    }): Observable<HttpResponse<Blob>> {
         let headers = this.defaultHeaders;
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -170,16 +172,18 @@ export class KonsultMetierService {
         );
     }
 
-/**
- *  Fonction qui permet de récupérer des métadonnés de type WMS/WFS d\&#39;un jeu de données.
- *  Récupère le flux WMS/WFS d\&#39;un média de type SERVICE
- */
-    callServiceMetadataMedia(mediaUrl: string, parameters?: { [key: string]: string; }, options?: {httpHeaderAccept?: 'application/octet-stream' | 'application/json'}): Observable<any> {
-    let queryParameters = new HttpParams({encoder: this.encoder});
-    if (parameters !== undefined && parameters !== null) {
-        queryParameters = this.addToHttpParams(queryParameters,
-            <any>parameters, 'parameters');
-    }
+    /**
+     *  Fonction qui permet de récupérer des métadonnés de type WMS/WFS d\&#39;un jeu de données.
+     *  Récupère le flux WMS/WFS d\&#39;un média de type SERVICE
+     */
+    callServiceMetadataMedia(mediaUrl: string, parameters?: { [key: string]: string; }, options?: {
+        httpHeaderAccept?: 'application/octet-stream' | 'application/json'
+    }): Observable<any> {
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (parameters !== undefined && parameters !== null) {
+            queryParameters = this.addToHttpParams(queryParameters,
+                <any> parameters, 'parameters');
+        }
 
         let headers: HttpHeaders = this.defaultHeaders;
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
@@ -208,7 +212,6 @@ export class KonsultMetierService {
     private getMetadataProducersFacets(): Observable<MetadataFacets> {
         return this.konsultService.searchMetadataFacets(['producer_organization_name']);
     }
-
 
 
     private getMetadataThemesFacets(): Observable<MetadataFacets> {

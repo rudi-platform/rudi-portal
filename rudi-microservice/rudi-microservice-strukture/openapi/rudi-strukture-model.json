@@ -13,7 +13,7 @@
 			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
 		}
 	},
-	"paths":{
+	"paths": {
 	},
 	"components": {
 		"schemas": {
@@ -111,6 +111,12 @@
 						"items": {
 							"$ref": "#/components/schemas/NodeProvider"
 						}
+					},
+					"linkedProducers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/LinkedProducer"
+						}
 					}
 				}
 			},
@@ -185,17 +191,26 @@
 					}
 				}
 			},
+			"OrganizationStatus": {
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED"
+				]
+			},
 			"Organization": {
 				"description": "Organisation",
 				"type": "object",
 				"required": [
 					"name",
 					"openingDate",
-					"password"
+					"description"
 				],
 				"allOf": [
 					{
-						"$ref": "#/components/schemas/AbstractLongIdDto"
+						"$ref": "#/components/schemas/AssetDescription"
 					},
 					{
 						"properties": {
@@ -203,9 +218,8 @@
 								"description": "Nom",
 								"type": "string"
 							},
-							"password": {
-								"type": "string",
-								"description": "Mot de passe de l'utilisateur ROBOT associé à l'organisation"
+							"organizationStatus": {
+								"$ref": "#/components/schemas/OrganizationStatus"
 							},
 							"openingDate": {
 								"type": "string",
@@ -222,6 +236,12 @@
 							},
 							"url": {
 								"type": "string"
+							},
+							"address": {
+								"type": "string"
+							},
+							"position": {
+								"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"
 							}
 						}
 					}
@@ -360,6 +380,9 @@
 							},
 							"user_uuid": {
 								"$ref": "#/components/schemas/OrganizationUserUuidParam"
+							},
+							"organization_status": {
+								"$ref": "#/components/schemas/OrganizationStatus"
 							},
 							"load_all_informations": {
 								"description": "Utilisé dans le cadre des organizationBean pour savoir si l'on charge l'ensemble des informations",
@@ -650,6 +673,152 @@
 							}
 						}
 					}
+				]
+			},
+			"AssetDescription": {
+				"type": "object",
+				"properties": {
+					"object_type": {
+						"type": "string"
+					}
+				},
+				"discriminator": {
+					"propertyName": "object_type",
+					"mapping": {
+						"Organization": "#/components/schemas/Organization",
+						"LinkedProducer": "#/components/schemas/LinkedProducer"
+					}
+				}
+			},
+			"IntegrationStatus": {
+				"type": "string",
+				"enum": [
+					"OK",
+					"KO"
+				]
+			},
+			"Method": {
+				"type": "string",
+				"enum": [
+					"POST",
+					"PUT",
+					"DELETE",
+					"ATTACH",
+					"DETACH"
+				]
+			},
+			"ReportError": {
+				"type": "object",
+				"properties": {
+					"error_code": {
+						"type": "string"
+					},
+					"error_message": {
+						"type": "string"
+					}
+				}
+			},
+			"Report": {
+				"type": "object",
+				"properties": {
+					"report_id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"submission_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"treatment_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"method": {
+						"$ref": "#/components/schemas/Method"
+					},
+					"version": {
+						"type": "string"
+					},
+					"organization_id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"organization_name": {
+						"type": "string"
+					},
+					"integration_status": {
+						"$ref": "#/components/schemas/IntegrationStatus"
+					},
+					"comment": {
+						"type": "string"
+					},
+					"integration_errors": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/ReportError"
+						}
+					}
+				}
+			},
+			"LinkedProducerStatus": {
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED"
+				]
+			},
+			"LinkedProducer": {
+				"description": "Lien entre un Provider et un Producer",
+				"type": "object",
+				"required": [
+					"openingDate",
+					"description"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AssetDescription"
+					},
+					{
+						"properties": {
+							"organization": {
+								"$ref": "#/components/schemas/Organization"
+							},
+							"linked_producer_status": {
+								"$ref": "#/components/schemas/LinkedProducerStatus"
+							}
+						}
+					}
+				]
+			},
+			"OwnerInfo": {
+				"description": "Information du owner",
+				"type": "object",
+				"allOf": [
+					{
+						"properties": {
+							"name": {
+								"description": "Nom",
+								"type": "string"
+							},
+							"contact": {
+								"description": "Contact",
+								"type": "string"
+							},
+							"ownerType": {
+								"$ref": "#/components/schemas/OwnerType"
+							}
+						}
+					}
+				]
+			},
+			"OwnerType": {
+				"description": "Type du Owner.",
+				"type": "string",
+				"enum": [
+					"USER",
+					"ORGANIZATION"
 				]
 			}
 		}

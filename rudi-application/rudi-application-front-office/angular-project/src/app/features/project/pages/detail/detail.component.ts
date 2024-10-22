@@ -104,6 +104,9 @@ export class DetailComponent implements OnInit {
                     if (error.status == 404) {
                         this.router.navigate(['/error/404']);
                     }
+                    if (error.status == 401) {
+                        this.router.navigate(['/error/401']);
+                    }
                 },
                 complete: () => {
                     // Une fois qu'on a toutes les dépendances, on enlève le loader

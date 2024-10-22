@@ -1,8 +1,19 @@
 package org.rudi.microservice.strukture.storage.dao.address.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.strukture.core.bean.AddressRoleSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleCustomDao;
 import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
 import org.rudi.microservice.strukture.storage.entity.address.AddressType;
@@ -11,16 +22,6 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Repository custom pour les producteurs

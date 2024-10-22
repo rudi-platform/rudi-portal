@@ -14,7 +14,7 @@ public class DescriptionProcessor implements CreateOrganizationFieldProcessor, U
 
 	@Override
 	public void processBeforeCreate(OrganizationEntity organization) throws AppServiceBadRequestException {
-		if (organization != null && StringUtils.isNotBlank(organization.getDescription()) &&
+		if (organization == null || StringUtils.isEmpty(organization.getDescription()) ||
 				organization.getDescription().length() > 800) {
 			throw new AppServiceBadRequestException("La description de l'organisation est trop longue ( > 800 caractères)");
 		}
@@ -22,7 +22,7 @@ public class DescriptionProcessor implements CreateOrganizationFieldProcessor, U
 
 	@Override
 	public void processBeforeUpdate(Organization organization, OrganizationEntity existingOrganization)  throws AppServiceBadRequestException {
-		if (organization != null && StringUtils.isNotBlank(organization.getDescription()) &&
+		if (organization == null || StringUtils.isEmpty(organization.getDescription()) ||
 				organization.getDescription().length() > 800) {
 			throw new AppServiceBadRequestException("La nouvelle description de l'organisation est trop longue ( > 800 caractères)");
 		}

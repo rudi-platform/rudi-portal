@@ -93,9 +93,9 @@ export class MyProjectDetailsComponent implements OnInit {
                     this.pageTitleService.setPageTitleFromUrl('/personal-space/my-activity');
                 }
                 this.project = dependencies.project;
-                if (dependencies.project.owner_type === OwnerType.User) {
+                if (dependencies.project.project_status === ProjectStatus.Validated && dependencies.project.owner_type === OwnerType.User) {
                     this._displayApiTab = true;
-                } else {
+                } else if (dependencies.project.project_status === ProjectStatus.Validated) {
                     this.isAdministrator(dependencies.project.owner_uuid);
                 }
                 this.projectLogo = dependencies.logo;

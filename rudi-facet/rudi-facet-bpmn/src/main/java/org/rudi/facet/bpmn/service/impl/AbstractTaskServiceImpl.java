@@ -373,7 +373,8 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Override
 	public String getAssociatedTaskId(UUID assetUuid) {
 		E assetDescription = assetDescriptionDao.findByUuid(assetUuid);
-		org.activiti.engine.task.Task task = bpmnHelper.queryTaskByAssetId(assetDescription.getId());
+		org.activiti.engine.task.Task task = bpmnHelper.queryTaskByAssetId(assetDescription.getClass(),
+				assetDescription.getId());
 		if (task != null) {
 			return task.getId();
 		} else {
@@ -797,7 +798,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	}
 
 	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException {
-		if (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getId()) != null
+		if (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(), assetDescriptionEntity.getId()) != null
 				&& assetDescriptionEntity.getStatus() != Status.DRAFT) {
 			throw new IllegalArgumentException("Asset is already linked to a task");
 		}
