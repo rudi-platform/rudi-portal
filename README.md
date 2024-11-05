@@ -124,6 +124,15 @@ Stockez et organisez vos données en toute sécurité.
 #### [Node Catalog 🗂️](https://github.com/rudi-platform/rudi-node-catalog)
 Décrivez et indexez vos jeux de données pour les rendre facilement trouvables.
 
+## Contribuer à Rudi
+
+Nous accueillons et encourageons les contributions de la communauté. Voici comment vous pouvez participer :
+- 🛣️ [Feuille de route](https://github.com/orgs/rudi-platform/projects/2)
+- 🐞 [Signaler un bug du portail](https://github.com/rudi-platform/rudi-portal/issues)
+- ✨ [Contribuer](https://github.com/rudi-platform/.github/blob/main/CONTRIBUTING.md)
+- 🗣️ [Participer aux discussions](https://github.com/orgs/rudi-platform/discussions)
+
+
 
 
 
