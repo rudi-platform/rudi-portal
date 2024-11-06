@@ -7,6 +7,25 @@
     padding-top: 20px;
 }
 
+.title {
+    font-weight: bold;
+    display: block;
+}
+
+.section-title {
+    @extend .title;
+    font-size: 18px;
+}
+
+.section-sub-title {
+    @extend .title;
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.section-content {
+    padding: 0;
+}
 
 .project-modified-expansion {
     margin-top: 15px;
@@ -43,10 +62,11 @@
         }
     }
 
-    app-owner-information {
-        padding: 16px 0;
+    .project-owner {
+        padding: 16px 16px 0 16px;
         @extend .col-sm-12;
         @extend .col-lg-4;
+        @extend .project-section;
     }
 }
 

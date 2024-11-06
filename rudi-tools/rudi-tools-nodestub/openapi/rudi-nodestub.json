@@ -423,41 +423,6 @@
 					}
 				}
 			}
-		},
-		"/test/api/v1/organizations/{organizationUuid}/report":{
-			"put": {
-				"tags": [
-					"miscellaneous"
-				],
-				"summary": "Réception du rapport d'intégration de la création d'une organization sur un nom d'url /nodestub/test",
-				"operationId": "recieveReport",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "organizationUuid",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						}
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "StruktureReport"
-							}
-						}
-					}
-				},
-				"responses": {
-					"204": {
-						"description": "ok"
-					}
-				}
-			}
-
 		}
 	},
 	"components": {

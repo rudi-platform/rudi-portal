@@ -341,9 +341,12 @@ export class DetailComponent implements OnInit {
      * @param response
      * @param media
      */
-    downLoadFile(response: HttpResponse<Blob>, media?: Media): void {
+    downLoadFile(response: HttpResponse<Blob>, media: Media): void {
         const blob = new Blob([response.body], {type: response.body.type});
-        saveAs(blob, media.media_name);
+        // format du header content-disposition : attachment; filename="nom_fichier.ext"
+        const filename = response?.headers?.get('content-disposition')?.split(';')[1].split('=')[1].replace(/"(.*)"/g, "$1").trim();
+
+        saveAs(blob, filename? filename : media.media_name);
     }
 
     /**

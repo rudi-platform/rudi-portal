@@ -1,6 +1,12 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +22,6 @@ import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
-import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
@@ -26,18 +31,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationR
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @StruktureSpringBootTest
 public class OrganizationHelperTestUT {
-
-	private final List<OrganizationEntity> createdOrganizations = new ArrayList<>();
-
-	@Autowired
-	private OrganizationDataFactory organizationDataFactory;
 
 	@Autowired
 	OrganizationDao organizationDao;
@@ -53,9 +48,7 @@ public class OrganizationHelperTestUT {
 
 	@AfterEach
 	public void cleanData() {
-		for(OrganizationEntity o : createdOrganizations) {
-			organizationDao.delete(o);
-		}
+		organizationDao.deleteAll();
 	}
 
 	@Test
@@ -152,8 +145,18 @@ public class OrganizationHelperTestUT {
 	}
 
 	private OrganizationEntity createOrganization() {
-		OrganizationEntity o = organizationDataFactory.createLiksiOrganization();
-		createdOrganizations.add(o);
-		return o;
+		OrganizationEntity organization = new OrganizationEntity();
+		organization.setUuid(UUID.randomUUID());
+		organization.setName("Liksi");
+		organization.setDescription("petite ESN");
+		organization.setUrl("http://liksi.com");
+
+		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
+		organization.setOpeningDate(date);
+
+		LocalDateTime date2 = LocalDateTime.of(2025, Month.APRIL, 14, 23, 38, 12, 0);
+		organization.setClosingDate(date2);
+
+		return organizationDao.save(organization);
 	}
 }

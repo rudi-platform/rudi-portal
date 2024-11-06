@@ -8,7 +8,7 @@ import lombok.Builder;
 
 /**
  * @see <a href="https://guides.dataverse.org/en/latest/admin/metadatacustomization.html#controlledvocabulary-enumerated-properties">Documentation
- * Dataverse</a>
+ *      Dataverse</a>
  */
 @Builder
 class TsvControlledVocabularyLine extends TsvLine {
@@ -44,7 +44,7 @@ class TsvControlledVocabularyLine extends TsvLine {
 
 	@Override
 	public String toString() {
-		return StringUtils.joinWith("\t", TsvLine.FIRST_COLUMN, datasetField, value, identifier, displayOrder);
+		return StringUtils.joinWith("\t", firstColumn, datasetField, value, identifier, displayOrder);
 	}
 
 	@Override

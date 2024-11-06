@@ -326,20 +326,26 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 	@Override
 	public boolean isMyAccessGratedToDataset(UUID datasetUuid)
 			throws GetOrganizationException, AppServiceUnauthorizedException {
+		// on récupère l'utilisateur connecté et l'ensemble des organisations dont il fait partie.
+		List<UUID> meAndMyOrganizations = myInformationsHelper.getMeAndMyOrganizationsUuids();
+		return isAccessGrantedToDatasetForAUser(meAndMyOrganizations, datasetUuid);
+	}
+
+	@Override
+	public boolean isAccessGrantedToDatasetForAUser(List<UUID> userAndItsOrganizations, UUID datasetUuid)
+			throws GetOrganizationException, AppServiceUnauthorizedException {
 		if (datasetUuid == null) {
 			log.error("Dataset Uuid null. Requête impossible.");
 			return false;
 		}
 
-		// on récupère l'utilisateur connecté et l'ensemble des organisations dont il fait partie.
-		List<UUID> meAndMyOrganizations = myInformationsHelper.getMeAndMyOrganizationsUuids();
-		if (CollectionUtils.isEmpty(meAndMyOrganizations)) {
+		if (CollectionUtils.isEmpty(userAndItsOrganizations)) {
 			log.error("Utilisateur connecté null");
 			return false;
 		}
 
 		var linkedDatasetSearchCriteria = new LinkedDatasetSearchCriteria().datasetUuid(datasetUuid)
-				.projectOwnerUuids(meAndMyOrganizations).status(List.of(LinkedDatasetStatus.VALIDATED))
+				.projectOwnerUuids(userAndItsOrganizations).status(List.of(LinkedDatasetStatus.VALIDATED))
 				.endDateIsNotOver(true);
 		final var linkedDatasetEntities = linkedDatasetCustomDao.searchLinkedDatasets(linkedDatasetSearchCriteria,
 				Pageable.unpaged());

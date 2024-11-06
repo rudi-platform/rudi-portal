@@ -1,20 +1,20 @@
 package org.rudi.microservice.strukture.facade.controller;
 
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
+
 import java.util.List;
 import java.util.UUID;
 
 import org.rudi.microservice.strukture.core.bean.AddressRole;
+import org.rudi.microservice.strukture.core.bean.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.AddressType;
-import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.AddressRolesApi;
 import org.rudi.microservice.strukture.service.address.AddressRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 
 @RestController
 public class AddressRoleController implements AddressRolesApi {

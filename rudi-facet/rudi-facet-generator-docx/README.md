@@ -1,16 +1,13 @@
-# Rudi - Facet- Docx
-
-Facette de génération de document au format Docx.
-
-## Intégration de la facette Generator Docx
+# I - Intégration de la facette Generator Docx
 
 La facette met à disposition un service de templating pour les documents docx
 
 L'ajout de la facette requière de compléter dans la classe _AppFacadeApplication_ la liste des packages scannés :
 
-```
+<pre>
 @SpringBootApplication(scanBasePackages = { "org.rudi.facet.generator.docx" ...})
-```
+
+</pre>
 
 Deux services sont mis à disposition :
 
@@ -18,3 +15,5 @@ Deux services sont mis à disposition :
 - DocxGenerator qui permet de générer un docx par injection de données en utilisant des champs de fusion et du freemarker à partir d'un fichier docx template.
 
 Pour la génération, il est nécessaire de créer une classe fille de AbstractDocxDataModel (Cf. TU) afin d'injecter toutes les données nécessaires.
+
+

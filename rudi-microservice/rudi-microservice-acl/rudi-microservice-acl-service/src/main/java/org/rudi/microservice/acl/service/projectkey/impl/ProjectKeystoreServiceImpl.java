@@ -195,7 +195,7 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 
 	@Override
 	public Page<ProjectKeystore> searchProjectKeys(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable) {
-		var entities = projectKeystoreCustomDao.searchUsers(searchCriteria, pageable);
+		var entities = projectKeystoreCustomDao.searchProjectKeystores(searchCriteria, pageable);
 		return projectKeystoreMapper.entitiesToDto(entities, pageable);
 	}
 
