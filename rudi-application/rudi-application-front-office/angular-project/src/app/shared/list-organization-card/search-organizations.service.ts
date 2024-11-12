@@ -4,18 +4,12 @@ import {Order} from '@features/organization/components/order/type';
 import {MetadataFacets} from 'micro_service_modules/api-kaccess';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {ProjectByOwner} from 'micro_service_modules/projekt/projekt-model';
-import {
-    OrganizationBean,
-    OrganizationService,
-    OrganizationStatus,
-    PagedOrganizationBeanList
-} from 'micro_service_modules/strukture/api-strukture';
+import {OrganizationBean, OrganizationService, PagedOrganizationBeanList} from 'micro_service_modules/strukture/api-strukture';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 export interface SearchOrganisationsRequest {
     userUuid?: string;
-    orgnizationStatus?: OrganizationStatus;
     offset?: number;
     itemPerPage?: number;
     sortOrder?: Order;
@@ -28,6 +22,9 @@ const searchDefaultOrder: Order = '-openingDate';
     providedIn: 'root'
 })
 export class SearchOrganizationsService {
+    private subscription: Subscription;
+    private currentRequest: SearchOrganisationsRequest;
+
     currentPage$: BehaviorSubject<number>;
     currentSortOrder$: BehaviorSubject<Order>;
     totalOrganizations$: BehaviorSubject<number>;
@@ -35,8 +32,6 @@ export class SearchOrganizationsService {
     isLoadingCatalogue$: BehaviorSubject<boolean>;
     datasetCountLoading$: BehaviorSubject<boolean>;
     projectsCountLoading$: BehaviorSubject<boolean>;
-    private subscription: Subscription;
-    private currentRequest: SearchOrganisationsRequest;
 
     constructor(
         private organizationService: OrganizationService,
@@ -44,7 +39,6 @@ export class SearchOrganizationsService {
         private readonly konsultService: KonsultService
     ) {
         this.currentRequest = {
-            orgnizationStatus: OrganizationStatus.Validated,
             itemPerPage: searchDefaultPageSize
         };
 
@@ -104,7 +98,6 @@ export class SearchOrganizationsService {
         this.isLoadingCatalogue$.next(true);
         this.organizationService.searchOrganizationsBeans(
             searchRequest.userUuid,
-            searchRequest.orgnizationStatus,
             searchRequest.offset,
             searchRequest.itemPerPage,
             searchRequest.sortOrder

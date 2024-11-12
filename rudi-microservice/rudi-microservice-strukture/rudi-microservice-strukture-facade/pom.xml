@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-strukture</artifactId>
-		<version>3.1.0</version>
+		<version>3.0.5</version>
 	</parent>
 
 	<artifactId>rudi-microservice-strukture-facade</artifactId>
@@ -162,16 +162,7 @@
 					<typeMappings>
 						<typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
 					</typeMappings>
-					<schemaMappings>
-						KindOfData=org.rudi.facet.kmedia.bean.KindOfData,
-						User=org.rudi.facet.acl.bean.User,
-						ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,
-						Status=org.rudi.bpmn.core.bean.Status,
-						Form=org.rudi.bpmn.core.bean.Form,
-						AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,
-						Task=org.rudi.bpmn.core.bean.Task,
-						HistoricInformation=org.rudi.bpmn.core.bean.HistoricInformation
-					</schemaMappings>
+					<schemaMappings>KindOfData=org.rudi.facet.kmedia.bean.KindOfData,User=org.rudi.facet.acl.bean.User</schemaMappings>
 					<generatorName>spring</generatorName>
 					<library>spring-boot</library>
 					<generateModelTests>false</generateModelTests>

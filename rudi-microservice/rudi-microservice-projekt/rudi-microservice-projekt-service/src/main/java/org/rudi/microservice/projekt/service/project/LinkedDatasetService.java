@@ -81,4 +81,14 @@ public interface LinkedDatasetService {
 	 */
 	boolean isMyAccessGratedToDataset(UUID datasetUuid)
 			throws GetOrganizationException, AppServiceUnauthorizedException;
+
+	/**
+	 * Permet de vérifier si l'un des uuid a accès au JDD ciblé par son uuid
+	 * 
+	 * @param userList    liste d'UUID d'utilisateur (uuid utilisateur + ses organisations par exemple)
+	 * @param datasetUuid globalId du dataset
+	 * @return true si l'un des uuid a accès, false sinon.
+	 */
+	boolean isAccessGrantedToDatasetForAUser(List<UUID> userList, UUID datasetUuid)
+			throws GetOrganizationException, AppServiceUnauthorizedException;
 }

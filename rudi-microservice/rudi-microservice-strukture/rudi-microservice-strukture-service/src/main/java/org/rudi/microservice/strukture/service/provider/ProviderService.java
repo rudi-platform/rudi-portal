@@ -1,21 +1,20 @@
 package org.rudi.microservice.strukture.service.provider;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.microservice.strukture.core.bean.AbstractAddress;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Provider;
-import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @author FNI18300

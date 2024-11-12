@@ -49,7 +49,6 @@ export abstract class OrganizationMetierService {
             searchCriteria.name,
             searchCriteria.active,
             searchCriteria.user_uuid,
-            searchCriteria.organization_status,
             searchCriteria.offset,
             searchCriteria.limit);
     }

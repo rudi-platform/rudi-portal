@@ -1,6 +1,4 @@
-# Rudi - µService Selfdata
- 
-Le µService Selfdata permet la gestion des données personnelles.
+# Microservice de gestion des données personnelles.
 
 On se base sur le swagger RUDI-PRODUCER-ext_selfdata_content.yml pour décrire la partie SelfData contenue dans
 la propriété `ext_metadata.ext_selfdata.ext_selfdata_content` d'un jeu de données.
@@ -41,8 +39,3 @@ keytool.exe" -genseckey -alias <alias>-<yyyyMMdd> -keystore rudi-selfdata.jks -s
 ```
 http(s):///<host>:<port>/selfdata/api/v1/admin/recrypt?previous-alias-key=<alias compromis>
 ```
-
-## Diagramme de classes
-
-![Diagramme de classes](readme/rudi-microservice-selfdata-storage-entities.png)
-

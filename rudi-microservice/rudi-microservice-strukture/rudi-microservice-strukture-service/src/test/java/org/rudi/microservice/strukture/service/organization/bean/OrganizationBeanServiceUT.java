@@ -157,7 +157,6 @@ class OrganizationBeanServiceUT {
 		organization.setName(name);
 		organization.setDescription(description);
 		organization.setUrl(url);
-		organization.setInitiator("initiator@mail.fr");
 
 		organization.setOpeningDate(openingDate);
 

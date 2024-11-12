@@ -3,11 +3,8 @@
  */
 package org.rudi.microservice.strukture.service.address.impl;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.rudi.microservice.strukture.core.bean.AddressRole;
-import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.service.address.AddressRoleService;
 import org.rudi.microservice.strukture.service.mapper.AddressRoleMapper;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleCustomDao;
@@ -16,6 +13,9 @@ import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @author NTR18299

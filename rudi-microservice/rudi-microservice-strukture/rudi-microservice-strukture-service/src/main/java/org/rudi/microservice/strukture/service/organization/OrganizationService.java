@@ -11,10 +11,9 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
+import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
-import org.rudi.microservice.strukture.core.bean.OwnerInfo;
-import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,10 +21,9 @@ import org.springframework.data.domain.Pageable;
  * Service de gestion des organisations
  *
  * @author FNI18300
+ *
  */
 public interface OrganizationService {
-
-	OwnerInfo getOrganizationOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException;
 
 	Organization createOrganization(Organization organization) throws AppServiceBadRequestException;
 

@@ -13,7 +13,9 @@ export class SelfdataInformationRequestTaskMetierService extends MicroserviceSel
 
     protected objectType: ObjectType = ObjectType.SELFDATA_INFORMATION_REQUEST;
 
-    constructor(selfdataTaskService: SelfdataTaskService) {
+    constructor(
+        selfdataTaskService: SelfdataTaskService
+    ) {
         super(selfdataTaskService);
     }
 

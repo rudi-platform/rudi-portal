@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 abstract class TsvLine {
 	static final String COLUMN_SEPARATOR = "\t";
-	static final String FIRST_COLUMN = StringUtils.EMPTY;
+	final String firstColumn = StringUtils.EMPTY;
 
 	public abstract String toString();
 
