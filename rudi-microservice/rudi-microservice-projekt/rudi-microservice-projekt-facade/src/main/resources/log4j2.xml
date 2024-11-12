@@ -1,67 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
-    <Properties>
+	<Properties>
         <Property name="basePath">${ENV:RUDI_LOG_PATH:-${sys:java.io.tmpdir}}</Property>
-    </Properties>
- 
-    <Appenders>
-        <RollingFile name="fileLogger" fileName="${basePath}/rudi-projekt.log" filePattern="${basePath}/app-info-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
+	</Properties>
+
+	<Appenders>
+		<RollingFile name="fileLogger" fileName="${basePath}/rudi-projekt.log" filePattern="${basePath}/app-info-%d{yyyy-MM-dd}.log">
+			<PatternLayout>
                 <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
-            </PatternLayout>
-            <Policies>
-        		<SizeBasedTriggeringPolicy size="10MB" />
-    		</Policies>
-    		<DefaultRolloverStrategy max="5" />
-        </RollingFile>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
 
 		<RollingFile name="apiLogger" fileName="${basePath}/rudi-api-projekt.log" filePattern="${basePath}/rudi-api-projekt-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
+			<PatternLayout>
                 <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
-            </PatternLayout>
-            <Policies>
-        		<SizeBasedTriggeringPolicy size="10MB" />
-    		</Policies>
-    		<DefaultRolloverStrategy max="5" />
-        </RollingFile>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
 
         <RollingFile name="cleanExpiredLinkedDatasetLogger" fileName="${basePath}/rudi-expired-linked-dataset.log" filePattern="${basePath}/rudi-expired-linked-dataset-%d{yyyy-MM-dd}.log">
-            <PatternLayout>
+			<PatternLayout>
                 <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
-            </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="10MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="5" />
-        </RollingFile>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
 
-        <Console name="console" target="SYSTEM_OUT">
+		<Console name="console" target="SYSTEM_OUT">
             <PatternLayout   pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
-        </Console>
-    </Appenders>
-    <Loggers>
-    	<Logger name="org.rudi.common.facade.aop.FacadeAspect" level="DEBUG" additivity="false">
-            <appender-ref ref="apiLogger" level="DEBUG" />
-            <appender-ref ref="console" level="DEBUG" />
-        </Logger>
-        <Logger name="org.rudi.microservice.projekt.service.scheduler.LinkedDatasetExpirationScheduler" level="DEBUG" additivity="false">
-            <appender-ref ref="cleanExpiredLinkedDatasetLogger" level="DEBUG" />
-            <appender-ref ref="console" level="DEBUG" />
-        </Logger>
-        <Logger name="org.rudi.microservice.projekt.service.helper.linkeddataset.LinkedDatasetExpirationHelper" level="DEBUG" additivity="false">
-            <appender-ref ref="cleanExpiredLinkedDatasetLogger" level="DEBUG" />
-            <appender-ref ref="console" level="DEBUG" />
-        </Logger>
-        <Logger name="org.springframework" level="INFO" additivity="false">
-            <appender-ref ref="fileLogger" level="INFO" />
-            <appender-ref ref="console" level="INFO" />
-        </Logger>
-        <Logger name="org.rudi.microservice.projekt" level="INFO" additivity="false">
-            <appender-ref ref="fileLogger" level="INFO" />
-            <appender-ref ref="console" level="INFO" />
-        </Logger>        
-        <Root level="INFO" additivity="false">
-            <appender-ref ref="console" />
-        </Root>
-    </Loggers>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.rudi.common.facade.aop.FacadeAspect" level="INFO" additivity="false">
+			<appender-ref ref="apiLogger" level="INFO" />
+			<appender-ref ref="console" level="INFO" />
+		</Logger>
+		<Logger name="org.springframework" level="INFO" additivity="false">
+			<appender-ref ref="fileLogger" level="INFO" />
+			<appender-ref ref="console" level="INFO" />
+		</Logger>
+		<Logger name="org.rudi.microservice.projekt.service" level="DEBUG" additivity="false">
+			<appender-ref ref="fileLogger" level="DEBUG" />
+			<appender-ref ref="console" level="DEBUG" />
+		</Logger>
+		<Logger name="org.rudi" level="INFO" additivity="false">
+			<appender-ref ref="fileLogger" level="INFO" />
+			<appender-ref ref="console" level="INFO" />
+		</Logger>
+		<Logger name="org.rudi.microservice.projekt.service.scheduler.LinkedDatasetExpirationScheduler" level="INFO" additivity="false">
+			<appender-ref ref="cleanExpiredLinkedDatasetLogger" level="INFO" />
+			<appender-ref ref="console" level="INFO" />
+		</Logger>
+		<Logger name="org.rudi.microservice.projekt.service.helper.linkeddataset.LinkedDatasetExpirationHelper" level="INFO" additivity="false">
+			<appender-ref ref="cleanExpiredLinkedDatasetLogger" level="INFO" />
+			<appender-ref ref="console" level="INFO" />
+		</Logger>
+		<Root level="INFO" additivity="false">
+			<appender-ref ref="console" />
+		</Root>
+	</Loggers>
 </Configuration>

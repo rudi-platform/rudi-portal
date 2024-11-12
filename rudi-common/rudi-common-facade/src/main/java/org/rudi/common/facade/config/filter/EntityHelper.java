@@ -6,18 +6,20 @@ package org.rudi.common.facade.config.filter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nimbusds.oauth2.sdk.util.MapUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.nimbusds.oauth2.sdk.util.MapUtils;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
  * @author FNI18300
+ *
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EntityHelper {
@@ -36,6 +38,6 @@ public class EntityHelper {
 			parameters.entrySet().forEach(item -> map.add(item.getKey(), item.getValue()));
 		}
 
-		return new HttpEntity<>(map, headers);
+		return new HttpEntity<MultiValueMap<String, String>>(map, headers);
 	}
 }

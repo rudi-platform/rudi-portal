@@ -43,10 +43,6 @@ export class DatasetsInfosComponent {
      * Id du jdd courrant
      */
     @Input() currentJddId: string;
-    /**
-     * S'agit -il d'une nouvelle demande ?
-     */
-    @Input() isANewRequest = false;
     restrictedDatasetIcon = 'key_icon_88_secondary-color';
     mediaSize: MediaSize;
 

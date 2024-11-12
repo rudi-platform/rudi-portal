@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-strukture</artifactId>
-		<version>3.1.0</version>
+		<version>3.0.5</version>
 	</parent>
 
 	<artifactId>rudi-microservice-strukture-core</artifactId>
@@ -51,11 +51,6 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.rudi</groupId>
-			<artifactId>rudi-facet-bpmn</artifactId>
-		</dependency>
-
 		<!-- Swagger UI dependency -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -93,10 +88,7 @@
 					<generateModels>true</generateModels>
 					<templateDirectory>${resource-generation-directory}/openapi/generation/</templateDirectory>
 					<verbose>false</verbose>
-					<schemaMappings>
-						KindOfData=org.rudi.facet.kmedia.bean.KindOfData,
-						AssetDescription=org.rudi.bpmn.core.bean.AssetDescription
-					</schemaMappings>
+					<schemaMappings>KindOfData=org.rudi.facet.kmedia.bean.KindOfData</schemaMappings>
 					<typeMappings>
 						<typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
 					</typeMappings>

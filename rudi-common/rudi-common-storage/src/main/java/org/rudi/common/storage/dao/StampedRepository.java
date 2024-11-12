@@ -3,16 +3,15 @@
  */
 package org.rudi.common.storage.dao;
 
+import org.rudi.common.storage.entity.AbstractStampedEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import javax.annotation.Nonnull;
-
-import org.rudi.common.storage.entity.AbstractStampedEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
 
 /**
  * @author FNI18300
@@ -35,9 +34,5 @@ public interface StampedRepository<T extends AbstractStampedEntity> extends JpaR
 	 */
 	@Nonnull
 	T findByUUID(UUID uuid);
-
-	List<T> findByCode(String code, Boolean active);
-
-	T findFirstByCode(String code, Boolean active);
 
 }

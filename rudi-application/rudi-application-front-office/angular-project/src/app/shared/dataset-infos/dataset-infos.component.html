@@ -2,7 +2,6 @@
 'jdd-card-xs flex-row': mediaSize.isXs}" (click)="handleClickOnDatasetCard(currentJddId, resourceTitle)">
     <div class="logo-container" *ngIf="showLogo">
         <app-organization-logo [organizationId]="organizationId"
-                               [isANewRequest]="isANewRequest"
                                cssClass="with-border"
                                organizationType="producer"
         ></app-organization-logo>

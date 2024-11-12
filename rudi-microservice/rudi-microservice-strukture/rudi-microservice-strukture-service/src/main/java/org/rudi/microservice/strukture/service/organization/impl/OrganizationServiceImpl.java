@@ -8,26 +8,27 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
+import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
+import org.rudi.microservice.strukture.core.bean.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
-import org.rudi.microservice.strukture.core.bean.OwnerInfo;
-import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.exception.UserIsNotOrganizationAdministratorException;
-import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
-import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
-import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationMapper;
@@ -48,8 +49,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -73,25 +74,13 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private final StruktureAuthorisationHelper struktureAuthorisationHelper;
 	private final OrganizationMembersHelper organizationMembersHelper;
 	private final OrganizationMembersPartitionerHelper organizationMembersPartitionerHelper;
-	private final OrganizationHelper organizationHelper;
-	private final ProviderHelper providerHelper;
-	private final OwnerInfoHelper ownerInfoHelper;
 
 	@Value("${default.organization.roles:USER,ORGANIZATION}")
 	private List<String> defaultOrganizationRoles;
 
 	@Override
-	public OwnerInfo getOrganizationOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException {
-		OrganizationEntity entity = organizationDao.findByUuid(uuid);
-		if (entity == null) {
-			throw new AppServiceBadRequestException(String.format("No organization for the uuid : %s", uuid));
-		}
-		return ownerInfoHelper.getAssetDescriptionOwnerInfo(entity);
-	}
-
-	@Override
 	public Organization getOrganization(UUID uuid) throws AppServiceNotFoundException {
-		OrganizationEntity entity = organizationHelper.getOrganizationEntity(uuid);
+		val entity = getOrganizationEntity(uuid);
 		return organizationMapper.entityToDto(entity);
 	}
 
@@ -114,6 +103,18 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return organizationUuid.toString();
 	}
 
+	@Nonnull
+	private OrganizationEntity getOrganizationEntity(UUID uuid) throws AppServiceNotFoundException {
+		if (uuid == null) {
+			throw new IllegalArgumentException("UUID required");
+		}
+		val entity = organizationDao.findByUuid(uuid);
+		if (entity == null) {
+			throw new AppServiceNotFoundException(OrganizationEntity.class, uuid);
+		}
+		return entity;
+	}
+
 	@Override
 	@Transactional // (readOnly = false)
 	public Organization createOrganization(Organization organization) throws AppServiceBadRequestException {
@@ -121,18 +122,34 @@ public class OrganizationServiceImpl implements OrganizationService {
 		for (final CreateOrganizationFieldProcessor processor : createOrganizationFieldProcessors) {
 			processor.processBeforeCreate(entity);
 		}
+		val organizationCreated = organizationDao.save(entity);
+		// Create user associated to organization
+		User userCreated = aclHelper
+				.createUser(this.createUser(organizationCreated.getUuid().toString(), organization.getPassword()));
+		// Add user to organization
+		OrganizationMember member = new OrganizationMember().userUuid(userCreated.getUuid())
+				.role(org.rudi.microservice.strukture.core.bean.OrganizationRole.EDITOR).addedDate(LocalDateTime.now());
+		organizationCreated.getMembers().add(organizationMemberMapper.dtoToEntity(member));
+		return organizationMapper.entityToDto(entity);
+	}
 
-		final LocalDateTime now = LocalDateTime.now();
-		entity.setCreationDate(now);
-		entity.setUpdatedDate(now);
-
-		return organizationMapper.entityToDto(organizationDao.save(entity));
+	private User createUser(String uuidOrganization, String password) {
+		User user = new User();
+		user.setLogin(uuidOrganization);
+		user.setPassword(password);
+		user.setType(UserType.ROBOT);
+		List<Role> roles = aclHelper.searchRoles().stream()
+				.filter(element -> defaultOrganizationRoles.contains(element.getCode())).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(roles)) { // On part du principe que le rôle de chaque module a été créé via flyway
+			user.setRoles(roles);
+		}
+		return user;
 	}
 
 	@Override
 	@Transactional // (readOnly = false)
 	public void updateOrganization(Organization organization) throws AppServiceException {
-		val existingEntity = organizationHelper.getOrganizationEntity(organization.getUuid());
+		val existingEntity = getOrganizationEntity(organization.getUuid());
 		for (final UpdateOrganizationFieldProcessor processor : updateOrganizationFieldProcessors) {
 			processor.processBeforeUpdate(organization, existingEntity);
 		}
@@ -142,7 +159,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	@Transactional // (readOnly = false)
 	public void deleteOrganization(UUID uuid) throws AppServiceNotFoundException {
-		val entity = organizationHelper.getOrganizationEntity(uuid);
+		val entity = getOrganizationEntity(uuid);
 		organizationDao.delete(entity);
 	}
 
@@ -166,7 +183,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 					"L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
 		}
 
-		val organizationEntity = organizationHelper.getOrganizationEntity(organizationUuid);
+		val organizationEntity = getOrganizationEntity(organizationUuid);
 		// Verifier que le membre qu'on ajoute est user ACL
 		val correspondingUser = organizationMembersHelper.getUserByLoginOrByUuid(organizationMember.getLogin(),
 				organizationMember.getUserUuid());
@@ -197,7 +214,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 			throw new UserIsNotOrganizationAdministratorException(String.format(
 					"L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
 		}
-		val organizationEntity = organizationHelper.getOrganizationEntity(organizationUuid);
+		val organizationEntity = getOrganizationEntity(organizationUuid);
 		return organizationMemberMapper.entitiesToDto(organizationEntity.getMembers());
 	}
 
@@ -215,7 +232,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 					"L'utilisateur connecté n'a pas le droit de manipuler cette organisation");
 		}
 
-		val organizationEntity = organizationHelper.getOrganizationEntity(organizationUuid);
+		val organizationEntity = getOrganizationEntity(organizationUuid);
 
 		final var anyAdministratorBeforeRemovingMember = organizationEntity.getMembers().stream()
 				.filter(member -> member.getRole() == OrganizationRole.ADMINISTRATOR).findAny();
@@ -292,7 +309,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 		}
 
 		// Vérifier que l'UUID de l'organisation passée correspond bien à une organisation connue, sinon throw une exception
-		val existingOrganization = organizationHelper.getOrganizationEntity(organizationUuid);
+		val existingOrganization = getOrganizationEntity(organizationUuid);
 
 		// Vérifier que l'UUID du membre passé est bien lié à l'organisation passée en paramètre.
 		var member = existingOrganization.getMembers().stream()

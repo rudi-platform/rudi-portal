@@ -1,8 +1,4 @@
-# Rudi - Facet - PDF
-
-Facette de conversion des document Docx en PDF et de signature de PDF.
-
-## Intégration de la facette Generator PDF
+## I - Intégration de la facette Generator PDF
 
 La facette met à disposition un service de conversion de fichiers docx en pdf et de signature des pdfs
 
@@ -15,7 +11,7 @@ Cette facette comporte les services suivants :
 - PDFConvertor pour la conversion des fichiers docx en PDF ou des PDF en PDF/A
 - PDFSigner pour la signature de PDFs
 
-## Signature des PDFs
+## II - Signature des PDFs
 
 Pour la signature des PDF, il est nécessaire de mettre en place un coffre-fort de certificat contenant un certificat avec sa chaine de certification.
 En conséquence, les propriétés à configurer pour la signature des PDFs sont :
@@ -28,7 +24,7 @@ En conséquence, les propriétés à configurer pour la signature des PDFs sont 
 En complément la propriété suivante peut-être configurée :
 * `rudi.pdf.sign.keyStoreType` : type de KeyStore (par défaut ```JKS```)
 
-### Création du coffre-fort (```keystore```) "rudi-test"
+#### Création du coffre-fort (```keystore```) "rudi-test"
 
 
 1. Création d'un certificat et de sa clé
@@ -36,7 +32,7 @@ En complément la propriété suivante peut-être configurée :
 3. Import dans le keystore
 
 
-### Création d'un certificat 
+###### Création d'un certificat 
 
 > openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout rudi-test.key -out rudi-test.crt
 
@@ -44,19 +40,19 @@ Au prompt de cette commande les éléments suivants sont saisis :
 
 ![OpenSSL prompt](readme/openssl-certificate-prompt.png "OpenSSL prompt")
 
-### Création d'un fichier portable contenant le certificat et la clé
+###### Création d'un fichier portable contenant le certificat et la clé
 
 > cat /etc/ssl/certs/ca-certificates.crt rudi-test.crt > ca-certs.pem
 
 > openssl pkcs12 -export -in rudi-test.crt -inkey rudi-test.key -chain -CAfile ca-certs.pem -name "rudi-test" -out rudi.p12
 
-### Import dans un fichier java keyStore de type PKCS12
+###### Import dans un fichier java keyStore de type PKCS12
 
 > keytool -importkeystore -deststorepass ruditest -destkeystore rudi-test.jks -srckeystore rudi.p12 -srcstoretype PKCS12
 
 Le mot de passe du KeyStore de test est ```ruditest``` 
 
-### Lister le contenu du coffre-fort "rudi-test"
+###### Lister le contenu du coffre-fort "rudi-test"
 
 La ligne de commande pour lister les éléments d'un coffre-fort est :
 
@@ -67,7 +63,7 @@ La ligne de commande pour lister les éléments d'un coffre-fort est :
 > keytool -list -keystore <key store name>.jks -alias <rudi alias name> -rfc
 
 
-## Conversion en PDF/A
+## III - Conversion en PDF/A
 
 La conversion en PDF/A doit respecter un certain nombre de pré-requis décrits par exemple ici https://fr.wikipedia.org/wiki/PDF/A
 

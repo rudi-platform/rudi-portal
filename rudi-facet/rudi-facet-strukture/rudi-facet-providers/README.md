@@ -1,6 +1,5 @@
-# Rudi - Facet - Providers
-
-Cette facette permet de simplifier l'accès aux données du µStrukture pour les éléments propres aux fournisseurs (Providers).
+## RUDI - FACET - PROVIDERS
+Cette facette permet de simplifier l'accès aux données du µProviders.
 
 L'ajout de cette facette dans un µservice peut nécessiter la configuration de 2 propriétés:
 

@@ -1,6 +1,6 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
-import java.security.InvalidParameterException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,10 +13,13 @@ import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.bean.OrganizationMember;
 import org.rudi.facet.organization.bean.OrganizationRole;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
+import org.rudi.facet.organization.helper.exceptions.CreateOrganizationException;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.facet.strukture.exceptions.StruktureApiException;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
@@ -65,32 +68,36 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 		final var metadata = hydrateMetadata(integrationRequest.getFile());
 		if (validateAndSetErrors(metadata, integrationRequest)) {
 			treat(integrationRequest, metadata);
-
-			verifyOrganizations(metadata, integrationRequest.getNodeProviderId());
+			createOrganizations(metadata, integrationRequest.getNodeProviderId());
 			integrationRequest.setIntegrationStatus(IntegrationStatus.OK);
 		} else {
 			integrationRequest.setIntegrationStatus(IntegrationStatus.KO);
 		}
 	}
 
-	private void verifyOrganizations(Metadata metadata, UUID nodeProviderId) {
+	private void createOrganizations(Metadata metadata, UUID nodeProviderId) {
 		try {
-			if(organizationHelper.getOrganization(metadata.getProducer().getOrganizationId()) == null){
-				log.error("Producer inconnu {} lors de l'insertion du JDD {}", metadata.getProducer(), metadata.getGlobalId());
-				throw new InvalidParameterException("Unknown producer organization");
-			}
+
+			final var producerOrganization = metadata.getProducer();
+			createOrganization(producerOrganization);
 
 			final var providerOrganization = metadata.getMetadataInfo().getMetadataProvider();
-			if(providerOrganization != null && organizationHelper.getOrganization(providerOrganization.getOrganizationId()) == null){
-				log.error("Provider inconnu {} lors de l'insertion du JDD {}", providerOrganization, metadata.getGlobalId());
-				throw new InvalidParameterException("Unknown provider organization");
-			}
-			// TODO : RUDI-1460 : Si les deux organizations éxistent, vérifier qu'elles sont bien rattachées l'une à l'autre.
-
+			createOrganization(providerOrganization);
 			addNodeProviderToOrganization(nodeProviderId, providerOrganization);
 
 		} catch (StruktureApiException e) {
 			log.warn("Erreur lors de la création des organisations liées au JDD " + metadata.getGlobalId(), e);
+		}
+	}
+
+	private void createOrganization(@Nullable org.rudi.facet.kaccess.bean.Organization metadataOrganization)
+			throws GetOrganizationException, CreateOrganizationException {
+		if (metadataOrganization != null) {
+			final var organizationId = metadataOrganization.getOrganizationId();
+			organizationHelper.createOrganizationIfNotExists(
+					new Organization().uuid(organizationId).name(metadataOrganization.getOrganizationName())
+							.openingDate(LocalDateTime.now()).password(defaultOrganizationPassword) // Password identique pour toutes les organisations des JDDs
+			);
 		}
 	}
 

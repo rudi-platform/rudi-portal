@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-strukture</artifactId>
-		<version>3.1.0</version>
+		<version>3.0.5</version>
 	</parent>
 
 	<artifactId>rudi-microservice-strukture-storage</artifactId>
@@ -83,15 +83,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.rudi</groupId>
-			<artifactId>rudi-facet-bpmn</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-spatial</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -103,29 +95,4 @@
 		</plugins>
 	</build>
 
-
-	<profiles>
-		<profile>
-			<id>generateuml</id>
-			<activation>
-				<property><name>generateUml</name></property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>plantuml-generator-maven-plugin</artifactId>
-						<groupId>de.elnarion.maven</groupId>
-					</plugin>
-					<plugin>
-			            <groupId>com.github.davidmoten</groupId>
-			            <artifactId>plantuml-maven-plugin</artifactId>
-			        </plugin>
-			        <plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-clean-plugin</artifactId>
-			        </plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

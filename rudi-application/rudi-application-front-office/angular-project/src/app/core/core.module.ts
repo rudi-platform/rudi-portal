@@ -2,9 +2,6 @@ import {CommonModule} from '@angular/common';
 import {InjectionToken, NgModule} from '@angular/core';
 import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
-import {WorkerLinkedProducerService} from '@core/services/tasks-aggregator/strukture/linked-producer/worker-linked-producer.service';
-import {WorkerOrganizationService} from '@core/services/tasks-aggregator/strukture/organization/worker-organization.service';
-import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
 import {ProjectListService} from './services/project-list.service';
 import {WorkerLinkedDatasetService} from './services/tasks-aggregator/projekt/worker-linked-dataset.service';
@@ -29,8 +26,6 @@ export const WORKERS_AGGREGATOR_TASKS = new InjectionToken<Worker>('tasksWorker'
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerSelfdataInformationRequestService, multi: true},
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerNewDatasetRequestService, multi: true},
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerProjectService, multi: true},
-        {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerOrganizationService, multi: true},
-        {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerLinkedProducerService, multi: true},
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},
         {
             provide: MatSnackBarRef,
@@ -41,8 +36,7 @@ export const WORKERS_AGGREGATOR_TASKS = new InjectionToken<Worker>('tasksWorker'
         },
         ProjectListService,
         GetBackendPropertyPipe,
-        URIComponentCodec,
-        CustomTranslatePipe
+        URIComponentCodec
     ]
 })
 

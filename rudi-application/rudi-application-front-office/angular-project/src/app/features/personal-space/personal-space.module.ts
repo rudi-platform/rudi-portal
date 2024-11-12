@@ -4,15 +4,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
-import {
-    OrganizationInformationComponent
-} from '@features/personal-space/components/organization-information/organization-information.component';
-import {OwnerInformationComponent} from '@features/personal-space/components/owner-information/owner-information.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
-import {
-    LinkedProducerTaskDetailComponent
-} from '@features/personal-space/pages/linked-producer-task-detail/linked-producer-task-detail.component';
 import {SharedModule} from '@shared/shared.module';
 import {ProjectModule} from '../project/project.module';
 import {D3BarChartComponent} from './components/d3-bar-chart/d3-bar-chart.component';
@@ -52,7 +45,6 @@ import {MyActivityComponent} from './pages/my-activity/my-activity.component';
 import {MyNotificationsComponent} from './pages/my-notifications/my-notifications.component';
 import {MyProjectDetailsComponent} from './pages/my-project-details/my-project-details.component';
 import {NewRequestTaskDetailComponent} from './pages/new-request-task-detail/new-request-task-detail.component';
-import {OrganizationTaskDetailComponent} from './pages/organization-task-detail/organization-task-detail.component';
 import {ProjectTaskDetailComponent} from './pages/project-task-detail/project-task-detail.component';
 import {SelfdataDatasetDetailsComponent} from './pages/selfdata-dataset-details/selfdata-dataset-details.component';
 import {SelfdataDatasetsComponent} from './pages/selfdata-datasets/selfdata-datasets.component';
@@ -64,9 +56,6 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
 
 @NgModule({
     declarations: [
-        LinkedProducerTaskDetailComponent,
-        OwnerInformationComponent,
-        OrganizationInformationComponent,
         RemoveKeysDialogComponent,
         MyAccountComponent,
         MyNotificationsComponent,
@@ -109,7 +98,6 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         MyProfilComponent,
         OrganizationTabComponent,
         ProjectTaskDetailComponent,
-        OrganizationTaskDetailComponent,
         GenerateKeysDialogComponent,
         ProjectTaskHistoricComponent
     ],

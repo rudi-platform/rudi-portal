@@ -16,6 +16,7 @@ import org.rudi.facet.organization.bean.OrganizationMember;
 import org.rudi.facet.organization.bean.OrganizationRole;
 import org.rudi.facet.organization.bean.PagedOrganizationList;
 import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
+import org.rudi.facet.organization.helper.exceptions.CreateOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.facet.strukture.MonoUtils;
@@ -106,6 +107,19 @@ public class OrganizationHelper {
 	}
 
 	/**
+	 * @return l'organisation existante ou celle créée sinon
+	 */
+	public Organization createOrganizationIfNotExists(Organization organization)
+			throws GetOrganizationException, CreateOrganizationException {
+		final var existingOrganization = getOrganization(organization.getUuid());
+		if (existingOrganization != null) {
+			return existingOrganization;
+		} else {
+			return createOrganization(organization);
+		}
+	}
+
+	/**
 	 * @return null si l'organisation n'a pas été trouvée
 	 */
 	@Nullable
@@ -156,6 +170,13 @@ public class OrganizationHelper {
 		return organizations;
 	}
 
+	private Organization createOrganization(Organization organization) throws CreateOrganizationException {
+		final var mono = organizationWebClient.post()
+				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath()).build())
+				.body(Mono.just(organization), Organization.class).retrieve().bodyToMono(Organization.class);
+		return MonoUtils.blockOrThrow(mono, CreateOrganizationException.class);
+	}
+
 	public List<UUID> getMyOrganizationsUuids(UUID userUuid) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
@@ -168,7 +189,6 @@ public class OrganizationHelper {
 		if (page == null || page.getTotal() <= 0) {
 			return new ArrayList<>();
 		}
-
 		return page.getElements().stream().map(Organization::getUuid).collect(Collectors.toList());
 	}
 }

@@ -1,5 +1,10 @@
 package org.rudi.microservice.strukture.service.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,9 +24,9 @@ import org.rudi.microservice.strukture.core.bean.EmailAddress;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.PostalAddress;
 import org.rudi.microservice.strukture.core.bean.Provider;
+import org.rudi.microservice.strukture.core.bean.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.TelephoneAddress;
 import org.rudi.microservice.strukture.core.bean.WebsiteAddress;
-import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.address.AddressRoleService;
 import org.rudi.microservice.strukture.storage.dao.address.AbstractAddressDao;
@@ -31,11 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Class de test du service des Providers

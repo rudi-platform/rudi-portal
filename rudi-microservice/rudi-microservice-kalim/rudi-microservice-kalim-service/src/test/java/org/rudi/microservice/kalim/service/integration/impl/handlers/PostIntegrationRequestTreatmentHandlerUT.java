@@ -1,12 +1,22 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +32,7 @@ import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.helper.OrganizationHelper;
-import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
@@ -38,16 +46,7 @@ import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequest
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.description;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class PostIntegrationRequestTreatmentHandlerUT {
@@ -110,7 +109,7 @@ class PostIntegrationRequestTreatmentHandlerUT {
 	@Test
 	@DisplayName("validation passed ✔ ⇒ dataset and API created \uD83E\uDD73")
 	void createIntegrationRequestNoValidationErrorInteractions()
-			throws DataverseAPIException, IOException, ApiGatewayApiException, GetOrganizationException {
+			throws DataverseAPIException, IOException, ApiGatewayApiException {
 
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
@@ -126,7 +125,6 @@ class PostIntegrationRequestTreatmentHandlerUT {
 		final Metadata createdMetadata = mock(Metadata.class);
 		when(datasetService.getDataset(createdMetadataDoi)).thenReturn(createdMetadata);
 
-		when(organizationHelper.getOrganization(any())).thenReturn(new Organization());
 		handler.handle(integrationRequest);
 
 		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);

@@ -1,4 +1,4 @@
-# Rudi - µService ApiGateway
+# µService ApiGateway
 
 Le µService ApiGateway est une gateway permettant l'accès aux données des Apis exposées
 
@@ -22,8 +22,3 @@ Pour le lancement du service sur un environnement de développement, il est néc
 Le fichier ``rudi-apigateway.jks`` initial (celui de ``src/main/resource`` par exemple) doit être copié dans ``C:/<votre chemin local>/`` 
 
 Puis la propriété ``-Dspring.config.additional-location=file:C:/<votre chemin local>/`` doit être ajoutée au lancement de votre configuration.
-
-# Diagramme de classes
-
-![Diagramme de classes](readme/rudi-microservice-apigateway-storage-entities.png)
-

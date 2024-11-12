@@ -122,7 +122,7 @@ public class AccessControlGlobalFilter extends AbstractMetadataGlobalFilter {
 				}
 			}).switchIfEmpty(Mono.error(new UnauthorizedException("Invalid user (R)")))
 					.map(ProjectKeystore::getProjectUuid).flatMap(projectUuid -> getProjektHelper()
-							.hasMonoAccessToDataset(projectUuid, datasetIdentifiers.getLeft()));
+							.hasMonoProjectAccessToDataset(projectUuid, datasetIdentifiers.getLeft()));
 
 		} else {
 			result = getProjektHelper().hasMonoAccessToDataset(user.getUuid(), datasetIdentifiers.getLeft());

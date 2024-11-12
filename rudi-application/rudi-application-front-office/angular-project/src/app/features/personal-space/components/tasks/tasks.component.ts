@@ -22,7 +22,6 @@ export class TasksComponent {
     selfdataIcon = 'self_data_icon_definition_key';
     newDatasetRequestIcon = 'nouvelles_donnees_definition_key';
     projectIcon = 'project_definition_key';
-    organizationIcon = 'organization_definition_key';
 
     @Input() loading = false;
 
@@ -78,10 +77,6 @@ export class TasksComponent {
             icon = this.selfdataIcon;
         } else if (value.processDefinitionKey === ProcessDefinitionEnum.PROJECT_PROCESS) {
             icon = this.projectIcon;
-        } else if (value.processDefinitionKey === ProcessDefinitionEnum.ORGANIZATION_PROCESS) {
-            icon = this.organizationIcon;
-        } else if (value.processDefinitionKey === ProcessDefinitionEnum.LINKED_PRODUCER_PROCESS) {
-            icon = this.organizationIcon;
         }
 
         return icon;

@@ -17,7 +17,7 @@ import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
  *
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class,
-		NodeProviderMapper.class, AbstractAddressMapper.class, LinkedProducerMapper.class })
+		NodeProviderMapper.class, AbstractAddressMapper.class })
 public interface ProviderFullMapper extends AbstractMapper<ProviderEntity, Provider> {
 
 	@Override

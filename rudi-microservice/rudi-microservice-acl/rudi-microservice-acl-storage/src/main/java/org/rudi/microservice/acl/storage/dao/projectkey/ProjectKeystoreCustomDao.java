@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
  * Permet d'obtenir une liste de project keystore paginée et triée
  */
 public interface ProjectKeystoreCustomDao {
-	Page<ProjectKeystoreEntity> searchUsers(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable);
+	Page<ProjectKeystoreEntity> searchProjectKeystores(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable);
 }

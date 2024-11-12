@@ -3,11 +3,11 @@
  */
 package org.rudi.microservice.strukture.service.address;
 
+import org.rudi.microservice.strukture.core.bean.AddressRole;
+import org.rudi.microservice.strukture.core.bean.AddressRoleSearchCriteria;
+
 import java.util.List;
 import java.util.UUID;
-
-import org.rudi.microservice.strukture.core.bean.AddressRole;
-import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
 
 /**
  * @author NTR18299

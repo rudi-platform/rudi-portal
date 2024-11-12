@@ -11,24 +11,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = { "org.rudi.common.core",
-		"org.rudi.common.facade",
-		"org.rudi.common.service",
-		"org.rudi.common.storage",
-		"org.rudi.facet.acl.helper",
-		"org.rudi.facet.dataverse",
-		"org.rudi.facet.kmedia",
-		"org.rudi.facet.oauth2",
-		"org.rudi.facet.strukture",
-		"org.rudi.facet.organization",
-		"org.rudi.facet.bpmn",
-		"org.rudi.facet.email",
-		"org.rudi.facet.generator",
-		"org.rudi.facet.kaccess",
-		"org.rudi.microservice.projekt.core",
-		"org.rudi.microservice.projekt.facade",
-		"org.rudi.microservice.projekt.service",
-		"org.rudi.microservice.projekt.storage",
+@SpringBootApplication(scanBasePackages = { "org.rudi.common.core", "org.rudi.common.facade", "org.rudi.common.service",
+		"org.rudi.common.storage", "org.rudi.facet.acl.helper", "org.rudi.facet.dataverse", "org.rudi.facet.kmedia",
+		"org.rudi.facet.oauth2", "org.rudi.facet.strukture", "org.rudi.facet.organization", "org.rudi.facet.bpmn",
+		"org.rudi.facet.email", "org.rudi.facet.generator", "org.rudi.facet.kaccess",
+		"org.rudi.microservice.projekt.core", "org.rudi.microservice.projekt.facade",
+		"org.rudi.microservice.projekt.service", "org.rudi.microservice.projekt.storage",
 		"org.rudi.facet.projekt.helper", })
 @EnableEurekaClient
 @EnableScheduling

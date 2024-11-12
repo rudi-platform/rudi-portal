@@ -104,7 +104,7 @@ public class StruktureAuthorisationHelper {
 	private static final List<String> TRANSVERSAL_ROLES = Arrays.asList(RoleCodes.ADMINISTRATOR, RoleCodes.ANONYMOUS,
 			RoleCodes.MODERATOR, NOT_USER);
 
-	public boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
+	private boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
 		if (user == null) { // NOSONAR il faut pouvoir traiter le cas où le user n'est pas positionné (pour les TU par exemple)
 			throw new AppServiceUnauthorizedException("No user");
 		}

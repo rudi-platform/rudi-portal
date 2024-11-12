@@ -15,7 +15,6 @@ export type TitleIconType =
     'self_data_icon_definition_key' |
     'nouvelles_donnees_definition_key' |
     'project_definition_key' |
-    'organization_definition_key' |
     'bouton_telecharger' |
     'attachment' |
     'icone_archives' |
@@ -84,7 +83,7 @@ export const ALL_TYPES: TitleIconType[] = [
     'icon-historique',
     'icon-delete',
     'icon-close',
-    'icon-comment'
+    'icon-comment',
 ];
 
 export const PROCESS_DEFINITION_KEY_TYPES: TitleIconType[] = [
@@ -92,5 +91,4 @@ export const PROCESS_DEFINITION_KEY_TYPES: TitleIconType[] = [
     'self_data_icon_definition_key',
     'nouvelles_donnees_definition_key',
     'project_definition_key',
-    'organization_definition_key'
 ];

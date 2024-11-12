@@ -1,13 +1,13 @@
 package org.rudi.microservice.strukture.storage.dao.organization;
 
-import java.util.UUID;
-
-import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface OrganizationDao extends AssetDescriptionDao<OrganizationEntity> {
+public interface OrganizationDao extends JpaRepository<OrganizationEntity, Long> {
 
 	OrganizationEntity findByUuid(UUID uuid);
 

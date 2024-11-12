@@ -1152,23 +1152,7 @@
             "selfdata": "Données personnelles",
             "explainationText": "Vous trouverez sur cette page l'ensemble des demandes qui vous ont été adressées et qui nécessitent une action de votre part : demande d'accès à vos données, notifications sur vos réutilisations ou suites à vos demandes envoyées.",
             "linkText": "Cliquez ici pour en savoir plus.",
-            "project": "Réutilisation",
-            "organization": "Organisation",
-            "linkedProducer": "Organisation"
-        },
-        "organizationDetails": {
-            "declaration": "Déclaration d'organisation",
-            "demande": "Demande",
-            "description": "Description",
-            "url": "Url de l'organisation",
-            "adresse": "Adresse",
-            "nodeProvider": "Noeud fournisseur",
-            "identifiant": "Identifiant de l'organisation",
-            "nom": "Nom de l'organisation",
-            "supplier": "Demandeur"
-        },
-        "linkedProducerDetails": {
-            "rattachement": "Demande de rattachement"
+            "project": "Réutilisation"
         },
         "projectDetails": {
             "headerTitlePublication": "Demande de publication",
@@ -1223,7 +1207,7 @@
         },
         "myActivity": {
             "title": "Mon activité",
-            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur {projectName} : vos projets et réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
+            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur {projectName} : vos réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
             "linkText": "Cliquez ici pour en savoir plus.",
             "tab1": "Mes réutilisations",
             "tab2": "Mes demandes"

@@ -82,10 +82,19 @@
 
                         </div>
 
-                        <app-owner-information [title]="'personalSpace.projectDetails.projectOwner' | translate"
-                                               [email]="dependencies.project.contact_email"
-                                               [name]="dependencies.ownerInfo.name"
-                        ></app-owner-information>
+                        <mat-card class="project-owner">
+                            <mat-card-title class="section-title">
+                                {{ 'personalSpace.projectDetails.projectOwner' | translate }}
+                            </mat-card-title>
+                            <mat-card-subtitle class="section-sub-title">
+                                {{ dependencies.ownerInfo.name }}
+                            </mat-card-subtitle>
+                            <mat-card-content class="section-content">
+                                <app-clipboard-field
+                                    [content]="dependencies.project.contact_email"
+                                ></app-clipboard-field>
+                            </mat-card-content>
+                        </mat-card>
 
                     </div>
                 </ng-template>
