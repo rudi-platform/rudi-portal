@@ -86,11 +86,11 @@ export class OrganizationMembersTableComponent implements OnInit {
     );
 
     constructor(private readonly organizationMetierService: OrganizationMetierService,
-                private readonly translateService: TranslateService,
                 private readonly logService: LogService,
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly snackbarService: SnackBarService,
                 private readonly dialogMemberOrganizationService: DialogMemberOrganizationService,
+                private readonly translateService: TranslateService
     ) {
     }
 
@@ -210,6 +210,7 @@ export class OrganizationMembersTableComponent implements OnInit {
         organizationMemberDialogData.subTitle = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.subTitle');
         organizationMemberDialogData.fieldLoginDescription = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.descriptionMail');
         organizationMemberDialogData.fieldRoleDescription = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.descriptionRole');
+
         const organizationMember$ = this.dialogMemberOrganizationService.openDialogAddMember(organizationMemberDialogData);
         this.addOrganizationMember(organizationMember$, this.organization.uuid).pipe(
             tap(() => this.userTypedEvent.next(this.searchText))
@@ -247,10 +248,12 @@ export class OrganizationMembersTableComponent implements OnInit {
         const organizationMemberDialogData: OrganizationMemberDialogData = {};
         organizationMemberDialogData.organizationUserMember = organizationUserMember;
         organizationMemberDialogData.organizationUuid = this.organization.uuid;
+
         organizationMemberDialogData.title = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.title');
         organizationMemberDialogData.subTitle = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.text');
         organizationMemberDialogData.fieldLoginDescription = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.descriptionMail');
         organizationMemberDialogData.fieldRoleDescription = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.descriptionRole');
+
         const organizationMember$ = this.dialogMemberOrganizationService.openDialogUpdateMember(organizationMemberDialogData);
         this.updateOrganizationMember(organizationMember$, this.organization.uuid)
             .pipe(

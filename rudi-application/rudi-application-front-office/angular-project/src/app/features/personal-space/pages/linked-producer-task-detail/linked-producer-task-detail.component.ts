@@ -21,7 +21,7 @@ import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Task} from 'micro_service_modules/projekt/projekt-api';
 import {LinkedProducer, LinkedProducersService} from 'micro_service_modules/strukture/api-strukture';
-import {OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
+import {LinkedProducerStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
@@ -40,6 +40,7 @@ export class LinkedProducerTaskDetailComponent
     currentTask: Task;
     hasSections: boolean = false;
     ownerInfo: Observable<OwnerInfo>;
+    headerLibelle: string;
     protected readonly ProjectStatus = ProjectStatus;
 
     constructor(
@@ -75,6 +76,8 @@ export class LinkedProducerTaskDetailComponent
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
                     this.taskWithDependencies = taskWithDependencies;
+                    // Détermine le titre fonction du status de l'asset.
+                    this.headerLibelle = this.translateService.instant(taskWithDependencies.asset.linked_producer_status == LinkedProducerStatus.Validated ? 'personalSpace.linkedProducerDetails.detachement' : 'personalSpace.linkedProducerDetails.rattachement');
                 }),
                 injectDependencies({
                     linkedProducer: this.linkedProducerTaskDependencyFetcher.linkedProducer

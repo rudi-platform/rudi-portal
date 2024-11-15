@@ -2786,6 +2786,39 @@
 						}
 					}
 				}
+			},
+			"delete": {
+				"tags": [
+					"linked-producers"
+				],
+				"summary": "Demande de détachement d'une organisation d'un provider",
+				"description": "Demande de détachement d'une organisation d'un provider.",
+				"operationId": "detachProducer",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"description": "UUID de l'organization que l'on souhaite détacher de son fournisseur.",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					}
+				}
 			}
 		},
 		"/linked-producers/{uuid}/owner-info": {

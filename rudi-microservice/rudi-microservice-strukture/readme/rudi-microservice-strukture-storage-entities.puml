@@ -334,6 +334,22 @@ enum org.rudi.microservice.strukture.storage.entity.organization.OrganizationSta
 }
 
 
+class org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity <<Entity>>  <<Table>>  {
+ {TableName=linked_producer}
+ {TableSchema=strukture_data}
+--
+	{field} {static} +PROVIDER_FK : String
+}
+
+
+enum org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus {
+	{field} +CANCELLED
+	{field} +DRAFT
+	{field} +IN_PROGRESS
+	{field} +VALIDATED
+}
+
+
 class org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity <<Entity>>  <<Table>>  {
  {TableName=node_provider}
  {TableSchema=strukture_data}
@@ -397,8 +413,13 @@ org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity -
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity --|>  org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity -->  org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole : role
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus ..|>  org.rudi.common.storage.entity.PositionedStatus
+org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity -->  org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity :  @ManyToOne\norganization
+org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity -->  org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus :  @Column("linked_producer_status")\nlinkedProducerStatus
+org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity --|>  org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
+org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus ..|>  org.rudi.common.storage.entity.PositionedStatus
 org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity :  @OneToMany\naddresses
+org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity :  @OneToMany\nlinkedProducers
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity :  @OneToMany\nnodeProviders
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
 

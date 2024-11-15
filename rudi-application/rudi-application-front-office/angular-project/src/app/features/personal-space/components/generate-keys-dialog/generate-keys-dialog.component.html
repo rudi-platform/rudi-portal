@@ -73,8 +73,17 @@
                         class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.passwordDescription' | translate}}
                     </mat-hint>
                     <mat-form-field appearance="outline" hideRequiredMarker>
-                        <input type="password" formControlName="password" matInput
+                        <input [type]="hidePassword ? 'password' : 'text'"  formControlName="password" matInput
                                autocomplete="off" maxlength="150"/>
+                        <button
+                            mat-icon-button
+                            matSuffix
+                            (click)="showPassword($event)"
+                            [attr.aria-label]="'Hide password'"
+                            [attr.aria-pressed]="hidePassword"
+                        >
+                            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
                     </mat-form-field>
                         <mat-error class="stepper-mat-error"
                                    *ngIf="passwordError">

@@ -228,16 +228,18 @@ class OrganizationBeanServiceUT {
 	@Test
 	@DisplayName("Vérifier que je récupère bien l'ensemble des organization quand je ne met aucun paramètre.")
 	void testSearchAllOrganizations() throws Exception {
-		List<Organization> organizations = createOrganizations();
-
 		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
 		Pageable pageable = Pageable.unpaged();
+
+		Page<OrganizationBean> initialOrganizations = organizationBeanService.searchOrganizationBeans(criteria, pageable);
+		List<Organization> organizations = createOrganizations();
+
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
 				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
 				.as("Les listes doivent être équivalentes.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-					.allMatch(bean -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
+					.allMatch(bean -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid()) || initialOrganizations.getContent().contains(bean)));
 
 	}
 

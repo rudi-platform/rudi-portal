@@ -1,0 +1,3 @@
+#https://docs.magnolia-cms.com/product-docs/6.2/Developing/Templating/Template-definition.html
+templateScript: /rudi/templates/components/news/newsSitemap.ftl
+renderType: freemarker

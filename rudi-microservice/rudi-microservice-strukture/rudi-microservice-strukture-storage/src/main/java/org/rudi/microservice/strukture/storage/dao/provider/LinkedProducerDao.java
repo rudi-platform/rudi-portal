@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface LinkedProducerDao extends AssetDescriptionDao<LinkedProducerEntity> {
 
 	LinkedProducerEntity findByUuid(UUID uuid);
+
 }

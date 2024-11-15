@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author FNI18300
- *
  */
 @Repository
 public class SectionDefinitionCustomDaoImpl
@@ -47,10 +46,8 @@ public class SectionDefinitionCustomDaoImpl
 	@Override
 	protected void addPredicates(SectionDefinitionSearchCriteria searchCriteria, CriteriaBuilder builder,
 			CriteriaQuery<?> criteriaQuery, Root<SectionDefinitionEntity> root, List<Predicate> predicates) {
-		if (searchCriteria != null) {
-			if (StringUtils.isNotEmpty(searchCriteria.getName())) {
-				predicates.add(buildPredicateStringCriteria(searchCriteria.getName(), NAME_PROPERTY, builder, root));
-			}
+		if (searchCriteria != null && StringUtils.isNotEmpty(searchCriteria.getName())) {
+			predicates.add(buildPredicateStringCriteria(searchCriteria.getName(), NAME_PROPERTY, builder, root));
 		}
 	}
 

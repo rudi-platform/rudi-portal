@@ -1,6 +1,7 @@
 package org.rudi.microservice.strukture.service.address;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +13,7 @@ import org.rudi.microservice.strukture.core.bean.AddressType;
 import org.rudi.microservice.strukture.core.bean.criteria.AddressRoleSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleDao;
+import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -38,15 +40,24 @@ class AddressRoleServiceUT {
 	private AddressRole roleSiteWebProjet;
 	private AddressRole roleMailHotline;
 
+	private List<AddressRole> addedAddressRoles;
+
 	@BeforeEach
 	public void initData() {
+		addedAddressRoles = new ArrayList<AddressRole>();
 		roleSiteWebProjet = addressRoleService.createAddressRole(initRoleAdresseSiteWeb());
 		roleMailHotline = addressRoleService.createAddressRole(initRoleAdresseMail());
+
+		addedAddressRoles.add(roleSiteWebProjet);
+		addedAddressRoles.add(roleMailHotline);
 	}
 
 	@AfterEach
 	public void cleanData() {
-		addressRoleDao.deleteAll();
+		for (AddressRole role : addedAddressRoles) {
+			AddressRoleEntity entity = addressRoleDao.findByUUID(role.getUuid());
+			addressRoleDao.delete(entity);
+		}
 	}
 
 	private AddressRole initRoleTelephonePro() {

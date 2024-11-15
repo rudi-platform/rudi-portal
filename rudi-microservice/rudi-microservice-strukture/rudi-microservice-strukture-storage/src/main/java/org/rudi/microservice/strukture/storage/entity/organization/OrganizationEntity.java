@@ -33,6 +33,7 @@ import lombok.Setter;
 @Setter
 public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 
+	public static final String FIELD_UUID = "uuid";
 	public static final String FIELD_MEMBERS = "members";
 	public static final String FIELD_ORGANIZATION_STATUS = "organizationStatus";
 

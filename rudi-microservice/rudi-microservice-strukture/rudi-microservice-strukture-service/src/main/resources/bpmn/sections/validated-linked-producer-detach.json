@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à accepter la demande de détachement de l’organisation au noeud fournisseur. Après approbation, celui-ci, ne pourra plus publier de jeux de données au nom de l'organisation.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToDetachmentInitiator",
+			"label": "Message à l’attention du demandeur",
+			"type": "TEXT",
+			"required": true
+		}
+	]
+}

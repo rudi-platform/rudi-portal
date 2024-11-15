@@ -1168,7 +1168,8 @@
             "supplier": "Demandeur"
         },
         "linkedProducerDetails": {
-            "rattachement": "Demande de rattachement"
+            "rattachement": "Demande de rattachement",
+            "detachement": "Demande de détachement"
         },
         "projectDetails": {
             "headerTitlePublication": "Demande de publication",
@@ -1223,7 +1224,7 @@
         },
         "myActivity": {
             "title": "Mon activité",
-            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur {projectName} : vos projets et réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
+            "description1": "Vous pouvez retrouver sur cette page l'ensemble de vos actions effectuées sur {projectName} : vos réutilisations, vos demandes d'accès à des données restreintes, demande de nouvelles données et demande d'accès à des données personnelles. ",
             "linkText": "Cliquez ici pour en savoir plus.",
             "tab1": "Mes réutilisations",
             "tab2": "Mes demandes"
@@ -1253,6 +1254,7 @@
             "territorialScale": "Territoire concerné",
             "desiredSupport": "Accompagnement souhaité",
             "confidentiality": "Confidentialité",
+            "url": "URL d'accès",
             "updateInformations": "Modifier les informations",
             "annuler": "Annuler",
             "confirmer": "Confirmer",
@@ -1352,7 +1354,7 @@
             }
         },
         "requestDetail": {
-            "requestDate": "Demande d'accès reçue le",
+            "requestDate": "Demande reçue le",
             "accessRequest": "Demande d'accès",
             "title": "Demande",
             "datasetTitle": "Titre du jeu de données",

@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.1</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -42,7 +42,7 @@
 		<openapi.plugin.version>7.9.0</openapi.plugin.version>
 		<openapi.jackson.version>0.2.6</openapi.jackson.version>
 		<jackson-datatype.version>2.15.2</jackson-datatype.version>
-		<jackson-core.version>2.18.0</jackson-core.version>
+		<jackson-core.version>2.18.1</jackson-core.version>
 		<apache.directory.api.version>2.1.7</apache.directory.api.version>
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
@@ -54,7 +54,7 @@
 		<freemarker.version>2.3.33</freemarker.version>
 		<jetbrains.annotations.version>26.0.1</jetbrains.annotations.version>
 		<mockwebserver.version>4.12.0</mockwebserver.version>
-		<nimbus.jose.jwt.version>9.41.2</nimbus.jose.jwt.version>
+		<nimbus.jose.jwt.version>9.45</nimbus.jose.jwt.version>
 		<freemarker.version>2.3.31</freemarker.version>
 		<jsoup.version>1.18.1</jsoup.version>
 		<activiti.version>7.1.0.M6</activiti.version>
@@ -73,7 +73,7 @@
 		<servlet.api.version>2.5</servlet.api.version>
 		<google-findbugs.version>3.0.2</google-findbugs.version>
 		<jsonassert.version>1.5.3</jsonassert.version>
-		<boucycastle.version>1.78.1</boucycastle.version>
+		<boucycastle.version>1.79</boucycastle.version>
 		<activation.version>1.1.1</activation.version>
 		<reactor-test.version>3.6.11</reactor-test.version>
 		<h2.version>2.3.232</h2.version>
@@ -83,9 +83,9 @@
 		<version-maven-plugin.version>2.17.1</version-maven-plugin.version>
 		<!-- avec surefire 2.12.4, le test du microservice provider n'est pas
 		lancé -->
-		<maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-		<maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 		<ant.plugin.version>3.1.0</ant.plugin.version>

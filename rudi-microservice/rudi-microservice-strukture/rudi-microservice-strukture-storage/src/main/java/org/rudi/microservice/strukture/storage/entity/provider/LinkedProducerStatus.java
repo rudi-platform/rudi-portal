@@ -23,7 +23,12 @@ public enum LinkedProducerStatus implements PositionedStatus {
 	/**
 	 * Validé : l'organisation créée
 	 */
-	VALIDATED(StatusPosition.FINAL);
+	VALIDATED(StatusPosition.FINAL),
+
+	/**
+	 * Lien rompu
+	 */
+	DISENGAGED(StatusPosition.FINAL);
 
 	private final StatusPosition position;
 

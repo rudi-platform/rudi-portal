@@ -94,5 +94,15 @@ public class LinkedProducerController implements LinkedProducersApi {
 		return ResponseEntity.ok(linkedProducerTaskService.updateTask(task));
 	}
 
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + PROVIDER + ")")
+	public ResponseEntity<UUID> detachProducer(UUID organizationUuid) throws Exception {
+		LinkedProducer linkedProducer = linkedProducerService.getMyLinkedProducerFromOrganizationUuid(organizationUuid);
 
+		Task task = linkedProducerTaskService.createDraft(linkedProducer);
+
+		linkedProducerTaskService.startTask(task);
+
+		return ResponseEntity.ok(linkedProducer.getUuid());
+	}
 }

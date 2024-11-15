@@ -9,7 +9,6 @@ import {ClipboardFieldComponent} from '@shared/clipboard-field/clipboard-field.c
 import {ErrorPageComponent} from '@shared/error-page/error-page.component';
 import {ListOrganizationCardComponent} from '@shared/list-organization-card/list-organization-card.component';
 import {OrganizationCardComponent} from '@shared/organization-card/organization-card.component';
-import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {ToStringPipe} from '@shared/pipes/to-string.pipe';
 import {DatasetTableComponent} from '@shared/project-datasets-tables/dataset-table/dataset-table.component';
 
@@ -101,7 +100,6 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
 @NgModule({
     declarations:
         [
-            CustomTranslatePipe,
             ErrorPageComponent,
             OrganizationCardComponent,
             ListOrganizationCardComponent,
@@ -276,8 +274,7 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         RudiSwiperComponent,
         WorkflowExpansionComponent,
         WorkflowExpansionLabelComponent,
-        WorkflowExpansionDateComponent,
-        CustomTranslatePipe
+        WorkflowExpansionDateComponent
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},

@@ -48,4 +48,11 @@
     .theme-card:hover {
         box-shadow: var(--shadow-box);
     }
+
+    .theme-container {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        gap: 15px;
+    }
 }

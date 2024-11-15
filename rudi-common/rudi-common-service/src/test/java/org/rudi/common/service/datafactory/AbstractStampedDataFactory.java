@@ -45,7 +45,6 @@ public class AbstractStampedDataFactory<E extends AbstractStampedEntity, R exten
 			return repository.save(item);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Failed to create item for " + type, e);
-
 		}
 	}
 

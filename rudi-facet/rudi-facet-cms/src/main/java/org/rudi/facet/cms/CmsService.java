@@ -66,5 +66,11 @@ public interface CmsService {
 	PagedCmsAssets renderAssets(CmsAssetType assetType, String assetTemplate, CmsRequest request, Integer offset,
 			Integer limit, String order) throws CmsException;
 
+	List<String> renderAssetsAsUrl(CmsAssetType assetType, String assetTemplate, CmsRequest request, Integer offset,
+			Integer limit, String order) throws CmsException;
+
 	DocumentContent downloadResource(String resourcePath) throws CmsException;
+
+
+
 }

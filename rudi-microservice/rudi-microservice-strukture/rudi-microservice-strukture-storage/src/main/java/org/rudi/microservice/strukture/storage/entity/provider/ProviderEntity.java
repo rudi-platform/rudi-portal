@@ -29,6 +29,10 @@ import lombok.ToString;
 @ToString
 public class ProviderEntity extends AbstractStampedEntity {
 
+	public static final String FIELD_ID = "id";
+	public static final String FIELD_UUID = "uuid";
+	public static final String FIELD_LINKED_PRODUCERS = "linkedProducers";
+
 	private static final long serialVersionUID = -6508639499690690560L;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

@@ -115,6 +115,9 @@ class EncryptDecryptUtil {
 						+ "-----END PUBLIC KEY-----");
 		// ** Nom du fichier à generer - peut être l'UUID de media pour être deposé dans nodestub/endpoints
 		final String outputFilename = "032c8a03-9968-49be-8ccf-dac417c2dd9b";
+		// PENSER à COMMENTER le Disabled du test pour que le fichier soit bien généré
+		// Selon la manière dont le test est lancé, le fichier est généré dans
+		// rudi\rudi-microservice\rudi-microservice-apigateway\rudi-microservice-apigateway-service
 		// *** Fin paramètres à adapter *** //
 
 		generateEncryptedFile(basefile, publicKey, outputFilename);

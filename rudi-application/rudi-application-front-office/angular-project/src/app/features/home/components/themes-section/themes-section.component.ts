@@ -1,5 +1,6 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {Theme} from '@features/home/types';
 import {SwiperBreakpoint} from '@shared/rudi-swiper/types';
@@ -9,10 +10,10 @@ import {SwiperBreakpoint} from '@shared/rudi-swiper/types';
     templateUrl: './themes-section.component.html',
     styleUrls: ['./themes-section.component.scss']
 })
-export class ThemesSectionComponent {
+export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];
     @Input() isLoading: boolean;
-
+    mediaSize: MediaSize;
     cardSwiperBreakpoints: SwiperBreakpoint = {
         380: {
             slidesPerView: 3,
@@ -39,7 +40,8 @@ export class ThemesSectionComponent {
 
     constructor(
         private readonly filtersService: FiltersService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly breakpointObserver: BreakpointObserverService
     ) {
         this.themes = [];
         this.isLoading = true;
@@ -50,4 +52,19 @@ export class ThemesSectionComponent {
         this.filtersService.themesFilter.value = [themeCode];
         this.router.navigate(['/catalogue']);
     }
+
+    ngOnInit(): void {
+        this.mediaSize = this.breakpointObserver.getMediaSize();
+    }
+
+    get canDisplaySwiper(): boolean {
+
+        return (this.mediaSize.isXs && this.themes.length >= 2)
+            || (this.mediaSize.isSm && this.themes.length >= 4)
+            || (this.mediaSize.isMd && this.themes.length >= 6)
+            || (this.mediaSize.isLg && this.themes.length >= 7)
+            || (this.mediaSize.isXl && this.themes.length >= 8)
+            || (this.mediaSize.isXxl && this.themes.length >= 10);
+    }
+
 }

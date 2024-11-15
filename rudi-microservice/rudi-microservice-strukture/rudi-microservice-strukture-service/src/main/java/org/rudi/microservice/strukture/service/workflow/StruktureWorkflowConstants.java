@@ -5,5 +5,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StruktureWorkflowConstants {
-
+	public static final String LINKED_PRODUCER_STATUS = "linkedProducerStatus";
 }

@@ -35,16 +35,16 @@ export class GenerateKeysDialogComponent implements OnInit {
     project: Project;
 
     public passwordError: boolean;
-    public hidePassword = true;
+    public hidePassword;
 
     public keys: ApiKeys;
 
     constructor(
         public dialogRef: MatDialogRef<GenerateKeysDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public dialogData: GenerateKeysDialogData,
-        private matIconRegistry: MatIconRegistry,
+        private readonly matIconRegistry: MatIconRegistry,
         private readonly propertiesMetierService: PropertiesMetierService,
-        private domSanitizer: DomSanitizer,
+        private readonly domSanitizer: DomSanitizer,
         private readonly formBuilder: FormBuilder,
         private readonly projektService: ProjektService,
         private readonly breakpointObserver: BreakpointObserverService) {
@@ -55,8 +55,13 @@ export class GenerateKeysDialogComponent implements OnInit {
             'icon-close',
             this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-close.svg')
         );
+        this.hidePassword = true;
     }
 
+    showPassword(event: MouseEvent) {
+        this.hidePassword = !this.hidePassword;
+        event.stopPropagation();
+    }
 
     ngOnInit(): void {
         this.propertiesMetierService.get('front.docRudi').subscribe({

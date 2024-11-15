@@ -2,12 +2,11 @@
     <h2 *ngIf="!isLoading && themes.length > 0" class="title">{{ 'home.themesSection.title' | translate }}</h2>
     <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="isLoading"></app-loader>
     <app-rudi-swiper
-        *ngIf="!isLoading"
+        *ngIf="!isLoading && canDisplaySwiper"
         containerName="rudi-themes"
         [autoplay]="false"
         [loop]="true"
-        [breakpoints]="cardSwiperBreakpoints"
-    >
+        [breakpoints]="cardSwiperBreakpoints">
         <div *ngFor="let theme of themes">
             <div class="theme-card" (click)="onClickThemeCard(theme.code)">
                 <mat-icon class="theme-picto" [svgIcon]="theme.code"></mat-icon>
@@ -15,4 +14,13 @@
             </div>
         </div>
     </app-rudi-swiper>
+    <div *ngIf="!isLoading && !canDisplaySwiper" class="theme-container">
+        <div  *ngFor="let theme of themes">
+            <div class="theme-card" (click)="onClickThemeCard(theme.code)">
+                <mat-icon class="theme-picto" [svgIcon]="theme.code"></mat-icon>
+                <span class="theme-name">{{theme.name}}</span>
+            </div>
+        </div>
+    </div>
 </div>
+

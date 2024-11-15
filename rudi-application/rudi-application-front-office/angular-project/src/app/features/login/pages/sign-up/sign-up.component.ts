@@ -15,7 +15,6 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Level} from '@shared/notification-template/notification-template.component';
-import {CustomTranslatePipe} from '@shared/pipes/custom-translate.pipe';
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
 import {RudiValidators} from '@shared/validators/rudi-validators';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
@@ -27,10 +26,7 @@ const ICON_INFO: string = '../assets/icons/icon_info.svg';
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
-    styleUrls: ['./sign-up.component.scss'],
-    providers: [
-        CustomTranslatePipe
-    ]
+    styleUrls: ['./sign-up.component.scss']
 })
 export class SignUpComponent implements OnInit {
 
@@ -96,8 +92,7 @@ export class SignUpComponent implements OnInit {
                 private readonly route: ActivatedRoute,
                 private readonly konsultService: KonsultService,
                 private readonly customizationService: CustomizationService,
-                private readonly logger: LogService,
-                private readonly customTranslatePipe: CustomTranslatePipe
+                private readonly logger: LogService
     ) {
         this.matIconRegistry.addSvgIcon(
             'icon-info',
@@ -212,9 +207,9 @@ export class SignUpComponent implements OnInit {
                     this.propertiesService.get('front.contact').subscribe(contactLink => {
                         this.snackBarService.openSnackBar({
                             level: Level.SUCCESS,
-                            message: `${this.customTranslatePipe.transform('snackbarTemplate.successIncription')}
+                            message: `${this.translateService.instant('snackbarTemplate.successIncription')}
                                         <a href="${contactLink}">
-                                            ${this.customTranslatePipe.transform('snackbarTemplate.successIncriptionLinkText')}
+                                            ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
                                         </a>`,
                             keepBeforeSecondRouteChange: true
                         });

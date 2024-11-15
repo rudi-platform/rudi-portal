@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- origin at X=0.0 Y=0.0 -->
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ext="http://org.eclipse.bpmn2/ext" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.4.RC1-v20220528-0836-B1" targetNamespace="http://org.eclipse.bpmn2/default/process">
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ext="http://org.eclipse.bpmn2/ext" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.4.RC1-v20220528-0836-B1" targetNamespace="http://org.eclipse.bpmn2/default/process">
   <bpmn:itemDefinition id="ItemDefinition_18" isCollection="false" structureRef="xs:boolean"/>
   <bpmn:itemDefinition id="ItemDefinition_1" isCollection="false" structureRef="xs:string"/>
   <bpmn:itemDefinition id="EMailData" isCollection="false" structureRef="org.rudi.facet.bpmn.bean.workflow.EMailData"/>
@@ -20,14 +20,14 @@
       <bpmn:documentation id="Documentation_4"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_27</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Update status pending"); projectWorkflowContext.updateStatus(context, execution, "PENDING", "IN_PROGRESS", "En attente de validation"); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/moderator-notify-subject.txt","file:templates/emails/project/moderator-notify-body.html"); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData("projectOwner",projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,"MODERATOR");</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_12" sourceRef="ScriptTask_1" targetRef="UserTask_6"/>
     <bpmn:scriptTask id="ScriptTask_7" name="Publication" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_41"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_35</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.startSubProcess(execution); projectWorkflowContext.info("Update status complete"); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, "COMPLETED", "VALIDATED", reuseStatus); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/owner-accepted-subject.txt","file:templates/emails/project/owner-accepted-body.html"); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.startSubProcess(execution); projectWorkflowContext.info(&quot;Update status complete&quot;); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_1" name="Done">
       <bpmn:incoming>SequenceFlow_2</bpmn:incoming>
@@ -42,16 +42,16 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_10" name="ok" sourceRef="ExclusiveGateway_4" targetRef="ScriptTask_7">
       <bpmn:documentation id="Documentation_7"><![CDATA[Accepter la demande]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_7" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "ok"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_7" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;ok&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:scriptTask id="ScriptTask_4" name="Reutilisation à revoir" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_21</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_22</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Update status refused"); projectWorkflowContext.updateStatus(context, execution, "PENDING", "REJECTED", "Refusée"); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/owner-refused-subject.txt","file:templates/emails/project/owner-refused-body.html"); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status refused&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;REJECTED&quot;, &quot;Refusée&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_21" name="refused" sourceRef="ExclusiveGateway_4" targetRef="ScriptTask_4">
       <bpmn:documentation id="Documentation_8"><![CDATA[Refuser la demande]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_9" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "refused"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_9" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="UserTask_5" name="Prise en compte par le porteur de projet du refus de publication">
       <bpmn:incoming>SequenceFlow_22</bpmn:incoming>
@@ -70,7 +70,7 @@
     </bpmn:inclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_24" name="resubmit" sourceRef="ExclusiveGateway_5" targetRef="InclusiveGateway_1">
       <bpmn:documentation id="Documentation_14"><![CDATA[Soumettre ma réutilisation]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_10" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "resubmit"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_10" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;resubmit&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_5" name="Resoumettre ou archiver ?" gatewayDirection="Diverging">
       <bpmn:extensionElements>
@@ -83,7 +83,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_25" sourceRef="UserTask_5" targetRef="ExclusiveGateway_5"/>
     <bpmn:sequenceFlow id="SequenceFlow_26" name="archive" sourceRef="ExclusiveGateway_5" targetRef="ScriptTask_5">
       <bpmn:documentation id="Documentation_15"><![CDATA[Archiver ma réutilisation]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_11" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "archive"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_11" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="UserTask_6" name="Moderation par l'animateur de la réutilisation" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_12</bpmn:incoming>
@@ -104,7 +104,7 @@
     <bpmn:scriptTask id="ScriptTask_5" name="Archivage" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_26</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_36</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Update status cancelled"); projectWorkflowContext.updateStatus(context, execution, "CANCELLED", "CANCELLED", "Archivée");</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status cancelled&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;CANCELLED&quot;, &quot;CANCELLED&quot;, &quot;Archivée&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_35" sourceRef="ScriptTask_7" targetRef="ScriptTask_3"/>
     <bpmn:sequenceFlow id="SequenceFlow_36" sourceRef="ScriptTask_5" targetRef="InclusiveGateway_2"/>
@@ -130,10 +130,10 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_3" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_1"/>
     <bpmn:sequenceFlow id="SequenceFlow_6" name="Création" sourceRef="ExclusiveGateway_1" targetRef="InclusiveGateway_1">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_2" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == "DRAFT"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_2" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == &quot;DRAFT&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_7" name="Modification" sourceRef="ExclusiveGateway_1" targetRef="InclusiveGateway_3">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_3" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == "VALIDATED"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_3" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == &quot;VALIDATED&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_8" name="Modif OK ou refusé ?" gatewayDirection="Diverging">
       <bpmn:extensionElements>
@@ -147,7 +147,7 @@
       <bpmn:documentation id="Documentation_27"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_42</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Modification : Update status pending"); projectWorkflowContext.updateStatus(context, execution, "PENDING", "", "En attente de validation"); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/moderator-notify-modif-subject.txt","file:templates/emails/project/moderator-notify-modif-body.html"); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData("projectOwner",projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,"MODERATOR");</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:userTask id="UserTask_11" name="Moderation par l'animateur de la modification de la réutilisation" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_42</bpmn:incoming>
@@ -176,20 +176,20 @@
       <bpmn:documentation id="Documentation_28"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_39</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_44</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Modification : publication des modifications"); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/owner-accepted-modif-subject.txt","file:templates/emails/project/owner-accepted-modif-body.html"); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData); projectWorkflowContext.publishProjectModification(context, execution);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : publication des modifications&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-modif-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData); projectWorkflowContext.publishProjectModification(context, execution);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="ScriptTask_19" name="Reutilisation à revoir" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_40</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_43</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Modification : Update status refused"); projectWorkflowContext.updateStatus(context, execution, "PENDING", "", "Refusée"); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData("file:templates/emails/project/owner-refused-modif-subject.txt","file:templates/emails/project/owner-refused-modif-body.html"); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status refused&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;Refusée&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-modif-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_39" name="ok" sourceRef="ExclusiveGateway_8" targetRef="ScriptTask_18">
       <bpmn:documentation id="Documentation_29"><![CDATA[Accepter la demande]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_25" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "ok"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_25" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;ok&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_40" name="refused" sourceRef="ExclusiveGateway_8" targetRef="ScriptTask_19">
       <bpmn:documentation id="Documentation_30"><![CDATA[Refuser la demande]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_26" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == "refused"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_26" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_41" sourceRef="UserTask_11" targetRef="ExclusiveGateway_8"/>
     <bpmn:sequenceFlow id="SequenceFlow_42" sourceRef="ScriptTask_17" targetRef="UserTask_11"/>
@@ -203,11 +203,11 @@
     <bpmn:sequenceFlow id="SequenceFlow_45" sourceRef="UserTask_12" targetRef="ExclusiveGateway_9"/>
     <bpmn:sequenceFlow id="SequenceFlow_46" name="cancel" sourceRef="ExclusiveGateway_9" targetRef="InclusiveGateway_4">
       <bpmn:documentation id="Documentation_43"><![CDATA[Annuler mes modifications]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_4" language="http://www.java.com/java">${action == "cancel"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_4" language="http://www.java.com/java">${action == &quot;cancel&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_47" name="resubmit" sourceRef="ExclusiveGateway_9" targetRef="InclusiveGateway_3">
       <bpmn:documentation id="Documentation_44"><![CDATA[Soumettre mes modifications]]></bpmn:documentation>
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">${action == "resubmit"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">${action == &quot;resubmit&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_48" sourceRef="InclusiveGateway_3" targetRef="ScriptTask_17"/>
     <bpmn:inclusiveGateway id="InclusiveGateway_4" name="To reset form" gatewayDirection="Converging">
@@ -218,14 +218,19 @@
     <bpmn:scriptTask id="ScriptTask_2" name="Reset Modif Form" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Modification : Update status complete - Reset Modif Form"); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, "COMPLETED", "VALIDATED", reuseStatus); projectWorkflowContext.resetDraftForm(context, execution); projectWorkflowContext.resetFormData(context, execution, "UserTask_11", "ok", "validate-project-modification"); projectWorkflowContext.resetFormData(context, execution, "UserTask_11", "refused", "refused-project-modification"); projectWorkflowContext.resetFormData(context, execution, "UserTask_12", "cancel", "cancel-project-modification"); projectWorkflowContext.resetFormData(context, execution, "UserTask_12", "resubmit", "resubmit-project-modification");</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Modif Form&quot;); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); projectWorkflowContext.resetDraftForm(context, execution); projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;ok&quot;, &quot;validate-project-modification&quot;); projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;refused&quot;, &quot;refused-project-modification&quot;); projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_12&quot;, &quot;cancel&quot;, &quot;cancel-project-modification&quot;); projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_12&quot;, &quot;resubmit&quot;, &quot;resubmit-project-modification&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="InclusiveGateway_4" targetRef="ScriptTask_2"/>
     <bpmn:sequenceFlow id="SequenceFlow_4" sourceRef="ScriptTask_2" targetRef="InclusiveGateway_2"/>
     <bpmn:scriptTask id="ScriptTask_3" name="Reset Creation Form" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_35</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info("Modification : Update status complete - Reset Creation Form"); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, "COMPLETED", "VALIDATED", reuseStatus); projectWorkflowContext.resetFormData(context, execution, "UserTask_5", "resubmit", "resubmit-project"); projectWorkflowContext.resetFormData(context, execution, "UserTask_6", "ok", "validate-project"); projectWorkflowContext.resetFormData(context, execution, "UserTask_6", "refused", "refused-project");</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Creation Form&quot;); 
+var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); 
+projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); 
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_5&quot;, &quot;resubmit&quot;, &quot;resubmit-project&quot;); 
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;ok&quot;, &quot;validate-project&quot;); 
+projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;refused&quot;, &quot;refused-project&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="ScriptTask_3" targetRef="InclusiveGateway_2"/>
   </bpmn:process>
@@ -270,13 +275,13 @@
       <bpmndi:BPMNShape id="BPMNShape_UserTask_5" bpmnElement="UserTask_5" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="823.0" y="246.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_41" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="85.0" width="108.0" x="824.0" y="244.0"/>
+          <dc:Bounds height="60.0" width="109.0" x="823.0" y="256.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_1" bpmnElement="InclusiveGateway_1" isMarkerVisible="true">
         <dc:Bounds height="50.0" width="50.0" x="180.0" y="131.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_43" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="74.0" x="168.0" y="181.0"/>
+          <dc:Bounds height="30.0" width="78.0" x="166.0" y="181.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_5" bpmnElement="ExclusiveGateway_5" isMarkerVisible="true">
@@ -324,7 +329,7 @@
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_17" bpmnElement="ScriptTask_17" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="275.0" y="487.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_13" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="51.0" width="79.0" x="290.0" y="502.0"/>
+          <dc:Bounds height="30.0" width="97.0" x="281.0" y="512.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_11" bpmnElement="UserTask_11" isExpanded="true">
@@ -336,7 +341,7 @@
       <bpmndi:BPMNShape id="BPMNShape_UserTask_12" bpmnElement="UserTask_12" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="824.0" y="617.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_15" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="85.0" width="108.0" x="825.0" y="615.0"/>
+          <dc:Bounds height="60.0" width="109.0" x="824.0" y="627.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_18" bpmnElement="ScriptTask_18" isExpanded="true">
@@ -360,13 +365,13 @@
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_4" bpmnElement="InclusiveGateway_4" isMarkerVisible="true">
         <dc:Bounds height="50.0" width="50.0" x="1023.0" y="502.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_2" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="64.0" x="1016.0" y="552.0"/>
+          <dc:Bounds height="15.0" width="73.0" x="1012.0" y="552.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_2" bpmnElement="ScriptTask_2" isExpanded="true">
         <dc:Bounds height="50.0" width="110.0" x="1110.0" y="501.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_33" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="89.0" x="1120.0" y="509.0"/>
+          <dc:Bounds height="15.0" width="97.0" x="1116.0" y="518.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_3" bpmnElement="ScriptTask_3" isExpanded="true">

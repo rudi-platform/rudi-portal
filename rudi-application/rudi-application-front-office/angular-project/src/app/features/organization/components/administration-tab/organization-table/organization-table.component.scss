@@ -10,10 +10,14 @@ button {
     margin: 2em 0 5em 0;
 }
 
-.table-title-style {
-    font-size: 18px;
-    font-weight: bold;
-    text-align: left;
+.table-title-container {
+    margin-bottom: 20px;
+
+    .table-title-style {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+    }
 }
 
 .mat-table-robot {

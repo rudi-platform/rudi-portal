@@ -10,3 +10,5 @@ areas:
         id: rudi:components/term/termDetail
       termSimple:
         id: rudi:components/term/termSimple 
+      termSitemap:
+              id: rudi:components/term/termSitemap

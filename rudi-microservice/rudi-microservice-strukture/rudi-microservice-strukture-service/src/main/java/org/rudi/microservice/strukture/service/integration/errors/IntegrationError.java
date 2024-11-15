@@ -3,7 +3,7 @@ package org.rudi.microservice.strukture.service.integration.errors;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum IntegrationError {
-	ERR_101("ERR_101", "Organisation refusée par la modération");
+	ERR_101("ERR_101", "Action non autorisée par le modérateur.");
 
 	private final String message;
 	private final String code;

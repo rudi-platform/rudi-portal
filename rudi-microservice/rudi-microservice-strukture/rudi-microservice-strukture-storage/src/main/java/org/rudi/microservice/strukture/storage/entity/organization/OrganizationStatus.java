@@ -23,7 +23,12 @@ public enum OrganizationStatus implements PositionedStatus {
 	/**
 	 * Validé : l'organisation créée
 	 */
-	VALIDATED(StatusPosition.FINAL);
+	VALIDATED(StatusPosition.FINAL),
+
+	/**
+	 * annulé
+	 */
+	DISENGAGED(StatusPosition.FINAL);
 
 	private final StatusPosition position;
 

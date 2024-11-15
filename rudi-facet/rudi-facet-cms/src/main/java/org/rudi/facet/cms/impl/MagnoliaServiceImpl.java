@@ -219,6 +219,32 @@ public class MagnoliaServiceImpl implements CmsService {
 		return result;
 	}
 
+	@Override
+	public List<String> renderAssetsAsUrl(CmsAssetType assetType, String assetTemplate, CmsRequest request, Integer offset, Integer limit, String order) throws CmsException {
+
+		PagedCmsAssets pagedCmsAssets = renderAssets(assetType, assetTemplate, request, offset, limit, order);
+
+		return pagedCmsAssets.getElements().stream().map(element -> transformToUrl(element.getContent())).filter(element -> element != null).collect(Collectors.toList());
+	}
+
+
+	/**
+	 * Extrait l'attribut href de la première balise <a> trouvée dans un élément <div>
+	 * du contenu HTML fourni.
+	 *
+	 * @param content Le contenu HTML sous forme de chaîne de caractères à partir duquel extraire l'URL.
+	 * @return L'URL contenue dans l'attribut href de la première balise <a> trouvée à l'intérieur d'un <div>.
+	 *         Renvoie une chaîne vide si aucune balise <a> n'est trouvée.
+	 */
+	private String transformToUrl(String content) {
+		Document document = Jsoup.parse(content, "UTF-8");
+		Element element = document.selectFirst("div a");
+		if(element==null) {
+			return null;
+		}
+		return element.attr("href");
+	}
+
 	/**
 	 * @param resourcePath path Magnolia vers la ressource
 	 * @return une Ressource sous la forme de DocumentContent

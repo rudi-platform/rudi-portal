@@ -28,6 +28,7 @@ import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Report;
 import org.rudi.microservice.strukture.core.bean.ReportError;
 import org.rudi.microservice.strukture.service.helper.NodeProviderUserHelper;
+import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.ReportHelper;
 import org.rudi.microservice.strukture.service.helper.ReportSendExecutor;
 import org.rudi.microservice.strukture.service.integration.errors.IntegrationError;
@@ -55,11 +56,13 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 
 	private final NodeProviderUserHelper nodeProviderUserHelper;
 	private final ReportHelper reportHelper;
+	private final ProviderHelper providerHelper;
 
-	public OrganizationWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper) {
+	public OrganizationWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper, ProviderHelper providerHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
+		this.providerHelper = providerHelper;
 	}
 
 	@Transactional(readOnly = false)
@@ -93,7 +96,7 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		User initiator = lookupUser(assetDescription.getInitiator());
 		if (initiator != null) {
-
+			String email = lookupEMailAddress(initiator);
 			if (initiator.getType().equals(UserType.ROBOT) && initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
 				// On est dans le cas d'un provider : donc rapport
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
@@ -102,20 +105,23 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 					throw new InvalidParameterException("Node introuvable");
 				}
 
+				String providerContactEmail = providerHelper.getContactEmail(nodeProvider);
+				if (providerContactEmail != null) {
+					email = providerContactEmail;
+				}
+
 				Report report = buildReport(assetDescription, isValidated);
 
 				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts, assetDescription.getUuid()));
 				thread.start();
-
-			} else {
-				// on est dans le cas d'un utilisateur : envoie d'un mail
-				try {
-					sendEMail(executionEntity, assetDescription, eMailData, List.of(lookupEMailAddress(initiator)));
-
-				} catch (Exception e) {
-					log.warn("WkC - Failed to send mail for " + executionEntity.getProcessDefinitionKey(), e);
-				}
 			}
+			// On envoie un mail à l'initiator
+			try {
+				sendEMail(executionEntity, assetDescription, eMailData, List.of(email));
+			} catch (Exception e) {
+				log.warn("WkC - Failed to send mail for " + executionEntity.getProcessDefinitionKey(), e);
+			}
+
 		}
 	}
 

@@ -10,3 +10,5 @@ areas:
         id: rudi:components/projectvalue/projectvalueDetail
       projectvalueSimple:
         id: rudi:components/projectvalue/projectvalueSimple 
+      projectvalueSitemap:
+              id: rudi:components/projectvalue/projectvalueSitemap

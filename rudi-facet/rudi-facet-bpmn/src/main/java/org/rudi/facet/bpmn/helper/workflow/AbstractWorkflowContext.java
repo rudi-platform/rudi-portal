@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.rudi.facet.bpmn.helper.workflow;
 
@@ -99,7 +99,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Méthode utilitaire de log
-	 * 
+	 *
 	 * @param message
 	 */
 	public void info(String message) {
@@ -138,7 +138,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Méthode de mise à jour de l'état de l'asset associé
-	 * 
+	 *
 	 * @param scriptContext   le context du script
 	 * @param executionEntity le context d'execution
 	 * @param statusValue     l'état cible
@@ -150,7 +150,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Envoi de courriel
-	 * 
+	 *
 	 * @param scriptContext   le context du script
 	 * @param executionEntity le context d'execution
 	 * @param eMailData
@@ -171,7 +171,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Envoi de courriel
-	 * 
+	 *
 	 * @param scriptContext   le context du script
 	 * @param executionEntity le context d'execution
 	 * @param eMailData
@@ -192,7 +192,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Envoi de courriel
-	 * 
+	 *
 	 * @param scriptContext   le context du script
 	 * @param executionEntity le context d'execution
 	 * @param eMailData
@@ -214,7 +214,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Retourne la liste des users candidats pour la tâche
-	 * 
+	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @param roleName        le rôle rechercher
@@ -234,7 +234,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Retourne la liste des users candidats pour la tâche
-	 * 
+	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @param roleName        le rôle rechercher
@@ -266,7 +266,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Retourne la liste des users candidats pour la tâche Utilisable via une balise bpmn:humanPerformer cf rudi-facet/rudi-facet-bpmn/README.md
-	 * 
+	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @param roleName        le rôle rechercher
@@ -300,7 +300,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Calcule des groupes
-	 * 
+	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'exécution
 	 * @param roleCodes       la liste des noms des rôles
@@ -394,7 +394,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	/**
 	 * Point d'extension pour l'alimentation du datamodel des emails
-	 * 
+	 *
 	 * @param eMailDataModel
 	 */
 	protected void addEmailDataModelData(EMailDataModel<E, A> eMailDataModel) {
@@ -463,15 +463,16 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 					Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
 					Form userKeyForm = getFormHelper().lookupForm(processInstanceBusinessKey, userKey, actionName);
 
-					userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName))
-							.findFirst().ifPresentOrElse(value -> {
-								if (CollectionUtils.isNotEmpty(value.getFields())) {
-									value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
-								}
-							}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
-					assetDescriptionEntity.setData(getFormHelper().deshydrateData(data));
-					getAssetDescriptionDao().save(assetDescriptionEntity);
-
+					if (userKeyForm != null) {
+						userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName))
+								.findFirst().ifPresentOrElse(value -> {
+									if (CollectionUtils.isNotEmpty(value.getFields())) {
+										value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
+									}
+								}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
+						assetDescriptionEntity.setData(getFormHelper().deshydrateData(data));
+						getAssetDescriptionDao().save(assetDescriptionEntity);
+					}
 				} catch (InvalidDataException e) {
 					log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
 				} catch (FormDefinitionException e) {

@@ -47,7 +47,8 @@ public class ProjectKeystoreCustomDaoImpl
 	}
 
 	@Override
-	public Page<ProjectKeystoreEntity> searchUsers(ProjectKeystoreSearchCriteria searchCriteria, Pageable pageable) {
+	public Page<ProjectKeystoreEntity> searchProjectKeystores(ProjectKeystoreSearchCriteria searchCriteria,
+			Pageable pageable) {
 		return search(searchCriteria, pageable);
 	}
 
@@ -63,7 +64,7 @@ public class ProjectKeystoreCustomDaoImpl
 			Root<ProjectKeystoreEntity> subRoot = subquery.from(ProjectKeystoreEntity.class);
 			Join<ProjectKeystoreEntity, ProjectKeyEntity> joinProjectKeys = subRoot.join(FIELD_PROJECT_KEYS,
 					JoinType.INNER);
-			subquery.select(joinProjectKeys.get(FIELD_ID));
+			subquery.select(subRoot.get(FIELD_ID));
 			List<Predicate> subPredicates = new ArrayList<>();
 			if (searchCriteria.getMaxExpirationDate() != null) {
 				subPredicates.add(builder.lessThanOrEqualTo(joinProjectKeys.get(FIELD_EXPIRATION_DATE),
@@ -77,9 +78,8 @@ public class ProjectKeystoreCustomDaoImpl
 				Join<ProjectKeyEntity, UserEntity> joinUSer = joinProjectKeys.join(FIELD_CLIENT, JoinType.INNER);
 				subPredicates.add(builder.equal(joinUSer.get(FIELD_LOGIN), searchCriteria.getClientId()));
 			}
-			subquery.where(builder.and(predicates.toArray(new Predicate[0])));
+			subquery.where(builder.and(subPredicates.toArray(new Predicate[0])));
 			predicates.add(root.get(FIELD_ID).in(subquery));
-
 		}
 	}
 

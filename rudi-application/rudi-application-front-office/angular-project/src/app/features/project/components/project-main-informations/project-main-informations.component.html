@@ -83,6 +83,12 @@
                 [value]="project.confidentiality?.label | toString"
             ></app-project-main-information-label>
 
+            <!--URL d'accès -->
+            <app-project-main-information-label
+                [label]="'personalSpace.project.url'|translate"
+                [value]="project.access_url | toString"
+            ></app-project-main-information-label>
+
         </ng-container>
 
         <ng-template #updateProjectForm>

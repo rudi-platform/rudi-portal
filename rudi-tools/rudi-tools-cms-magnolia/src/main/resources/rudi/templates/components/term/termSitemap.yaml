@@ -1,0 +1,4 @@
+#https://docs.magnolia-cms.com/product-docs/6.2/Developing/Templating/Template-definition.html
+templateScript: /rudi/templates/components/term/termSitemap.ftl
+renderType: freemarker
+

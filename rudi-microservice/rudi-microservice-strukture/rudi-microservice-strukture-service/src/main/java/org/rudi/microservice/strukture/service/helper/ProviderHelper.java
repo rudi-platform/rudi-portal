@@ -11,7 +11,10 @@ import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
+import org.rudi.microservice.strukture.storage.entity.address.AddressType;
+import org.rudi.microservice.strukture.storage.entity.address.EmailAddressEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProviderHelper {
 
+	@Value("${rudi.default.contact.code:CONTACT}")
+	private String codeContact;
 	private final ProviderCustomDao providerCustomDao;
 	private final NodeProviderUserHelper nodeProviderUserHelper;
 	private final ACLHelper aclHelper;
@@ -43,6 +48,10 @@ public class ProviderHelper {
 			throw new InvalidParameterException("Node introuvable");
 		}
 
+		return getProviderFromNodeProvider(nodeProvider);
+	}
+
+	public ProviderEntity getProviderFromNodeProvider(NodeProvider nodeProvider) throws AppServiceUnauthorizedException {
 		ProviderSearchCriteria criteria = new ProviderSearchCriteria();
 		criteria.setNodeProviderUuid(nodeProvider.getUuid());
 		criteria.setFull(true);
@@ -55,4 +64,21 @@ public class ProviderHelper {
 
 		return providers.getContent().get(0);
 	}
+
+	public String getContactEmail(NodeProvider nodeProvider) {
+		try {
+			ProviderEntity providerEntity = getProviderFromNodeProvider(nodeProvider);
+			EmailAddressEntity addressEntity = (EmailAddressEntity) providerEntity.getAddresses().stream()
+					.filter(addresse -> AddressType.EMAIL.equals(addresse.getAddressRole().getType()) && codeContact.equals(addresse.getAddressRole().getCode()))
+					.findFirst().orElse(null);
+			if(addressEntity == null){
+				return null;
+			}
+			return addressEntity.getEmail();
+		} catch (AppServiceUnauthorizedException e) {
+			throw new InvalidParameterException("Provider introuvable");
+		}
+	}
+
+
 }

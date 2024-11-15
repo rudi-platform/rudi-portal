@@ -887,6 +887,7 @@ components:
         - 'text/plain' # (.txt)
         - 'text/xml' # (.xml)
         - 'text/x-yaml' # (.yaml | .yml)
+        - 'application/geo+json+crypt'
         - 'application/x-executable+crypt' # Unconventionnal MIME types for encypted files
         - 'application/graphql+crypt'
         - 'application/javascript+crypt' # (.js)

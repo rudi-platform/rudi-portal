@@ -21,10 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -102,21 +102,51 @@ public class ProjektHelper {
 	}
 
 	public boolean hasProjectAccessToDataset(UUID projectUuid, UUID datasetUuid) {
-		boolean result = false;
+		return Boolean.TRUE.equals(hasMonoProjectAccessToDataset(projectUuid, datasetUuid).block());
+	}
+
+	public Mono<Boolean> hasMonoProjectAccessToDataset(UUID projectUuid, UUID datasetUuid) {
 		ProjectSearchCriteria searchCriteria = new ProjectSearchCriteria().projectUuids(List.of(projectUuid))
 				.datasetUuids(List.of(datasetUuid));
-		Page<Project> projects = searchProjects(searchCriteria, Pageable.ofSize(1));
-		if (!projects.isEmpty()) {
-			Project project = projects.getContent().get(0);
-			if (CollectionUtils.isNotEmpty(project.getLinkedDatasets())) {
-				LinkedDataset linkedDataset = project.getLinkedDatasets().stream()
-						.filter(item -> item.getDatasetUuid().equals(datasetUuid)).findFirst().orElse(null);
-				if (linkedDataset != null && linkedDataset.getLinkedDatasetStatus() == LinkedDatasetStatus.VALIDATED) {
-					result = true;
+		return searchMonoProjects(searchCriteria, Pageable.ofSize(1)).map(projects -> {
+			if (!projects.isEmpty()) {
+				Project project = projects.getContent().get(0);
+				if (CollectionUtils.isNotEmpty(project.getLinkedDatasets())) {
+					LinkedDataset linkedDataset = project.getLinkedDatasets().stream()
+							.filter(item -> item.getDatasetUuid().equals(datasetUuid)).findFirst().orElse(null);
+					if (linkedDataset != null
+							&& linkedDataset.getLinkedDatasetStatus() == LinkedDatasetStatus.VALIDATED) {
+						return true;
+					}
 				}
 			}
-		}
-		return result;
+			return false;
+		});
+	}
+
+	/**
+	 * 
+	 * @param searchCriteria
+	 * @param page
+	 * @return
+	 */
+	public Mono<Page<Project>> searchMonoProjects(ProjectSearchCriteria searchCriteria, Pageable page) {
+		return projektWebClient.get().uri(uriBuilder -> uriBuilder.path(projektProperties.getSearchProjectsPath())
+				.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
+				.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
+				.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
+				.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
+				.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
+				.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
+				.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
+				.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build()).retrieve()
+				.bodyToMono(PagedProjectList.class).map(projects -> {
+					if (projects != null) {
+						return new PageImpl<>(projects.getElements(), page, projects.getTotal());
+					} else {
+						return Page.empty();
+					}
+				});
 	}
 
 	/**
@@ -126,22 +156,7 @@ public class ProjektHelper {
 	 * @return
 	 */
 	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable page) {
-		PagedProjectList projects = projektWebClient.get().uri(uriBuilder -> uriBuilder
-				.path(projektProperties.getSearchProjectsPath())
-				.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
-				.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
-				.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
-				.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
-				.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
-				.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
-				.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
-				.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build()).retrieve()
-				.bodyToMono(PagedProjectList.class).block();
-		if (projects != null) {
-			return new PageImpl<>(projects.getElements(), page, projects.getTotal());
-		} else {
-			return Page.empty();
-		}
+		return searchMonoProjects(searchCriteria, page).block();
 	}
 
 	protected String convertSort(Sort sort) {

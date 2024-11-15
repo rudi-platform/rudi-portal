@@ -1,6 +1,10 @@
 <!-- Robot table-->
 <div class="table-robot">
-    <span class="table-title-style" [translate]="'metaData.administrationTab.organizationTitle'"> </span>
+
+    <div class="table-title-container">
+        <span class="table-title-style" [translate]="'metaData.administrationTab.organizationTitle'"> </span>
+    </div>
+
     <app-loader [allPage]="false" [isLight]="true" [noText]="true" [active]="isLoading"></app-loader>
 
     <table
