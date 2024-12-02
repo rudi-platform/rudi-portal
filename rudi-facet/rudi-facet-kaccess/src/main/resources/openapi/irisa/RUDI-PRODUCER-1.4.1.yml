@@ -56,6 +56,9 @@
 #     additional sub-parts, in particular 'ext_selfdata' to describe a
 #     dataset that contains personal (GDPR) information.
 #
+# [1.4.1]
+#   - The metadata_provider no longer needs to be filled in the metadatas,
+#     as the provider of the authenticated nodeProvider is now used for the request.
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
@@ -661,12 +664,6 @@ components:
             #......................
             'metadata_dates':
               $ref: '#/components/schemas/ReferenceDates'
-            #......................
-            'metadata_provider':
-              allOf:
-                - $ref: '#/components/schemas/Organization'
-                - description: Description of the organization that produced the metadata
-              type: object
             #......................
             'metadata_contacts':
               description: Addresses to get further information on the metadata

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Owner accepted Body</title>
+    <title>${projectName} - Demande de déclaration d'organisation acceptée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,12 +21,20 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-
-Initiator Accepted Body
-
+<p>L'équipe ${projectName} a accepté votre demande de déclaration de l'organisation ${asset.name}.</p>
+<#if messageToOrganizationCreator??><p>Voici le commentaire associé à la demande : ${messageToOrganizationCreator}</p></#if>
 <p>
-    A très bientôt, <br>
+    L'organisation ${asset.name} est désormais rattachée à votre compte et est visible depuis le catalogue
+    ${projectName}.
+</p>
+<p>
+    Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
+        href="${urlContact}">ici</a>.
+</p>
+<p>
+    À très bientôt, <br>
     L'équipe ${teamName} <br>
     <a href="${urlServer}">${urlServer}</a>
 </p>
 </body>
+

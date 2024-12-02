@@ -35,12 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class LinkedProducerServiceImpl implements LinkedProducerService {
+	public static final String INITIAL_FUNCTIONNAL_STATUS = "Lien créé";
 
 	private final OrganizationHelper organizationHelper;
 	private final LinkedProducerMapper linkedProducerMapper;
@@ -52,7 +52,8 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 	private final UtilPageable utilPageable;
 
 	@Override
-	public OwnerInfo getLinkedProducerOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException {
+	public OwnerInfo getLinkedProducerOwnerInfo(UUID uuid)
+			throws AppServiceBadRequestException, IllegalArgumentException {
 		LinkedProducerEntity entity = linkedProducerDao.findByUuid(uuid);
 		if (entity == null) {
 			throw new AppServiceBadRequestException(String.format("No linked producer for the uuid : %s", uuid));
@@ -67,7 +68,8 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 
 	@Override
 	@Transactional
-	public LinkedProducer createLinkedProducer(UUID organizationUuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException, AppServiceBadRequestException, DataIntegrityViolationException {
+	public LinkedProducer createLinkedProducer(UUID organizationUuid) throws AppServiceNotFoundException,
+			AppServiceUnauthorizedException, AppServiceBadRequestException, DataIntegrityViolationException {
 		// Récupération du provider concerné
 		ProviderEntity provider = providerHelper.getMyProvider();
 
@@ -75,9 +77,16 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		OrganizationEntity organization = getOrganizationEntityValidatedFromUuid(organizationUuid);
 
 		LinkedProducer linkedProducer = getMyLinkedProducerFromOrganization(organizationUuid);
-		if(linkedProducer != null) {
-			log.error("Organization {} déjà liée au provider {}", organizationUuid, provider.getUuid());
-			throw new DataIntegrityViolationException("Organisation déjà liée.");
+		if (linkedProducer != null) {
+			if(!linkedProducer.getLinkedProducerStatus().equals(org.rudi.microservice.strukture.core.bean.LinkedProducerStatus.CANCELLED)){
+				log.error("Organization {} déjà liée au provider {}", organizationUuid, provider.getUuid());
+				throw new DataIntegrityViolationException("Organisation déjà liée.");
+			}
+			/*
+			Elle a été refusée donc on la renvoie pour revalidation : renouvellement de la demande de rattachement.
+			Pour relancer le workflow, on réinitialise les status comme si on démarrait avec un nouvel objet
+			*/
+			return reinitializeLinkedProducer(linkedProducer.getUuid());
 		}
 
 		// Rattachement de l'organization au provider
@@ -85,10 +94,14 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 
 		// Récupération de l'entité sauvegardée en base
 		ProviderEntity savedProvider = providerDao.save(provider);
-		Optional<LinkedProducerEntity> createdLinkedProducer = savedProvider.getLinkedProducers().stream().filter(LinkedProducerEntity -> LinkedProducerEntity.getOrganization().getUuid().equals(organizationUuid)).findFirst();
+		Optional<LinkedProducerEntity> createdLinkedProducer = savedProvider.getLinkedProducers().stream().filter(
+				linkedProducerEntity -> linkedProducerEntity.getOrganization().getUuid().equals(organizationUuid))
+				.findFirst();
 
 		if (createdLinkedProducer.isEmpty()) {
-			throw new AppServiceBadRequestException(String.format("Une erreur est survenue lors du rattachement de l'organisation %s au provider %s", organizationUuid, provider.getUuid()));
+			throw new AppServiceBadRequestException(
+					String.format("Une erreur est survenue lors du rattachement de l'organisation %s au provider %s",
+							organizationUuid, provider.getUuid()));
 		}
 
 		return linkedProducerMapper.entityToDto(createdLinkedProducer.get());
@@ -96,30 +109,30 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 
 	@Override
 	public Page<LinkedProducer> searchLinkedProducers(LinkedProducerSearchCriteria criteria, Pageable pageable) {
-		return linkedProducerMapper.entitiesToDto(linkedProducerCustomDao.searchLinkedProducers(criteria,pageable), pageable);
+		return linkedProducerMapper.entitiesToDto(linkedProducerCustomDao.searchLinkedProducers(criteria, pageable),
+				pageable);
 	}
 
 	@Override
-	public LinkedProducer getMyLinkedProducerFromOrganizationUuid(UUID organizationUuid) throws AppServiceUnauthorizedException {
+	public LinkedProducer getMyLinkedProducerFromOrganizationUuid(UUID organizationUuid)
+			throws AppServiceUnauthorizedException {
 		LinkedProducer linkedProducer = getMyLinkedProducerFromOrganization(organizationUuid);
-		if(linkedProducer == null) {
+		if (linkedProducer == null) {
 			log.error("Organization {} non liée au provider", organizationUuid);
 			throw new DataIntegrityViolationException("L'organisation n'est pas liée.");
 		}
 		return linkedProducer;
 	}
 
-	private LinkedProducer getMyLinkedProducerFromOrganization(UUID organizationUuid) throws AppServiceUnauthorizedException {
-		LinkedProducerSearchCriteria criteria = LinkedProducerSearchCriteria
-				.builder()
-				.providerUuid(providerHelper.getMyProvider().getUuid())
-				.organizationUuid(organizationUuid)
-				.build();
+	private LinkedProducer getMyLinkedProducerFromOrganization(UUID organizationUuid)
+			throws AppServiceUnauthorizedException {
+		LinkedProducerSearchCriteria criteria = LinkedProducerSearchCriteria.builder()
+				.providerUuid(providerHelper.getMyProvider().getUuid()).organizationUuid(organizationUuid).build();
 
-		Pageable pageable = utilPageable.getPageable(0,1,null);
-		Page<LinkedProducer> pagedLinkedProducer = searchLinkedProducers(criteria,pageable);
+		Pageable pageable = utilPageable.getPageable(0, 1, null);
+		Page<LinkedProducer> pagedLinkedProducer = searchLinkedProducers(criteria, pageable);
 
-		if(pagedLinkedProducer.isEmpty()) {
+		if (pagedLinkedProducer.isEmpty()) {
 			return null;
 		}
 
@@ -132,8 +145,9 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		// Création de l'objet LinkedProducer
 		LinkedProducerEntity linkedProducerEntity = new LinkedProducerEntity();
 		linkedProducerEntity.setUuid(UUID.randomUUID());
-		linkedProducerEntity.setDescription(String.format("Rattachement de l'organsiation %s au provider %s", organization.getName(), provider.getLabel()));
-		linkedProducerEntity.setFunctionalStatus("Lien créé");
+		linkedProducerEntity.setDescription(String.format("Rattachement de l'organsiation %s au provider %s",
+				organization.getName(), provider.getLabel()));
+		linkedProducerEntity.setFunctionalStatus(INITIAL_FUNCTIONNAL_STATUS);
 		linkedProducerEntity.setProcessDefinitionKey("linked-producer-process");
 		linkedProducerEntity.setOrganization(organization);
 		linkedProducerEntity.setLinkedProducerStatus(LinkedProducerStatus.DRAFT);
@@ -154,6 +168,16 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		}
 
 		return organizationEntity;
+	}
+
+	private LinkedProducer reinitializeLinkedProducer(UUID linkedProducerUuid){
+		LinkedProducerEntity linkedProducerEntity = linkedProducerDao.findByUuid(linkedProducerUuid);
+
+		linkedProducerEntity.setLinkedProducerStatus(LinkedProducerStatus.DRAFT);
+		linkedProducerEntity.setStatus(Status.DRAFT);
+		linkedProducerEntity.setProcessDefinitionKey("linked-producer-process");
+
+		return linkedProducerMapper.entityToDto(linkedProducerDao.save(linkedProducerEntity));
 	}
 
 }

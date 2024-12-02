@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MatchingDataCipherOperator extends CipherOperator {
 
+	private static final RudiAlgorithmSpec SPEC = RudiAlgorithmSpec.AES_DEFAULT;
 	private final MatchingDataKeystoreProperties matchingDataKeystoreProperties;
-	private final RudiAlgorithmSpec spec = RudiAlgorithmSpec.AES_DEFAULT;
 
 	private KeyStore keyStore;
 
@@ -50,8 +50,8 @@ public class MatchingDataCipherOperator extends CipherOperator {
 		Key publicKey = getKey(alias);
 		log.info("encrypt {} {}", alias, publicKey);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		final var initialisationVector = CryptoUtil.generateRandomNonce(spec.initializationVectorLength);
-		final AlgorithmParameterSpec parameterSpec = new GCMParameterSpec(spec.authenticationTagLength,
+		final var initialisationVector = CryptoUtil.generateRandomNonce(SPEC.initializationVectorLength);
+		final AlgorithmParameterSpec parameterSpec = new GCMParameterSpec(SPEC.authenticationTagLength,
 				initialisationVector);
 
 		encryptWithKey(input, publicKey, output, parameterSpec);
@@ -65,15 +65,15 @@ public class MatchingDataCipherOperator extends CipherOperator {
 
 	public String decrypt(String data, String alias) throws GeneralSecurityException, IOException {
 		byte[] byteData = hexStringToByteArray(data);
-		byte[] initialisationVector = Arrays.copyOfRange(byteData, 0, spec.initializationVectorLength);
-		byte[] inputData = Arrays.copyOfRange(byteData, spec.initializationVectorLength, byteData.length);
+		byte[] initialisationVector = Arrays.copyOfRange(byteData, 0, SPEC.initializationVectorLength);
+		byte[] inputData = Arrays.copyOfRange(byteData, SPEC.initializationVectorLength, byteData.length);
 
 		ByteArrayInputStream input = new ByteArrayInputStream(inputData);
 		Key privateKey = getKey(alias);
 		log.info("decrypt {} {}", alias, privateKey);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-		final AlgorithmParameterSpec parameterSpec = new GCMParameterSpec(spec.authenticationTagLength,
+		final AlgorithmParameterSpec parameterSpec = new GCMParameterSpec(SPEC.authenticationTagLength,
 				initialisationVector);
 		decryptWithKey(input, privateKey, output, parameterSpec);
 

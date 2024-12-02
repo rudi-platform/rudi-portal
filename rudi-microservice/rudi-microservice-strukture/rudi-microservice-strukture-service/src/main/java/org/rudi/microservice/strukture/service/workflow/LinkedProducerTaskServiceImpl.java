@@ -11,7 +11,6 @@ import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
-import org.rudi.facet.bpmn.service.FormService;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
@@ -25,15 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class LinkedProducerTaskServiceImpl extends AbstractTaskServiceImpl<LinkedProducerEntity, LinkedProducer, LinkedProducerDao, LinkedProducerWorkflowHelper, LinkedProducerAssignmentHelper> {
+public class LinkedProducerTaskServiceImpl extends
+		AbstractTaskServiceImpl<LinkedProducerEntity, LinkedProducer, LinkedProducerDao, LinkedProducerWorkflowHelper, LinkedProducerAssignmentHelper> {
 
 	public static final String PROCESS_DEFINITION_ID = "linked-producer-process";
 
-	private final FormService formService;
-
-	protected LinkedProducerTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper, UtilContextHelper utilContextHelper, InitializationService initializationService, LinkedProducerDao assetDescriptionDao, LinkedProducerWorkflowHelper assetDescriptionHelper, LinkedProducerAssignmentHelper assignmentHelper, FormService formService) {
-		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao, assetDescriptionHelper, assignmentHelper);
-		this.formService = formService;
+	protected LinkedProducerTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
+			UtilContextHelper utilContextHelper, InitializationService initializationService,
+			LinkedProducerDao assetDescriptionDao, LinkedProducerWorkflowHelper assetDescriptionHelper,
+			LinkedProducerAssignmentHelper assignmentHelper) {
+		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
+				assetDescriptionHelper, assignmentHelper);
 	}
 
 	@Override
@@ -57,8 +58,9 @@ public class LinkedProducerTaskServiceImpl extends AbstractTaskServiceImpl<Linke
 	 */
 	@Override
 	protected void fillProcessVariables(Map<String, Object> variables, LinkedProducerEntity assetDescriptionEntity) {
-		if(assetDescriptionEntity.getLinkedProducerStatus()!=null){
-			variables.put(StruktureWorkflowConstants.LINKED_PRODUCER_STATUS, assetDescriptionEntity.getLinkedProducerStatus());
+		if (assetDescriptionEntity.getLinkedProducerStatus() != null) {
+			variables.put(StruktureWorkflowConstants.LINKED_PRODUCER_STATUS,
+					assetDescriptionEntity.getLinkedProducerStatus());
 		}
 	}
 
@@ -75,9 +77,11 @@ public class LinkedProducerTaskServiceImpl extends AbstractTaskServiceImpl<Linke
 	@Override
 	protected void checkEntityStatus(LinkedProducerEntity assetDescriptionEntity) throws IllegalArgumentException {
 		// Si le status n'est ni à DRAFT ni à COMPLETED, on lance une exception.
-		if(!(assetDescriptionEntity.getStatus().equals(Status.DRAFT) || assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
-			log.error("Invalid status for linkedProducer {} : status : {}", assetDescriptionEntity.getUuid(), assetDescriptionEntity.getStatus());
-			throw new IllegalArgumentException("Invalid status on project "+ assetDescriptionEntity.getUuid());
+		if (!(assetDescriptionEntity.getStatus().equals(Status.DRAFT)
+				|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
+			log.error("Invalid status for linkedProducer {} : status : {}", assetDescriptionEntity.getUuid(),
+					assetDescriptionEntity.getStatus());
+			throw new IllegalArgumentException("Invalid status on project " + assetDescriptionEntity.getUuid());
 		}
 	}
 

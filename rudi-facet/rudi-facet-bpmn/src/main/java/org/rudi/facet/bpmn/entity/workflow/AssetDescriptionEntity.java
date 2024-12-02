@@ -48,9 +48,9 @@ public interface AssetDescriptionEntity extends LongId {
 
 	void setUpdatedDate(LocalDateTime updatedDate);
 
-	void setDescription(String assignee);
+	void setDescription(String description);
 
-	void setData(String assignee);
+	void setData(String data);
 
 	void setAssignee(String assignee);
 

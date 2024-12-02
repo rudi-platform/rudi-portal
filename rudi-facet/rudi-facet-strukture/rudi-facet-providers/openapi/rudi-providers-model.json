@@ -54,6 +54,114 @@
 						"items": {
 							"$ref": "#/components/schemas/NodeProvider"
 						}
+					},
+					"linkedProducers": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/LinkedProducer"
+						}
+					}
+				}
+			},
+			"LinkedProducer": {
+				"description": "Lien entre un Provider et un Producer",
+				"type": "object",
+				"required": [
+					"openingDate",
+					"description"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AssetDescription"
+					},
+					{
+						"properties": {
+							"organization": {
+								"$ref": "#/components/schemas/Organization"
+							},
+							"linked_producer_status": {
+								"$ref": "#/components/schemas/LinkedProducerStatus"
+							}
+						}
+					}
+				]
+			},
+			"LinkedProducerStatus": {
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED",
+					"DISENGAGED"
+				]
+			},
+			"OrganizationStatus": {
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED",
+					"DISENGAGED"
+				]
+			},
+			"Organization": {
+				"description": "Organisation",
+				"type": "object",
+				"required": [
+					"name",
+					"openingDate",
+					"description"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AssetDescription"
+					},
+					{
+						"properties": {
+							"name": {
+								"description": "Nom",
+								"type": "string"
+							},
+							"organizationStatus": {
+								"$ref": "#/components/schemas/OrganizationStatus"
+							},
+							"openingDate": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Date de début d'activité"
+							},
+							"closingDate": {
+								"type": "string",
+								"format": "date-time",
+								"description": "Une date de fin d'activité"
+							},
+							"description": {
+								"type": "string"
+							},
+							"url": {
+								"type": "string"
+							}
+						}
+					}
+				]
+			},
+			"AssetDescription": {
+				"type": "object",
+				"properties": {
+					"object_type": {
+						"type": "string"
+					},
+					"uuid": {
+						"type": "string",
+						"format": "uuid"
+					}
+				},
+				"discriminator": {
+					"propertyName": "object_type",
+					"mapping": {
+						"Organization": "#/components/schemas/Organization"
 					}
 				}
 			},
@@ -108,7 +216,6 @@
 					"label": {
 						"type": "string",
 						"description": "Libelle de l'adresse"
-						
 					},
 					"type": {
 						"$ref": "#/components/schemas/AddressType"

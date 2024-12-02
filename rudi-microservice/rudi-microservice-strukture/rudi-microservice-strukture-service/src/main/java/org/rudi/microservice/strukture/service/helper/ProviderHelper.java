@@ -38,8 +38,9 @@ public class ProviderHelper {
 
 	public ProviderEntity getProviderFromUser(User user) throws AppServiceUnauthorizedException {
 		// Vérifie que l'utilsiteur connecté à les bons rôles
-		if (!(user.getType().equals(UserType.ROBOT) && user.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))) {
-			throw new AppServiceUnauthorizedException("Utilsiateur non lié à un provider");
+		if (!(user.getType().equals(UserType.ROBOT)
+				&& user.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))) {
+			throw new AppServiceUnauthorizedException("L'utilisateur connecté n'est pas lié au provider.");
 		}
 
 		// Vérifie que l'utilisateur connecté est bien un utilisateur d'un node provider
@@ -51,7 +52,7 @@ public class ProviderHelper {
 		return getProviderFromNodeProvider(nodeProvider);
 	}
 
-	public ProviderEntity getProviderFromNodeProvider(NodeProvider nodeProvider) throws AppServiceUnauthorizedException {
+	public ProviderEntity getProviderFromNodeProvider(NodeProvider nodeProvider) {
 		ProviderSearchCriteria criteria = new ProviderSearchCriteria();
 		criteria.setNodeProviderUuid(nodeProvider.getUuid());
 		criteria.setFull(true);
@@ -66,19 +67,15 @@ public class ProviderHelper {
 	}
 
 	public String getContactEmail(NodeProvider nodeProvider) {
-		try {
-			ProviderEntity providerEntity = getProviderFromNodeProvider(nodeProvider);
-			EmailAddressEntity addressEntity = (EmailAddressEntity) providerEntity.getAddresses().stream()
-					.filter(addresse -> AddressType.EMAIL.equals(addresse.getAddressRole().getType()) && codeContact.equals(addresse.getAddressRole().getCode()))
-					.findFirst().orElse(null);
-			if(addressEntity == null){
-				return null;
-			}
-			return addressEntity.getEmail();
-		} catch (AppServiceUnauthorizedException e) {
-			throw new InvalidParameterException("Provider introuvable");
+		ProviderEntity providerEntity = getProviderFromNodeProvider(nodeProvider);
+		EmailAddressEntity addressEntity = (EmailAddressEntity) providerEntity.getAddresses().stream()
+				.filter(addresse -> AddressType.EMAIL.equals(addresse.getAddressRole().getType())
+						&& codeContact.equals(addresse.getAddressRole().getCode()))
+				.findFirst().orElse(null);
+		if (addressEntity == null) {
+			return null;
 		}
+		return addressEntity.getEmail();
 	}
-
 
 }

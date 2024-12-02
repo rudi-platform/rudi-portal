@@ -90,7 +90,6 @@ public class SelfdataDraftFormMapper {
 	}
 
 	private Validator map(@Nonnull org.rudi.facet.kaccess.bean.Validator selfdataValidator) {
-		// TODO RUDI-2755
 		final var message = String.format("Self-data Validator of type \"%s\" has no matching workflow validator", selfdataValidator.getType());
 		throw new NotImplementedException(message);
 	}

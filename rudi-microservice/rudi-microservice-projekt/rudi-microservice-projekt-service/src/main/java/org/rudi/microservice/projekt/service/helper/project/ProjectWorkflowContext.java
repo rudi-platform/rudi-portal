@@ -160,9 +160,11 @@ public class ProjectWorkflowContext
 				// Ajout du demandeur
 				result.add(assetDescription.getInitiator());
 
-				// Ajout de tous les membres de l'organisation
-				CollectionUtils.addAll(result,
-						getAssignmentHelper().computeOrganizationMembersLogins(assetDescription.getOwnerUuid()));
+				if (assetDescription.getOwnerType() == OwnerType.ORGANIZATION) {
+					// Ajout de tous les membres de l'organisation
+					CollectionUtils.addAll(result,
+							getAssignmentHelper().computeOrganizationMembersLogins(assetDescription.getOwnerUuid()));
+				}
 
 				if (log.isInfoEnabled()) {
 					log.info("Assignees: {}", StringUtils.join(result, ", "));

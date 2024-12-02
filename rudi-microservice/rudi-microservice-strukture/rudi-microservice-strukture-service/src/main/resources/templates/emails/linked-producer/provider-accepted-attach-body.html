@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Provider Accepted Attach Body</title>
+    <title>${projectName} - Demande de rattachement d'organisation acceptée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,11 +21,20 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-
-Provider Accepted Attach Body
-
 <p>
-    A très bientôt, <br>
+    L'équipe ${projectName} a accepté votre demande de rattachement pour l'organisation ${asset.organization.name}.
+</p>
+<#if messageToAttachmentInitiator??><p>Voici le commentaire associé à la demande : ${messageToAttachmentInitiator}</p></#if>
+<p>
+    L'organisation ${asset.organization.name} est désormais rattachée à votre nœud producteur, vous pouvez
+    dès à présent publier des jeux de données en son nom.
+</p>
+<p>
+    Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
+        href="${urlContact}">ici</a>.
+</p>
+<p>
+    À très bientôt, <br>
     L'équipe ${teamName} <br>
     <a href="${urlServer}">${urlServer}</a>
 </p>

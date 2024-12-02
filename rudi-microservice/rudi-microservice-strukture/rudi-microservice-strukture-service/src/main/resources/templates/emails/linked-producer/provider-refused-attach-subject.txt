@@ -1,1 +1,1 @@
-provider refused attach subject
+${projectName} - Demande de rattachement d'organisation refusée

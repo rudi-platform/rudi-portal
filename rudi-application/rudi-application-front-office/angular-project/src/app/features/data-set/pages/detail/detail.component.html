@@ -54,14 +54,19 @@
                 <app-tab *ngIf="isMapDisplayed"
                          [label]="'metaData.mapData'|translate"
                          [icon]="'map'"
-                         [invisible]="true"
+                         [invisible]="false"
                 >
                     <ng-template>
-                        <app-map-tab
-                            [metadata]="metadata"
-                            [mediaToDisplay]="mediaToDisplayMap"
-                        >
-                        </app-map-tab>
+                        <ng-container *ngIf="!mapHasError; else errorTemplate">
+                            <app-map-tab
+                                [metadata]="metadata"
+                                [mediaToDisplay]="mediaToDisplayMap"
+                            ></app-map-tab>
+                        </ng-container>
+                        <ng-template #errorTemplate>
+                            <app-error-box [text]="'metaData.mapDataTab.error' | translate">
+                            </app-error-box>
+                        </ng-template>
                     </ng-template>
                 </app-tab>
 

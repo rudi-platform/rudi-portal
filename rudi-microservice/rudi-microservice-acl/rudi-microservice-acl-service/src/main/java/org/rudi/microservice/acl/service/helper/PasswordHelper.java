@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class PasswordHelper {
 
+	private static final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,100}$";
+
 	@Value("${account.min.length.password}")
 	private int minLengthPassword;
 
@@ -30,8 +32,6 @@ public class PasswordHelper {
 	private int maxLengthPassword;
 
 	private PasswordEncoder userPasswordEncoder;
-
-	private static String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,100}$";
 
 	@Bean("userPasswordEncoder")
 	public PasswordEncoder userPasswordEncoder() {

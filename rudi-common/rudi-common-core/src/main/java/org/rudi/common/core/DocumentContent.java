@@ -119,6 +119,7 @@ public class DocumentContent {
 		if (url == null) {
 			log.error("Error while loading resource {}, path {} doesn't exist. Please check config", resourceName,
 					path);
+			return null;
 		}
 
 		try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);) {

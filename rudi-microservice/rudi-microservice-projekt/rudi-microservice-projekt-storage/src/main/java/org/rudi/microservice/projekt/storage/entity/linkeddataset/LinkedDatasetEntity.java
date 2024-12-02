@@ -76,12 +76,14 @@ public class LinkedDatasetEntity extends AbstractAssetDescriptionEntity {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
+		if (!super.equals(o))
+			return false;
 		final LinkedDatasetEntity that = (LinkedDatasetEntity) o;
 		return Objects.equals(getDatasetUuid(), that.getDatasetUuid());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getDatasetUuid());
+		return Objects.hash(super.hashCode(), getDatasetUuid());
 	}
 }

@@ -1,29 +1,26 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
-import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.bean.Organization;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.organization.bean.OrganizationMember;
-import org.rudi.facet.organization.bean.OrganizationRole;
 import org.rudi.facet.organization.helper.OrganizationHelper;
-import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
-import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
-import org.rudi.facet.strukture.exceptions.StruktureApiException;
+import org.rudi.facet.providers.bean.Provider;
+import org.rudi.facet.providers.helper.ProviderHelper;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
@@ -31,17 +28,17 @@ import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequest
 import org.springframework.beans.factory.annotation.Value;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_108;
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_110;
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_112;
 
-@Slf4j
 public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 		extends AbstractIntegrationRequestTreatmentHandler {
 
-	protected final ObjectMapper objectMapper;
 	protected final List<AbstractMetadataValidator<?>> metadataValidators;
 	protected final MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator;
-	protected final DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator;
-	private final OrganizationHelper organizationHelper;
+	protected final OrganizationHelper organizationHelper;
+
 	@Getter
 	@Value("${default.organization.password:12345678Mm$}")
 	private String defaultOrganizationPassword;
@@ -50,13 +47,10 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 			ApiManagerHelper apiGatewayManagerHelper, ObjectMapper objectMapper,
 			List<AbstractMetadataValidator<?>> metadataValidators, Error500Builder error500Builder,
 			MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator,
-			DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator,
-			OrganizationHelper organizationHelper) {
-		super(datasetService, apiGatewayManagerHelper, error500Builder);
-		this.objectMapper = objectMapper;
+			OrganizationHelper organizationHelper, ProviderHelper providerHelper, ACLHelper aclHelper, RolesHelper roleHelper) {
+		super(datasetService, apiGatewayManagerHelper, error500Builder, providerHelper, objectMapper, aclHelper, roleHelper);
 		this.metadataValidators = metadataValidators;
 		this.metadataInfoProviderIsAuthenticatedValidator = metadataInfoProviderIsAuthenticatedValidator;
-		this.datasetCreatorIsAuthenticatedValidator = datasetCreatorIsAuthenticatedValidator;
 		this.organizationHelper = organizationHelper;
 	}
 
@@ -64,75 +58,64 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 			throws IntegrationException, DataverseAPIException, ApiGatewayApiException {
 		final var metadata = hydrateMetadata(integrationRequest.getFile());
 		if (validateAndSetErrors(metadata, integrationRequest)) {
-			treat(integrationRequest, metadata);
+			final Provider provider = providerHelper.getProviderByNodeProviderUUID(integrationRequest.getNodeProviderId());
 
-			verifyOrganizations(metadata, integrationRequest.getNodeProviderId());
+			if (provider != null) {
+				Organization orgProvider = new Organization();
+				orgProvider.setOrganizationId(provider.getUuid());
+				orgProvider.setOrganizationName(provider.getLabel());
+				metadata.getMetadataInfo().setMetadataProvider(orgProvider);
+			}
+
+			treat(integrationRequest, metadata);
 			integrationRequest.setIntegrationStatus(IntegrationStatus.OK);
 		} else {
 			integrationRequest.setIntegrationStatus(IntegrationStatus.KO);
 		}
 	}
 
-	private void verifyOrganizations(Metadata metadata, UUID nodeProviderId) {
-		try {
-			if(organizationHelper.getOrganization(metadata.getProducer().getOrganizationId()) == null){
-				log.error("Producer inconnu {} lors de l'insertion du JDD {}", metadata.getProducer(), metadata.getGlobalId());
-				throw new InvalidParameterException("Unknown producer organization");
-			}
-
-			final var providerOrganization = metadata.getMetadataInfo().getMetadataProvider();
-			if(providerOrganization != null && organizationHelper.getOrganization(providerOrganization.getOrganizationId()) == null){
-				log.error("Provider inconnu {} lors de l'insertion du JDD {}", providerOrganization, metadata.getGlobalId());
-				throw new InvalidParameterException("Unknown provider organization");
-			}
-			// TODO : RUDI-1460 : Si les deux organizations éxistent, vérifier qu'elles sont bien rattachées l'une à l'autre.
-
-			addNodeProviderToOrganization(nodeProviderId, providerOrganization);
-
-		} catch (StruktureApiException e) {
-			log.warn("Erreur lors de la création des organisations liées au JDD " + metadata.getGlobalId(), e);
-		}
-	}
-
-	private void addNodeProviderToOrganization(UUID nodeProviderId,
-			@Nullable org.rudi.facet.kaccess.bean.Organization metadataOrganization)
-			throws AddUserToOrganizationException, GetOrganizationMembersException {
-		if (metadataOrganization != null) {
-			final var organizationId = metadataOrganization.getOrganizationId();
-			final var member = new OrganizationMember().userUuid(nodeProviderId).role(OrganizationRole.ADMINISTRATOR);
-			organizationHelper.addMemberToOrganizationIfNotExists(member, organizationId);
-		}
-	}
-
-	/**
-	 * Transforme une chaine de caractères en Metadata.
-	 *
-	 * @param file la chaine de caractères qui contient un metadata au format JSON
-	 * @return Metadata l'objet java Metadata obtenu à partir du contenu JSON désérialisé
-	 * @throws IntegrationException en cas d'erreur lors du parsing JSON de la metadata
-	 */
-	private Metadata hydrateMetadata(String file) throws IntegrationException {
-		try {
-			return objectMapper.readValue(file, Metadata.class);
-		} catch (Exception e) {
-			throw new IntegrationException(
-					"Error lors de la récupération des Metadata dans l'Integration Request : transformation JSON -> Metadata",
-					e);
-		}
-	}
-
 	private boolean validateAndSetErrors(Metadata metadata, IntegrationRequestEntity integrationRequest) {
 		final Set<IntegrationRequestErrorEntity> errors = validate(metadata);
-//		errors.addAll(metadataInfoProviderIsAuthenticatedValidator.validate(metadata, integrationRequest)); // Contrôle désactivé par la RUDI-1459
-		if (datasetCreatorIsAuthenticatedValidator.canBeUsedBy(this)) {
-			errors.addAll(datasetCreatorIsAuthenticatedValidator.validate(integrationRequest));
+		if (!errors.isEmpty()) {
+			integrationRequest.setErrors(errors);
+			return errors.isEmpty();
 		}
+
+		UUID nodeProviderId = integrationRequest.getNodeProviderId();
+
+		//vérifie que l'utilisateur est du bon type
+		User user = aclHelper.getUserByUUID(nodeProviderId);
+		if (user == null || !isUserNodeProvider(nodeProviderId)) {
+			errors.add(new IntegrationRequestErrorEntity(ERR_108.getCode(), ERR_108.getMessage()));
+			integrationRequest.setErrors(errors);
+			return errors.isEmpty();
+		}
+
+		final Provider provider = providerHelper.getFullProviderByNodeProviderUUID(nodeProviderId);
+
+		if (provider == null) {
+			// Le node provider n'est lié a aucun provider
+			errors.add(new IntegrationRequestErrorEntity(ERR_110.getCode(), ERR_110.getMessage()));
+			integrationRequest.setErrors(errors);
+			return errors.isEmpty();
+		}
+
+		//vérifie que le provider du nodeProvider est liée à l'organization
+		if (!isLinkedToOrganization(metadata, provider)) {
+			// le provider n'est pas associé à l'organisation producer du JDD
+			errors.add(new IntegrationRequestErrorEntity(ERR_112.getCode(), ERR_112.getMessage()));
+		}
+
+		//ajout des erreurs dans le rapport d'integration
+		errors.addAll(validateSpecificForOperation(integrationRequest));
 
 		// Sauvegarde des erreurs
 		integrationRequest.setErrors(errors);
 
 		return errors.isEmpty();
 	}
+
+	abstract Set<IntegrationRequestErrorEntity> validateSpecificForOperation(IntegrationRequestEntity integrationRequest);
 
 	protected Set<IntegrationRequestErrorEntity> validate(Metadata metadata) {
 		Set<IntegrationRequestErrorEntity> integrationRequestsErrors = new HashSet<>();

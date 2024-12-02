@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Owner refused body</title>
+    <title>${projectName} - Demande de déclaration d'organisation refusée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,11 +21,16 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-
-Initiator refused body
-
 <p>
-    A très bientôt, <br>
+    L'équipe ${projectName} a refusé votre demande de déclaration de l'organisation ${asset.name} pour le motif suivant
+    : ${messageToOrganizationCreator}
+</p>
+<p>
+    Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
+        href="${urlContact}">ici</a>.
+</p>
+<p>
+    À très bientôt, <br>
     L'équipe ${teamName} <br>
     <a href="${urlServer}">${urlServer}</a>
 </p>

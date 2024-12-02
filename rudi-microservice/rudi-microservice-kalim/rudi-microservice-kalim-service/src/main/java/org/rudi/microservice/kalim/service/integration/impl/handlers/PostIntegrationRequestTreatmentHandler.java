@@ -1,20 +1,24 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.apigateway.exceptions.CreateApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.helper.OrganizationHelper;
+import org.rudi.facet.providers.helper.ProviderHelper;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
-import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.DatasetCreatorIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
+import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -29,11 +33,16 @@ public class PostIntegrationRequestTreatmentHandler extends AbstractIntegrationR
 			ApiManagerHelper apigatewayManagerHelper, ObjectMapper objectMapper,
 			List<AbstractMetadataValidator<?>> metadataValidators, Error500Builder error500Builder,
 			MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator,
-			DatasetCreatorIsAuthenticatedValidator datasetCreatorIsAuthenticatedValidator,
-			OrganizationHelper organizationHelper) {
+			OrganizationHelper organizationHelper, ProviderHelper providerHelper, ACLHelper aclHelper, RolesHelper roleHelper) {
 		super(datasetService, apigatewayManagerHelper, objectMapper, metadataValidators,
-				error500Builder, metadataInfoProviderIsAuthenticatedValidator, datasetCreatorIsAuthenticatedValidator,
-				organizationHelper);
+				error500Builder, metadataInfoProviderIsAuthenticatedValidator,
+				organizationHelper, providerHelper, aclHelper, roleHelper);
+	}
+
+	@Override
+	Set<IntegrationRequestErrorEntity> validateSpecificForOperation(IntegrationRequestEntity integrationRequest) {
+		//Pas de vérification complémentaire nécessaire dans le cas du POST
+		return Set.of();
 	}
 
 	@Override

@@ -1,1 +1,1 @@
-moderator notify subject attach
+${projectName} - Demande de rattachement d'organisation

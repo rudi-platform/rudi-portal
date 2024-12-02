@@ -174,8 +174,7 @@ public class AuthorizationServerSecurityConfigurer
 
 			@Override
 			public boolean matches(CharSequence rawPassword, String encodedPassword) {
-				return StringUtils.hasText(encodedPassword) ? passwordEncoder.matches(rawPassword, encodedPassword)
-						: true;
+				return !StringUtils.hasText(encodedPassword) || passwordEncoder.matches(rawPassword, encodedPassword);
 			}
 
 			@Override

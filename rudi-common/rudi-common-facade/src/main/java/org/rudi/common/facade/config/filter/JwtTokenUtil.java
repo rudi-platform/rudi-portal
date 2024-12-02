@@ -17,10 +17,13 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Classe utilitaire des gestion de token JWT
  */
 @Component
+@Slf4j
 public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = -2550185165626007488L;
@@ -58,6 +61,7 @@ public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 	@Override
 	protected void handleExternalAccount(JwtTokenData token, JWTClaimsSet claims) {
 		// Nothing to do
+		log.warn("External account not handled in common facade");
 	}
 
 	@Override

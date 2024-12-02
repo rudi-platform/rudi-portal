@@ -1,1 +1,1 @@
-Initiator refused subject
+${projectName} - Demande de déclaration d'organisation refusée

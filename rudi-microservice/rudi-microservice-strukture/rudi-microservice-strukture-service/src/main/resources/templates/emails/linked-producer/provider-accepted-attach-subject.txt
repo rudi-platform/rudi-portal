@@ -1,1 +1,1 @@
-provider accepted attach subject
+${projectName} - Demande de rattachement d'organisation acceptée

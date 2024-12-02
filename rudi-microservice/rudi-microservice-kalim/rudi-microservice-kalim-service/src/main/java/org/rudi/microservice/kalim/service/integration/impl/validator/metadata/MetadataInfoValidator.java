@@ -14,6 +14,8 @@ import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
 import org.springframework.stereotype.Component;
 
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_PROVIDER;
+
 @Component
 public class MetadataInfoValidator extends AbstractMetadataValidator<MetadataMetadataInfo> {
 
@@ -36,6 +38,13 @@ public class MetadataInfoValidator extends AbstractMetadataValidator<MetadataMet
 					IntegrationError.ERR_106.getCode(), errorMessage,
 					RudiMetadataField.METADATA_INFO_API_VERSION.getLocalName(), LocalDateTime.now());
 
+			integrationRequestsErrors.add(integrationRequestError);
+		} else if (metadataMetadataInfo.getApiVersion().equals(ConstantMetadata.CURRENT_METADATA_VERSION) && metadataMetadataInfo.getMetadataProvider() != null) {
+			String errorMessage = String.format(IntegrationError.ERR_307.getMessage(),
+					metadataMetadataInfo.getMetadataProvider().getOrganizationName(), METADATA_INFO_PROVIDER);
+			IntegrationRequestErrorEntity integrationRequestError = new IntegrationRequestErrorEntity(UUID.randomUUID(),
+					IntegrationError.ERR_307.getCode(), errorMessage,
+					RudiMetadataField.METADATA_INFO_API_VERSION.getLocalName(), LocalDateTime.now());
 			integrationRequestsErrors.add(integrationRequestError);
 		}
 		return integrationRequestsErrors;

@@ -29,12 +29,12 @@ public class SwaggerHelper {
 
 	private ObjectMapper objectMapperYaml = new ObjectMapper(new YAMLFactory());
 
-	public Swagger getSwaggerContractFromValue(String contract) throws IOException {
-		if (StringUtils.isEmpty(contract)) {
+	public Swagger getSwaggerContractFromValue(String contractPath) throws IOException {
+		if (StringUtils.isEmpty(contractPath)) {
 			return null;
 		}
-		URL url = Thread.currentThread().getContextClassLoader().getResource(contract);
-		if (contract.endsWith(".json")) {
+		URL url = Thread.currentThread().getContextClassLoader().getResource(contractPath);
+		if (contractPath.endsWith(".json")) {
 			return objectMapper.reader().forType(Swagger.class).readValue(url);
 		} else {
 			return objectMapperYaml.reader().forType(Swagger.class).readValue(url);

@@ -3,7 +3,6 @@ package org.rudi.microservice.acl.service.address;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.rudi.microservice.acl.core.bean.AddressRole;
 import org.rudi.microservice.acl.core.bean.AddressRoleSearchCriteria;
@@ -104,7 +103,6 @@ public class AddressRoleServiceUT {
 	}
 
 	@Test
-	@Disabled
 	public void testCRUDAddressRole() {
 
 		assertNotNull(addressRoleService);

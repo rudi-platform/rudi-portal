@@ -1,5 +1,7 @@
 package org.rudi.microservice.strukture.storage.entity.provider;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,4 +43,22 @@ public class LinkedProducerEntity extends AbstractAssetDescriptionEntity {
 	@ManyToOne
 	@JoinColumn(name = ORGANIZATION_FK)
 	private OrganizationEntity organization;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		final LinkedProducerEntity that = (LinkedProducerEntity) o;
+		return Objects.equals(organization, that.organization)
+				&& Objects.equals(linkedProducerStatus, that.linkedProducerStatus);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), organization, linkedProducerStatus);
+	}
 }

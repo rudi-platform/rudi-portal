@@ -1,1 +1,1 @@
-moderator notify subject detach
+${projectName} - Demande de détachement d'organisation

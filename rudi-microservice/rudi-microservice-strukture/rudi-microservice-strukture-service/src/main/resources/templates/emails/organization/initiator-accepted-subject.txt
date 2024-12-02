@@ -1,1 +1,1 @@
-Initiator accepted subject
+${projectName} - Demande de déclaration d'organisation acceptée

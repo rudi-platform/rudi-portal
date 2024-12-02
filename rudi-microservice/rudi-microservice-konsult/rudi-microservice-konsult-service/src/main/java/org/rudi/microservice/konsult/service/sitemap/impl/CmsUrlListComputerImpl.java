@@ -1,5 +1,7 @@
 package org.rudi.microservice.konsult.service.sitemap.impl;
 
+import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
+
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -28,7 +30,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
 
 @Component
 @Slf4j
@@ -44,6 +45,8 @@ public class CmsUrlListComputerImpl extends AbstractUrlListComputer {
 	// Constante pour l'ordre
 	private static final String CMS_REQUEST_ORDER = "-mgnl:lastModified";
 
+	// Filtre par défaut
+	private static final CmsRequest CMS_REQUEST_DEFAULT_FILTER = CmsRequest.builder().build();
 
 	@Override
 	public UrlListTypeData getAcceptedData() {
@@ -51,66 +54,44 @@ public class CmsUrlListComputerImpl extends AbstractUrlListComputer {
 	}
 
 	@Override
-	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData) throws AppServiceException {
-
-		// Filtre par défaut
-		CmsRequest CMS_REQUEST_DEFAULT_FILTER = CmsRequest.builder().build();
+	public List<TUrl> computeInternal(SitemapEntryData sitemapEntryData, SitemapDescriptionData sitemapDescriptionData)
+			throws AppServiceException {
 
 		String formattedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
 		// Filtre spécifique pour les "news"
-		CmsRequest newsFilter = CmsRequest.builder().filters(List.of("publishdate[lte]=" + formattedDate, "unpublishdate[gt]=" + formattedDate)).build();
+		CmsRequest newsFilter = CmsRequest.builder()
+				.filters(List.of("publishdate[lte]=" + formattedDate, "unpublishdate[gt]=" + formattedDate)).build();
 
+		List<String> news = fetchCmsUrls(CmsAssetType.NEWS, "rudi-news@news-sitemap", newsFilter,
+				sitemapDescriptionData);
 
-		List<String> news = fetchCmsUrls(
-				CmsAssetType.NEWS,
-				"rudi-news@news-sitemap",
-				newsFilter,
-				sitemapDescriptionData
-		);
+		List<String> terms = fetchCmsUrls(CmsAssetType.TERMS, "rudi-terms@terms-sitemap", CMS_REQUEST_DEFAULT_FILTER,
+				sitemapDescriptionData);
 
-		List<String> terms = fetchCmsUrls(
-				CmsAssetType.TERMS,
-				"rudi-terms@terms-sitemap",
-				CMS_REQUEST_DEFAULT_FILTER,
-				sitemapDescriptionData
-		);
+		List<String> projectValues = fetchCmsUrls(CmsAssetType.PROJECTVALUES,
+				"rudi-project-values@projectvalue-sitemap", CMS_REQUEST_DEFAULT_FILTER, sitemapDescriptionData);
 
-		List<String> projectValues = fetchCmsUrls(
-				CmsAssetType.PROJECTVALUES,
-				"rudi-project-values@projectvalue-sitemap",
-				CMS_REQUEST_DEFAULT_FILTER,
-				sitemapDescriptionData
-		);
-
-		return Stream.of(news, terms, projectValues)
-				.flatMap(list -> convertToTUrlList(list).stream())
+		return Stream.of(news, terms, projectValues).flatMap(list -> convertToTUrlList(list).stream())
 				.collect(Collectors.toList());
 	}
-
 
 	/**
 	 * Récupère les URLs des assets CMS pour un type d'asset spécifique en fonction des paramètres fournis.
 	 *
-	 * @param assetType Le type d'asset CMS à récupérer (ex. NEWS, TERMS, PROJECTVALUES).
-	 * @param sitemap Le nom du template de sitemap pour structurer les URLs générées.
-	 * @param request L'objet `CmsRequest` contenant les filtres et autres paramètres de la requête.
+	 * @param assetType              Le type d'asset CMS à récupérer (ex. NEWS, TERMS, PROJECTVALUES).
+	 * @param sitemap                Le nom du template de sitemap pour structurer les URLs générées.
+	 * @param request                L'objet `CmsRequest` contenant les filtres et autres paramètres de la requête.
 	 * @param sitemapDescriptionData Les données de description du sitemap, contenant notamment le nombre maximal d'URLs à récupérer.
-	 * @return Une liste de chaînes de caractères représentant les URLs relatives
-	 * 		   (ex: /cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/Politique_de_confidentialit%C3%A9_de_la_plateforme_Rudi)
-	 * 		   des assets CMS, ordonnées par date de dernière modification.
-	 *         Renvoie une liste vide en cas d'échec ou d'exception.
+	 * @return Une liste de chaînes de caractères représentant les URLs relatives (ex:
+	 *         /cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/Politique_de_confidentialit%C3%A9_de_la_plateforme_Rudi)
+	 *         des assets CMS, ordonnées par date de dernière modification. Renvoie une liste vide en cas d'échec ou d'exception.
 	 */
-	private List<String> fetchCmsUrls(CmsAssetType assetType, String sitemap, CmsRequest request, SitemapDescriptionData sitemapDescriptionData) {
+	private List<String> fetchCmsUrls(CmsAssetType assetType, String sitemap, CmsRequest request,
+			SitemapDescriptionData sitemapDescriptionData) {
 		try {
-			return cmsService.renderAssetsAsUrl(
-					assetType,
-					sitemap,
-					request,
-					0,
-					sitemapDescriptionData.getMaxUrlCount(),
-					CMS_REQUEST_ORDER
-			);
+			return cmsService.renderAssetsAsUrl(assetType, sitemap, request, 0, sitemapDescriptionData.getMaxUrlCount(),
+					CMS_REQUEST_ORDER);
 		} catch (CmsException exception) {
 			log.error("Erreur lors de la récupération des assets url de type {} pour le sitemap", assetType, exception);
 			return Collections.emptyList(); // Return an empty list on error
@@ -133,25 +114,24 @@ public class CmsUrlListComputerImpl extends AbstractUrlListComputer {
 		return urlList;
 	}
 
-
 	/**
 	 * Construit une URL en décodant la dernière partie du lien fourni pour la rendre compatible, puis en la reconstruisant avec une urlServer de base.
 	 *
-	 * @param link L'URL d'entrée sous forme de chaîne de caractères.
-	 *             Cette URL doit contenir une structure avec des barres obliques ("/") pour que la méthode fonctionne correctement.
+	 * @param link L'URL d'entrée sous forme de chaîne de caractères. Cette URL doit contenir une structure avec des barres obliques ("/") pour que la
+	 *             méthode fonctionne correctement.
 	 *             (ex:/cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/Politique_de_confidentialit%C3%A9_de_la_plateforme_Rudi)
-	 * @return Une nouvelle URL formée à partir de la base du lien et de la dernière partie décodée.
-	 *         La dernière partie est normalisée et encodée selon les normes UTF-8.
-	 *         (ex: http://localhost:4200/cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/politique-de-confidentialite-de-la-plateforme-rudi)
+	 * @return Une nouvelle URL formée à partir de la base du lien et de la dernière partie décodée. La dernière partie est normalisée et encodée selon
+	 *         les normes UTF-8. (ex:
+	 *         http://localhost:4200/cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/politique-de-confidentialite-de-la-plateforme-rudi)
 	 */
 	private String buildLocation(String link) {
 		if (link.startsWith("/")) {
 			link = link.substring(1);
 		}
-			int lastSlashIndex = link.lastIndexOf('/');
-			String baseUrl = link.substring(0, lastSlashIndex + 1);
-			String lastPart = link.substring(lastSlashIndex + 1);
-			String encodedLastPart = normalize(URLDecoder.decode(lastPart, StandardCharsets.UTF_8));
-			return StringUtils.join(urlServer, (baseUrl + encodedLastPart));
+		int lastSlashIndex = link.lastIndexOf('/');
+		String baseUrl = link.substring(0, lastSlashIndex + 1);
+		String lastPart = link.substring(lastSlashIndex + 1);
+		String encodedLastPart = normalize(URLDecoder.decode(lastPart, StandardCharsets.UTF_8));
+		return StringUtils.join(urlServer, (baseUrl + encodedLastPart));
 	}
 }

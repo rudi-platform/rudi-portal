@@ -4,6 +4,9 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService, GPS_PROJECTION} from '@core/services/data-set/display-map.service';
 import {LogService} from '@core/services/log.service';
 import {MAP_PROTOCOLS} from '@core/services/map/map-protocols';
+import {SnackBarService} from '@core/services/snack-bar.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/notification-template/notification-template.component';
 import {Media, MediaFile, MediaType, Metadata} from 'micro_service_modules/api-kaccess';
 import {Address} from 'micro_service_modules/api-rva';
 import {LayerInformation} from 'micro_service_modules/konsult/konsult-model';
@@ -43,7 +46,7 @@ export class MapComponent implements AfterViewInit {
     mapCenter: number[] = [-1.662712, 48.114767];
     mapCenterTopleft: number[] = [-1.751289, 48.168261];
     mapCenterBottomRight: number[] = [-1.534996, 48.062135];
-    
+
     /**
      * Le nombre de pixels de "padding" autour d'une extent de géoémtrie sur laquelle la vue se centre
      */
@@ -65,7 +68,9 @@ export class MapComponent implements AfterViewInit {
         private readonly displayMapService: DisplayMapService,
         private readonly logService: LogService,
         private readonly mapLayerFunction: MapLayerFunction,
-        private readonly propertiesMetierService: PropertiesMetierService
+        private readonly propertiesMetierService: PropertiesMetierService,
+        private readonly snackBarService: SnackBarService,
+        private readonly translateService: TranslateService
     ) {
         this.matIconRegistry.addSvgIcon(
             'icon_centrage',
@@ -226,6 +231,10 @@ export class MapComponent implements AfterViewInit {
                 })
             ).subscribe({
                 error: (err) => {
+                    this.snackBarService.openSnackBar({
+                        message: this.translateService.instant('metaData.mapDataTab.error'),
+                        level: Level.ERROR
+                    });
                     console.error(err);
                 }
             });

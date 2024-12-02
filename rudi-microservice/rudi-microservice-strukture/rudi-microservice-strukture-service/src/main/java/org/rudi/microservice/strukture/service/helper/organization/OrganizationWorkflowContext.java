@@ -17,6 +17,7 @@ import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
+import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
@@ -28,6 +29,7 @@ import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Report;
 import org.rudi.microservice.strukture.core.bean.ReportError;
 import org.rudi.microservice.strukture.service.helper.NodeProviderUserHelper;
+import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.ReportHelper;
 import org.rudi.microservice.strukture.service.helper.ReportSendExecutor;
@@ -57,12 +59,14 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	private final NodeProviderUserHelper nodeProviderUserHelper;
 	private final ReportHelper reportHelper;
 	private final ProviderHelper providerHelper;
+	private final OwnerInfoHelper ownerInfoHelper;
 
-	public OrganizationWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper, ProviderHelper providerHelper) {
+	public OrganizationWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper, ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
 		this.providerHelper = providerHelper;
+		this.ownerInfoHelper = ownerInfoHelper;
 	}
 
 	@Transactional(readOnly = false)
@@ -156,7 +160,7 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 
 	}
 
-	public List<ReportError> getErrorsFromIntegrationError(List<IntegrationError> integrationErrors) {
+	private List<ReportError> getErrorsFromIntegrationError(List<IntegrationError> integrationErrors) {
 		ArrayList<ReportError> errors = new ArrayList<>();
 
 		for (IntegrationError integrationError : integrationErrors) {
@@ -166,5 +170,14 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		return errors;
 	}
 
-
+	/**
+	 * Point d'extension pour l'alimentation du datamodel des emails
+	 *
+	 * @param eMailDataModel
+	 */
+	@Override
+	protected void addEmailDataModelData(EMailDataModel<OrganizationEntity, OrganizationAssignmentHelper> eMailDataModel) {
+		super.addEmailDataModelData(eMailDataModel);
+		eMailDataModel.addData("denomination", ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
+	}
 }

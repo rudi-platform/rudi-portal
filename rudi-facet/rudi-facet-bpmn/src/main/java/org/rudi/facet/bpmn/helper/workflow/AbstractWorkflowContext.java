@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.script.ScriptContext;
 
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
@@ -459,26 +460,43 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			E assetDescriptionEntity = getAssetDescriptionDao().findByUuid(uuid);
 			if (assetDescriptionEntity != null) {
-				try {
-					Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
-					Form userKeyForm = getFormHelper().lookupForm(processInstanceBusinessKey, userKey, actionName);
-
-					if (userKeyForm != null) {
-						userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName))
-								.findFirst().ifPresentOrElse(value -> {
-									if (CollectionUtils.isNotEmpty(value.getFields())) {
-										value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
-									}
-								}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
-						assetDescriptionEntity.setData(getFormHelper().deshydrateData(data));
-						getAssetDescriptionDao().save(assetDescriptionEntity);
-					}
-				} catch (InvalidDataException e) {
-					log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
-				} catch (FormDefinitionException e) {
-					log.error("Failed to look up for {} form for {}", userKey, assetDescriptionEntity.getInitiator());
-				}
+				cleanDataBySection(userKey, actionName, sectionName, processInstanceBusinessKey,
+						assetDescriptionEntity);
 			}
+		}
+	}
+
+	/**
+	 * Supprime le contenu des données de la section 'sectionName' correspondant au form userky_actionname retrouvé par processInstanceBusinessKey pour
+	 * l'entite assetDescriptionEntity
+	 * 
+	 * @param userKey                    le nom technique de l'étape dans le workflow, pour retrouver le form
+	 * @param actionName                 le nom de la branche de sortie de l'étape, pour retrouver le form
+	 * @param sectionName                le nom de la section à supprimer
+	 * @param processInstanceBusinessKey l'id du workflow en cours
+	 * @param assetDescriptionEntity     l'entité à corriger
+	 */
+	private void cleanDataBySection(String userKey, String actionName, String sectionName,
+			@Nonnull String processInstanceBusinessKey, @Nonnull E assetDescriptionEntity) {
+		try {
+			Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
+			Form userKeyForm = getFormHelper().lookupForm(processInstanceBusinessKey, userKey, actionName);
+
+			if (userKeyForm != null) {
+				userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName)).findFirst()
+						.ifPresentOrElse(value -> {
+							if (CollectionUtils.isNotEmpty(value.getFields())) {
+								value.getFields().forEach(field -> data.remove(field.getDefinition().getName()));
+							}
+						}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
+				String newData = getFormHelper().deshydrateData(data);
+				assetDescriptionEntity.setData(newData);
+				getAssetDescriptionDao().save(assetDescriptionEntity);
+			}
+		} catch (InvalidDataException e) {
+			log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
+		} catch (FormDefinitionException e) {
+			log.error("Failed to look up for {} form for {}", userKey, assetDescriptionEntity.getInitiator());
 		}
 	}
 

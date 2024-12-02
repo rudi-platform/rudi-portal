@@ -1,1 +1,1 @@
-provider refused detach subject
+${projectName} - Demande de détachement d'organisation refusée

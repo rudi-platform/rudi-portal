@@ -672,7 +672,8 @@
         "mapData": "Carte",
         "mapDataTab": {
             "searchAddressTitle": "Recherche par adresse: ",
-            "searchAddressPlaceholder": "Recherche par nom de lieu"
+            "searchAddressPlaceholder": "Recherche par nom de lieu",
+            "error": "Les données ne sont pas visibles au format carte."
         },
         "administrationTab": {
             "title": "Administration des membres",

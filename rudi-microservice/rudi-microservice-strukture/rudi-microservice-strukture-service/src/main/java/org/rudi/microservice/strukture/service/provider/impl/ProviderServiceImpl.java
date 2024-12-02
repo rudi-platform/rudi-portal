@@ -63,13 +63,9 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private static final String UUID_NODE_PROVIDER_MISSING_MESSAGE = "UUID NodeProvider missing";
 
-	private static final String PROVIDER_UNKNOWN_MESSAGE = "Provider unknown:";
-
 	private static final String UUID_PROVIDER_MISSING_MESSAGE = "UUID provider missing";
 
 	private static final String ADDRESS_ROLE_INVALID_MESSAGE = "AddresseRole invalid";
-
-	private static final String ADDRESS_ROLE_MISSING_MESSAGE = "AddresseRole missing";
 
 	private static final String EMPTY_CODE_MESSAGE = "Invalid empty code";
 
@@ -136,9 +132,6 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 
 		ProviderEntity entity = providerDao.findByUUID(provider.getUuid());
-		if (entity == null) {
-			throw new IllegalArgumentException(PROVIDER_UNKNOWN_MESSAGE + provider.getUuid());
-		}
 		validProviderEntity(entity);
 
 		providerMapper.dtoToEntity(provider, entity);
@@ -168,9 +161,6 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional // readOnly = false
 	public void deleteProvider(@NotNull UUID uuid) {
 		ProviderEntity entity = providerDao.findByUUID(uuid);
-		if (entity == null) {
-			throw new IllegalArgumentException(PROVIDER_UNKNOWN_MESSAGE + uuid);
-		}
 		providerDao.delete(entity);
 	}
 
@@ -178,9 +168,6 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional // readOnly = false
 	public NodeProvider createNode(@NotNull UUID providerUuid, @NotNull NodeProvider nodeProvider) {
 		ProviderEntity providerEntity = providerDao.findByUUID(providerUuid);
-		if (providerEntity == null) {
-			throw new IllegalArgumentException(PROVIDER_UNKNOWN_MESSAGE + providerUuid);
-		}
 		NodeProviderEntity nodeProviderEntity = nodeProviderMapper.dtoToEntity(nodeProvider);
 		nodeProviderEntity.setUuid(UUID.randomUUID());
 		providerEntity.getNodeProviders().add(nodeProviderEntity);
@@ -230,9 +217,6 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional // readOnly = false
 	public AbstractAddress createAddress(@NotNull UUID providerUuid, @NotNull AbstractAddress abstractAddress) {
 		ProviderEntity providerEntity = providerDao.findByUUID(providerUuid);
-		if (providerEntity == null) {
-			throw new IllegalArgumentException(PROVIDER_UNKNOWN_MESSAGE + providerUuid);
-		}
 		AbstractAddressEntity abstractAddressEntity = abstractAddressMapper.dtoToEntity(abstractAddress);
 		assignAddressRole(abstractAddress, abstractAddressEntity);
 		abstractAddressEntity.setUuid(UUID.randomUUID());
@@ -262,10 +246,6 @@ public class ProviderServiceImpl implements ProviderService {
 		AddressRoleEntity addressRoleEntity = null;
 		if (abstractAddress.getAddressRole() != null && abstractAddress.getAddressRole().getUuid() != null) {
 			addressRoleEntity = addressRoleDao.findByUUID(abstractAddress.getAddressRole().getUuid());
-
-			if (addressRoleEntity == null) {
-				throw new IllegalArgumentException(ADDRESS_ROLE_MISSING_MESSAGE);
-			}
 		}
 
 		abstractAddressEntity.setAddressRole(addressRoleEntity);

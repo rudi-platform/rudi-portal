@@ -41,8 +41,12 @@ public abstract class TransientEntitiesReplacer<V, E> {
 	}
 
 	/**
-	 * // TODO javadoc à revoir
-	 * Remplace les entités transient du projet source (sourceProject) par les entités réelles présentes en base dans le projet cible (targetProject)
+	 * Retrouve les entités persistées à partir des entités transcientes, pour remplacement dans les entités les utilisant (pour les listes déroulantes
+	 * par exemple)
+	 * 
+	 * @param transientEntities la ou les entités transientes
+	 * @return la ou les entités persistes correspondantes
+	 * @throws AppServiceException si les entités transcientes ne sont pas trouvées
 	 */
 	@Nullable
 	protected abstract E getPersistentEntities(@Nullable E transientEntities) throws AppServiceException;

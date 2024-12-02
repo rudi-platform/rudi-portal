@@ -14,6 +14,7 @@ import org.rudi.microservice.apigateway.service.throttling.validator.ThrottlingV
 import org.rudi.microservice.apigateway.storage.dao.throttling.ThrottlingCustomDao;
 import org.rudi.microservice.apigateway.storage.dao.throttling.ThrottlingDao;
 import org.rudi.microservice.apigateway.storage.entity.throttling.ThrottlingEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -70,11 +71,11 @@ public class ThrottlingServiceImpl implements ThrottlingService {
 	}
 
 	private ThrottlingEntity getThrottlingEntity(UUID throttlingUuid) {
-		ThrottlingEntity entity = throttlingDao.findByUUID(throttlingUuid);
-		if (entity == null) {
+		try {
+			return throttlingDao.findByUUID(throttlingUuid);
+		} catch (EmptyResultDataAccessException e) {
 			throw new IllegalArgumentException("Resource inexistante:" + throttlingUuid);
 		}
-		return entity;
 	}
 
 	@Override

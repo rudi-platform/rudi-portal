@@ -1,5 +1,6 @@
 package org.rudi.microservice.apigateway.facade.config.gateway.filters;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -148,8 +149,8 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 			}
 		} else {
 			try {
-				String path = INTERFACE_CONTRACT_PATH + "/" + contract + ".json";
-				Swagger swagger = swaggerHelper.getSwaggerContractFromValue(path);
+				String contractPath = StringUtils.join(INTERFACE_CONTRACT_PATH, File.separator, contract, ".json");
+				Swagger swagger = swaggerHelper.getSwaggerContractFromValue(contractPath);
 				checkParameters(exchange, swagger, uri);
 			} catch (Exception e) {
 				log.warn("Failed to get contract", e);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Provider Accepted Detach Body</title>
+    <title>${projectName} - Demande de détachement d'organisation acceptée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -21,11 +21,19 @@
 </head>
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
-
-Provider Accepted Detach Body
-
 <p>
-    A très bientôt, <br>
+    L'équipe ${projectName} a accepté votre demande de détachement pour l'organisation ${asset.organization.name}.
+</p>
+<#if messageToDetachmentInitiator??><p>Voici le commentaire associé à la demande : ${messageToDetachmentInitiator}</p></#if>
+<p>
+    L'organisation ${asset.organization.name} est désormais détachée de votre nœud producteur.
+</p>
+<p>
+    Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
+        href="${urlContact}">ici</a>.
+</p>
+<p>
+    À très bientôt, <br>
     L'équipe ${teamName} <br>
     <a href="${urlServer}">${urlServer}</a>
 </p>

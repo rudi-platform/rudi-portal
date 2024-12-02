@@ -50,7 +50,9 @@
 				"enum": [
 					"DRAFT",
 					"IN_PROGRESS",
-					"VALIDATED"
+					"CANCELLED",
+					"VALIDATED",
+					"DISENGAGED"
 				]
 			},
 			"Organization": {

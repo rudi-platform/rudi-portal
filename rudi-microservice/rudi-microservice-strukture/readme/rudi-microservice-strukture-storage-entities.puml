@@ -294,6 +294,7 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
 --
 	{field} {static} +FIELD_MEMBERS : String
 	{field} {static} +FIELD_ORGANIZATION_STATUS : String
+	{field} {static} +FIELD_UUID : String
 	{field} +@Column("address") address : String
 	{field} +closingDate : java.time.LocalDateTime
 	{field} +name : String
@@ -328,6 +329,7 @@ enum org.rudi.microservice.strukture.storage.entity.organization.OrganizationRol
 
 enum org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus {
 	{field} +CANCELLED
+	{field} +DISENGAGED
 	{field} +DRAFT
 	{field} +IN_PROGRESS
 	{field} +VALIDATED
@@ -337,13 +339,21 @@ enum org.rudi.microservice.strukture.storage.entity.organization.OrganizationSta
 class org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity <<Entity>>  <<Table>>  {
  {TableName=linked_producer}
  {TableSchema=strukture_data}
+ {TableUniqueConstraints=UniqueConstraint (columnNames=[organization_fk,provider_fk] )}
 --
+	{field} {static} +FIELD_ID : String
+	{field} {static} +FIELD_ORGANIZATION : String
+	{field} {static} +FIELD_UUID : String
+	{field} {static} +ORGANIZATION_FK : String
 	{field} {static} +PROVIDER_FK : String
+	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +hashCode () : int
 }
 
 
 enum org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus {
 	{field} +CANCELLED
+	{field} +DISENGAGED
 	{field} +DRAFT
 	{field} +IN_PROGRESS
 	{field} +VALIDATED
@@ -373,6 +383,9 @@ class org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity <<E
  {TableName=provider}
  {TableSchema=strukture_data}
 --
+	{field} {static} +FIELD_ID : String
+	{field} {static} +FIELD_LINKED_PRODUCERS : String
+	{field} {static} +FIELD_UUID : String
 	{field} {static} -serialVersionUID : long
 	{method} +equals ( paramObject1 : Object ) : boolean
 	{method} +hashCode () : int

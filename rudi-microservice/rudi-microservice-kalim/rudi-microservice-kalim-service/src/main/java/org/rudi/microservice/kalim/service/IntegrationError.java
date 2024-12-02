@@ -22,6 +22,12 @@ public enum IntegrationError {
 			"Erreur inconnue: l’erreur na pas été reconnue, veuillez contacter l’administrateur Rudi afin d’analyser l’erreur."),
 	ERR_106("ERR-106", "La version de metadonnées %s n'est pas supportée. La version courante est %s."),
 	ERR_107("ERR-107", "Le jeu de données '%s' n'est pas un selfData."),
+	ERR_108("ERR-108", "L'utilisateur n'est pas autorisé à réaliser cette opération"),
+	ERR_109("ERR-109", "Le jeu de données sur lequel vous souhaitez interagir n'existe pas."),
+	ERR_110("ERR-110", "Le node provider n'est lié a aucun provider et ne peut donc pas réaliser l'opération."),
+	ERR_111("ERR-111", "Le provider du nodeProvider n'est pas autorisé à réaliser l'opération."),
+	ERR_112("ERR-112", "Le provider du nodeProvider n'est pas lié à l'organization producer et ne peut donc pas réaliser l'opération."),
+	ERR_113("ERR-113", "L'organisation producer n'existe pas, on ne peut donc pas réaliser l'opération."),
 
 	ERR_201("ERR-201", "Le type du champ '%s' n'est pas le bon (format attendu : '%s' / format reçu : '%s'} )"),
 	ERR_202("ERR-202", "Le champ '%s' est manquant alors qu’il est obligatoire."),

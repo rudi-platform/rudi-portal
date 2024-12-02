@@ -15,6 +15,7 @@ import {IconRegistryService} from '@core/services/icon-registry.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
 import {LogService} from '@core/services/log.service';
+import {MAP_CONNECTOR_PARAMETERS_REQUIRED} from '@core/services/map/map-connector-required-parameters';
 import {MAP_PROTOCOLS_SUPPORTED} from '@core/services/map/map-protocols';
 import {PageTitleService} from '@core/services/page-title.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
@@ -34,7 +35,15 @@ import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {ObservableUtils} from '@shared/utils/ObservableUtils';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import saveAs from 'file-saver';
-import {Licence, LicenceStandard, Media, MediaFile, MediaType, Metadata} from 'micro_service_modules/api-kaccess';
+import {
+    ConnectorConnectorParameters,
+    Licence,
+    LicenceStandard,
+    Media,
+    MediaFile,
+    MediaType,
+    Metadata
+} from 'micro_service_modules/api-kaccess';
 import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
 import {ProjectStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
@@ -76,6 +85,8 @@ export class DetailComponent implements OnInit {
     private _metadata: Metadata | undefined;
     restrictedDatasetIcon = 'key_icon_88_secondary-color';
     selfDataIcon = 'self-data-icon';
+
+    mapHasError: boolean = false;
 
     /**
      * Permet de suivre la valeur du JDD récupéré. Nous devons passer par un Observable car le chargement
@@ -218,6 +229,7 @@ export class DetailComponent implements OnInit {
                 if (metadata) {
                     this.metadata = metadata;
                     this.restrictedAccess = this.metadata?.access_condition?.confidentiality?.restricted_access;
+                    this.handleMetadataProperties(this.metadata);
 
                     // L'item sélectionné est le premier type FILE de la liste des formats disponibles
                     this.selectedItem = this.metadata.available_formats.filter(f => f.media_type === 'FILE')[0];
@@ -344,20 +356,18 @@ export class DetailComponent implements OnInit {
     downLoadFile(response: HttpResponse<Blob>, media: Media): void {
         const blob = new Blob([response.body], {type: response.body.type});
         // format du header content-disposition : attachment; filename="nom_fichier.ext"
-        const filename = response?.headers?.get('content-disposition')?.split(';')[1].split('=')[1].replace(/"(.*)"/g, "$1").trim();
+        const filename = response?.headers?.get('content-disposition')?.split(';')[1].split('=')[1].replace(/"(.*)"/g, '$1').trim();
 
-        saveAs(blob, filename? filename : media.media_name);
+        saveAs(blob, filename ? filename : media.media_name);
     }
 
     /**
      * Fonction permettant de télécharger un fichier suivant son format
      */
     onDownloadFormat(): void {
-        console.log(this.selectedItem);
         this.isLoading = true;
         const selectedItem = this.selectedItem;
         if (selectedItem) {
-            console.log(this.selectedItem);
             this.konsultMetierService.downloadMetadataMedia(selectedItem.connector.url)
                 .subscribe({
                     next: (response) => {
@@ -609,6 +619,35 @@ export class DetailComponent implements OnInit {
 
         return of(null);
     }
+
+    /**
+     * La callback appelée quand on veut s'assurer que les données carto liées au JDD sont complètes
+     * @param metadata l'objet métadonnée du JDD
+     * @private
+     */
+    private handleMetadataProperties(metadata: Metadata): void {
+        let requiredKeys: string[];
+        let connectorParameters: ConnectorConnectorParameters[] = metadata.available_formats[0].connector.connector_parameters;
+
+        if (metadata.available_formats[0].media_type === MediaTypeEnum.File ||
+            MAP_PROTOCOLS_SUPPORTED.includes(metadata.available_formats[0].connector.interface_contract)) {
+            requiredKeys = MAP_CONNECTOR_PARAMETERS_REQUIRED;
+            this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, requiredKeys);
+        }
+    }
+
+    // Vérification que toutes les clés obligatoires sont présentes et valides
+    private hasAllRequiredKeys(connectorParameters: ConnectorConnectorParameters[], requiredKeys: string[]): boolean {
+        return requiredKeys.every(requiredKey =>
+            connectorParameters.some(obj => this.isValidObject(obj) && obj.key === requiredKey)
+        );
+    }
+
+    // Validation d'un un objet
+    private isValidObject(obj: any): boolean {
+        return typeof obj.key === 'string' && 'value' in obj;
+    }
+
 }
 
 

@@ -111,9 +111,40 @@ public class ProviderHelper {
 		return result;
 	}
 
+	/**
+	 * Accède au service µProviders pour trouver un provider FULL par l'uuid d'un de ses noeuds
+	 *
+	 * @param nodeProviderUUId uuid du noeud recherché
+	 * @return le provider correspondant
+	 */
+	@Nullable
+	public Provider getFullProviderByNodeProviderUUID(UUID nodeProviderUUId) {
+		Provider result = null;
+		if (nodeProviderUUId == null) {
+			throw new IllegalArgumentException("node provider uuid required");
+		}
+
+		ProviderPageResult pageResult = loadBalancedWebClient
+				.get()
+				.uri(uriBuilder -> searchUriBuilder(uriBuilder)
+						.queryParam(LIMIT_PARAMETER, 1)
+						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId)
+						.queryParam(FULL_PARAMETER, true)
+						.build()
+				)
+				.retrieve()
+				.bodyToMono(ProviderPageResult.class)
+				.block();
+		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
+			result = pageResult.getElements().get(0);
+		}
+		return result;
+	}
+
 
 	/**
 	 * Version non null de {@link #getProviderByNodeProviderUUID(UUID)}.
+	 *
 	 * @throws NullPointerException si le fournisseur est introuvable
 	 */
 	@Nonnull
@@ -142,6 +173,7 @@ public class ProviderHelper {
 
 	/**
 	 * Version non null de {@link #getNodeProviderByUUID(UUID)}.
+	 *
 	 * @throws NullPointerException si le nœud fournisseur est introuvable
 	 */
 	@Nonnull
@@ -206,5 +238,4 @@ public class ProviderHelper {
 				.retrieve()
 				.bodyToMono(NodeProvider.class);
 	}
-
 }

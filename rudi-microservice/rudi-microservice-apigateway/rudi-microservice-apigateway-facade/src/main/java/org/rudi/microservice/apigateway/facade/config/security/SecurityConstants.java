@@ -17,7 +17,7 @@ public class SecurityConstants {
 
 	public static final String ACTUATOR_URL = "/actuator/**";
 
-	public static final String[] SB_PERMIT_ALL_URL = {
+	protected static final String[] SB_PERMIT_ALL_URL = {
 			// URL public
 			"/apigateway/v1/application-information", "/apigateway/v1/healthCheck",
 			// OAuth2

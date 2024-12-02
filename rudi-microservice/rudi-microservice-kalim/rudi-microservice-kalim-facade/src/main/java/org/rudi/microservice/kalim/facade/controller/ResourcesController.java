@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
@@ -29,8 +30,9 @@ public class ResourcesController implements ResourcesApi {
 	private IntegrationRequestService integrationRequestService;
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
 	public ResponseEntity<UUID> createMetadata(Metadata metadata) {
+		//Ne plus utilisé directement metadata.metadata_info.provider par l'utilisateur connecté
 		try {
 			IntegrationRequest integrationRequest = integrationRequestService.createIntegrationRequest(metadata,
 					Method.POST);
@@ -43,7 +45,7 @@ public class ResourcesController implements ResourcesApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
 	public ResponseEntity<UUID> updateMetadata(Metadata metadata) {
 		try {
 			IntegrationRequest integrationRequest = integrationRequestService.createIntegrationRequest(metadata,
@@ -58,7 +60,7 @@ public class ResourcesController implements ResourcesApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + MODULE + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
 	public ResponseEntity<UUID> deleteMetadata(UUID globalId) throws IntegrationException, DataverseAPIException, AppServiceException {
 		IntegrationRequest integrationRequest = integrationRequestService.createDeleteIntegrationRequestFromGlobalId(globalId);
 		return ResponseEntity.ok(integrationRequest.getUuid());

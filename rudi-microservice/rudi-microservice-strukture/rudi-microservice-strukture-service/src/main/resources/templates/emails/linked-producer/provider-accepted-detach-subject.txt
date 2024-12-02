@@ -1,1 +1,1 @@
-provider accepted detach subject
+${projectName} - Demande de détachement d'organisation acceptée

@@ -1,7 +1,5 @@
 package org.rudi.microservice.strukture.service.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -17,6 +15,10 @@ import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.minidev.json.JSONObject;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class,
 		AbstractAddressMapper.class })
@@ -74,7 +76,7 @@ public abstract class OrganizationMapper implements AssetDescriptionMapper<Organ
 
 	private JSONObject buildJsonObject(GeoJsonObject geoJsonObject) {
 		if (geoJsonObject == null) {
-			return null;
+			return new JSONObject();
 		}
 		if (geoJsonObject.getType().equals("Feature")) {
 			return objectMapper.convertValue(((Feature) geoJsonObject).getGeometry(), JSONObject.class);

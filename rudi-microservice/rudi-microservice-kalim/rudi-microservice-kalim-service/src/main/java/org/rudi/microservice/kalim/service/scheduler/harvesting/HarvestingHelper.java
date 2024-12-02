@@ -46,7 +46,6 @@ class HarvestingHelper {
 					try {
 						sink.next(handleMetadata(metadata, node));
 					} catch (DataverseAPIException | IllegalAccessException | IntegrationException e) {
-						// TODO RUDI-942 il faut prévenir le noeud que cette metadata n'a pas pu être intégrée
 						log.error("Integration request failed for metadata {}", metadata.getGlobalId(), e);
 					}
 				});

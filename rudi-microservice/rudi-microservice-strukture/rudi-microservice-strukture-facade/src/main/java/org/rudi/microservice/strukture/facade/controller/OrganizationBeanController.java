@@ -21,8 +21,9 @@ public class OrganizationBeanController implements OrganizationBeansApi {
 	private final OrganizationBeanService organizationBeanService;
 	private final UtilPageable utilPageable;
 
-
-	public ResponseEntity<PagedOrganizationBeanList> searchOrganizationsBeans(UUID userUuid, OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws Exception {
+	@Override
+	public ResponseEntity<PagedOrganizationBeanList> searchOrganizationsBeans(UUID userUuid,
+			OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws Exception {
 
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val criteria = new OrganizationSearchCriteria();
