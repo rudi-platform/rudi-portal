@@ -17,7 +17,7 @@ import org.rudi.facet.email.exception.EMailException;
 import org.rudi.facet.email.model.EMailDescription;
 import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
 import org.rudi.microservice.acl.service.mapper.user.UserMapper;
@@ -74,7 +74,7 @@ public class EmailHelper {
 	private String accountValidationPath;
 
 	@Autowired
-	private TemplateGeneratorImpl templateGenerator;
+	private TemplateGenerator templateGenerator;
 
 	@Autowired
 	private EMailService eMailService;

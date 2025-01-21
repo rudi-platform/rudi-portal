@@ -46,11 +46,19 @@ public class UserDataFactory extends AbstractDataFactory {
 		return user;
 	}
 
-	public User createUserProvider(String login) {
+	public User createUserNodeProvider(String login) {
 		return getOrCreateUser(login, UserType.ROBOT, List.of(roleDataFactory.getOrCreate("PROVIDER", null)));
 	}
 
 	public User createUser(String login){
 		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null)));
+	}
+
+	public User createUserAdmin(String login){
+		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("ADMINISTRATOR", null)));
+	}
+
+	public User createUserModerator(String login){
+		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("MODERATOR", null)));
 	}
 }

@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,11 +41,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,7 +135,7 @@ public class FormHelper {
 
 	/**
 	 * Retourne le formulaire correspondant à une userTask et une action
-	 * 
+	 *
 	 * @param processDefinitionKey le process
 	 * @param userKey              le nom de la user task
 	 * @param actionName           l'action
@@ -159,6 +158,7 @@ public class FormHelper {
 			ProcessFormDefinitionEntity processFormDefinitionEntity = processFormDefinitionEntities.getContent().get(0);
 			try {
 				result = formMapper.entityToDto(processFormDefinitionEntity.getFormDefinition());
+				result.setType(userKey);
 			} catch (FormDefinitionException e) {
 				log.warn("Failed to set form for task with key {}", userKey, e);
 			}
@@ -195,6 +195,12 @@ public class FormHelper {
 				Field sourceField = lookupField(source, targetField.getDefinition().getName());
 				if (sourceField != null) {
 					targetField.setValues(sourceField.getValues());
+
+					// copy extended type pour la gestion des champs de type HIDDEN
+					if (sourceField.getDefinition() != null
+							&& sourceField.getDefinition().getType() == FieldType.HIDDEN) {
+						targetField.getDefinition().setExtendedType(sourceField.getDefinition().getExtendedType());
+					}
 				}
 			}
 		}
@@ -326,26 +332,30 @@ public class FormHelper {
 		Object result = null;
 		try {
 			switch (fieldDefinition.getType()) {
-			case BOOLEAN:
-				result = Boolean.valueOf(value);
-				break;
-			case DATE:
-				if (StringUtils.isNotEmpty(fieldDefinition.getExtendedType())) {
-					SimpleDateFormat dataFormat = new SimpleDateFormat(fieldDefinition.getExtendedType());
-					result = dataFormat.parse(value);
-				} else {
-					result = ZonedDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-				}
-				break;
-			case DOUBLE:
-				result = Double.valueOf(value);
-				break;
-			case LONG:
-				result = Long.valueOf(value);
-				break;
-			default:
-				result = value;
-				break;
+				case BOOLEAN:
+					result = Boolean.valueOf(value);
+					break;
+				case DATE:
+					if (StringUtils.isNotEmpty(fieldDefinition.getExtendedType())) {
+						SimpleDateFormat dataFormat = new SimpleDateFormat(fieldDefinition.getExtendedType());
+						result = dataFormat.parse(value);
+					} else {
+						result = ZonedDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+					}
+					break;
+				case DOUBLE:
+					result = Double.valueOf(value);
+					break;
+				case LONG:
+					result = Long.valueOf(value);
+					break;
+				case HIDDEN:
+					// pas de value pour le type HIDDEN, c'est l'extendedType qui contient la valeur interessante dans ce cas
+					result = fieldDefinition.getExtendedType();
+					break;
+				default:
+					result = value;
+					break;
 			}
 		} catch (ParseException e) {
 			throw new FormConvertException("Failed to convert value:" + value + " for field:" + fieldDefinition, e);

@@ -5,16 +5,19 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.config.TlsConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,18 +44,22 @@ public class RestTemplateConfiguration {
 		RestTemplate result = null;
 		CloseableHttpClient httpClient = null;
 		if (trustAllCerts) {
-			TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-			SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
-					.loadTrustMaterial(null, acceptingTrustStrategy).build();
+			final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial((chain, authType) -> true).build();
+			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, new NoopHostnameVerifier());
+			final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
+					.setTlsSocketStrategy(tlsStrategy).setDefaultTlsConfig(TlsConfig.custom().build()).build();
 
-			SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
-			httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+			httpClient = HttpClients.custom().setConnectionManager(cm).build();
 		} else if (trustStore != null) {
 			SSLContext sslContext = new SSLContextBuilder()
 					.loadTrustMaterial(trustStore.getURL(), trustStorePassword.toCharArray()).build();
-			SSLConnectionSocketFactory sslConFactory = new SSLConnectionSocketFactory(sslContext);
-
-			httpClient = HttpClients.custom().setSSLSocketFactory(sslConFactory).build();
+			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext);
+			final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
+					.setTlsSocketStrategy(tlsStrategy).setDefaultTlsConfig(TlsConfig.custom()
+							// .setSupportedProtocols(TLS.V_1_3)
+							.build())
+					.build();
+			httpClient = HttpClients.custom().setConnectionManager(cm).build();
 		}
 		if (httpClient != null) {
 			ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);

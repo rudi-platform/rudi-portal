@@ -3,14 +3,13 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.script.ScriptContext;
@@ -22,8 +21,11 @@ import org.rudi.bpmn.core.bean.Field;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
+import org.rudi.common.facade.util.UtilPageable;
+import org.rudi.facet.acl.bean.ProjectKeystore;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.ProjectKeystoreSearchCriteria;
 import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
@@ -31,7 +33,9 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
+import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
@@ -44,13 +48,18 @@ import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.OwnerType;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
+import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetStatus;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.common.core.security.RoleCodes.MODERATOR;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+import static org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus.ARCHIVED;
 
 /**
  * @author FNI18300
@@ -75,14 +84,27 @@ public class ProjectWorkflowContext
 
 	private final List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors;
 
-	public ProjectWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
+	private final DatasetService datasetService;
+
+	private final UtilPageable utilPageable;
+
+	private static final String WKC_UNKNOWN_SKIPPED = "WkC - Unkown {} skipped.";
+
+	private static final String ARCHIVED_FUNCTIONAL_STATUS = "Archivé";
+
+	private static final String EMAIL_TO_ANIMATOR_SUBJECT = "file:templates/emails/project/notify-animator-subject.txt";
+
+	private static final String EMAIL_TO_ANIMATOR_BODY = "file:templates/emails/project/notify-animator-body.html";
+
+	public ProjectWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			ProjectDao assetDescriptionDao, ProjectAssigmentHelper assignmentHelper, ACLHelper aclHelper,
 			FormHelper formHelper, TaskService<NewDatasetRequest> newDatasetRequestTaskService,
 			NewDatasetRequestMapper newDatasetRequestMapper, TaskService<LinkedDataset> linkedDatasetTaskService,
 			LinkedDatasetMapper linkedDatasetMapper, ACLHelper aclHelper1, OrganizationHelper organizationHelper,
-			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors, RolesHelper rolesHelper) {
+			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors, RolesHelper rolesHelper, DatasetService datasetService, UtilPageable utilPageable) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper,
 				rolesHelper);
+		this.utilPageable = utilPageable;
 		this.newDatasetRequestTaskService = newDatasetRequestTaskService;
 		this.newDatasetRequestMapper = newDatasetRequestMapper;
 		this.linkedDatasetTaskService = linkedDatasetTaskService;
@@ -90,6 +112,7 @@ public class ProjectWorkflowContext
 		this.aclHelper = aclHelper1;
 		this.organizationHelper = organizationHelper;
 		this.projectTaskUpdateProjectProcessors = projectTaskUpdateProjectProcessors;
+		this.datasetService = datasetService;
 	}
 
 	@Transactional(readOnly = true)
@@ -104,7 +127,7 @@ public class ProjectWorkflowContext
 				reutilisationStatusLabel = assetDescription.getReutilisationStatus().getLabel();
 				log.debug("WkC - Status of reuse {} is {}.", processInstanceBusinessKey, reutilisationStatusLabel);
 			} else {
-				log.debug("WkC - Unknown {} skipped.", processInstanceBusinessKey);
+				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
 			}
 		} else {
 			log.debug("WkC - Get reuse status of {} skipped.", processInstanceBusinessKey);
@@ -134,7 +157,7 @@ public class ProjectWorkflowContext
 				getAssetDescriptionDao().save(assetDescription);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
-				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);
+				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
 			}
 		} else {
 			log.debug("WkC - Update {} to status {} skipped.", processInstanceBusinessKey, statusValue);
@@ -212,8 +235,33 @@ public class ProjectWorkflowContext
 		} catch (Exception e) {
 			log.warn("Failed to send email to owner", e);
 		}
+	}
+
+	/**
+	 * Envoit un mail au producer du dataset dans le cas de l'archivage
+	 *
+	 * @param executionEntity  entité de l'éxécution, ici projet
+	 * @param assetDescription l'asset description
+	 * @param dataset          les Matadatas du dataset
+	 * @param eMailData        email à envoyer
+	 */
+	private void sendEmailToProducer(ExecutionEntity executionEntity, ProjectEntity assetDescription, Metadata dataset, EMailData eMailData) {
+		List<String> assigneesEmails = new ArrayList<>();
+		try {
+			List<User> users = getAssignmentHelper()
+					.computeOrganizationMembers(dataset.getProducer().getOrganizationId());
+			CollectionUtils.addAll(assigneesEmails, aclHelper.lookupEmailAddresses(users));
+
+			if (eMailData != null && CollectionUtils.isNotEmpty(assigneesEmails)) {
+				sendEMail(executionEntity, assetDescription, eMailData, assigneesEmails, null);
+			}
+
+		} catch (Exception e) {
+			log.warn("Failed to send email to producer", e);
+		}
 
 	}
+
 
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void startSubProcess(ExecutionEntity executionEntity) {
@@ -296,7 +344,6 @@ public class ProjectWorkflowContext
 	}
 
 	/**
-	 *
 	 * @param context         context
 	 * @param executionEntity entity - ici project
 	 * @return le nom du project owner ou de l'organisation owner du projet
@@ -348,4 +395,82 @@ public class ProjectWorkflowContext
 	public void resetDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
 	}
+
+	@Transactional(readOnly = false)
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void archiveProject(ExecutionEntity executionEntity) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		if (processInstanceBusinessKey != null) {
+			UUID uuid = UUID.fromString(processInstanceBusinessKey);
+			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
+			if (assetDescription != null) {
+				assetDescription.setProjectStatus(ProjectStatus.DISENGAGED);
+				assetDescription.setStatus(Status.DELETED);
+				handleArchivedLinkedDatasets(assetDescription, executionEntity);
+				handleArchivedNewDatasetRequest(assetDescription, executionEntity);
+			} else {
+				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
+			}
+		} else {
+			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void deleteProjectKeyStore(ExecutionEntity executionEntity) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		if (processInstanceBusinessKey != null) {
+			UUID uuid = UUID.fromString(processInstanceBusinessKey);
+			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
+			if (assetDescription != null) {
+				ProjectKeystoreSearchCriteria searchCriteria = new ProjectKeystoreSearchCriteria();
+				List<UUID> uuidList = new ArrayList<>();
+				uuidList.add(assetDescription.getUuid());
+				searchCriteria.setProjectUuids(uuidList);
+				Pageable page = utilPageable.getPageable(0, 1, null);
+				Optional<ProjectKeystore> projectKeystore = getAclHelper().searchProjectKeystores(searchCriteria, page)
+						.get()
+						.findFirst();
+
+				if (projectKeystore.isPresent()) {
+					aclHelper.deleteProjectKeyStore(projectKeystore.get().getUuid());
+				} else {
+					log.info("WkC - There is no projectKeystore associated to the project {}.", processInstanceBusinessKey);
+				}
+			} else {
+				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
+			}
+		} else {
+			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+		}
+	}
+
+	private void handleArchivedNewDatasetRequest(ProjectEntity assetDescription, ExecutionEntity executionEntity) {
+		EMailData emailDataToAnim = new EMailData(EMAIL_TO_ANIMATOR_SUBJECT, EMAIL_TO_ANIMATOR_BODY);
+		for (NewDatasetRequestEntity newDatasetRequestEntity : assetDescription.getDatasetRequests()) {
+			newDatasetRequestEntity.setNewDatasetRequestStatus(ARCHIVED);
+			newDatasetRequestEntity.setFunctionalStatus(ARCHIVED_FUNCTIONAL_STATUS);
+			sendEMailToRole(null, executionEntity, emailDataToAnim, MODERATOR);
+		}
+	}
+
+	private void handleArchivedLinkedDatasets(ProjectEntity assetDescription, ExecutionEntity executionEntity) {
+		EMailData emailDataToAnim = new EMailData(EMAIL_TO_ANIMATOR_SUBJECT, EMAIL_TO_ANIMATOR_BODY);
+
+		for (LinkedDatasetEntity linkedDataset : assetDescription.getLinkedDatasets()) {
+			try {
+				linkedDataset.setLinkedDatasetStatus(LinkedDatasetStatus.ARCHIVED);
+				linkedDataset.setFunctionalStatus(ARCHIVED_FUNCTIONAL_STATUS);
+				Metadata dataset = datasetService.getDataset(linkedDataset.getDatasetUuid());
+				if (dataset.getAccessCondition().getConfidentiality().getRestrictedAccess()) {
+					EMailData emailData = new EMailData("file:templates/emails/project/notify-producer-subject.txt", "file:templates/emails/project/notify-producer-body.html");
+					sendEmailToProducer(executionEntity, assetDescription, dataset, emailData);
+					sendEMailToRole(null, executionEntity, emailDataToAnim, MODERATOR);
+				}
+			} catch (Exception e) {
+				log.debug(WKC_UNKNOWN_SKIPPED, executionEntity.getProcessInstanceBusinessKey());
+			}
+		}
+	}
+
 }

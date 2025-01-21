@@ -81,7 +81,7 @@ export abstract class TaskDetailComponent<A extends AssetDescription, D, T exten
             complete: () => {
                 this.translateService.get('task.success').subscribe(message => {
                     this.snackBarService.openSnackBar({
-                        level: Level.INFO,
+                        level: Level.SUCCESS,
                         message,
                         keepBeforeSecondRouteChange: true,
                     });

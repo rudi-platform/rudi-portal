@@ -21,6 +21,11 @@ public enum NewDatasetRequestStatus implements PositionedStatus {
 	VALIDATED(StatusPosition.FINAL),
 
 	/**
+	 * Archivé => le projet est une réutilisation archivée
+	 */
+	ARCHIVED(StatusPosition.FINAL),
+
+	/**
 	 * Refusée
 	 */
 	REFUSED(StatusPosition.FINAL);

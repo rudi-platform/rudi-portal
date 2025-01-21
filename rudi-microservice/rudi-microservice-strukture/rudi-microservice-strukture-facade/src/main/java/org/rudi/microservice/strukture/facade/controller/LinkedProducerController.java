@@ -75,7 +75,7 @@ public class LinkedProducerController implements LinkedProducersApi {
 
 	@Override
 	public ResponseEntity<Form> lookupLinkedProducerDraftForm() throws Exception {
-		return ResponseEntity.ok(linkedProducerTaskService.lookupDraftForm());
+		return ResponseEntity.ok(linkedProducerTaskService.lookupDraftForm(null));
 	}
 
 	@Override

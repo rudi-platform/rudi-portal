@@ -1,5 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {CaptchaComponent} from '@shared/angular-captcha/captcha.component';
+import {FormControl, FormGroup} from '@angular/forms';
+import {CaptchetatAngularComponent} from 'captchetat-angular';
 import {CaptchaModel, CaptchaService} from 'micro_service_modules/acl/acl-api';
 import {Observable} from 'rxjs';
 
@@ -18,8 +19,11 @@ export class RudiCaptchaComponent implements OnInit {
      */
     @Input()
     nomCaptcha: string;
+    urlBackend: string;
+    form: FormGroup;
+    FORM_CONTROL_CAPTCHA: string = 'captchaCode';
 
-    @ViewChild(CaptchaComponent, {static: true}) captchaComponent: CaptchaComponent;
+    @ViewChild(CaptchetatAngularComponent) captchetatComponent: CaptchetatAngularComponent;
 
     constructor(
         private readonly captchaService: CaptchaService,
@@ -27,21 +31,34 @@ export class RudiCaptchaComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.captchaComponent.captchaEndpoint = ACL_SERVICE_BASEPATH + CAPTCHA_NAMESPACE;
+        this.urlBackend = ACL_SERVICE_BASEPATH + CAPTCHA_NAMESPACE;
+        this.form = new FormGroup({
+            captchaCode: new FormControl('')
+        });
+        this.form.get(this.FORM_CONTROL_CAPTCHA)?.valueChanges.subscribe(value => {
+            const uppercasedValue = value.toUpperCase();
+            if (value !== uppercasedValue) {
+                this.form.get(this.FORM_CONTROL_CAPTCHA)?.setValue(uppercasedValue, {emitEvent: false});
+            }
+        });
     }
 
     /**
      * Indique si le champ de captcha a été rempli par l'utilisateur
      */
     isFilled(): boolean {
-        return this.captchaComponent?.captchaCode !== '';
+        const captchaCode: string = this.form.get(this.FORM_CONTROL_CAPTCHA)?.value as string;
+        return captchaCode !== '';
     }
 
     /**
      * Envoie pour validation la saisie utilisateur du captcha auprès du back
      */
     validateInput(): Observable<boolean> {
-        const captcha = {id: this.captchaComponent.captchaId, code: this.captchaComponent.captchaCode} as CaptchaModel;
+        const captcha: CaptchaModel = {
+            uuid: this.captchetatComponent.getIdCaptcha(),
+            code: this.form.get(this.FORM_CONTROL_CAPTCHA)?.value as string
+        };
         return this.captchaService.validateCaptcha(captcha);
     }
 }

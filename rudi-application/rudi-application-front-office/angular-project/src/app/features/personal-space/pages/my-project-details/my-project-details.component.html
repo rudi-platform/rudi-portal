@@ -16,16 +16,16 @@
             </app-project-heading>
 
             <!-- Bannière et onglets du détail projet -->
-            <app-tabs>
+            <app-tabs #tabs>
                 <app-tab [label]="'personalSpace.project.tabs.information' | translate"
-                         [icon]="'icon_tab_infos'">
+                         [icon]="'icon_tab_infos'" #tabInformation>
                     <ng-template>
 
                         <mat-card class="p-3">
                             <app-project-main-informations
                                 [project]="project"
                                 (updateForm)="updateProjectTask($event)"
-                                [isProjectUpdatable]="displayModifiedButton()"
+                                [isProjectUpdatable]="isProjectUpdatable()"
                                 [isLoading]="childrenIsLoading"
                                 [isUpdating]="isUpdateInProgress"
                                 [dialogDescription]="'personalSpace.project.tabs.update.text2' | translate"
@@ -38,11 +38,18 @@
                         <app-project-datasets-tab [project]="project"></app-project-datasets-tab>
                     </ng-template>
                 </app-tab>
-                <app-tab *ngIf="displayApiTab" [label]="'personalSpace.project.tabs.api.title' | translate" [icon]="'api_icon'">
+                <app-tab *ngIf="displayApiTab" [label]="'personalSpace.project.tabs.api.title' | translate"
+                         [icon]="'api_icon'">
                     <ng-template>
-                        <app-project-api-tab></app-project-api-tab>
+                        <app-project-api-tab *ngIf="displayApiTab"></app-project-api-tab>
                     </ng-template>
                 </app-tab>
+
+                <!-- Bouton "Archiver la réutilisation" -->
+                <app-banner-button (click)="openPopinArchive(tabs, tabInformation)"
+                                   *ngIf="this.project?.status === Status.Completed">
+                    {{ 'personalSpace.project.archive.archived' | translate }}
+                </app-banner-button>
 
                 <ng-container appTabsLayout>
                     <div class="detail-wrapper">

@@ -5,11 +5,10 @@ package org.rudi.facet.bpmn.entity.workflow;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.storage.entity.AbstractLongIdEntity;
 

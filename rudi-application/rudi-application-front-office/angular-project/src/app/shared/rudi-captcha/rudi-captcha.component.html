@@ -1,8 +1,9 @@
-<div>
-    <botdetect-captcha captchaStyleName="{{nomCaptcha}}" autoFocusInput="false"></botdetect-captcha>
-    <div class="input-margin">
-        <input
-            type="text"
-            id="captchaFormulaireExtInput" name="captchaFormulaireExtInput" formControlName="captchaCode">
-    </div>
+<div [formGroup]="form">
+    <captchetat captchaStyleName="{{nomCaptcha}}" urlBackend="{{urlBackend}}"></captchetat>
+
+    <input
+        type="text"
+        id="captchaFormulaireExtInput"
+        name="captchaFormulaireExtInput"
+        formControlName="{{FORM_CONTROL_CAPTCHA}}">
 </div>

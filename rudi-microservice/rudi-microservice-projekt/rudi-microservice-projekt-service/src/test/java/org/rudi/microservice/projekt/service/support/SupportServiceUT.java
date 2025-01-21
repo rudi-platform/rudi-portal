@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setAllowComparingPrivateFields;
 
 /**
  * Class de test de la couche service
@@ -85,9 +86,10 @@ class SupportServiceUT {
 
 		final Support gotSupport = supportService.getSupport(createdSupport.getUuid());
 
+		setAllowComparingPrivateFields(true);
 		assertThat(gotSupport)
 				.as("On retrouve le type d'accompagnement créé")
-				.isEqualToComparingFieldByField(createdSupport);
+				.usingRecursiveComparison().isEqualTo(createdSupport);
 	}
 
 	@Test
@@ -145,9 +147,10 @@ class SupportServiceUT {
 
 		final Support updatedSupport = supportService.updateSupport(support);
 
+		setAllowComparingPrivateFields(true);
 		assertThat(updatedSupport)
 				.as("Tous les champs sont bien modifiés")
-				.isEqualToComparingFieldByField(support);
+				.usingRecursiveComparison().isEqualTo(support);
 	}
 
 	@Test

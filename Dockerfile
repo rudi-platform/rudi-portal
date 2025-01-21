@@ -61,7 +61,7 @@ FROM alpine:latest as extract
 ADD rudi-application/rudi-application-front-office/target/rudi-application-front-office-angular-dist.zip .
 RUN unzip rudi-application-front-office-angular-dist.zip
 
-FROM nginx:1.27.2-alpine as rudi-application-front-office
+FROM nginx:1.27.3-alpine as rudi-application-front-office
 COPY ci/docker/front-office/rudi.conf /etc/nginx/conf.d/
 COPY --from=extract ./angular-project/  /usr/share/nginx/html
 

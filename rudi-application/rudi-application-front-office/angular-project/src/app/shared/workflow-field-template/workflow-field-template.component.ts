@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, Type, ViewContainerRef} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {WorkflowFieldDateComponent} from '@shared/workflow-field-date/workflow-field-date.component';
+import {WorkflowFieldHiddenComponent} from '@shared/workflow-field-hidden/workflow-field-hidden.component';
 import {Field, Section} from 'micro_service_modules/api-bpmn';
 import {Observable, of} from 'rxjs';
 import {WorkflowFieldAddressComponent} from '../workflow-field-address/workflow-field-address.component';
@@ -113,6 +114,8 @@ export class WorkflowFieldTemplateComponent implements OnInit {
                 return WorkflowFieldAttachmentComponent;
             case 'DATE':
                 return WorkflowFieldDateComponent;
+            case 'HIDDEN':
+                return WorkflowFieldHiddenComponent;
             default:
                 console.warn(`WorkFlow FieldType "${type}" not handled. Using default component : WorkflowFieldComponent`);
                 return WorkflowFieldComponent;

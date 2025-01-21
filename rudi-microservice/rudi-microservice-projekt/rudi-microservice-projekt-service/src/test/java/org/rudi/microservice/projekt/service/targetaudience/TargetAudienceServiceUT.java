@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.setAllowComparingPrivateFields;
 
 /**
  * Classe de test de la couche service
@@ -129,8 +130,10 @@ class TargetAudienceServiceUT {
 		final TargetAudience gotTargetAudience = targetAudienceService
 				.getTargetAudience(createdTargetAudience.getUuid());
 
-		assertThat(gotTargetAudience).as("On retrouve le public cible créé")
-				.isEqualToComparingFieldByField(createdTargetAudience);
+		setAllowComparingPrivateFields(true);
+		assertThat(gotTargetAudience)
+				.as("On retrouve le public cible créé")
+				.usingRecursiveComparison().isEqualTo(createdTargetAudience);
 	}
 
 	@Test
@@ -145,8 +148,11 @@ class TargetAudienceServiceUT {
 
 		final TargetAudience updatedTargetAudience = targetAudienceService.updateTargetAudience(targetAudience);
 
-		assertThat(updatedTargetAudience).as("Tous les champs sont bien modifiés")
-				.isEqualToComparingFieldByField(targetAudience);
+
+		setAllowComparingPrivateFields(true);
+		assertThat(updatedTargetAudience)
+				.as("Tous les champs sont bien modifiés")
+				.usingRecursiveComparison().isEqualTo(targetAudience);
 	}
 
 	@Test

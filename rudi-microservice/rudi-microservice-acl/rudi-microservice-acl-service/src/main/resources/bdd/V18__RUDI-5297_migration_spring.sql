@@ -1,0 +1,2 @@
+create table acl_data.token (expires_at timestamp(6), id bigserial not null, issued_at timestamp(6), user_fk bigint, type varchar(20) not null check (type in ('AUTHORIZATION_TOKEN','REFRESH_TOKEN','ACCESS_TOKEN','USER_CODE')), value_ varchar(2048), attributes varchar(2048), authorization_grant_type varchar(255), metadata varchar(2048), registered_client_id varchar(255), state varchar(255), primary key (id));
+alter table if exists acl_data.token add constraint FKo226ornefeodu8xpcealb9mqy foreign key (user_fk) references user_;

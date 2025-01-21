@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-selfdata</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-selfdata-core</artifactId>
@@ -54,8 +54,12 @@
 
 		<!-- Swagger 2 doc dependency -->
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
 		</dependency>
 
 		<dependency>
@@ -102,7 +106,8 @@
 					<generateApiDocumentation>false</generateApiDocumentation>
 					<generateApis>false</generateApis>
 					<generateModels>true</generateModels>
-					<templateDirectory>${resource-generation-directory}/openapi/generation/</templateDirectory>
+					<templateDirectory>
+						${resource-generation-directory}/openapi/generation/</templateDirectory>
 					<verbose>false</verbose>
 					<!--configHelp>true</configHelp-->
 					<typeMappings>
@@ -116,6 +121,7 @@
 					</schemaMappings>
 					<configOptions>
 						<dateLibrary>java8</dateLibrary>
+						<useJakartaEe>true</useJakartaEe>
 						<containerDefaultToNull>true</containerDefaultToNull>
 					</configOptions>
 				</configuration>
@@ -126,7 +132,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${resource-directory}/openapi/rudi-selfdata-api.json</inputSpec>
+							<inputSpec>
+								${resource-directory}/openapi/rudi-selfdata-api.json</inputSpec>
 						</configuration>
 					</execution>
 					<execution>
@@ -135,7 +142,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${resource-directory}/openapi/rudi-selfdata-model.json</inputSpec>
+							<inputSpec>
+								${resource-directory}/openapi/rudi-selfdata-model.json</inputSpec>
 						</configuration>
 					</execution>
 					<execution>
@@ -144,7 +152,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${resource-directory}/openapi/rudi-selfdata-gdata.json</inputSpec>
+							<inputSpec>
+								${resource-directory}/openapi/rudi-selfdata-gdata.json</inputSpec>
 						</configuration>
 					</execution>
 					<execution>
@@ -153,7 +162,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${resource-directory}/openapi/rudi-selfdata-tpbc.json</inputSpec>
+							<inputSpec>
+								${resource-directory}/openapi/rudi-selfdata-tpbc.json</inputSpec>
 						</configuration>
 					</execution>
 				</executions>

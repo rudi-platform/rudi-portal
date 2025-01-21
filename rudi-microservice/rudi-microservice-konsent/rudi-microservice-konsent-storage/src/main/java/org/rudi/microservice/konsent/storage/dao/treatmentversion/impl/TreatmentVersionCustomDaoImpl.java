@@ -2,20 +2,19 @@ package org.rudi.microservice.konsent.storage.dao.treatmentversion.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.microservice.konsent.core.bean.TreatmentVersionSearchCriteria;
 import org.rudi.microservice.konsent.storage.dao.treatmentversion.TreatmentVersionCustomDao;
-import org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity;
 import org.rudi.microservice.konsent.storage.entity.common.TreatmentStatus;
+import org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity;
 import org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVersionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

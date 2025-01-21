@@ -5,8 +5,7 @@ package org.rudi.facet.generator.model.impl;
 
 import java.util.Locale;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.rudi.facet.generator.model.DocumentDataModel;
 import org.rudi.facet.generator.model.GenerationFormat;
 

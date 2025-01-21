@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.rudi.common.core.security.Role;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
-import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
@@ -53,6 +56,7 @@ import lombok.val;
 @RequiredArgsConstructor
 public class IntegrationRequestServiceImpl implements IntegrationRequestService {
 
+	private static final String DEFAULT_USER_VERSION = "v1";
 	private final ObjectMapper objectMapper;
 
 	@Value("${rudi.kalim.sendReport.retry:5}")
@@ -67,11 +71,12 @@ public class IntegrationRequestServiceImpl implements IntegrationRequestService 
 	private final IntegrationRequestCustomDao integrationRequestCustomDao;
 	private final KalimProviderHelper kalimProviderHelper;
 	private final ProviderHelper providerHelper;
-	protected final UtilContextHelper utilContextHelper;
 	private final PostIntegrationRequestTreatmentHandler postIntegrationRequestHandler;
 	private final PutIntegrationRequestTreatmentHandler putIntegrationRequestHandler;
 	private final DeleteIntegrationRequestTreatmentHandler deleteIntegrationRequestHandler;
 	private final DatasetService datasetService;
+	private final RolesHelper rolesHelper;
+	private final ACLHelper aclHelper;
 
 	@Override
 	public Page<IntegrationRequest> searchIntegrationRequests(IntegrationRequestSearchCriteria searchCriteria,
@@ -98,9 +103,6 @@ public class IntegrationRequestServiceImpl implements IntegrationRequestService 
 	@Override
 	@Transactional // readOnly = false
 	public IntegrationRequest createDeleteIntegrationRequestFromGlobalId(UUID globalId) throws DataverseAPIException, AppServiceException, IntegrationException {
-		final var nodeProvider = kalimProviderHelper.getAuthenticatedNodeProvider();
-		checkAuthenticatedNodeProviderIsNotNull(nodeProvider);
-
 		final Metadata metadata;
 		try {
 			metadata = datasetService.getDataset(globalId);
@@ -108,7 +110,46 @@ public class IntegrationRequestServiceImpl implements IntegrationRequestService 
 			throw new AppServiceNotFoundException(Metadata.class, globalId);
 		}
 
-		return createIntegrationRequest(metadata, Method.DELETE, nodeProvider, false);
+		return createDeleteIntegrationRequest(metadata);
+	}
+
+	private IntegrationRequest createDeleteIntegrationRequest(Metadata metadata)
+			throws IntegrationException, AppServiceUnauthorizedException {
+
+		if (metadata == null) {
+			throw new IllegalArgumentException("Missing metadata or metadata uuid or method");
+		}
+		log.info("Create Integration request {} {}", metadata.getGlobalId(), Method.DELETE);
+
+		User user = aclHelper.getAuthenticatedUser();
+
+		UUID nodeProviderId;
+		String nodeProviderVersion;
+
+		if (rolesHelper.hasAnyRole(user, Role.ADMINISTRATOR, Role.MODERATOR)) {
+			nodeProviderId = user.getUuid();
+			nodeProviderVersion = DEFAULT_USER_VERSION;
+		} else {
+			final var nodeProvider = kalimProviderHelper.getAuthenticatedNodeProvider();
+			checkAuthenticatedNodeProviderIsNotNull(nodeProvider);
+			nodeProviderId = nodeProvider.getUuid();
+			nodeProviderVersion = nodeProvider.getVersion();
+		}
+		final IntegrationRequestEntity integrationRequestEntity = IntegrationRequestEntity.builder()
+				.uuid(UUID.randomUUID())
+				.method(Method.DELETE)
+				.submissionDate(LocalDateTime.now())
+				.submittedByHarvesting(false)
+				.resourceTitle(metadata.getResourceTitle())
+				.globalId(metadata.getGlobalId())
+				.progressStatus(ProgressStatus.CREATED)
+				.integrationStatus(IntegrationStatus.KO)
+				.nodeProviderId(nodeProviderId)
+				.version(nodeProviderVersion)
+				.file(deshydrateMetadata(metadata)).build();
+
+		log.info("Create Integration request {} {} done", metadata.getGlobalId(), Method.DELETE);
+		return integrationRequestMapper.entityToDto(integrationRequestDao.save(integrationRequestEntity));
 	}
 
 	@Override

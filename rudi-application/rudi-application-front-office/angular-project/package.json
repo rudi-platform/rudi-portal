@@ -68,6 +68,7 @@
         "ag-grid-angular": "^31.0.3",
         "ag-grid-community": "^31.0.3",
         "bootstrap": "^5.3.2",
+        "captchetat-angular": "https://static.piste.gouv.fr/captchEtat/libraries/captchetat-angular-1.0.0.tgz",
         "cropperjs": "^1.6.1",
         "d3": "^7.8.5",
         "file-saver": "^2.0.5",

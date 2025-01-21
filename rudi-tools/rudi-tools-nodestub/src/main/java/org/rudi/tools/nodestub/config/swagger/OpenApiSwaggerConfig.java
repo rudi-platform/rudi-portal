@@ -1,6 +1,6 @@
 package org.rudi.tools.nodestub.config.swagger;
 
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +15,7 @@ public class OpenApiSwaggerConfig {
 	public GroupedOpenApi publicApi() {
 		return GroupedOpenApi.builder().group("nodestub").packagesToScan("org.rudi.tools.nodestub.controller").build();
 	}
-	
+
 	@Bean
 	public OpenAPI springOpenAPI() {
 		return new OpenAPI().openapi("3.0.0").info(new Info().title("API Rudi Node Stub")).components(new Components());

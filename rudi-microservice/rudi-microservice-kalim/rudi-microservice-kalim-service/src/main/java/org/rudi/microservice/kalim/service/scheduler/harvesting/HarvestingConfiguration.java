@@ -1,13 +1,14 @@
 package org.rudi.microservice.kalim.service.scheduler.harvesting;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Configuration
 @ConfigurationProperties(prefix = HarvestingConfiguration.PREFIX)
@@ -46,7 +47,7 @@ class HarvestingConfiguration {
 
 	@Bean
 	public TaskScheduler taskScheduler() {
-		return new ConcurrentTaskScheduler();
+		return new ConcurrentTaskScheduler(null);
 	}
 
 }

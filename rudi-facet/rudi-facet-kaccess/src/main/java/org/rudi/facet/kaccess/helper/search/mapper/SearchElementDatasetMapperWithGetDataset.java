@@ -9,10 +9,10 @@ import org.rudi.facet.kaccess.helper.dataset.metadatablock.MetadataBlockHelper;
 import org.springframework.stereotype.Component;
 
 /**
- * Cette version de {@link SearchElementDatasetMapper} n'est pas aussi performante que {@link SearchElementDatasetMapperWithMetadatafields}.
- * En effet, pour chaque DataSet, on appelle Dataverse pour obtenir tous les champs manquants.
- * Cependant cette implémentation est la seule qui fonctionne tant que la MR Dataverse (cf lien) pour ajouter les metadatafields n'a pas été mergée
- * et elle également <b>toujours utilisée</b> pour la récupération des métadonnées d'un JDD unitaire.
+ * Cette version de {@link SearchElementDatasetMapper} n'est pas aussi performante que {@link SearchElementDatasetMapperWithMetadatafields}. En effet,
+ * pour chaque DataSet, on appelle Dataverse pour obtenir tous les champs manquants. Cependant cette implémentation est la seule qui fonctionne tant
+ * que la MR Dataverse (cf lien) pour ajouter les metadatafields n'a pas été mergée et elle également <b>toujours utilisée</b> pour la récupération
+ * des métadonnées d'un JDD unitaire.
  *
  * @see <a href="https://github.com/IQSS/dataverse/issues/7863">Merge Request sur le GitHub de Dataverse</a>
  */
@@ -21,13 +21,15 @@ public class SearchElementDatasetMapperWithGetDataset extends SearchElementDatas
 
 	private final DatasetOperationAPI datasetOperationAPI;
 
-	public SearchElementDatasetMapperWithGetDataset(MetadataBlockHelper metadataBLockHelper, DatasetOperationAPI datasetOperationAPI) {
+	public SearchElementDatasetMapperWithGetDataset(MetadataBlockHelper metadataBLockHelper,
+			DatasetOperationAPI datasetOperationAPI) {
 		super(metadataBLockHelper);
 		this.datasetOperationAPI = datasetOperationAPI;
 	}
 
 	@Override
-	protected DatasetMetadataBlock getDatasetMetadataBlock(SearchDatasetInfo searchDatasetInfo) throws DataverseAPIException {
+	protected DatasetMetadataBlock getDatasetMetadataBlock(SearchDatasetInfo searchDatasetInfo)
+			throws DataverseAPIException {
 		final Dataset dataset = datasetOperationAPI.getDataset(searchDatasetInfo.getGlobalId());
 		return dataset.getLatestVersion().getMetadataBlocks();
 	}

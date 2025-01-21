@@ -56,7 +56,7 @@ public class PutIntegrationRequestTreatmentHandler extends AbstractIntegrationRe
 	}
 
 	@Override
-	Set<IntegrationRequestErrorEntity> validateSpecificForOperation(IntegrationRequestEntity integrationRequest) {
+	protected Set<IntegrationRequestErrorEntity> validateSpecificForOperation(IntegrationRequestEntity integrationRequest) {
 		//Vérification complémentaire dans le cas du PUT
 		//Cohérence des données soumises par rapport à celles dans dataverse
 		UUID nodeProviderId = integrationRequest.getNodeProviderId();
@@ -89,7 +89,7 @@ public class PutIntegrationRequestTreatmentHandler extends AbstractIntegrationRe
 		}
 
 		//vérifie que le provider du nodeProvider est autorisé à réaliser cette demande
-		if (!isSameProvider(datasetMetadata, provider)) {
+		if (!isSameProviderOrNull(datasetMetadata, provider)) {
 			// le JDD est associé à un autre provider
 			errors.add(new IntegrationRequestErrorEntity(ERR_111.getCode(), ERR_111.getMessage()));
 		}

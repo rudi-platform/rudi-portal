@@ -15,7 +15,7 @@ import org.springframework.test.context.TestPropertySource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@SpringBootTest
+@SpringBootTest(classes = BpmnSpringBootTestApplication.class)
 @TestPropertySource(properties = "spring.config.name = facetbpmn")
 @ActiveProfiles(profiles = { "test", "${spring.profiles.test:test-env}" })
 public @interface BpmnSpringBootTest {

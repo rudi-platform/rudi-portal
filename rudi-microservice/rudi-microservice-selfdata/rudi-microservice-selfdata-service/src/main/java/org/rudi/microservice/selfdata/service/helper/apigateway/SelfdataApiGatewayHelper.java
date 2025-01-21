@@ -1,5 +1,6 @@
 package org.rudi.microservice.selfdata.service.helper.apigateway;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.microservice.apigateway.core.bean.Api;
 import org.rudi.microservice.selfdata.service.exception.MissingApiForMediaException;
@@ -28,8 +29,8 @@ public class SelfdataApiGatewayHelper {
 	public ClientResponse datasets(Api api, String token, MultiValueMap<String, String> queryParams)
 			throws AppServiceNotFoundException {
 		String apiHttpMethod = api.getMethods().get(0).getValue();
-		HttpMethod httpMethod = HttpMethod.resolve(apiHttpMethod);
-		if (httpMethod == null) {
+		HttpMethod httpMethod = HttpMethod.valueOf(apiHttpMethod); // un HttpMethod est toujours retourné, même si la méthode n'est pas une méthode connue
+		if (!ArrayUtils.contains(HttpMethod.values(), httpMethod)) {
 			throw new IllegalArgumentException(
 					String.format("Valid api method is required : no valid http method found for %s", apiHttpMethod));
 		}

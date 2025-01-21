@@ -1,17 +1,14 @@
 package org.rudi.microservice.kalim.service.scheduler.harvesting;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
-import static org.rudi.microservice.kalim.test.HasGlobalId.withSameGlobalIdAs;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,12 +29,13 @@ import org.rudi.microservice.kalim.core.bean.IntegrationRequest;
 import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.integration.IntegrationRequestService;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import reactor.test.StepVerifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
+import static org.rudi.microservice.kalim.test.HasGlobalId.withSameGlobalIdAs;
 
 @ExtendWith(MockitoExtension.class)
 class HarvestingHelperTU {
@@ -83,7 +81,7 @@ class HarvestingHelperTU {
 		final NodeProvider node = new NodeProvider().url("http://localhost:" + mockWebServer.getPort())
 				.lastHarvestingDate(LocalDateTime.of(2021, Month.AUGUST, 18, 16, 0, 0));
 		final Metadata singleMetadata = new Metadata();
-		final MetadataList singlePageList = new MetadataList().total(1L).additemsItem(singleMetadata);
+		final MetadataList singlePageList = new MetadataList().total(1L).addItemsItem(singleMetadata);
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);
 
@@ -106,16 +104,16 @@ class HarvestingHelperTU {
 
 		final Metadata page1Metadata1 = new Metadata().resourceTitle("page1Metadata1");
 		final Metadata page1Metadata2 = new Metadata().resourceTitle("page1Metadata2");
-		final MetadataList page1List = new MetadataList().total(total).additemsItem(page1Metadata1)
-				.additemsItem(page1Metadata2);
+		final MetadataList page1List = new MetadataList().total(total).addItemsItem(page1Metadata1)
+				.addItemsItem(page1Metadata2);
 
 		final Metadata page2Metadata1 = new Metadata().resourceTitle("page2Metadata1");
 		final Metadata page2Metadata2 = new Metadata().resourceTitle("page2Metadata2");
-		final MetadataList page2List = new MetadataList().total(total).additemsItem(page2Metadata1)
-				.additemsItem(page2Metadata2);
+		final MetadataList page2List = new MetadataList().total(total).addItemsItem(page2Metadata1)
+				.addItemsItem(page2Metadata2);
 
 		final Metadata page3Metadata = new Metadata().resourceTitle("page3Metadata");
-		final MetadataList page3List = new MetadataList().total(total).additemsItem(page3Metadata);
+		final MetadataList page3List = new MetadataList().total(total).addItemsItem(page3Metadata);
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);
 
@@ -151,8 +149,8 @@ class HarvestingHelperTU {
 				.globalId(UUID.randomUUID());
 		final Metadata metadataWithError = new Metadata().resourceTitle("metadataWithError")
 				.globalId(UUID.randomUUID());
-		final MetadataList metadataList = new MetadataList().total(2L).additemsItem(metadataWithoutError)
-				.additemsItem(metadataWithError);
+		final MetadataList metadataList = new MetadataList().total(2L).addItemsItem(metadataWithoutError)
+				.addItemsItem(metadataWithError);
 		final IntegrationRequest successfulIntegrationRequest = new IntegrationRequest();
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);
@@ -185,7 +183,7 @@ class HarvestingHelperTU {
 		final Metadata modifiedMetadata = new Metadata().globalId(existingMetadata.getGlobalId())
 				.datasetDates(new ReferenceDates().created(toUTC(LocalDateTime.of(2021, Month.AUGUST, 17, 10, 0)))
 						.updated(toUTC(LocalDateTime.of(2021, Month.AUGUST, 19, 10, 0))));
-		final MetadataList metadataList = new MetadataList().total(1L).additemsItem(modifiedMetadata);
+		final MetadataList metadataList = new MetadataList().total(1L).addItemsItem(modifiedMetadata);
 		final IntegrationRequest successfulIntegrationRequest = new IntegrationRequest();
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);
@@ -215,7 +213,7 @@ class HarvestingHelperTU {
 				.datasetDates(new ReferenceDates().created(toUTC(LocalDateTime.of(2021, Month.AUGUST, 17, 10, 0)))
 						.updated(toUTC(LocalDateTime.of(2021, Month.AUGUST, 19, 10, 0)))
 						.deleted(toUTC(LocalDateTime.now()).minus(1, ChronoUnit.HOURS)));
-		final MetadataList metadataList = new MetadataList().total(1L).additemsItem(metadataToDelete);
+		final MetadataList metadataList = new MetadataList().total(1L).addItemsItem(metadataToDelete);
 		final IntegrationRequest successfulIntegrationRequest = new IntegrationRequest();
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);
@@ -245,7 +243,7 @@ class HarvestingHelperTU {
 				.datasetDates(new ReferenceDates().created(toUTC(LocalDateTime.of(2021, Month.AUGUST, 17, 10, 0)))
 						.updated(toUTC(LocalDateTime.of(2021, Month.AUGUST, 19, 10, 0)))
 						.deleted(toUTC(LocalDateTime.now()).plus(1, ChronoUnit.DAYS)));
-		final MetadataList metadataList = new MetadataList().total(1L).additemsItem(metadataToDeleteTomorrow);
+		final MetadataList metadataList = new MetadataList().total(1L).addItemsItem(metadataToDeleteTomorrow);
 		final IntegrationRequest successfulIntegrationRequest = new IntegrationRequest();
 
 		when(configuration.getResourcesPath()).thenReturn(RESOURCES_PATH);

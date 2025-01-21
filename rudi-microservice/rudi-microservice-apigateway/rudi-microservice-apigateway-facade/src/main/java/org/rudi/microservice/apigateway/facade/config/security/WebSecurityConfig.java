@@ -1,7 +1,13 @@
+/**
+ * RUDI Portail
+ */
 package org.rudi.microservice.apigateway.facade.config.security;
 
 import java.util.Arrays;
 
+import javax.net.ssl.SSLException;
+
+import org.rudi.common.core.webclient.HttpClientHelper;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
 import org.rudi.microservice.apigateway.facade.config.security.jwt.JwtWebFilter;
 import org.rudi.microservice.apigateway.facade.config.security.oauth2.OAuth2WebFilter;
@@ -12,6 +18,7 @@ import org.springframework.boot.actuate.autoconfigure.security.reactive.Endpoint
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -25,21 +32,23 @@ import org.springframework.security.oauth2.client.web.server.AuthenticatedPrinci
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.WebFilter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.netty.http.client.HttpClient;
 
-@Slf4j
-@Component
-//@EnableWebFluxSecurity
+/**
+ * @author FNI18300
+ */
+@Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
 	@Value("${application.role.administrateur.code}")
@@ -68,6 +77,8 @@ public class WebSecurityConfig {
 
 	private final RestTemplate internalRestTemplate;
 
+	private final HttpClientHelper httpClientHelper;
+
 	@Qualifier("JwtTokenUtilApiGateway")
 	@Autowired
 	private AbstractJwtTokenUtil jwtTokenUtil;
@@ -79,18 +90,22 @@ public class WebSecurityConfig {
 			if (!disableAuthentification) {
 				exchanges.pathMatchers(SecurityConstants.SB_PERMIT_ALL_URL).permitAll();
 				exchanges.pathMatchers(SecurityConstants.ACTUATOR_URL).authenticated();
-				exchanges.anyExchange().authenticated().and()
-						.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
-						.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+				exchanges.anyExchange().authenticated();
 			} else {
 				log.warn("/!\\ Authentification is disabled");
 				exchanges.anyExchange().permitAll();
 			}
 		});
-		http.httpBasic(Customizer.withDefaults());
-		http.formLogin(Customizer.withDefaults());
-		http.cors().and().csrf().disable();
-		http.exceptionHandling().authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint());
+
+		http.httpBasic(Customizer.withDefaults()).formLogin(Customizer.withDefaults())
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
+
+		if (!disableAuthentification) {
+			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
+					.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+		}
 		return http.build();
 	}
 
@@ -114,9 +129,14 @@ public class WebSecurityConfig {
 		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(clientService);
 	}
 
+	@Bean(defaultCandidate = true)
+	public HttpClient httpClient() throws SSLException {
+		return httpClientHelper.createReactorHttpClient(true, false, false);
+	}
+
 	@Bean
 	protected CorsConfigurationSource corsConfigurationSource() {
-		final var configuration = new CorsConfiguration();
+		final CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
 		configuration.addAllowedHeader("*");
 		configuration.addExposedHeader("Authorization");
@@ -133,7 +153,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	GrantedAuthorityDefaults grantedAuthorityDefaults() {
+	protected GrantedAuthorityDefaults grantedAuthorityDefaults() {
 		// Remove the ROLE_ prefix
 		return new GrantedAuthorityDefaults("");
 	}

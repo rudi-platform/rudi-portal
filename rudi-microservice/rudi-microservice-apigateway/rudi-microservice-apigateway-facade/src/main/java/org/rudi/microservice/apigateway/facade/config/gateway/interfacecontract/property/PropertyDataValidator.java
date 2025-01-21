@@ -3,7 +3,8 @@
  */
 package org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.property;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * @author FNI18300
@@ -11,5 +12,5 @@ import io.swagger.models.properties.Property;
  */
 public interface PropertyDataValidator {
 
-	boolean validate(Property property, String value);
+	boolean validate(OpenAPI openAPI, Schema<?> property, String value);
 }

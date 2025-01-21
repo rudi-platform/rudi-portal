@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rudi.facet.dataverse.bean.SearchItemInfo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
 import lombok.Data;
 
 @Data
 public class SearchElements<T extends SearchItemInfo & Serializable> implements Serializable {
+
+	private static final long serialVersionUID = -4535741024179775412L;
 
 	@JsonProperty(value = "total_count")
 	private Long total;

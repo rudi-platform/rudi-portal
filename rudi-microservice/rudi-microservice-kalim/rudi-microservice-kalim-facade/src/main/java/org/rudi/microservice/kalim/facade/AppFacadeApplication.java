@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -16,8 +16,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		"org.rudi.facet.kos", "org.rudi.facet.acl", "org.rudi.facet.strukture", "org.rudi.facet.providers",
 		"org.rudi.facet.organization", "org.rudi.facet.apigateway", "org.rudi.microservice.kalim.facade",
 		"org.rudi.microservice.kalim.service", "org.rudi.microservice.kalim.storage", })
-@EnableEurekaClient
 @EnableScheduling
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:kalim/kalim-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

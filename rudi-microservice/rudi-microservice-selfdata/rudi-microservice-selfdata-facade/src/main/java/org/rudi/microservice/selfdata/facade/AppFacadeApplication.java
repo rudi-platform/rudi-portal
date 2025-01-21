@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 		"org.rudi.microservice.selfdata.core", "org.rudi.microservice.selfdata.facade",
 		"org.rudi.microservice.selfdata.service", "org.rudi.microservice.selfdata.storage", "org.rudi.facet.providers",
 		"org.rudi.facet.apigateway", })
-@EnableEurekaClient
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:selfdata/selfdata-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

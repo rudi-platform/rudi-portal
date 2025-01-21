@@ -1,4 +1,4 @@
-.btn {
+.blue-btn {
     background: #004680;
     border-radius: 28px;
     color: #ffffff;
@@ -6,7 +6,7 @@
     text-decoration: none;
 }
 
-.btn:hover {
+.blue-btn:hover {
     filter: brightness(125%);
     background: #004680;
     border-radius: 28px;

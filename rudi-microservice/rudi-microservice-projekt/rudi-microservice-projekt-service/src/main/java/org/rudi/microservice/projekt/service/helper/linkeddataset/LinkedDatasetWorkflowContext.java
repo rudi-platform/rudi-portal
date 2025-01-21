@@ -25,7 +25,7 @@ import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.bean.Organization;
@@ -58,7 +58,7 @@ public class LinkedDatasetWorkflowContext
 
 	private final ProjectCustomDao projectCustomDao;
 
-	public LinkedDatasetWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
+	public LinkedDatasetWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			LinkedDatasetDao assetDescriptionDao, LinkedDatasetAssigmentHelper assignmentHelper, ACLHelper aclHelper,
 			FormHelper formHelper, DatasetService datasetService, OrganizationHelper organizationHelper,
 			ProjectCustomDao projectCustomDao, RolesHelper rolesHelper) {

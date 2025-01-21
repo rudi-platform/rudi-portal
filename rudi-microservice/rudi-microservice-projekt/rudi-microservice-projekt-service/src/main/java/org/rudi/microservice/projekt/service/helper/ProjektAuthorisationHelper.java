@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -28,6 +27,7 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
+import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.stereotype.Component;
@@ -49,12 +49,14 @@ public class ProjektAuthorisationHelper {
 	private final OrganizationHelper organizationHelper;
 	private final DatasetService datasetService;
 	private final MyInformationsHelper myInformationsHelper;
+	private final ProjectWorkflowHelper projectWorkflowHelper;
 
 	/**
 	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au profil technique du module
 	 */
 	@Getter
 	private static final Map<String, Boolean> ADMINISTRATOR_ACCESS = new HashMap<>();
+
 	static {
 		ADMINISTRATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
 		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT_ADMINISTRATOR, Boolean.TRUE);
@@ -66,6 +68,7 @@ public class ProjektAuthorisationHelper {
 	 */
 	@Getter
 	private static final Map<String, Boolean> ADMINISTRATOR_MODERATOR_ACCESS = new HashMap<>();
+
 	static {
 		ADMINISTRATOR_MODERATOR_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
 		ADMINISTRATOR_MODERATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT_ADMINISTRATOR, Boolean.TRUE);
@@ -93,7 +96,7 @@ public class ProjektAuthorisationHelper {
 
 	/**
 	 * Vérifie les droits d'accès de l'utilisateur: possède-t-il l'un des roles techniques ou transverses définis dans la map ?
-	 * 
+	 *
 	 * @param accessRights la map des droits d'accès : code du rôle -> droit d'accès
 	 * @return true si l'utilisateur a l'un des roles autorisés
 	 */
@@ -117,11 +120,11 @@ public class ProjektAuthorisationHelper {
 	/**
 	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité projet : l'utilisateur doit avoir le rôle "PROJECT_MANAGER" ou "USER" et être
 	 * owner ou membre de l'organisation owner
-	 * 
+	 *
 	 * @param projectEntity le projet
 	 * @return true si l'utilisateur a accès
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
-	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public boolean isAccessGrantedForUserOnProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, MissingParameterException {
@@ -138,15 +141,15 @@ public class ProjektAuthorisationHelper {
 				}
 
 				switch (projectEntity.getOwnerType()) {
-				case USER:
-					return user.getUuid() != null && ownerUuid.equals(user.getUuid());
+					case USER:
+						return user.getUuid() != null && ownerUuid.equals(user.getUuid());
 
-				case ORGANIZATION:
-					return user.getUuid() != null
-							&& organizationHelper.organizationContainsUser(ownerUuid, user.getUuid());
+					case ORGANIZATION:
+						return user.getUuid() != null
+								&& organizationHelper.organizationContainsUser(ownerUuid, user.getUuid());
 
-				default:
-					break;
+					default:
+						break;
 				}
 			}
 
@@ -159,7 +162,7 @@ public class ProjektAuthorisationHelper {
 	/**
 	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité linkeddataset : l'utilisateur doit avoir le rôle "USER" et être owner ou membre
 	 * de l'organisation owner du JDD
-	 * 
+	 *
 	 * @param linkedDatasetEntity le JDD
 	 * @return si l'utilisateur a accès
 	 * @throws GetOrganizationException en cas de problème avec la récupération des membres de l'organisation
@@ -185,13 +188,13 @@ public class ProjektAuthorisationHelper {
 
 	/**
 	 * Un projectAdministrator est :
-	 * 	[Si le projet est individuel : le propriétaire du projet]
-	 * 	[Si le projet est au nom d'une organisation : les administrateurs de l'organsiation.]
+	 * [Si le projet est individuel : le propriétaire du projet]
+	 * [Si le projet est au nom d'une organisation : les administrateurs de l'organsiation.]
 	 *
 	 * @param projectEntity entité du projet
 	 * @return true si accès accordé, false sinon
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
-	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public boolean isAccessGrantedAsProjectAdministrator(ProjectEntity projectEntity) throws GetOrganizationMembersException, MissingParameterException {
 		try {
@@ -238,13 +241,13 @@ public class ProjektAuthorisationHelper {
 	/**
 	 * Définition de l'ouverture des droits la fonctionnalité de création de projet ou d'administration des new dataset request associé : Le projectowner
 	 * ou un membre de l'organisation peut / L'administrateur peut (uniquement via Postman) / Un autre user ne peut pas
-	 * 
+	 * <p>
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
-	 * 
+	 *
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
 	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
-	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsInitProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
@@ -259,13 +262,13 @@ public class ProjektAuthorisationHelper {
 	/**
 	 * Définition de l'ouverture des droits la fonctionnalité de d'administration des new dataset request associé : Le projectowner ou un membre de
 	 * l'organisation peut / L'administrateur peut (uniquement via Postman) / Un autre user ne peut pas
-	 * 
+	 * <p>
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
-	 * 
+	 *
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
 	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
-	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsAdministerProjectDataset(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
@@ -277,27 +280,23 @@ public class ProjektAuthorisationHelper {
 		if (existingProject != null) {
 
 			switch (existingProject.getProjectStatus()) {
-			case DRAFT:
-			case REJECTED:
-				// l'opération d'ajout ou de suppression de dataset est autorisée
-				break;
-			case VALIDATED:
-				if (
-						!existingProject.getReutilisationStatus().isDatasetSetModificationAllowed()
-						|| existingProject.getStatus().equals(Status.DRAFT)
-						|| existingProject.getStatus().equals(Status.PENDING)
-				) {
-					throw new AppServiceForbiddenException(
-							String.format("Cannot modify linkeddataset in project status %s",
-									existingProject.getReutilisationStatus().getCode()));
-				}
-				break;
-			case IN_PROGRESS:
-			case CANCELLED:
-			case DISENGAGED:
-			default:
-				throw new AppServiceForbiddenException(String.format("Cannot modify linkeddataset in project status %s",
-						existingProject.getProjectStatus()));
+				case DRAFT:
+				case REJECTED:
+					// l'opération d'ajout ou de suppression de dataset est autorisée
+					break;
+				case VALIDATED:
+					if (!existingProject.getReutilisationStatus().isDatasetSetModificationAllowed()) {
+						throw new AppServiceForbiddenException(
+								String.format("Cannot modify linkeddataset in project status %s",
+										existingProject.getReutilisationStatus().getCode()));
+					}
+					break;
+				case IN_PROGRESS:
+				case CANCELLED:
+				case DISENGAGED:
+				default:
+					throw new AppServiceForbiddenException(String.format("Cannot modify linkeddataset in project status %s",
+							existingProject.getProjectStatus()));
 
 			}
 		}
@@ -308,13 +307,13 @@ public class ProjektAuthorisationHelper {
 	 * Définition de l'ouverture des droits la fonctionnalité d'administration de projet : Le projectowner ou un membre de l'organisation peut modifier un
 	 * projet / L'administrateur peut modifier un projet (uniquement via Postman) / L'animateur peut modifier un projet (via postman) / Un autre user ne
 	 * peut pas modifier un projet
-	 * 
+	 * <p>
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
-	 * 
+	 *
 	 * @param projectEntity l'entité projet pour laquelle vérifier le droit d'accès
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
 	 * @throws AppServiceUnauthorizedException : pas les droits nécessaires pour effectuer une action
-	 * @throws MissingParameterException : erreur paramètre manquant ou incomplet
+	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsAdministerProject(ProjectEntity projectEntity)
 			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {

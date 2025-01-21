@@ -2,9 +2,8 @@ package org.rudi.common.service.exception;
 
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-import javax.persistence.Table;
-
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.storage.entity.AbstractLongIdEntity;
 import org.springframework.dao.EmptyResultDataAccessException;

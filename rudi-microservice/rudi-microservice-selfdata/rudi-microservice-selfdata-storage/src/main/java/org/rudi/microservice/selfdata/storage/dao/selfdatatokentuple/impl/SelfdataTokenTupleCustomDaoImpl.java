@@ -3,10 +3,9 @@ package org.rudi.microservice.selfdata.storage.dao.selfdatatokentuple.impl;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
@@ -34,7 +33,7 @@ public class SelfdataTokenTupleCustomDaoImpl extends AbstractCustomDaoImpl<Selfd
 		val searchQuery = builder.createQuery(entitiesClass);
 		val searchRoot = searchQuery.from(entitiesClass);
 		final Predicate whereCondition = builder.and(builder.equal(searchRoot.get(FIELD_DATASET_UUID), datasetUuid), builder.equal(searchRoot.get(FIELD_USER_UUID), userUuid));
-		javax.persistence.criteria.Order order = builder.desc(searchRoot.get(FIELD_ID));
+		jakarta.persistence.criteria.Order order = builder.desc(searchRoot.get(FIELD_ID));
 		searchQuery.where(whereCondition)
 				.orderBy(order);
 		TypedQuery<SelfdataTokenTupleEntity> typedQuery = entityManager.createQuery(searchQuery);

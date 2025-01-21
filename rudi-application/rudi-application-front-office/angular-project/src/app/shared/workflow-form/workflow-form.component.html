@@ -9,14 +9,8 @@
             <span class="description" *ngIf="section.help != null">{{section.help}}</span>
         </label>
 
-        <ng-container *ngIf="!(section | isSectionDisplayed)">
+        <ng-container>
             <ng-container *ngTemplateOutlet="fields"></ng-container>
-        </ng-container>
-
-        <ng-container *ngIf="section | isSectionDisplayed">
-            <mat-card class="section-card">
-                <ng-container *ngTemplateOutlet="fields"></ng-container>
-            </mat-card>
         </ng-container>
 
         <ng-template #fields>

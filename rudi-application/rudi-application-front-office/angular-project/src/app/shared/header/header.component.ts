@@ -144,7 +144,7 @@ export class HeaderComponent implements OnInit {
                 AuthenticationService.clearTokens();
                 this.snackBarService.openSnackBar({
                     message: this.translateService.instant('header.logOutSuccess'),
-                    level: Level.INFO,
+                    level: Level.SUCCESS,
                     keepBeforeSecondRouteChange: true
                 });
                 this.goToCatalogues();

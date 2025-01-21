@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -30,8 +30,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		"org.rudi.microservice.projekt.service",
 		"org.rudi.microservice.projekt.storage",
 		"org.rudi.facet.projekt.helper", })
-@EnableEurekaClient
 @EnableScheduling
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:projekt/projekt-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

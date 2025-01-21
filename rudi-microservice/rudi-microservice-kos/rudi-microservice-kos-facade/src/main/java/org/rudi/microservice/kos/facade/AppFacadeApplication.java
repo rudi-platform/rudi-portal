@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication(scanBasePackages = { "org.rudi.common.facade", "org.rudi.common.service",
 		"org.rudi.common.storage", "org.rudi.microservice.kos.facade", "org.rudi.microservice.kos.service",
 		"org.rudi.microservice.kos.storage" })
-@EnableEurekaClient
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:kos/kos-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

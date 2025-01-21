@@ -20,8 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.internet.MimeMessage;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -63,12 +61,14 @@ import org.rudi.facet.bpmn.service.impl.TaskService1TestImpl;
 import org.rudi.facet.bpmn.service.impl.TaskService2TestImpl;
 import org.rudi.facet.generator.model.GenerationFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.annotation.Rollback;
+
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * @author FNI18300
@@ -88,13 +88,13 @@ class TaskServiceUT {
 	@Autowired
 	private FormTemplateConfiguration formTemplateConfiguration;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	protected JavaMailSenderImpl javaMailSender;
 
 	@Autowired
@@ -221,15 +221,20 @@ class TaskServiceUT {
 
 		List<ProcessDefinition> definitions2 = initializationService.searchProcessDefinitions();
 		assertNotNull(definitions2);
-		assertEquals(definitions2.size(), size + 1);
+		assertEquals(definitions2.size(), size + 2);
 	}
 
 	private void initializeWorkflow() throws BpmnInitializationException {
-		URL url = Thread.currentThread().getContextClassLoader().getResource("bpmn/test.bpmn20.xml");
+		initializeWorkflow("test1");
+		initializeWorkflow("test2");
+	}
+
+	private void initializeWorkflow(String name) throws BpmnInitializationException {
+		URL url = Thread.currentThread().getContextClassLoader().getResource("bpmn/" + name + ".bpmn20.xml");
 		// URL url = Thread.currentThread().getContextClassLoader().getResource("bpmn/handle-group.bpmn20.xml");
-		DocumentContent bpmn = new DocumentContent("test.bpmn20.xml", GenerationFormat.XML.getMimeType(),
+		DocumentContent bpmn = new DocumentContent(name + ".bpmn20.xml", GenerationFormat.XML.getMimeType(),
 				new File(url.getFile()));
-		initializationService.updateProcessDefinition("test", bpmn);
+		initializationService.updateProcessDefinition(name, bpmn);
 	}
 
 	@Test
@@ -241,13 +246,13 @@ class TaskServiceUT {
 		// création des formulaires
 		SectionDefinition sectionDefinition1 = createSection("Comment", "Comment", "form/section-comment.json");
 		FormDefinition formDefinition1 = createFormDefinition("Form1", sectionDefinition1);
-		ProcessFormDefinition processFormDefinition1 = buildProcessFormDefinition("test", "UserTask_1",
+		ProcessFormDefinition processFormDefinition1 = buildProcessFormDefinition("test1", "UserTask_1",
 				formDefinition1);
 		formService.createProcessFormDefinition(processFormDefinition1);
 
 		SectionDefinition sectionDefinition2 = createSection("Test", "Test", "form/section-test.json");
 		FormDefinition formDefinition2 = createFormDefinition("Form2", sectionDefinition2);
-		ProcessFormDefinition processFormDefinition2 = buildProcessFormDefinition("test", "draft", formDefinition2);
+		ProcessFormDefinition processFormDefinition2 = buildProcessFormDefinition("test2", "draft", formDefinition2);
 		formService.createProcessFormDefinition(processFormDefinition2);
 
 		// chargement de la carte de workflow
@@ -260,7 +265,7 @@ class TaskServiceUT {
 
 		List<ProcessDefinition> definitions2 = initializationService.searchProcessDefinitions();
 		assertNotNull(definitions2);
-		assertEquals(definitions2.size(), size + 1);
+		assertEquals(definitions2.size(), size + 2);
 
 		// création d'un tâche
 		AssetDescription1TestData draft = new AssetDescription1TestData();

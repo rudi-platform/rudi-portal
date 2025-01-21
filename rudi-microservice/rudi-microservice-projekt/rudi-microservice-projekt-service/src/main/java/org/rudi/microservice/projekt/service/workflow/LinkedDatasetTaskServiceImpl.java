@@ -6,9 +6,8 @@ package org.rudi.microservice.projekt.service.workflow;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -25,6 +24,7 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersExcep
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.helper.linkeddataset.LinkedDatasetAssigmentHelper;
+import org.rudi.microservice.projekt.service.helper.linkeddataset.LinkedDatasetWorkflowContext;
 import org.rudi.microservice.projekt.service.helper.linkeddataset.LinkedDatasetWorkflowHelper;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
@@ -34,6 +34,7 @@ import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,9 +43,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class LinkedDatasetTaskServiceImpl extends
-		AbstractTaskServiceImpl<LinkedDatasetEntity, LinkedDataset, LinkedDatasetDao, LinkedDatasetWorkflowHelper, LinkedDatasetAssigmentHelper> {
+		AbstractTaskServiceImpl<LinkedDatasetEntity, LinkedDataset, LinkedDatasetDao, LinkedDatasetWorkflowHelper, LinkedDatasetAssigmentHelper, LinkedDatasetWorkflowContext> {
 
 	public static final String PROCESS_DEFINITION_ID = "linked-dataset-process";
+
+	public static final String WORFKLOW_CONTEXT_BEAN_NAME = "linkedDatasetWorkflowContext";
 
 	private final ProjectCustomDao projectCustomDao;
 
@@ -56,10 +59,26 @@ public class LinkedDatasetTaskServiceImpl extends
 	public LinkedDatasetTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
 			LinkedDatasetDao assetDescriptionDao, LinkedDatasetWorkflowHelper assetDescriptionHelper,
-			LinkedDatasetAssigmentHelper assigmentHelper, ProjectCustomDao projectCustomDao) {
+			LinkedDatasetAssigmentHelper assigmentHelper, LinkedDatasetWorkflowContext workflowContext,
+			ProcessEngineConfiguration processEngineConfiguration, ProjectCustomDao projectCustomDao) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
-				assetDescriptionHelper, assigmentHelper);
+				assetDescriptionHelper, assigmentHelper, workflowContext, processEngineConfiguration);
 		this.projectCustomDao = projectCustomDao;
+	}
+
+	@Override
+	protected String getWorkflowContextBeanName() {
+		return WORFKLOW_CONTEXT_BEAN_NAME;
+	}
+
+	@Override
+	public String getProcessDefinitionKey() {
+		return PROCESS_DEFINITION_ID;
+	}
+
+	@Override
+	protected AbstractTaskServiceImpl<LinkedDatasetEntity, LinkedDataset, LinkedDatasetDao, LinkedDatasetWorkflowHelper, LinkedDatasetAssigmentHelper, LinkedDatasetWorkflowContext> lookupMe() {
+		return ApplicationContext.getBean(LinkedDatasetTaskServiceImpl.class);
 	}
 
 	@Override
@@ -73,20 +92,10 @@ public class LinkedDatasetTaskServiceImpl extends
 				assetDescriptionEntity.getDatasetOrganisationUuid());
 	}
 
-	@Override
-	public String getProcessDefinitionKey() {
-		return PROCESS_DEFINITION_ID;
-	}
-
 	@PostConstruct
 	@Override
 	public void loadBpmn() throws IOException {
 		super.loadBpmn();
-	}
-
-	@Override
-	protected AbstractTaskServiceImpl<LinkedDatasetEntity, LinkedDataset, LinkedDatasetDao, LinkedDatasetWorkflowHelper, LinkedDatasetAssigmentHelper> lookupMe() {
-		return ApplicationContext.getBean(LinkedDatasetTaskServiceImpl.class);
 	}
 
 	/**

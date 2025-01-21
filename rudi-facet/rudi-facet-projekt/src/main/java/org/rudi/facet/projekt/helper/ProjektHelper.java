@@ -15,6 +15,8 @@ import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
 import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +32,10 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ProjektHelper {
 
-	private final WebClient projektWebClient;
+	@Autowired
+	@Qualifier("projektWebClient")
+	private WebClient projektWebClient;
+
 	private final ProjektProperties projektProperties;
 
 	public void notifyUserHasBeenAdded(UUID organizationUuid, UUID userUuid) {

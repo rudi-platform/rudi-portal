@@ -22,7 +22,7 @@ import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.kaccess.bean.MatchingData;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.SelfdataContent;
@@ -64,8 +64,8 @@ public class SelfdataInformationRequestWorkflowContext extends
 	private final SelfdataPairingUtils selfdataPairingUtils;
 	private final SelfdataMatchingDataHelper selfdataMatchingDataHelper;
 
-	protected SelfdataInformationRequestWorkflowContext(EMailService eMailService,
-			TemplateGeneratorImpl templateGenerator, SelfdataInformationRequestDao assetDescriptionDao,
+	protected SelfdataInformationRequestWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
+			SelfdataInformationRequestDao assetDescriptionDao,
 			SelfdataInformationRequestAssigmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper,
 			DatasetService datasetService, OrganizationHelper organizationHelper,
 			SelfdataProviderHelper selfdataProviderHelper, SelfdataPairingUtils selfdataPairingUtils,

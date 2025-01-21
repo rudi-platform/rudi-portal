@@ -17,6 +17,7 @@ import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
 import org.rudi.facet.generator.text.SpringBootTestApplication;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,7 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class TemplateGeneratorUT {
 
 	@Autowired
-	private TemplateGeneratorImpl templateGenerator;
+	private TemplateGenerator templateGenerator;
 
 	@Test
 	void testStringTemplate() {

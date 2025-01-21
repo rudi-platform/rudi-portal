@@ -3,8 +3,9 @@
  */
 package org.rudi.facet.kaccess.config;
 
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import jakarta.validation.constraints.NotNull;
 import org.rudi.common.core.json.SubTypeRegister;
 import org.rudi.facet.kaccess.bean.Feature;
 import org.rudi.facet.kaccess.bean.FeatureCollection;
@@ -16,9 +17,6 @@ import org.rudi.facet.kaccess.bean.MultiPolygon;
 import org.rudi.facet.kaccess.bean.Point;
 import org.rudi.facet.kaccess.bean.Polygon;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 import lombok.RequiredArgsConstructor;
 

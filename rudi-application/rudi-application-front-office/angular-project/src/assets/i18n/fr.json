@@ -1269,6 +1269,12 @@
                 "creationDate": "Date de création",
                 "updatedDate": "Mise à jour"
             },
+            "archive": {
+                "archived": "Archiver la réutilisation",
+                "success": "Votre réutilisation a été archivée.",
+                "error": "Une erreur est survenue lors de l'archivage de la réutilisation. Si l'erreur persiste, merci de contacter un administrateur ",
+                "here": "en cliquant ici."
+            },
             "tabs": {
                 "api": {
                     "title": "API",

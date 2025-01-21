@@ -30,6 +30,14 @@
         },
         "changeOrigin": true
     },
+    "/konsult/v1/properties": {
+        "target": "http://localhost:8087/konsult/v1/properties",
+        "secure": false,
+        "pathRewrite": {
+            "^/konsult/v1/properties": ""
+        },
+        "changeOrigin": true
+    },
     "/konsult/v1": {
         "target": "http://localhost:8082/konsult/v1",
         "secure": false,

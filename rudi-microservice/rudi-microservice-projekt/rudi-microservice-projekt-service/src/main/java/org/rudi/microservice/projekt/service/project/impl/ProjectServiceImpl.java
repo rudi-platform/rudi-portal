@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -17,7 +15,6 @@ import org.rudi.common.core.DocumentContent;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.core.util.ContentTypeUtils;
-import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
@@ -77,9 +74,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -110,7 +110,6 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ACLHelper aclHelper;
 	private final MyInformationsHelper myInformationsHelper;
 	private final ProjektAuthorisationHelper projektAuthorisationHelper;
-	private final UtilPageable utilPageable;
 	private final MyLinkedDatasetHelper myLinkedDatasetHelper;
 
 	@Value("${rudi.producer.attachement.allowed.types:image/jpeg,image/png}")
@@ -250,10 +249,9 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 			return logo;
 		} catch (DataverseAPIException e) {
-			throw new AppServiceException(
-					String.format("Erreur lors du téléchargement du %s du projet avec projectUuid = %s",
-							kindOfData.getValue(), projectUuid),
-					e);
+			log.warn(String.format("Erreur lors du téléchargement du %s du projet avec projectUuid = %s",
+					kindOfData.getValue(), projectUuid), e);
+			return getDefaultLogo();
 		}
 	}
 
@@ -485,8 +483,8 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
-		if(project.getProjectStatus() != ProjectStatus.VALIDATED) {
-			throw  new AppServiceBadRequestException("Project Status is not validated");
+		if (project.getProjectStatus() != ProjectStatus.VALIDATED) {
+			throw new AppServiceBadRequestException("Project Status is not validated");
 		}
 		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
 
@@ -515,8 +513,8 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new AppServiceBadRequestException("Project key uuid is required");
 		}
 
-		if(project.getProjectStatus() != ProjectStatus.VALIDATED) {
-			throw  new AppServiceBadRequestException("Project Status is not validated");
+		if (project.getProjectStatus() != ProjectStatus.VALIDATED) {
+			throw new AppServiceBadRequestException("Project Status is not validated");
 		}
 
 		Optional<ProjectKeystore> projectKeystoreOptional = getProjectKeystoreUuidByProjectUuid(projectUuid);
@@ -564,7 +562,7 @@ public class ProjectServiceImpl implements ProjectService {
 		projektAuthorisationHelper.checkRightsInitProject(projectEntity);
 	}
 
-	protected Optional<ProjectKeystore> getProjectKeystoreUuidByProjectUuid(UUID projectUuid){
+	protected Optional<ProjectKeystore> getProjectKeystoreUuidByProjectUuid(UUID projectUuid) {
 		ProjectKeystoreSearchCriteria criteria = new ProjectKeystoreSearchCriteria();
 		criteria.setProjectUuids(List.of(projectUuid));
 		Pageable pageable = PageRequest.of(0, 1);

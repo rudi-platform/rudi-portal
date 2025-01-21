@@ -20,7 +20,7 @@ public class OrganizationsController implements TestApi {
 	 * @return ok (status code 204)
 	 */
 	@Override
-	public ResponseEntity<Void> recieveReport(UUID organizationUuid, Report report) throws Exception {
+	public ResponseEntity<Void> recieveReport(UUID organizationUuid, Report report) {
 		if (report == null) {
 			log.error("ATTENTION - Le rapport ne doit pas être vide");
 		}

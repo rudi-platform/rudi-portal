@@ -3,9 +3,8 @@ package org.rudi.microservice.strukture.core.config;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.rudi.common.core.json.ObjectMapperUtils;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.Organization;

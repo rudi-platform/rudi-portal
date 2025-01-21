@@ -2,8 +2,7 @@ package org.rudi.microservice.konsent.storage.dao.treatment;
 
 import java.util.UUID;
 
-import javax.persistence.NoResultException;
-
+import jakarta.persistence.NoResultException;
 import org.rudi.microservice.konsent.core.bean.TreatmentSearchCriteria;
 import org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity;
 import org.springframework.data.domain.Page;

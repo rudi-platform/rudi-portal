@@ -1,17 +1,9 @@
 package org.rudi.microservice.acl.service.account;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doNothing;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.mail.internet.MimeMessage;
-
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.security.UserType;
@@ -26,8 +18,15 @@ import org.rudi.microservice.acl.storage.dao.user.UserDao;
 import org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegistrationEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 
 @AclSpringBootTest
 class AccountServiceUT {
@@ -41,7 +40,7 @@ class AccountServiceUT {
 	@Autowired
 	private AccountRegistrationDao accountRegistrationDao;
 
-	@MockBean
+	@MockitoBean
 	private JavaMailSenderImpl javaMailSender;
 
 	@AfterEach

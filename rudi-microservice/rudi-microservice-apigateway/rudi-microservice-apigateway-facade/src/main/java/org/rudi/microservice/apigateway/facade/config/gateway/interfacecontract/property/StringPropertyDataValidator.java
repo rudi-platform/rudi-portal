@@ -10,7 +10,8 @@ import java.util.UUID;
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerFormat;
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * @author FNI18300
@@ -23,7 +24,7 @@ public class StringPropertyDataValidator extends AbstractPropertyDataValidator {
 	}
 
 	@Override
-	protected boolean internalValidate(Property property, String value) {
+	protected boolean internalValidate(OpenAPI openapi, Schema<?> property, String value) {
 		boolean result = false;
 		SwaggerFormat format = SwaggerFormat.lookupType(property.getFormat());
 		switch (format) {

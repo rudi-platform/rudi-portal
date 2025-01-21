@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -27,8 +27,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 		"org.rudi.microservice.apigateway.facade", 
 		"org.rudi.microservice.apigateway.service",
 		"org.rudi.microservice.apigateway.storage", })
-@EnableEurekaClient
 @EnableJpaAuditing
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:apigateway/apigateway-common.properties" })
 @PropertySource(value = {
 		"classpath:apigateway/apigateway.yml" }, ignoreResourceNotFound = true, factory = YamlPropertySourceFactory.class)

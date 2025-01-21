@@ -28,7 +28,7 @@ public class LogGlobalFilter extends AbstractGlobalFilter {
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		log.info("Call to " + formatMessage(exchange) + "...");
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> log
-				.info("Call done to " + formatMessage(exchange) + "=>" + exchange.getResponse().getRawStatusCode())));
+				.info("Call done to " + formatMessage(exchange) + "=>" + exchange.getResponse().getStatusCode())));
 	}
 
 	@Override

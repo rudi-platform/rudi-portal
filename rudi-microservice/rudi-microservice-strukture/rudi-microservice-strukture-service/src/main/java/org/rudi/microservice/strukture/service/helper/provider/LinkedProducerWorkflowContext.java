@@ -22,7 +22,7 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
 import org.rudi.microservice.strukture.core.bean.Method;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
@@ -62,7 +62,10 @@ public class LinkedProducerWorkflowContext
 	private final ReportHelper reportHelper;
 	private final OwnerInfoHelper ownerInfoHelper;
 
-	protected LinkedProducerWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, LinkedProducerDao assetDescriptionDao, LinkedProducerAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ProviderHelper providerHelper, ReportHelper reportHelper, OwnerInfoHelper ownerInfoHelper) {
+	protected LinkedProducerWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
+			LinkedProducerDao assetDescriptionDao, LinkedProducerAssignmentHelper assignmentHelper, ACLHelper aclHelper,
+			FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ProviderHelper providerHelper,
+			ReportHelper reportHelper, OwnerInfoHelper ownerInfoHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.providerHelper = providerHelper;
@@ -216,8 +219,10 @@ public class LinkedProducerWorkflowContext
 	}
 
 	@Override
-	protected void addEmailDataModelData(EMailDataModel<LinkedProducerEntity, LinkedProducerAssignmentHelper> eMailDataModel) {
+	protected void addEmailDataModelData(
+			EMailDataModel<LinkedProducerEntity, LinkedProducerAssignmentHelper> eMailDataModel) {
 		super.addEmailDataModelData(eMailDataModel);
-		eMailDataModel.addData("denomination", ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
+		eMailDataModel.addData("denomination",
+				ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
 	}
 }

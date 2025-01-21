@@ -44,6 +44,18 @@ const routes: Routes = [
         canActivate: mapToCanActivate([UserGuard])
     },
     {
+        // Path demande d'information
+        path: 'detail/:uuid/:name/selfdata-information-request-creation',
+        component: SelfdataInformationRequestCreationComponent,
+        canActivate: mapToCanActivate([UserGuard])
+    },
+    {
+        // Path demande d'information
+        path: 'detail/:uuid/:name/selfdata-information-request-creation-success',
+        component: SelfdataInformationRequestCreationSuccessComponent,
+        canActivate: mapToCanActivate([UserGuard])
+    },
+    {
         // Path detail
         path: 'details',
         component: DetailComponent,

@@ -14,8 +14,9 @@ import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.property.PropertyDataValidator;
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.property.StringPropertyDataValidator;
 
-import io.swagger.models.parameters.SerializableParameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
 /**
  * @author FNI18300
@@ -30,15 +31,15 @@ public class ArrayParameterDataValidator extends AbstractParameterDataValidator 
 	}
 
 	@Override
-	protected boolean internalValidate(SerializableParameter parameter, String arrayValue) {
+	protected boolean internalValidate(OpenAPI openAPI, Parameter parameter, String arrayValue) {
 		boolean result = false;
-		Property property = parameter.getItems();
+		Schema property = parameter.getSchema().getItems();
 		String[] values = arrayValue.split(",");
 		SwaggerType type = SwaggerType.lookupType(property.getType());
 		PropertyDataValidator parameterDataValidator = DATA_VALIDATORS.get(type);
 		if (parameterDataValidator != null) {
 			for (String value : values) {
-				result &= parameterDataValidator.validate(property, value);
+				result &= parameterDataValidator.validate(openAPI, property, value);
 			}
 		} else {
 			// cas non prévu on bloque pas

@@ -7,12 +7,18 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jose.util.Resource;
@@ -28,22 +34,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwkResourceRetriever extends DefaultResourceRetriever {
 
+	private static final MediaType APPLICATION_JWK_SET_JSON = new MediaType("application", "jwk-set+json");
+
 	private static final String SSL_PROTOCOL = "TLSv1.2";
 
-	private static boolean initialized = false;
+	private boolean initialized = false;
 
-	private boolean hostVerifier = false;
-
-	/**
-	 * Constructeur
-	 */
-	public JwkResourceRetriever() {
-		super();
-	}
+	private boolean hostVerifier = true;
 
 	/**
-	 * Constructeur
 	 * 
+	 * @param restOperations
 	 * @param connectTimeout
 	 * @param readTimeout
 	 * @param sizeLimit
@@ -57,10 +58,10 @@ public class JwkResourceRetriever extends DefaultResourceRetriever {
 	}
 
 	@Override
-	protected HttpURLConnection openConnection(URL url) throws IOException {
+	protected HttpURLConnection openHTTPConnection(URL url) throws IOException {
 		initHostVerifier();
 
-		HttpURLConnection connection = super.openConnection(url);
+		HttpURLConnection connection = super.openHTTPConnection(url);
 		log.debug("JwkResourceRetriever.openConnection:{}", connection.getURL());
 
 		return connection;
@@ -69,10 +70,15 @@ public class JwkResourceRetriever extends DefaultResourceRetriever {
 	@Override
 	public Resource retrieveResource(URL url) throws IOException {
 		log.debug("JwkResourceRetriever.retrieveResource:{}", url);
+		if (getHeaders() == null) {
+			setHeaders(new HashMap<>());
+		}
+		getHeaders().put(HttpHeaders.ACCEPT,
+				Arrays.asList(MediaType.APPLICATION_JSON_VALUE, APPLICATION_JWK_SET_JSON.toString()));
+
 		return super.retrieveResource(url);
 	}
 
-	@SuppressWarnings("java:S5527")
 	private void initHostVerifier() {
 		if (!initialized && !hostVerifier) {
 			try {
@@ -81,22 +87,21 @@ public class JwkResourceRetriever extends DefaultResourceRetriever {
 				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
 				// Create all-trusting host name verifier
-				HostnameVerifier allHostsValid = (hostname, session) -> true;
+				HostnameVerifier allHostsValid = (hostname, session) -> !hostVerifier;
 				// Install the all-trusting host verifier
 				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
 				log.debug("JwkResourceRetriever.initHostVerifier {} done", allHostsValid);
-
+				initialized = true;
 			} catch (Exception e) {
 				log.warn("Failed to add host verifier", e);
 			}
 		}
 	}
 
-	@SuppressWarnings({ "java:S4830", "java:S1168" })
 	private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
 		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-			return null;
+			return ArrayUtils.toArray();
 		}
 
 		public void checkClientTrusted(X509Certificate[] certs, String authType) {

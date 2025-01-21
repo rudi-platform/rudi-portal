@@ -32,6 +32,7 @@ export class PageTitleService {
                 for (const title of titles) {
                     if (title) {
                         this.angularTitleService.setTitle(title + ' - ' + this.projectName);
+                        return;
                     }
                 }
             },

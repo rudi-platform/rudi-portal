@@ -36,7 +36,7 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationM
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -57,13 +57,13 @@ class OrganizationMembersHelperTestUT {
 	@Autowired
 	private OrganizationDao organizationDao;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 
 	@AfterEach

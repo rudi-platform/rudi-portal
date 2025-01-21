@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM openjdk:11.0-jdk-bullseye
+FROM openjdk:17.0.2-jdk-slim-bullseye
 USER root
 MAINTAINER rudi@rennes-metropole.fr
 ENV TZ=Europe/Paris
@@ -30,6 +30,7 @@ CMD [ "sh", "-c", "exec java -Djava.io.tmpdir=/tmp/jetty \
       -Drudi.datadir=/etc/rudi/data/microservice \
       -Dlogging.config=/etc/rudi/config/microservice/log4j2.xml \
       -Dspring.config.additional-location=file:/etc/rudi/config/microservice/ \
+      --add-opens java.base/java.util=ALL-UNNAMED \
       ${ADD_JAVA_OPTS} \
       -Xmx${XMX:-1G} -Xms${XMX:-1G} \
       -jar /opt/rudi/microservice.jar" ]

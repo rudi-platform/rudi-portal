@@ -284,6 +284,14 @@ mat-error {
 
 // Customization Angular Material
 ::ng-deep {
+    .mat-mdc-select-value-text {
+        line-height: 25px;
+    }
+
+    .single-select .mat-pseudo-checkbox {
+        display: none !important;
+    }
+
     .mat-focused .mat-form-field-label {
         /*change color of label*/
         color: var(--focus) !important;

@@ -1,6 +1,7 @@
 package org.rudi.microservice.kalim.service.integration.impl;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
@@ -18,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.DefaultJackson2ObjectMapperBuilder;
 import org.rudi.common.core.json.JsonResourceReader;
+import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.providers.bean.NodeProvider;
@@ -70,6 +73,10 @@ class IntegrationRequestServiceImplIT {
 	private ProviderHelper providerHelper;
 	@Mock
 	private KalimProviderHelper kalimProviderHelper;
+	@Mock
+	private ACLHelper aclHelper;
+	@Mock
+	private RolesHelper rolesHelper;
 	@Captor
 	private ArgumentCaptor<IntegrationRequestEntity> integrationRequestEntityToCreateCaptor;
 	@Captor
@@ -79,11 +86,18 @@ class IntegrationRequestServiceImplIT {
 	void setUp() {
 		integrationRequestService = new IntegrationRequestServiceImpl(
 				objectMapper,
-				integrationRequestMapper, reportErrorMapper,
-				integrationRequestDao, integrationRequestCustomDao,
-				kalimProviderHelper, providerHelper, null,
-				postHandler, putHandler, deleteHandler,
-				datasetService
+				integrationRequestMapper,
+				reportErrorMapper,
+				integrationRequestDao,
+				integrationRequestCustomDao,
+				kalimProviderHelper,
+				providerHelper,
+				postHandler,
+				putHandler,
+				deleteHandler,
+				datasetService,
+				rolesHelper,
+				aclHelper
 		);
 	}
 
@@ -176,8 +190,11 @@ class IntegrationRequestServiceImplIT {
 				.hasFieldOrPropertyWithValue("file", jsonResourceReader.getObjectMapper().writeValueAsString(metadataToCreate))
 		;
 
-		assertThat(integrationRequest).isEqualToIgnoringGivenFields(createdIntegrationRequestEntity, "nodeProviderId", "file", "submissionDate");
-		assertThat(createdIntegrationRequestEntity.getSubmissionDate()).isEqualToIgnoringHours(integrationRequest.getSubmissionDate().atStartOfDay());
+		assertThat(integrationRequest).usingRecursiveComparison()
+				.ignoringFields("nodeProviderId", "file", "submissionDate")
+				.isEqualTo(createdIntegrationRequestEntity);
+		assertThat(createdIntegrationRequestEntity.getSubmissionDate().truncatedTo(ChronoUnit.DAYS)).isEqualTo(integrationRequest.getSubmissionDate().atStartOfDay());
+
 	}
 
 	@ParameterizedTest

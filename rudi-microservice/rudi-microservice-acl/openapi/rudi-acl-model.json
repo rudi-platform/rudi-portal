@@ -342,12 +342,12 @@
 				"type": "object",
 				"required": [
 					"code",
-					"id"
+					"uuid"
 				],
 				"properties": {
-					"id": {
+					"uuid": {
 						"type": "string",
-						"example": "304647208",
+						"example": "e7da1f49-07d6-4ed7-8d5b-21e4ec4e22ec",
 						"description": "identifiant du captcha à valider"
 					},
 					"code": {
@@ -516,6 +516,56 @@
 						}
 					}
 				]
+			},
+			"TokenType": {
+				"type": "string",
+				"enum": [
+					"AUTHORIZATION_TOKEN",
+					"REFRESH_TOKEN",
+					"ACCESS_TOKEN",
+					"USER_CODE"
+				]
+			},
+			"Token": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"registeredClientId": {
+						"type": "string"
+					},
+					"authorizationGrantType": {
+						"type": "string"
+					},
+					"attributes": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/TokenType"
+					},
+					"value": {
+						"type": "string"
+					},
+					"issuedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"expriresAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"metadata": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					}
+				}
 			}
 		}
 	}

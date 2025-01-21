@@ -1,0 +1,1 @@
+${projectName} - Demande de publication acceptée

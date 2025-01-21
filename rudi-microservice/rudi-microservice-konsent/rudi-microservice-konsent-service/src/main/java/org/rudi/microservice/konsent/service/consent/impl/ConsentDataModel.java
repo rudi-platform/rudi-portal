@@ -64,6 +64,7 @@ public class ConsentDataModel extends AbstractDocxDataModel {
 		String resultText = null;
 		String localeText = "Texte de test";
 		boolean localeTextFound = false;
+
 		for (Object object : labels.toList()) {
 			DictionaryEntryEntity dictionaryEntry = (DictionaryEntryEntity) object;
 			if (dictionaryEntry.getLang().equals(locale.getLanguage())) {

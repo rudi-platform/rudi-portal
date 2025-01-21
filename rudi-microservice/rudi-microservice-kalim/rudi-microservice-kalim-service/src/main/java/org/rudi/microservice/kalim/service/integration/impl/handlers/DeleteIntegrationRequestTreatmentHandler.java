@@ -74,10 +74,9 @@ public class DeleteIntegrationRequestTreatmentHandler extends AbstractIntegratio
 		final Set<IntegrationRequestErrorEntity> errors = new HashSet<>();
 		UUID nodeProviderId = integrationRequest.getNodeProviderId();
 		UUID datasetGlobalId = integrationRequest.getGlobalId();
-		User user = aclHelper.getUserByUUID(nodeProviderId);
+		User user = isUserNodeProvider(nodeProviderId) ? aclHelper.getUserByLogin(nodeProviderId.toString()) : aclHelper.getUserByUUID(nodeProviderId);
 
-		// L'utilisateur n'est pas du bon type
-		if (user == null || !roleHelper.hasAnyRole(user, Role.ADMINISTRATOR, Role.MODERATOR) && !isUserNodeProvider(nodeProviderId)) {
+		if (user == null) {
 			errors.add(new IntegrationRequestErrorEntity(ERR_108.getCode(), ERR_108.getMessage()));
 			integrationRequest.setErrors(errors);
 			return errors.isEmpty();
@@ -110,7 +109,7 @@ public class DeleteIntegrationRequestTreatmentHandler extends AbstractIntegratio
 			}
 
 			// Le provider du nodeProvider n'est pas autorisé à réaliser cette demande
-			if (!isSameProvider(datasetMetadata, provider)) {
+			if (!isSameProviderOrNull(datasetMetadata, provider)) {
 				// le JDD est associé à un autre provider
 				errors.add(new IntegrationRequestErrorEntity(ERR_111.getCode(), ERR_111.getMessage()));
 			}

@@ -1,7 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CoreModule} from '@core/core.module';
-import {BotDetectCaptchaModule} from '@shared/angular-captcha/botdetect-captcha.module';
 import {SharedModule} from '@shared/shared.module';
 import {AccountValidationComponent} from './account-validation.component';
 import {LoginRoutingModule} from './login-routing.module';
@@ -25,8 +24,7 @@ import {SignUpComponent} from './pages/sign-up/sign-up.component';
         CommonModule,
         CoreModule,
         SharedModule,
-        LoginRoutingModule,
-        BotDetectCaptchaModule
+        LoginRoutingModule
     ],
     exports: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

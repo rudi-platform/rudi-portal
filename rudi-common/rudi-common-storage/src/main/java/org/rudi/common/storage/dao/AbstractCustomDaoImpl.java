@@ -5,16 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -22,6 +12,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -185,6 +184,23 @@ public class AbstractCustomDaoImpl<E, C> {
 			return builder.equal(root.get(type), criteria);
 		}
 		return null;
+	}
+
+	/**
+	 * Pour les listes d'énumérés
+	 *
+	 * @param <T>        le type d'énuméré
+	 * @param criteria   le critère
+	 * @param type       le type
+	 * @param predicates la liste des prédicats
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 */
+	protected <T extends Enum<T>> void predicateEnumCollectionCriteria(List<T> criteria, String type,
+			List<Predicate> predicates, CriteriaBuilder builder, From<?, ?> root) {
+		if (!CollectionUtils.isEmpty(criteria)) {
+			predicates.add(root.get(type).in(criteria));
+		}
 	}
 
 	protected Page<E> search(@Nullable C searchCriteria, Pageable pageable) {

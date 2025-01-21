@@ -5,8 +5,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
+import jakarta.annotation.Nonnull;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;

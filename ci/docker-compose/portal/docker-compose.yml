@@ -1,6 +1,4 @@
 ---
-version: "3"
-
 volumes:
   postgresql_data:
   registry_data:

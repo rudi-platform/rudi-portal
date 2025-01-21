@@ -84,7 +84,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 		UUID nodeProviderId = integrationRequest.getNodeProviderId();
 
 		//vérifie que l'utilisateur est du bon type
-		User user = aclHelper.getUserByUUID(nodeProviderId);
+		User user = aclHelper.getUserByLogin(nodeProviderId.toString());
 		if (user == null || !isUserNodeProvider(nodeProviderId)) {
 			errors.add(new IntegrationRequestErrorEntity(ERR_108.getCode(), ERR_108.getMessage()));
 			integrationRequest.setErrors(errors);

@@ -1,13 +1,13 @@
 package org.rudi.microservice.strukture.storage.entity.address;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * WebsiteAddress Entity

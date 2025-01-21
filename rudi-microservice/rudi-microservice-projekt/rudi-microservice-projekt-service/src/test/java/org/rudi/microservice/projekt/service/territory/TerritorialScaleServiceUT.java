@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.setAllowComparingPrivateFields;
 
 /**
  * Class de test de la couche service
@@ -87,9 +88,10 @@ class TerritorialScaleServiceUT {
 
 		final TerritorialScale gotTerritorialScale = territorialScaleService.getTerritorialScale(createdTerritorialScale.getUuid());
 
+		setAllowComparingPrivateFields(true);
 		assertThat(gotTerritorialScale)
 				.as("On retrouve l'échelle de territoire créée")
-				.isEqualToComparingFieldByField(createdTerritorialScale);
+				.usingRecursiveComparison().isEqualTo(createdTerritorialScale);
 	}
 
 	@Test
@@ -145,9 +147,11 @@ class TerritorialScaleServiceUT {
 
 		final TerritorialScale updatedTerritorialScale = territorialScaleService.updateTerritorialScale(territorialScale);
 
+
+		setAllowComparingPrivateFields(true);
 		assertThat(updatedTerritorialScale)
 				.as("Tous les champs sont bien modifiés")
-				.isEqualToComparingFieldByField(territorialScale);
+				.usingRecursiveComparison().isEqualTo(territorialScale);
 	}
 
 	@Test

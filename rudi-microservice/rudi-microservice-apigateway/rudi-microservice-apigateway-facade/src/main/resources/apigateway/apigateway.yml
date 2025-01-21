@@ -15,22 +15,3 @@ spring:
         locator:
           enabled: false
           lower-case-service-id: true
-          
-springdoc:
-  enable-native-support: true
-  api-docs:
-    groups:
-      enabled: true
-    enabled: true
-  group-configs:
-    - group: open-api
-      paths-to-match:
-        - /apigateway/v1/**
-      display-name: ApiGateway API
-  swagger-ui:
-    config-url: /apigateway/v3/api-docs/swagger-config
-    url: /apigateway/v3/api-docs
-    urls:
-      - url: /apigateway/v3/api-docs
-        name: Internal api
-            

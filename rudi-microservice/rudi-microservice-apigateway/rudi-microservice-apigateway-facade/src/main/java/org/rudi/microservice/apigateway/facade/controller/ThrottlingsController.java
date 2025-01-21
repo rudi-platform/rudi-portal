@@ -3,12 +3,9 @@
  */
 package org.rudi.microservice.apigateway.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY_ADMINISTRATOR;
-
 import java.util.UUID;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.apigateway.core.bean.PagedThrottlingList;
 import org.rudi.microservice.apigateway.core.bean.Throttling;
@@ -20,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY_ADMINISTRATOR;
 
 /**
  * @author FNI18300

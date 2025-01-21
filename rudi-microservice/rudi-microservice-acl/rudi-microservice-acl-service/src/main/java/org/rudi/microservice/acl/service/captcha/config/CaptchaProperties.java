@@ -26,7 +26,7 @@ public class CaptchaProperties {
 	/**
 	 * Url de base
 	 */
-	private String captchaBaseUrl = "https://api.piste.gouv.fr/piste/captcha";
+	private String captchaBaseUrl = "https://api.piste.gouv.fr/piste/captchetat/v2";
 
 	/**
 	 * Chemin pour d'accès au captcha
@@ -45,5 +45,5 @@ public class CaptchaProperties {
 	private String clientSecret;
 	private String clientName;
 
-	private String[] scopes = new String[] { "piste.captchetat" };
+	private String[] scopes = new String[]{ "piste.captchetat" };
 }

@@ -3,8 +3,7 @@
  */
 package org.rudi.facet.generator.model.impl;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.facet.generator.model.DataModel;
 import org.rudi.facet.generator.model.DataModelUtils;

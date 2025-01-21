@@ -3,11 +3,10 @@ package org.rudi.microservice.selfdata.storage.entity.selfdatadataset;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import net.jcip.annotations.Immutable;
 import org.rudi.microservice.selfdata.core.common.SchemaConstants;
 

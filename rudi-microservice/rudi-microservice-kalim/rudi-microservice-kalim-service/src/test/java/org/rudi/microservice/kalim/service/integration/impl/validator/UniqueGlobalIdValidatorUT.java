@@ -1,5 +1,8 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +14,6 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.GlobalIdExtractor;
 import org.rudi.microservice.kalim.service.integration.impl.validator.extractor.UniqueGlobalIdValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
-
-import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,7 +52,7 @@ class UniqueGlobalIdValidatorUT {
 
 		final Set<IntegrationRequestErrorEntity> errors = validator.validate(metadata);
 
-		assertThat(errors).hasOnlyOneElementSatisfying(error -> assertThat(error)
+		assertThat(errors).singleElement().satisfies(e ->  assertThat(e)
 				.hasFieldOrPropertyWithValue("code", "ERR-304")
 				.hasFieldOrPropertyWithValue("message", "La valeur saisie 'c89a88e0-878c-4693-9e67-ffb76c1adc84' pour le champ 'global_id' est déjà utilisée")
 				.hasFieldOrPropertyWithValue("fieldName", "global_id")

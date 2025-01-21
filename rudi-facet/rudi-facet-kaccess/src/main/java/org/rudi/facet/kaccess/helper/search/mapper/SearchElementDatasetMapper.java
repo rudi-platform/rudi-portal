@@ -92,7 +92,7 @@ public abstract class SearchElementDatasetMapper implements SearchElementMapper<
 					MetadataFacet metadataFacet = new MetadataFacet().propertyName(metadataKey)
 							.values(metadataFacetValuesList);
 
-					metadataFacets.additemsItem(metadataFacet);
+					metadataFacets.addItemsItem(metadataFacet);
 				}
 			});
 		}

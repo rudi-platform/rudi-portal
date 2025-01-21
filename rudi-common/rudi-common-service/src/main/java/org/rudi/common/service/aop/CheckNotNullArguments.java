@@ -1,19 +1,19 @@
 package org.rudi.common.service.aop;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.CodeSignature;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
-
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.stereotype.Component;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Source : https://vlkan.com/blog/post/2015/01/30/java-null-check/
@@ -35,7 +35,7 @@ public class CheckNotNullArguments {
 		// Pointcut
 	}
 
-	@Pointcut("execution(* *(.., @javax.validation.constraints.NotNull (*), ..))")
+	@Pointcut("execution(* *(.., @jakarta.validation.constraints.NotNull (*), ..))")
 	private void methodWithNotNullAnnotatedArguments() {
 		// Pointcut
 	}
@@ -46,10 +46,7 @@ public class CheckNotNullArguments {
 		private final List<Annotation> annotations;
 		private final Object value;
 
-		private MethodArgument(
-				String name,
-				List<Annotation> annotations,
-				Object value) {
+		private MethodArgument(String name, List<Annotation> annotations, Object value) {
 			this.name = name;
 			this.annotations = Collections.unmodifiableList(annotations);
 			this.value = value;
@@ -76,10 +73,9 @@ public class CheckNotNullArguments {
 
 		public static List<MethodArgument> of(JoinPoint joinPoint) {
 			List<MethodArgument> arguments = new ArrayList<>();
-			CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
+			MethodSignature codeSignature = (MethodSignature) joinPoint.getSignature();
 			String[] names = codeSignature.getParameterNames();
-			MethodSignature methodSignature =
-					(MethodSignature) joinPoint.getStaticPart().getSignature();
+			MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
 			Annotation[][] annotations = methodSignature.getMethod().getParameterAnnotations();
 			Object[] values = joinPoint.getArgs();
 			for (int i = 0; i < values.length; i++) {

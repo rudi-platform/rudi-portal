@@ -31,7 +31,7 @@ public interface TaskService<D extends AssetDescription> {
 	 * @throws FormDefinitionException
 	 */
 	@Nullable
-	Form lookupDraftForm() throws FormDefinitionException;
+	Form lookupDraftForm(String formType) throws FormDefinitionException;
 
 	/**
 	 * Demande de création d'une tâche draft Tant que la tâche n'est pas démarrée elle n'apparait dans aucune bannette
@@ -97,13 +97,11 @@ public interface TaskService<D extends AssetDescription> {
 	Task startTask(Task task) throws InvalidDataException, FormDefinitionException, FormConvertException;
 
 	/**
-	 *
 	 * @return le nom du process
 	 */
 	String getProcessDefinitionKey();
 
 	/**
-	 *
 	 * @param assetUuid
 	 * @return vrai si l'asset à une tâche en cours
 	 */
@@ -119,7 +117,7 @@ public interface TaskService<D extends AssetDescription> {
 
 	/**
 	 * Retourn l'historique d'une tâche
-	 * 
+	 *
 	 * @param taskId
 	 * @param asAdmin
 	 * @return
@@ -129,7 +127,7 @@ public interface TaskService<D extends AssetDescription> {
 
 	/**
 	 * Retourne l'historique des workflows associés à l'asset
-	 * 
+	 *
 	 * @param assetUuid
 	 * @return
 	 * @throws InvalidDataException

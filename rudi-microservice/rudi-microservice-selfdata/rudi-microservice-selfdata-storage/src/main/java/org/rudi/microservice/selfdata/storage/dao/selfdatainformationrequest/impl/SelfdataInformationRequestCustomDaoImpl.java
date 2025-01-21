@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
@@ -77,7 +76,7 @@ public class SelfdataInformationRequestCustomDaoImpl extends AbstractCustomDaoIm
 		predicates.add(builder.equal(searchRoot.get(DATASET_UUID_FIELD), datasetUuid));
 		// Application des prédicats et tri voulu
 		searchQuery.where(builder.and(predicates.toArray(Predicate[]::new)));
-		javax.persistence.criteria.Order order = builder.desc(searchRoot.get(CREATION_DATE_FIELD));
+		jakarta.persistence.criteria.Order order = builder.desc(searchRoot.get(CREATION_DATE_FIELD));
 		searchQuery.select(searchRoot)
 				.orderBy(order);
 

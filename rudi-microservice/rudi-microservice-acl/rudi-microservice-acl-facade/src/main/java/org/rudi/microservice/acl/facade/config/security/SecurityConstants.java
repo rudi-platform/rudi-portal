@@ -26,8 +26,8 @@ public final class SecurityConstants {
 	// En autorisant une URL ici, il faut l'autoriser dans le WebSecuConfig de la gateway pour les appels front
 	protected static final String[] SB_PERMIT_ALL_URL = {
 			// URL public
-			"/acl/v1/application-information", "/acl/v1/healthCheck", "/oauth/*token*", "/oauth/logout", "oauth/jwks",
-			AUTHENTICATE_URL,
+			"/acl/v1/application-information", "/acl/v1/healthCheck", "/oauth2/*token*", "/oauth2/logout",
+			"oauth2/jwks", AUTHENTICATE_URL,
 			// swagger ui / openapi
 			"/acl/v3/api-docs/**", "/acl/swagger-ui/**", "/acl/swagger-ui.html", "/acl/swagger-resources/**",
 			"/configuration/ui", "/configuration/security", "/webjars/**", "/error", "/acl/v1/kaptcha" };

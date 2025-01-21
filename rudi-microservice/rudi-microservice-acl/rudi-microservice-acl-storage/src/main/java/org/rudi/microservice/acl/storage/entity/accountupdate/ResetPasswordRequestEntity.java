@@ -1,17 +1,18 @@
 package org.rudi.microservice.acl.storage.entity.accountupdate;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.rudi.common.storage.entity.AbstractLongIdEntity;
-import org.rudi.microservice.acl.core.common.SchemaConstants;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.rudi.common.storage.entity.AbstractLongIdEntity;
+import org.rudi.microservice.acl.core.common.SchemaConstants;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "reset_password_request", schema = SchemaConstants.DATA_SCHEMA)

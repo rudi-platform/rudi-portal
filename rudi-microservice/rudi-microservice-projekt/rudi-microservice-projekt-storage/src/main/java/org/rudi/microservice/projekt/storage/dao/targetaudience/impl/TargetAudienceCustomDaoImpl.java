@@ -1,7 +1,6 @@
 package org.rudi.microservice.projekt.storage.dao.targetaudience.impl;
 
-import javax.persistence.EntityManager;
-
+import jakarta.persistence.EntityManager;
 import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
 import org.rudi.microservice.projekt.core.bean.criteria.TargetAudienceSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.targetaudience.TargetAudienceCustomDao;

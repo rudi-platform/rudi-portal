@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,9 +88,11 @@ class ConfidentialityServiceUT {
 
 		final Confidentiality gotConfidentiality = confidentialityService.getConfidentiality(createdConfidentiality.getUuid());
 
+		Assertions.setAllowComparingPrivateFields(true);
 		assertThat(gotConfidentiality)
 				.as("On retrouve le niveau de confidentialité créé")
-				.isEqualToComparingFieldByField(createdConfidentiality);
+				.usingRecursiveComparison()
+				.isEqualTo(createdConfidentiality);
 	}
 
 	@Test
@@ -153,9 +156,11 @@ class ConfidentialityServiceUT {
 
 		final Confidentiality updatedConfidentiality = confidentialityService.updateConfidentiality(confidentiality);
 
+		Assertions.setAllowComparingPrivateFields(true);
 		assertThat(updatedConfidentiality)
-				.as("Tous les champs sont bien modifiés")
-				.isEqualToComparingFieldByField(confidentiality);
+				.as("On retrouve le niveau de confidentialité créé")
+				.usingRecursiveComparison()
+				.isEqualTo(confidentiality);
 	}
 
 	@Test

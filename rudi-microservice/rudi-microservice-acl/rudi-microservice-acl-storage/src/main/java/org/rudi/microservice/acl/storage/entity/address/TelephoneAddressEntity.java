@@ -1,9 +1,8 @@
 package org.rudi.microservice.acl.storage.entity.address;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.microservice.acl.core.common.SchemaConstants;
 
 import lombok.Getter;

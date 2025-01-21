@@ -16,6 +16,7 @@ import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
 import org.rudi.facet.generator.impl.AbstractGenerator;
 import org.rudi.facet.generator.model.DocumentDataModel;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class TemplateGeneratorImpl extends AbstractGenerator<DocumentDataModel> {
+public class TemplateGeneratorImpl extends AbstractGenerator<DocumentDataModel> implements TemplateGenerator {
 
 	@Value("${freemarker.clearCache:true}")
 	private boolean freemarkerClearCache;
@@ -46,7 +47,7 @@ public class TemplateGeneratorImpl extends AbstractGenerator<DocumentDataModel> 
 	public TemplateGeneratorImpl(TemporaryHelper temporaryHelper) {
 		super(temporaryHelper);
 	}
-	
+
 	@Override
 	public DocumentContent generateDocument(DocumentDataModel dataModel)
 			throws GenerationModelNotFoundException, GenerationException, IOException {

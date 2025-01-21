@@ -3,10 +3,8 @@
  */
 package org.rudi.common.service.geo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +19,9 @@ import org.geotools.data.geojson.GeoJSONDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -41,8 +39,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.rudi.common.service.exception.GeometryException;
 import org.rudi.common.service.url.InMemoryURLFactory;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +58,6 @@ public class GeometryHelper {
 	public static final String WKT_3857 = "PROJCS[\"WGS 84 / Pseudo-Mercator\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Mercator_1SP\"],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],EXTENSION[\"PROJ4\",\"+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs\"],AUTHORITY[\"EPSG\",\"3857\"]]";
 	public static final String WKT_32632 = "PROJCS[\"WGS 84 / UTM zone 32N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",9],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AUTHORITY[\"EPSG\",\"32632\"],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]";
 	public static final String EPSG_4326 = "EPSG:4326";
-
-	private final ObjectMapper objectMapper;
 
 	/**
 	 * Extraction de la géométrie(+srid) à partir de sa représentation WKT
@@ -109,7 +103,7 @@ public class GeometryHelper {
 			geojson = "{\"type\": \"FeatureCollection\",\"features\": [" + geojson + "]}";
 		}
 		Map<String, Object> params = new HashMap<>();
-		params.put(GeoJSONDataStoreFactory.URLP.key,
+		params.put(GeoJSONDataStoreFactory.URL_PARAM.key,
 				InMemoryURLFactory.getInstance().build("geojson/" + UUID.randomUUID() + ".json", geojson));
 		DataStore newDataStore = DataStoreFinder.getDataStore(params);
 		SimpleFeatureSource featureSource = newDataStore.getFeatureSource(newDataStore.getTypeNames()[0]);
@@ -133,15 +127,21 @@ public class GeometryHelper {
 		return convertGeometryFromWkt(wktGeometry, srid);
 	}
 
-	public JSONObject convertGeometryToGeoJson(Geometry geometry) throws IOException {
-		GeometryJSON geometryJSON = new GeometryJSON();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		geometryJSON.write(geometry, baos);
-		JSONObject geojsonGeometry = objectMapper.reader().readValue(baos.toString(StandardCharsets.UTF_8),
-				JSONObject.class);
+	public JSONObject convertGeometryToGeoJson(Geometry geometry) {
+		JSONArray coordinates = new JSONArray();
+		for (Coordinate coordinate : geometry.getCoordinates()) {
+			JSONArray jsoncoordinate = new JSONArray();
+			jsoncoordinate.add(coordinate.getX());
+			jsoncoordinate.add(coordinate.getY());
+			coordinates.add(jsoncoordinate);
+		}
+
+		JSONObject featureGeometry = new JSONObject();
+		featureGeometry.appendField("type", geometry.getGeometryType());
+		featureGeometry.appendField("coordinates", coordinates);
 		JSONObject feature = new JSONObject();
 		feature.appendField("type", "Feature");
-		feature.appendField("geometry", geojsonGeometry);
+		feature.appendField("geometry", featureGeometry);
 		JSONArray features = new JSONArray(1);
 		features.add(feature);
 		JSONObject collection = new JSONObject();

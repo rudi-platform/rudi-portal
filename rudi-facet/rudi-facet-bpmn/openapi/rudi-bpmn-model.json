@@ -67,7 +67,8 @@
 					"LIST",
 					"TEXT",
 					"ADDRESS",
-					"ATTACHMENT"
+					"ATTACHMENT",
+					"HIDDEN"
 				]
 			},
 			"ValidatorType": {
@@ -253,6 +254,9 @@
 			"Form": {
 				"type": "object",
 				"properties": {
+					"type": {
+						"type": "string"
+					},
 					"sections": {
 						"type": "array",
 						"items": {

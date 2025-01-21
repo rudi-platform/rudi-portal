@@ -33,7 +33,7 @@ public class PasswordHelper {
 
 	private PasswordEncoder userPasswordEncoder;
 
-	@Bean("userPasswordEncoder")
+	@Bean
 	public PasswordEncoder userPasswordEncoder() {
 		userPasswordEncoder = new BCryptPasswordEncoder(4);
 		return userPasswordEncoder;

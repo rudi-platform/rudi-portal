@@ -1,0 +1,91 @@
+{
+	"global_id": "d2a257d7-b1b1-4692-905d-74504e9a6143",
+	"local_id": "f382ec4f-034b-411d-aab7-5b97a15eb92e",
+	"doi": "10.5072/FK2/JV9LCO",
+	"dataverse_doi": null,
+	"resource_title": "Recensement des exploitations agricoles avec production de biogaz test unitaire du 2021-04-22T15:26:31.911992100 - Modifié",
+	"synopsis": [
+		{
+			"lang": "fr",
+			"text": "Test pour 3.0.2"
+		}
+	],
+	"summary": [
+		{
+			"lang": "fr",
+			"text": "Test pour 3.0.2"
+		}
+	],
+	"theme": "children",
+	"keywords": [
+		"Aires de jeux",
+		"Enfance"
+	],
+	"producer": {
+		"organization_id": "acdccf43-566b-4134-b39e-ddf46c801242",
+		"organization_name": "Producteur rudi"
+	},
+	"contacts": [
+		{
+			"contact_id": "1aa9d609-6054-4813-a50e-2be18e297ca8",
+			"contact_name": "SIG Rennes Métropole",
+			"email": "sig@rennesmetropole.fr"
+		}
+	],
+	"available_formats": [
+		{
+			"media_type": "FILE",
+			"media_id": "f382ec4f-034b-411d-aab7-5b97a15eb92f",
+			"media_name": "aires-de-jeux-cesson-sevigne.csv",
+			"media_dates": {
+				"created": "2022-12-16T08:02:30.468Z",
+				"updated": "2022-12-16T08:02:30.468Z"
+			},
+			"connector": {
+				"url": "https://data.explore.star.fr/explore/dataset/mkt-partenaires-garages-td/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B",
+				"interface_contract": "dwnl"
+			},
+			"file_type": "text/csv",
+			"file_size": 1496,
+			"checksum": {
+				"algo": "MD5",
+				"hash": "8ef2d7be5f088c92fc87e2c06f05c8b3"
+			}
+		}
+	],
+	"resource_languages": [
+		"fr"
+	],
+	"dataset_dates": {
+		"created": "2021-02-01T00:00:00+01:00",
+		"validated": "2021-02-02T00:00:00+01:00",
+		"published": "2021-02-03T00:00:00+01:00",
+		"updated": "2021-03-12T07:00:00+01:00",
+		"deleted": "2021-04-29T00:00:00+02:00"
+	},
+	"storage_status": "online",
+	"access_condition": {
+		"confidentiality": {
+			"restricted_access": false,
+			"gdpr_sensitive": false
+		},
+		"licence": {
+			"licence_type": "STANDARD",
+			"licence_label": "odbl-1.0"
+		}
+	},
+	"metadata_info": {
+		"api_version": "1.4.1",
+		"metadata_dates": {
+			"created": "2022-10-04T09:32:21.75Z",
+			"updated": "2022-12-16T17:40:58.624Z"
+		},
+		"metadata_contacts": [
+			{
+				"contact_id": "1aa9d609-6054-4813-a50e-2be18e297ca8",
+				"contact_name": "SIG Rennes Métropole",
+				"email": "sig@rennesmetropole.fr"
+			}
+		]
+	}
+}

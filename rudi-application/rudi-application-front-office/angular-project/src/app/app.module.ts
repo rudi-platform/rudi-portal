@@ -18,7 +18,6 @@ import {HomeModule} from '@features/home/home.module';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateCompiler, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {BotDetectCaptchaModule} from '@shared/angular-captcha/botdetect-captcha.module';
 import {SharedModule} from '@shared/shared.module';
 import {MESSAGE_FORMAT_CONFIG, TranslateMessageFormatCompiler} from 'ngx-translate-messageformat-compiler';
 import {appInitializerFactory} from './app-initializer-factory';
@@ -38,7 +37,6 @@ registerLocaleData(localeFr);
         SharedModule,
         HomeModule,
         AppRoutingModule,
-        BotDetectCaptchaModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

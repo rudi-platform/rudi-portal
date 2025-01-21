@@ -1,18 +1,20 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.JsonResourceReader;
+import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.apigateway.exceptions.DeleteApiException;
@@ -21,22 +23,34 @@ import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.helper.dataset.metadatadetails.MetadataDetailsHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.facet.providers.bean.LinkedProducer;
+import org.rudi.facet.providers.bean.NodeProvider;
+import org.rudi.facet.providers.bean.Organization;
+import org.rudi.facet.providers.bean.Provider;
 import org.rudi.facet.providers.helper.ProviderHelper;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
+import org.rudi.microservice.kalim.service.IntegrationError;
+import org.rudi.microservice.kalim.service.KalimSpringBootTest;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import lombok.RequiredArgsConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@KalimSpringBootTest
 class DeleteIntegrationRequestTreatmentHandlerUT {
 
+	private final UserDataFactory userDataFactory;
 	private final Error500Builder error500Builder = new Error500Builder();
 	private final JsonResourceReader jsonResourceReader = new JsonResourceReader();
 	private AbstractIntegrationRequestTreatmentHandler handler;
@@ -48,11 +62,11 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 	private MetadataDetailsHelper metadataDetailsHelper;
 	@Mock
 	ObjectMapper objectMapper;
-	@Mock
+	@MockitoBean
 	ProviderHelper providerHelper;
-	@Mock
+	@MockitoBean
 	ACLHelper aclHelper;
-	@Mock
+	@MockitoBean
 	RolesHelper roleHelper;
 
 	@BeforeEach
@@ -61,35 +75,61 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 				metadataDetailsHelper, aclHelper, providerHelper, objectMapper, roleHelper);
 	}
 
+	private UUID init() {
+		UUID nodeProviderUuid = UUID.randomUUID();
+		NodeProvider nodeProvider = new NodeProvider().uuid(nodeProviderUuid);
+		Provider provider = new Provider();
+		provider.setNodeProviders(List.of(nodeProvider));
+		Organization organization = new Organization();
+		organization.setUuid(UUID.fromString("e6262c50-1628-436b-92f9-82b560729830"));
+		organization.setName("TA RUDI-1460 a accepter");
+		LinkedProducer linkedProducer = new LinkedProducer();
+		linkedProducer.setUuid(UUID.randomUUID());
+		linkedProducer.setOrganization(organization);
+		provider.setLinkedProducers(List.of(linkedProducer));
+		User user = userDataFactory.createUserNodeProvider(nodeProviderUuid.toString());
+
+		when(aclHelper.getUserByUUID(any())).thenReturn(user);
+		when(aclHelper.getUserByLogin(any())).thenReturn(user);
+		when(providerHelper.getNodeProviderByUUID(any())).thenReturn(nodeProvider);
+		when(providerHelper.getFullProviderByNodeProviderUUID(any())).thenReturn(provider);
+
+		return nodeProviderUuid;
+	}
+
 	@Test
 	@DisplayName("non existing metadata ⇒ error")
-	@Disabled
-		// en cours de correction
 	void createIntegrationRequestDeleteNonExistingMetadata()
-			throws DataverseAPIException, JsonProcessingException, DeleteApiException {
+			throws DataverseAPIException, IOException, DeleteApiException {
+
+		UUID nodeProviderUuid = init();
 
 		final Metadata metadataToDelete = buildMetadataToDelete();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToDelete);
 		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.DELETE)
 				.uuid(UUID.randomUUID()).globalId(metadataToDelete.getGlobalId()).progressStatus(ProgressStatus.CREATED)
-				.errors(new HashSet<>()).file(metadataJson).build();
+				.errors(new HashSet<>()).file(metadataJson).nodeProviderId(nodeProviderUuid).build();
 
 		when(datasetService.getDataset(metadataToDelete.getGlobalId()))
 				.thenThrow(DatasetNotFoundException.fromGlobalId(metadataToDelete.getGlobalId()));
 
 		handler.handle(integrationRequest);
 
-		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
-
-		// No more interactions with DataSet
-		verifyNoMoreInteractions(datasetService);
-
-		// API is deleted
-		verify(apigatewayManagerHelper).deleteApis(integrationRequest);
+		assertThat(integrationRequest)
+				.as("La requête doit échouer")
+				.matches(ir -> ir.getIntegrationStatus().equals(IntegrationStatus.KO))
+				.as("Il doit y avoir une erreur dans le rapport")
+				.matches(ir -> !ir.getErrors().isEmpty())
+				.as("Au moins une de ces erreur doit être une erreur 108")
+				.matches(ir -> ir.getErrors().stream()
+						.anyMatch(
+								e -> e.getCode().equals(IntegrationError.ERR_109.getCode())
+						)
+				);
 	}
 
-	private Metadata buildMetadataToDelete() {
-		return new Metadata().globalId(UUID.randomUUID());
+	private Metadata buildMetadataToDelete() throws IOException {
+		return jsonResourceReader.read("metadata/creation-ok.json", Metadata.class);
 	}
 
 	/**
@@ -99,16 +139,16 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 	 */
 	@Test
 	@DisplayName("existing metadata ⇒ dataset archived and API deleted")
-	@Disabled
-	// en cours de correction
 	void createIntegrationRequestDeleteExistingMetadata()
-			throws DataverseAPIException, JsonProcessingException, DeleteApiException {
+			throws DataverseAPIException, IOException, DeleteApiException {
 
-		final Metadata metadataToDelete = new Metadata().globalId(UUID.randomUUID());
+		UUID nodeProviderUuid = init();
+
+		final Metadata metadataToDelete = buildMetadataToDelete();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToDelete);
 		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.DELETE)
 				.uuid(UUID.randomUUID()).globalId(metadataToDelete.getGlobalId()).progressStatus(ProgressStatus.CREATED)
-				.file(metadataJson).errors(new HashSet<>()).build();
+				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
 
 		when(datasetService.getDataset(metadataToDelete.getGlobalId())).thenReturn(metadataToDelete);
 
@@ -122,5 +162,33 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 		// API is deleted
 		verify(apigatewayManagerHelper).deleteApis(integrationRequest);
 	}
+
+	@Test
+	@DisplayName("existing metadata ⇒ dataset archived and API deleted as Admin")
+	void createIntegrationRequestDeleteExistingMetadataAsAdmin()
+			throws DataverseAPIException, IOException, DeleteApiException {
+
+		UUID nodeProviderUuid = init();
+
+		final Metadata metadataToDelete = buildMetadataToDelete();
+		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadataToDelete);
+		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.DELETE)
+				.uuid(UUID.randomUUID()).globalId(metadataToDelete.getGlobalId()).progressStatus(ProgressStatus.CREATED)
+				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
+
+		when(datasetService.getDataset(metadataToDelete.getGlobalId())).thenReturn(metadataToDelete);
+
+		handler.handle(integrationRequest);
+
+		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
+
+		// DataSet is archived
+		verify(datasetService).archiveDataset(metadataToDelete.getDataverseDoi());
+
+		// API is deleted
+		verify(apigatewayManagerHelper).deleteApis(integrationRequest);
+	}
+
+
 
 }

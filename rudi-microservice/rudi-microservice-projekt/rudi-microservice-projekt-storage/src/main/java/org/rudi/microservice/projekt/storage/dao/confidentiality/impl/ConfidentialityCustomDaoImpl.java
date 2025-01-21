@@ -1,7 +1,6 @@
 package org.rudi.microservice.projekt.storage.dao.confidentiality.impl;
 
-import javax.persistence.EntityManager;
-
+import jakarta.persistence.EntityManager;
 import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
 import org.rudi.microservice.projekt.core.bean.criteria.ConfidentialitySearchCriteria;

@@ -30,8 +30,8 @@
     </Appenders>
     <Loggers>
     	<Logger name="org.rudi.common.facade.aop.FacadeAspect" level="DEBUG" additivity="false">
-            <appender-ref ref="apiLogger" level="DEBUG" />
-            <appender-ref ref="console" level="DEBUG" />
+            <appender-ref ref="apiLogger" level="INFO" />
+            <appender-ref ref="console" level="INFO" />
         </Logger>
         <Logger name="org.springframework" level="INFO" additivity="false">
             <appender-ref ref="fileLogger" level="INFO" />

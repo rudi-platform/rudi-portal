@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-
+import bean.workflow.SelfdataTaskSearchCriteria;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.bpmn.core.bean.Action;
 import org.rudi.bpmn.core.bean.Form;
@@ -27,6 +26,7 @@ import org.rudi.facet.bpmn.service.TaskQueryService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequest;
 import org.rudi.microservice.selfdata.service.helper.selfdatainformationrequest.SelfdataInformationRequestAssigmentHelper;
+import org.rudi.microservice.selfdata.service.helper.selfdatainformationrequest.SelfdataInformationRequestWorkflowContext;
 import org.rudi.microservice.selfdata.service.helper.selfdatainformationrequest.SelfdataInformationRequestWorkflowHelper;
 import org.rudi.microservice.selfdata.service.helper.selfdatamatchingdata.SelfdataMatchingDataHelper;
 import org.rudi.microservice.selfdata.service.selfdata.workflow.SelfdataInformationRequestTaskService;
@@ -36,19 +36,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
 import bean.workflow.SelfdataTaskSearchCriteria;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
+
 
 /**
  * @author KOU21310 Ce service permet de gérer les étapes du wkf associées à selfdataInformationRequest. Elle fait ainsi des actions sur des tasks
- *         notamment et non sur des entity (ou asset)
+ * notamment et non sur des entity (ou asset)
  */
 @Service
 @Transactional(readOnly = true)
 public class SelfdataInformationRequestTaskServiceImpl extends
-		AbstractTaskServiceImpl<SelfdataInformationRequestEntity, SelfdataInformationRequest, SelfdataInformationRequestDao, SelfdataInformationRequestWorkflowHelper, SelfdataInformationRequestAssigmentHelper>
+		AbstractTaskServiceImpl<SelfdataInformationRequestEntity, SelfdataInformationRequest, SelfdataInformationRequestDao, SelfdataInformationRequestWorkflowHelper, SelfdataInformationRequestAssigmentHelper, SelfdataInformationRequestWorkflowContext>
 		implements SelfdataInformationRequestTaskService {
 
 	public static final String PROCESS_DEFINITION_ID = "selfdata-information-request-process";
+
+	public static final String WORFKLOW_CONTEXT_BEAN_NAME = "selfdataInformationRequestWorkflowContext";
 
 	@Value("${rudi.team.confidentialityPoliticUrl:}")
 	private String confidentialityPoliticUrl;
@@ -62,11 +68,13 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 			BpmnHelper bpmnHelper, UtilContextHelper utilContextHelper, InitializationService initializationService,
 			SelfdataInformationRequestDao assetDescriptionDao,
 			SelfdataInformationRequestWorkflowHelper assetDescriptionHelper,
-			SelfdataInformationRequestAssigmentHelper assignmentHelper, FormService formService, FormHelper formHelper1,
+			SelfdataInformationRequestAssigmentHelper assignmentHelper,
+			SelfdataInformationRequestWorkflowContext workflowContext,
+			ProcessEngineConfiguration processEngineConfiguration, FormService formService, FormHelper formHelper1,
 			TaskQueryService<SelfdataTaskSearchCriteria> taskQueryService,
 			SelfdataMatchingDataHelper selfdataMatchingDataHelper) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
-				assetDescriptionHelper, assignmentHelper);
+				assetDescriptionHelper, assignmentHelper, workflowContext, processEngineConfiguration);
 
 		this.formService = formService;
 		this.formHelper = formHelper1;
@@ -80,6 +88,16 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 	}
 
 	@Override
+	protected String getWorkflowContextBeanName() {
+		return WORFKLOW_CONTEXT_BEAN_NAME;
+	}
+
+	@Override
+	protected AbstractTaskServiceImpl<SelfdataInformationRequestEntity, SelfdataInformationRequest, SelfdataInformationRequestDao, SelfdataInformationRequestWorkflowHelper, SelfdataInformationRequestAssigmentHelper, SelfdataInformationRequestWorkflowContext> lookupMe() {
+		return ApplicationContext.getBean(SelfdataInformationRequestTaskServiceImpl.class);
+	}
+
+	@Override
 	@Nullable
 	public Form lookupDraftFormWithSelfdata(UUID metadataUuid, Optional<String> languageString)
 			throws FormDefinitionException {
@@ -87,7 +105,7 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 	}
 
 	@Override
-	protected Form lookupOriginalDraftForm(SelfdataInformationRequestEntity assetDescriptionEntity)
+	protected Form lookupOriginalDraftForm(SelfdataInformationRequestEntity assetDescriptionEntity, String type)
 			throws FormDefinitionException {
 		return selfdataMatchingDataHelper.lookupDraftFormWithSelfdata(assetDescriptionEntity.getDatasetUuid(),
 				Optional.empty());
@@ -130,7 +148,8 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 			SelfdataInformationRequestEntity assetDescriptionEntity)
 			throws FormDefinitionException, FormConvertException, InvalidDataException {
 		Map<String, Object> datas = formHelper.hydrateData(assetDescriptionEntity.getData());
-		Form orignalForm = lookupOriginalDraftForm(assetDescriptionEntity);
+		String type = (assetDescription.getForm() != null) ? assetDescription.getForm().getType() : DRAFT_USER_TASK_ID;
+		Form orignalForm = lookupOriginalDraftForm(assetDescriptionEntity, type);
 		formHelper.copyFormData(assetDescription.getForm(), orignalForm);
 		// Chiffrement des matchingDatas.
 		selfdataMatchingDataHelper.encrypt(orignalForm);
@@ -185,8 +204,4 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 		selfdataMatchingDataHelper.encrypt(actionForm);
 	}
 
-	@Override
-	protected AbstractTaskServiceImpl<SelfdataInformationRequestEntity, SelfdataInformationRequest, SelfdataInformationRequestDao, SelfdataInformationRequestWorkflowHelper, SelfdataInformationRequestAssigmentHelper> lookupMe() {
-		return ApplicationContext.getBean(SelfdataInformationRequestTaskServiceImpl.class);
-	}
 }

@@ -32,11 +32,11 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationM
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,10 +55,10 @@ class OrganizationMembersPartitionerHelperTestUT {
 	@Autowired
 	private OrganizationDao organizationDao;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 
 	@AfterEach
@@ -120,8 +120,8 @@ class OrganizationMembersPartitionerHelperTestUT {
 
 		List<User> users = new ArrayList<>();
 		for (int i = 0; i < 22; i++) {
-			User user = new User().uuid(UUID.randomUUID()).login(RandomStringUtils.random(6))
-					.lastname(RandomStringUtils.random(6)).firstname(RandomStringUtils.random(6))
+			User user = new User().uuid(UUID.randomUUID()).login(RandomStringUtils.secure().next(6))
+					.lastname(RandomStringUtils.secure().next(6)).firstname(RandomStringUtils.secure().next(6))
 					.lastConnexion(LocalDateTime.now());
 			users.add(user);
 		}
@@ -184,9 +184,9 @@ class OrganizationMembersPartitionerHelperTestUT {
 		List<OrganizationUserMember> enricheds = new ArrayList<>();
 		for (int i = 0; i < 22; i++) {
 			OrganizationUserMember enriched = new OrganizationUserMember();
-			enriched.setLogin(RandomStringUtils.random(6));
-			enriched.setFirstname(RandomStringUtils.random(6));
-			enriched.setLastname(RandomStringUtils.random(6));
+			enriched.setLogin(RandomStringUtils.secure().next(6));
+			enriched.setFirstname(RandomStringUtils.secure().next(6));
+			enriched.setLastname(RandomStringUtils.secure().next(6));
 			enriched.setAddedDate(LocalDateTime.now());
 			enriched.setLastConnexion(LocalDateTime.now());
 			enriched.setRole(org.rudi.microservice.strukture.core.bean.OrganizationRole.EDITOR);

@@ -1,18 +1,9 @@
 package org.rudi.microservice.projekt.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -35,6 +26,7 @@ import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.PagedProjectList;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectFormType;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
@@ -55,6 +47,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -247,8 +246,8 @@ public class ProjectController implements ProjectsApi {
 	}
 
 	@Override
-	public ResponseEntity<Form> lookupProjectDraftForm() throws Exception {
-		return ResponseEntity.ok(projectTaskService.lookupDraftForm());
+	public ResponseEntity<Form> lookupProjectDraftForm(ProjectFormType formType) throws Exception {
+		return ResponseEntity.ok(projectTaskService.lookupDraftForm(formType != null ? formType.name() : null));
 	}
 
 	@Override
@@ -299,7 +298,7 @@ public class ProjectController implements ProjectsApi {
 
 	/**
 	 * Retourne le formulaire de consultation des informations de la décision concernant la demande d'accès au JDD
-	 * 
+	 *
 	 * @param projectUuid       l'uuid du projet
 	 * @param linkedDatasetUUID le lien du JDD
 	 * @return le formulaire avec les informations à afficher
@@ -321,7 +320,7 @@ public class ProjectController implements ProjectsApi {
 
 	/**
 	 * Retourne le formulaire de consultation des informations de la décision concernant la demande de nouveau JDD
-	 * 
+	 *
 	 * @param projectUuid           l'uuid du projet
 	 * @param newDatasetRequestUUID le lien de la demande
 	 * @return le formulaire avec les informations à afficher

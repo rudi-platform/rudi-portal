@@ -1,15 +1,22 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectDependenciesFetchers, ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
 import {LogService} from '@core/services/log.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {UserService} from '@core/services/user.service';
+import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
+import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/notification-template/notification-template.component';
+import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
+import {TabComponent} from '@shared/tab/tab.component';
+import {TabsComponent} from '@shared/tabs/tabs.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {Status} from 'micro_service_modules/api-bpmn';
+import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
+import {Form, Status} from 'micro_service_modules/api-bpmn';
 import {OwnerType} from 'micro_service_modules/konsent/konsent-api';
 import {
     Confidentiality,
@@ -17,12 +24,14 @@ import {
     Field,
     OwnerInfo,
     Project,
+    ProjectFormType,
     ProjectStatus,
     Task,
     TaskService
 } from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
 import * as moment from 'moment';
+import {Observable} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 interface MyProjectDetailsDependencies {
@@ -44,32 +53,33 @@ export class MyProjectDetailsComponent implements OnInit {
     public projectOwnerInfo: OwnerInfo;
     public loading;
     public isModified;
-    public _displayApiTab: boolean = false;
     public draftTask: Task;
+    public form: Form;
+    public isLoading: boolean;
+    public _displayApiTab: boolean;
+    private urlToRedirectIfError: string;
+    protected readonly ProjectStatus = ProjectStatus;
+    protected readonly Status = Status;
 
     constructor(private readonly route: ActivatedRoute,
                 private projectDependenciesService: ProjectDependenciesService,
                 private projectDependenciesFetchers: ProjectDependenciesFetchers,
                 private readonly pageTitleService: PageTitleService,
                 private readonly organizationService: OrganizationMetierService,
-                private readonly userService: UserService,
                 private readonly logService: LogService,
                 private readonly translateService: TranslateService,
                 private readonly taskService: TaskService,
-                private readonly snackBarService: SnackBarService) {
+                private readonly snackBarService: SnackBarService,
+                private readonly dialog: MatDialog,
+                private readonly projectTaskMetierService: ProjectTaskMetierService,
+                private readonly getBackendProperty: GetBackendPropertyPipe) {
         this.loading = false;
+        this.isLoading = false;
+        this._displayApiTab = false;
         this.isModified = false;
         this.childrenIsLoading = false;
         this.isUpdateInProgress = false;
     }
-
-    ngOnInit(): void {
-        this.route.params.subscribe(params => {
-            this.projectUuid = params.projectUuid;
-        });
-
-    }
-
 
     set projectUuid(uuid: string) {
         this.loading = true;
@@ -85,28 +95,61 @@ export class MyProjectDetailsComponent implements OnInit {
                     ownerInfo: dependencies.ownerInfo
                 };
             })
-        ).subscribe({
-            next: (dependencies: MyProjectDetailsDependencies) => {
-                if (dependencies.project.title) {
-                    this.pageTitleService.setPageTitle(dependencies.project.title, this.translateService.instant('pageTitle.defaultDetail'));
-                } else {
-                    this.pageTitleService.setPageTitleFromUrl('/personal-space/my-activity');
+        )
+            .subscribe({
+                next: (data) => {
+                    getDraftFrom(data.project.status);
+                    loadProjectData(data);
+                },
+                error: (error) => {
+                    console.error(error);
+                    this.loading = false;
                 }
-                this.project = dependencies.project;
-                if (dependencies.project.project_status === ProjectStatus.Validated && dependencies.project.owner_type === OwnerType.User) {
+            });
+
+        const getDraftFrom = (status) => {
+            if (status === Status.Completed) {
+                this.isLoading = true;
+                this.taskService.lookupProjectDraftForm(ProjectFormType.DraftArchive).subscribe((form: Form) => {
+                    this.form = form;
+                    this.isLoading = false;
+                });
+            }
+        };
+
+        const loadProjectData = (dependencies) => {
+            if (dependencies.project.title) {
+                this.pageTitleService.setPageTitle(dependencies.project.title, this.translateService.instant('pageTitle.defaultDetail'));
+            } else {
+                this.pageTitleService.setPageTitleFromUrl('/personal-space/my-activity');
+            }
+            this.project = dependencies.project;
+
+            if (this.project.project_status != ProjectStatus.Validated) {
+                this._displayApiTab = false;
+            } else {
+                if (this.project.owner_type === OwnerType.User) {
                     this._displayApiTab = true;
-                } else if (dependencies.project.project_status === ProjectStatus.Validated) {
-                    this.isAdministrator(dependencies.project.owner_uuid);
+                } else {
+                    this.isAdministrator(this.project.owner_uuid);
                 }
-                this.projectLogo = dependencies.logo;
-                this.projectOwnerInfo = dependencies.ownerInfo;
-                this.loading = false;
+            }
+            this.projectLogo = dependencies.logo;
+            this.projectOwnerInfo = dependencies.ownerInfo;
+            this.loading = false;
+        };
+    }
+
+    ngOnInit(): void {
+        this.getBackendProperty.transform('front.contact').subscribe({
+            next: url => {
+                this.urlToRedirectIfError = url;
             },
-            error: (error) => {
-                console.error(error);
-                this.loading = false;
+            error: err => {
+                this.urlToRedirectIfError = 'https://rudi.fr/contact';
             }
         });
+        this.loadProject();
     }
 
     /**
@@ -121,9 +164,9 @@ export class MyProjectDetailsComponent implements OnInit {
         return moment(this.project[fieldName]).format('DD/MM/YYYY');
     }
 
-
-    displayModifiedButton(): boolean {
-        const containsLinkedDatasets = this.project?.linked_datasets.filter((d) => d?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
+    isProjectUpdatable(): boolean {
+        const containsLinkedDatasets = this.project?.linked_datasets
+            .filter((d) => d?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
         return this.project?.status === Status.Completed && !containsLinkedDatasets;
     }
 
@@ -131,7 +174,11 @@ export class MyProjectDetailsComponent implements OnInit {
         this.isModified = !this.isModified;
     }
 
-    updateProjectTask(formModified: { confidentialities: Confidentiality[]; form: FormGroup, messageToModerator?: string }): void {
+    updateProjectTask(formModified: {
+        confidentialities: Confidentiality[];
+        form: FormGroup,
+        messageToModerator?: string
+    }): void {
         if (this.project) {
             this.childrenIsLoading = true;
             this.isUpdateInProgress = true;
@@ -191,22 +238,65 @@ export class MyProjectDetailsComponent implements OnInit {
 
     }
 
-    protected readonly ProjectStatus = ProjectStatus;
-
     get displayApiTab(): boolean {
         return this._displayApiTab;
     }
 
     isAdministrator(organizationUuid: string): void {
-        this.organizationService.isAdministrator(organizationUuid)
-            .subscribe({
-                next: (isAdministrator: boolean) => {
-                    this._displayApiTab = isAdministrator;
-                },
-                error: (error) => {
-                    this.logService.error(error);
-                }
-            });
+        this.organizationService.isAdministrator(organizationUuid).subscribe({
+            next: (isAdministrator: boolean) => {
+                this._displayApiTab = isAdministrator;
+            },
+            error: (error) => {
+                this.logService.error(error);
+            }
+        });
+
+    }
+
+    loadProject(): void {
+        this.route.params.subscribe(params => {
+            this.projectUuid = params.projectUuid;
+        });
+    }
+
+    openPopinArchive(tabs: TabsComponent, tabInformation: TabComponent): void {
+        this.dialog.open(WorkflowFormDialogComponent, {
+            data: {
+                title: this.translateService.instant('personalSpace.project.archive.archived'),
+                form: this.form
+            }
+        }).afterClosed().subscribe(result => {
+            if (result?.closeEvent !== null && result.closeEvent === CloseEvent.VALIDATION) {
+                this.archiveProject().subscribe({
+                    next: (value: Task) => {
+                        this.snackBarService.openSnackBar({
+                            level: Level.SUCCESS,
+                            message: this.translateService.instant('personalSpace.project.archive.success'),
+                        }, 3000);
+                        tabs.selectTab(tabInformation);
+                        this.loadProject();
+                    },
+                    error: err => {
+                        this.snackBarService.openSnackBar({
+                            level: Level.ERROR,
+                            message: `${this.translateService.instant('personalSpace.project.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('personalSpace.project.archive.here')}</a>`,
+                        }, 3000);
+                    }
+                });
+            }
+        });
+    }
+
+    archiveProject(): Observable<Task> {
+        this.project.form = this.form;
+        // 1) On crée le draft à partir du projet
+        return this.projectTaskMetierService.createDraft(this.project).pipe(
+            // 2 et maintenant on doit démarrer le workflow de cet élément
+            switchMap((task: Task) => {
+                return this.projectTaskMetierService.startTask(task);
+            }),
+        );
     }
 
     private isNotExisted(value: any): boolean {

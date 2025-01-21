@@ -28,9 +28,9 @@ import org.rudi.microservice.strukture.storage.dao.address.AbstractAddressDao;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleDao;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,7 +59,7 @@ class ProviderServiceUT {
 	@Autowired
 	private AbstractAddressDao abstractAddressDao;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 
 	// données insérées en base before test

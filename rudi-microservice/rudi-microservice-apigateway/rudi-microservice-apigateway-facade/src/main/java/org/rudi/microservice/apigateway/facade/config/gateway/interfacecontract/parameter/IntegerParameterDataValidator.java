@@ -5,7 +5,8 @@ package org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract
 
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.parameters.SerializableParameter;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
 /**
  * @author FNI18300
@@ -18,7 +19,7 @@ public class IntegerParameterDataValidator extends AbstractParameterDataValidato
 	}
 
 	@Override
-	protected boolean internalValidate(SerializableParameter parameter, String value) {
+	protected boolean internalValidate(OpenAPI openapi, Parameter parameter, String value) {
 		boolean result = false;
 		try {
 			Long.parseLong(value);

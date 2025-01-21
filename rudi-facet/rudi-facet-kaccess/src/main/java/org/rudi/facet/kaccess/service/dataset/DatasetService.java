@@ -1,14 +1,15 @@
 package org.rudi.facet.kaccess.service.dataset;
 
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.dataverse.fields.FieldSpec;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.UUID;
 
 public interface DatasetService {
 
@@ -30,6 +31,16 @@ public interface DatasetService {
 	 */
 	@Nonnull
 	Metadata getDataset(UUID globalId) throws DataverseAPIException;
+
+	/**
+	 * Récupération des métadonnées d'un jeu de données
+	 *
+	 * @param globalId identifiant du jeu de données sous forme
+	 * @return jeu de données + métadonnées
+	 * @throws DataverseAPIException Erreur lors de la récupération
+	 */
+	@Nonnull
+	Metadata getNonBlockingDataset(UUID globalId) throws DataverseAPIException;
 
 	/**
 	 * Création d'un jeu de données

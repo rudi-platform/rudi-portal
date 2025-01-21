@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-strukture</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.3</version>
 	</parent>
 
 	<artifactId>rudi-microservice-strukture-storage</artifactId>
@@ -60,7 +60,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-spatial</artifactId>
 		</dependency>
 
@@ -86,11 +86,6 @@
 		<dependency>
 			<groupId>org.rudi</groupId>
 			<artifactId>rudi-facet-bpmn</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-spatial</artifactId>
 		</dependency>
 	</dependencies>
 

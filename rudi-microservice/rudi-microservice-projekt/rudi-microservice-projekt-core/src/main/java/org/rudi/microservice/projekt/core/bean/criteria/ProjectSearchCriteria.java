@@ -3,8 +3,7 @@ package org.rudi.microservice.projekt.core.bean.criteria;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import org.rudi.common.core.bean.criteria.AbstractSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;

@@ -11,11 +11,7 @@
                 ]
             },
             "properties": {
-                "fid": 1,
-                "other": [
-                    { "color": "blue" },
-                    { "color": "red" }
-                ]
+                "fid": 1
             }
         },
         {
@@ -28,11 +24,7 @@
                 ]
             },
             "properties": {
-                "fid": 2,
-                "other": [
-                    { "color": "mauve" },
-                    { "color": "pink" }
-                ]
+                "fid": 2
             }
         }
     ]

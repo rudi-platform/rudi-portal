@@ -10,7 +10,8 @@ import java.util.UUID;
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerFormat;
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.parameters.SerializableParameter;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
 /**
  * @author FNI18300
@@ -23,9 +24,9 @@ public class StringParameterDataValidator extends AbstractParameterDataValidator
 	}
 
 	@Override
-	protected boolean internalValidate(SerializableParameter parameter, String value) {
+	protected boolean internalValidate(OpenAPI openapi, Parameter parameter, String value) {
 		boolean result = false;
-		SwaggerFormat format = SwaggerFormat.lookupType(parameter.getFormat());
+		SwaggerFormat format = SwaggerFormat.lookupType(parameter.getSchema().getFormat());
 		switch (format) {
 		case UUID:
 			try {

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.3</version>
 	</parent>
 
 	<artifactId>rudi-facet-doks</artifactId>
@@ -76,6 +76,7 @@
 					</typeMappings>
 					<configOptions>
 						<dateLibrary>java8</dateLibrary>
+						<useJakartaEe>true</useJakartaEe>
 					</configOptions>
 				</configuration>
 				<executions>

@@ -37,8 +37,11 @@ import org.rudi.facet.kaccess.helper.search.mapper.SearchConfiguration;
 import org.rudi.facet.kaccess.helper.search.mapper.SearchCriteriaMapper;
 import org.rudi.facet.kaccess.helper.search.mapper.SearchElementDatasetMapper;
 import org.rudi.facet.kaccess.helper.search.mapper.SearchElementDatasetMapperWithGetDataset;
+import org.rudi.facet.kaccess.helper.search.mapper.SearchElementDatasetMapperWithGetNonBlockingDataset;
 import org.rudi.facet.kaccess.helper.search.mapper.SearchElementDatasetMapperWithMetadataBlocks;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -55,17 +58,27 @@ public class DatasetServiceImpl implements DatasetService {
 			RudiMetadataField.SUMMARY_TEXT, RudiMetadataField.PRODUCER_ORGANIZATION_ID, RudiMetadataField.THEME,
 			RudiMetadataField.KEYWORDS, RudiMetadataField.CONFIDENTIALITY);
 	public static final String MISSING_GLOBAL_ID = "L'identifiant du jeu de donnée est absent";
+
 	private final DatasetOperationAPI datasetOperationAPI;
+
 	private final MetadataBlockHelper metadataBLockHelper;
 	/**
 	 * @see SearchConfiguration#searchElementDatasetMapperForMultipleDatasets(SearchElementDatasetMapperWithGetDataset,
 	 *      SearchElementDatasetMapperWithMetadataBlocks)
 	 */
-	private final SearchElementDatasetMapper searchElementDatasetMapperForMultipleDatasets;
+	@Autowired
+	@Qualifier("searchElementDatasetMapperForMultipleDatasets")
+	private SearchElementDatasetMapper searchElementDatasetMapperForMultipleDatasets;
 	/**
 	 * @see SearchConfiguration#searchElementDatasetMapperForOneDataset(org.rudi.facet.kaccess.helper.search.mapper.SearchElementDatasetMapperWithGetDataset)
 	 */
-	private final SearchElementDatasetMapper searchElementDatasetMapperForOneDataset;
+	@Qualifier("searchElementDatasetMapperForOneDataset")
+	@Autowired
+	private SearchElementDatasetMapper searchElementDatasetMapperForOneDataset;
+
+	@Autowired
+	private SearchElementDatasetMapperWithGetNonBlockingDataset searchElementDatasetMapperForOneDatasetNonBlocking;
+
 	private final SearchCriteriaMapper searchCriteriaMapper;
 	private final MetadatafieldsMapper metadatafieldsMapper;
 	@Value("${dataverse.api.rudi.data.alias:rudi_data}")
@@ -93,6 +106,35 @@ public class DatasetServiceImpl implements DatasetService {
 		MetadataListFacets metadataListFacets = searchDatasets(
 				new DatasetSearchCriteria().globalIds(Collections.singletonList(globalId)).offset(0).limit(1),
 				Collections.emptyList(), true);
+		MetadataList metadataList = metadataListFacets.getMetadataList();
+
+		if (metadataList.getTotal() == 0 || metadataList.getItems().isEmpty()) {
+			throw DatasetNotFoundException.fromGlobalId(globalId);
+		}
+
+		return metadataList.getItems().get(0);
+	}
+
+	/**
+	 * Cette méthode est à destination de l'API Gateway qui ne peut pas utiliser le webclient en block
+	 */
+	@Override
+	@Nonnull
+	public Metadata getNonBlockingDataset(UUID globalId) throws DataverseAPIException {
+
+		if (globalId == null) {
+			throw new DataverseAPIException(MISSING_GLOBAL_ID);
+		}
+
+		DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria()
+				.globalIds(Collections.singletonList(globalId)).offset(0).limit(1);
+		List<String> facets = Collections.emptyList();
+		SearchParams rawSearchParams = searchCriteriaMapper.datasetSearchCriteriaToSearchParams(datasetSearchCriteria,
+				CollectionUtils.isNotEmpty(facets));
+		final SearchElements<SearchDatasetInfo> searchElements = datasetOperationAPI
+				.searchNonBlockingDataset(rawSearchParams);
+		MetadataListFacets metadataListFacets = searchElementDatasetMapperForOneDatasetNonBlocking
+				.toMetadataListFacets(searchElements, facets);
 		MetadataList metadataList = metadataListFacets.getMetadataList();
 
 		if (metadataList.getTotal() == 0 || metadataList.getItems().isEmpty()) {
@@ -136,7 +178,6 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public MetadataListFacets searchDatasets(DatasetSearchCriteria datasetSearchCriteria, List<String> facets)
 			throws DataverseAPIException {
-
 		return searchDatasets(datasetSearchCriteria, facets, false);
 	}
 

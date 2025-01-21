@@ -65,10 +65,11 @@ public abstract class AbstractIntegrationRequestTreatmentHandler {
 	 * @param metadata des Metadata
 	 * @param provider un Provider
 	 * @return un booleen indiquant si le provider dans les metadatas est le même que le provider
+	 * Renvoie true si le provider dans les metadatas est null
 	 */
-	public boolean isSameProvider(Metadata metadata, Provider provider) {
+	public boolean isSameProviderOrNull(Metadata metadata, Provider provider) {
 		// Si la valeur du provider n'est pas renseigné alors on authorise
-		if (metadata.getMetadataInfo().getMetadataProvider() == null) {
+		if (metadata.getMetadataInfo().getMetadataProvider() == null || metadata.getMetadataInfo().getMetadataProvider().getOrganizationId() == null) {
 			return true;
 		}
 		// on vérifie que le Provider correspond à l'utilisateur actuel

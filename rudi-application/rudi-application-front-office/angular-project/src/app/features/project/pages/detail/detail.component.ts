@@ -16,8 +16,8 @@ import {PageTitleService} from '@core/services/page-title.service';
 import {TranslateService} from '@ngx-translate/core';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {AclService} from 'micro_service_modules/acl/acl-api';
-import {OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import {LinkedDatasetStatus, Project} from 'micro_service_modules/projekt/projekt-model';
+import {LinkedDatasetStatus, OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {Project} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

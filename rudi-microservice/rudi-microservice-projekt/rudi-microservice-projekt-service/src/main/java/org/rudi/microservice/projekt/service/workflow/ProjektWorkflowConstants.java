@@ -5,11 +5,11 @@ package org.rudi.microservice.projekt.service.workflow;
 
 /**
  * @author FNI18300
- *
  */
 public final class ProjektWorkflowConstants {
 
 	public static final String PROJECT_STATUS = "projectStatus";
+	public static final String PROJECT_DRAFT_TYPE = "draftType";
 
 	public static final String TITLE = "title";
 

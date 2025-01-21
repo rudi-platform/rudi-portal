@@ -626,14 +626,19 @@ export class DetailComponent implements OnInit {
      * @private
      */
     private handleMetadataProperties(metadata: Metadata): void {
-        let requiredKeys: string[];
-        let connectorParameters: ConnectorConnectorParameters[] = metadata.available_formats[0].connector.connector_parameters;
-
-        if (metadata.available_formats[0].media_type === MediaTypeEnum.File ||
-            MAP_PROTOCOLS_SUPPORTED.includes(metadata.available_formats[0].connector.interface_contract)) {
-            requiredKeys = MAP_CONNECTOR_PARAMETERS_REQUIRED;
-            this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, requiredKeys);
+        if (this.datasetIsMap(metadata)) {
+            const connectorParameters: ConnectorConnectorParameters[] = metadata.available_formats[0].connector.connector_parameters;
+            this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, MAP_CONNECTOR_PARAMETERS_REQUIRED);
         }
+    }
+
+    // Vérifie que le JDD est un JDD cartographique
+    private datasetIsMap(metadata: Metadata): boolean {
+        const mediaFile: MediaFile = this.metadata.available_formats[0] as MediaFile;
+        return (metadata.available_formats[0].media_type === MediaTypeEnum.File
+                && (mediaFile.file_type === MediaType.ApplicationGeojson || mediaFile.file_type === MediaType.ApplicationGeojsoncrypt)) ||
+            (metadata.available_formats[0].media_type === MediaTypeEnum.Service
+                && MAP_PROTOCOLS_SUPPORTED.includes(metadata.available_formats[0].connector.interface_contract));
     }
 
     // Vérification que toutes les clés obligatoires sont présentes et valides
@@ -647,7 +652,6 @@ export class DetailComponent implements OnInit {
     private isValidObject(obj: any): boolean {
         return typeof obj.key === 'string' && 'value' in obj;
     }
-
 }
 
 

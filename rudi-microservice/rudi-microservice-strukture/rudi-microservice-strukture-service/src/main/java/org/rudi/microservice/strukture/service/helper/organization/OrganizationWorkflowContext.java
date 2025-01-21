@@ -22,7 +22,7 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
 import org.rudi.microservice.strukture.core.bean.Method;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
@@ -46,13 +46,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component(value = "organizationWorkflowContext")
 @Transactional
 @Slf4j
-public class OrganizationWorkflowContext extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
+public class OrganizationWorkflowContext
+		extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
 
 	@Value("${rudi.organization.report.version:v1}")
 	private String version;
 	@Value("${rudi.organization.report.attempts:3}")
 	private int attempts;
-
 
 	private static final String COMMENT_KEY = "messageToOrganizationCreator";
 
@@ -61,7 +61,10 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	private final ProviderHelper providerHelper;
 	private final OwnerInfoHelper ownerInfoHelper;
 
-	public OrganizationWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper, ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper) {
+	public OrganizationWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
+			OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper,
+			FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper,
+			ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
@@ -71,9 +74,11 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 
 	@Transactional(readOnly = false)
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void updateStatus(ScriptContext context, ExecutionEntity executionEntity, String statusValue, String organizationStatusValue, String functionalStatusValue) {
+	public void updateStatus(ScriptContext context, ExecutionEntity executionEntity, String statusValue,
+			String organizationStatusValue, String functionalStatusValue) {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
-		log.debug("WkC - Update {} to status {}, {}, {}", processInstanceBusinessKey, statusValue, organizationStatusValue, functionalStatusValue);
+		log.debug("WkC - Update {} to status {}, {}, {}", processInstanceBusinessKey, statusValue,
+				organizationStatusValue, functionalStatusValue);
 		Status status = Status.valueOf(statusValue);
 		OrganizationStatus organizationStatus = OrganizationStatus.valueOf(organizationStatusValue);
 
@@ -96,12 +101,14 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendEmailToOrganizationInitiator(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData, boolean isValidated) {
+	public void sendEmailToOrganizationInitiator(ScriptContext context, ExecutionEntity executionEntity,
+			EMailData eMailData, boolean isValidated) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		User initiator = lookupUser(assetDescription.getInitiator());
 		if (initiator != null) {
 			String email = lookupEMailAddress(initiator);
-			if (initiator.getType().equals(UserType.ROBOT) && initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+			if (initiator.getType().equals(UserType.ROBOT)
+					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
 				// On est dans le cas d'un provider : donc rapport
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
@@ -116,7 +123,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 
 				Report report = buildReport(assetDescription, isValidated);
 
-				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts, assetDescription.getUuid()));
+				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts,
+						assetDescription.getUuid()));
 				thread.start();
 			}
 			// On envoie un mail à l'initiator
@@ -145,18 +153,11 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 			integrationErrors.add(IntegrationError.ERR_101);
 		}
 
-		return new Report()
-				.reportId(UUID.randomUUID())
-				.submissionDate(assetDescription.getCreationDate())
-				.treatmentDate(LocalDateTime.now())
-				.method(Method.POST)
-				.version(version)
-				.organizationId(assetDescription.getUuid())
-				.organizationName(assetDescription.getName())
-				.integrationStatus(status)
-				.integrationErrors(getErrorsFromIntegrationError(integrationErrors))
+		return new Report().reportId(UUID.randomUUID()).submissionDate(assetDescription.getCreationDate())
+				.treatmentDate(LocalDateTime.now()).method(Method.POST).version(version)
+				.organizationId(assetDescription.getUuid()).organizationName(assetDescription.getName())
+				.integrationStatus(status).integrationErrors(getErrorsFromIntegrationError(integrationErrors))
 				.comment(comment);
-
 
 	}
 
@@ -164,7 +165,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		ArrayList<ReportError> errors = new ArrayList<>();
 
 		for (IntegrationError integrationError : integrationErrors) {
-			errors.add(new ReportError().errorCode(integrationError.getCode()).errorMessage(integrationError.getMessage()));
+			errors.add(new ReportError().errorCode(integrationError.getCode())
+					.errorMessage(integrationError.getMessage()));
 		}
 
 		return errors;
@@ -176,8 +178,10 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	 * @param eMailDataModel
 	 */
 	@Override
-	protected void addEmailDataModelData(EMailDataModel<OrganizationEntity, OrganizationAssignmentHelper> eMailDataModel) {
+	protected void addEmailDataModelData(
+			EMailDataModel<OrganizationEntity, OrganizationAssignmentHelper> eMailDataModel) {
 		super.addEmailDataModelData(eMailDataModel);
-		eMailDataModel.addData("denomination", ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
+		eMailDataModel.addData("denomination",
+				ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
 	}
 }

@@ -1,12 +1,5 @@
 package org.rudi.facet.kaccess.service.dataset;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
-import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -43,8 +36,14 @@ import org.rudi.facet.kaccess.exceptions.DatasetAlreadyExistsException;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.MetadataBlockHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
+import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
 
 @KaccessSpringBootTest
 @Slf4j
@@ -122,8 +121,8 @@ class DatasetServiceIT {
 		// -----------------------------------
 		MetadataList metadataList1 = datasetService.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100)
 				.globalIds(Collections.singletonList(metadata.getGlobalId())).freeText("exploitations")
-				.addthemesItem("environment").addkeywordsItem("agriculture").addkeywordsItem("biogaz")
-				.addproducerNamesItem("Producteur rudi")
+				.addThemesItem("environment").addKeywordsItem("agriculture").addKeywordsItem("biogaz")
+				.addProducerNamesItem("Producteur rudi")
 				.dateDebut(toUTC(LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0, 0)))
 				.dateFin(OffsetDateTime.now().plusYears(1)), Collections.emptyList()).getMetadataList();
 
@@ -173,15 +172,15 @@ class DatasetServiceIT {
 		// on doit récupérer les JDD qui ont transport OU tram OU wrongkeyword dans leur liste de mots clés
 		// bus et tram en font partie, mais pas wrongKeyword
 		MetadataList metadataList6 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addkeywordsItem("bus")
-						.addkeywordsItem("tram").addkeywordsItem("wrongKeyword"), Collections.emptyList())
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addKeywordsItem("bus")
+						.addKeywordsItem("tram").addKeywordsItem("wrongKeyword"), Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList6.getTotal() > 0);
 		Assertions.assertTrue(metadataList6.getItems().stream()
 				.anyMatch(metadataItem -> metadataItem.getGlobalId().equals(metadataTransport.getGlobalId())));
 
 		MetadataList metadataList7 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addkeywordsItem("wrongKeyword"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addKeywordsItem("wrongKeyword"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertEquals(0, metadataList7.getTotal());
@@ -189,7 +188,7 @@ class DatasetServiceIT {
 		// recherche sur themes
 		// ---------------------
 		MetadataList metadataList8 = datasetService.searchDatasets(
-				new DatasetSearchCriteria().offset(0).limit(100).addthemesItem("transport").addthemesItem("wrongTheme"),
+				new DatasetSearchCriteria().offset(0).limit(100).addThemesItem("transport").addThemesItem("wrongTheme"),
 				Collections.emptyList()).getMetadataList();
 		Assertions.assertTrue(metadataList8.getTotal() > 0);
 		Assertions.assertTrue(metadataList8.getItems().stream()
@@ -199,7 +198,7 @@ class DatasetServiceIT {
 		// recherche sur ProducerNames
 		// ---------------------------
 		MetadataList metadataList9 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addproducerNamesItem("Metropole"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("Metropole"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList9.getTotal() > 0);
@@ -216,7 +215,7 @@ class DatasetServiceIT {
 		createDataset(metadataStarAgricultureBiologique);
 
 		MetadataList metadataList10 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addproducerNamesItem("star"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("star"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList10.getTotal() > 0);
@@ -225,7 +224,7 @@ class DatasetServiceIT {
 				.noneMatch(metadataItem -> metadataItem.getProducer().getOrganizationName().equals("Keolis star")));
 
 		MetadataList metadataList11 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addthemesItem("agriculture"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addThemesItem("agriculture"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList11.getTotal() > 0);
@@ -327,7 +326,7 @@ class DatasetServiceIT {
 		final List<Media> medias = jsonResourceReader
 				.readList("metadata/available_format/available_format_for_update.json", Media.class);
 		final Metadata metadataToUpdate = readMetadata("jdd_to_update").theme("agriculture biologique")
-				.resourceTitle("JDD ouvert mise à jour effectué").addkeywordsItem("riz").availableFormats(medias);
+				.resourceTitle("JDD ouvert mise à jour effectué").addKeywordsItem("riz").availableFormats(medias);
 		createDataset(metadataToUpdate);
 
 		// mise à jour

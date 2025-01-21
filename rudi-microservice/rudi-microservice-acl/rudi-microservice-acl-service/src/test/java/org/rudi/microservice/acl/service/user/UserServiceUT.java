@@ -41,7 +41,7 @@ import org.rudi.microservice.acl.storage.dao.address.AddressRoleDao;
 import org.rudi.microservice.acl.storage.dao.user.UserDao;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -53,7 +53,7 @@ import lombok.val;
 @AclSpringBootTest
 class UserServiceUT {
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper mockedUtilContextHelper;
 
 	@Autowired

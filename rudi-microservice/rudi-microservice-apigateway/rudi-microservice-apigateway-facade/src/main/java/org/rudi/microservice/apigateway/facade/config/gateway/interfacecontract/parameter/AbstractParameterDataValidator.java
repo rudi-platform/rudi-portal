@@ -5,7 +5,8 @@ package org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract
 
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.parameters.SerializableParameter;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
 /**
  * @author FNI18300
@@ -20,14 +21,14 @@ public abstract class AbstractParameterDataValidator implements ParameterDataVal
 	}
 
 	@Override
-	public boolean validate(SerializableParameter parameter, String value) {
+	public boolean validate(OpenAPI openAPI, Parameter parameter, String value) {
 		boolean result = false;
-		if (type == SwaggerType.lookupType(parameter.getType())) {
-			result = internalValidate(parameter, value);
+		if (type == SwaggerType.lookupType(parameter.getSchema().getType())) {
+			result = internalValidate(openAPI, parameter, value);
 		}
 		return result;
 	}
 
-	protected abstract boolean internalValidate(SerializableParameter parameter, String value);
+	protected abstract boolean internalValidate(OpenAPI openAPI, Parameter parameter, String value);
 
 }

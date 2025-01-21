@@ -12,8 +12,6 @@ import org.rudi.microservice.acl.core.bean.EmailAddress;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.facade.config.security.AbstractDetailServiceImpl;
 import org.rudi.microservice.acl.service.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,21 +22,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProvider extends AbstractDetailServiceImpl implements AuthenticationProvider {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	@Qualifier("clientPasswordEncoder")
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	@Value("${security.anonymous.login:anonymous}")
 	private String anonymousUsername;

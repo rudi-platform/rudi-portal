@@ -1,7 +1,6 @@
 package org.rudi.common.facade.config.filter;
 
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.springframework.http.HttpHeaders;

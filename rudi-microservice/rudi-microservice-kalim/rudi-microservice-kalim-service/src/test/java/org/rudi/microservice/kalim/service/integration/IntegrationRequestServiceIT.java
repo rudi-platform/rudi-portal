@@ -1,8 +1,5 @@
 package org.rudi.microservice.kalim.service.integration;
 
-import static org.mockito.Mockito.when;
-import static org.rudi.microservice.kalim.service.KalimTestConfigurer.initMetadata;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -49,8 +46,11 @@ import org.rudi.microservice.kalim.service.mapper.IntegrationRequestMapper;
 import org.rudi.microservice.kalim.storage.dao.integration.IntegrationRequestDao;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.mockito.Mockito.when;
+import static org.rudi.microservice.kalim.service.KalimTestConfigurer.initMetadata;
 
 /**
  * Class de test du service IntegrationRequest
@@ -61,17 +61,17 @@ class IntegrationRequestServiceIT {
 
 	private Metadata metadata;
 
-	@MockBean
+	@MockitoBean
 	private KalimProviderHelper mockedKalimProviderHelper;
 
-	@MockBean
+	@MockitoBean
 	private ProviderHelper providerHelper;
 
 	@SuppressWarnings("unused") // Utilisé par PostIntegrationRequestTreatmentHandler
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
 
-	@MockBean
+	@MockitoBean
 	private DatasetService datasetService;
 
 	@Autowired
@@ -113,7 +113,7 @@ class IntegrationRequestServiceIT {
 	}
 
 	private static Provider initProvider() {
-		return new Provider().uuid(UUID.randomUUID()).code(RandomStringUtils.randomAlphabetic(10));
+		return new Provider().uuid(UUID.randomUUID()).code(RandomStringUtils.secure().nextAlphabetic(10));
 	}
 
 	@BeforeEach

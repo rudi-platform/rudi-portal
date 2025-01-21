@@ -49,7 +49,6 @@ import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.service.MediaService;
-import org.rudi.facet.oauth2.config.WebClientConfig;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
@@ -77,11 +76,12 @@ import org.rudi.microservice.projekt.storage.dao.territory.TerritorialScaleDao;
 import org.rudi.microservice.projekt.storage.dao.type.ProjectTypeDao;
 import org.rudi.microservice.projekt.storage.entity.ReutilisationStatusEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -134,28 +134,28 @@ class ProjectServiceUT {
 	private final ReutilisationStatusMapper reutilisationStatusMapper;
 	private final ResourceHelper resourceHelper;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
-	@MockBean
+	@MockitoBean
 	private RolesHelper rolesHelper;
-	@MockBean
+	@MockitoBean
 	private MyInformationsHelper myInformationsHelper;
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
-	@MockBean
+	@MockitoBean
 	private MediaService mediaService;
-	@MockBean
+	@MockitoBean
 	private final DatasetService datasetService;
 
 	@SuppressWarnings("unused") // mocké pour ACLHelper
-	@MockBean(name = "rudi_oauth2")
-	private WebClientConfig webClientConfig;
+	@MockitoBean(name = "rudi_oauth2")
+	private WebClient webClient;
 
 	@SuppressWarnings("unused") // mocké pour OrganizationHelper
-	@MockBean(name = "struktureWebClient")
-	private WebClientConfig struktureWebClient;
+	@MockitoBean(name = "struktureWebClient")
+	private WebClient struktureWebClient;
 
 	List<KnownProject> knownProjects = List.of(PROJET_LAMPADAIRE_PRIVATE, PROJET_LAMPADAIRE_PUBLIC,
 			PROJET_POUBELLE_PRIVATE, PROJET_POUBELLE_PUBLIC, PROJET_LAMPADAIRE_ORGANISATION_PRIVATE,

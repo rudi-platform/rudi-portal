@@ -5,7 +5,8 @@ package org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract
 
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * @author FNI18300
@@ -20,14 +21,14 @@ public abstract class AbstractPropertyDataValidator implements PropertyDataValid
 	}
 
 	@Override
-	public boolean validate(Property property, String value) {
+	public boolean validate(OpenAPI openAPI, Schema<?> property, String value) {
 		boolean result = false;
 		if (type == SwaggerType.lookupType(property.getType())) {
-			result = internalValidate(property, value);
+			result = internalValidate(openAPI, property, value);
 		}
 		return result;
 	}
 
-	protected abstract boolean internalValidate(Property property, String value);
+	protected abstract boolean internalValidate(OpenAPI openAPI, Schema<?> property, String value);
 
 }

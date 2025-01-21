@@ -1,8 +1,7 @@
 package org.rudi.microservice.apigateway.storage.entity.throttling;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.common.storage.entity.AbstractStampedEntity;
 import org.rudi.microservice.apigateway.core.common.SchemaConstants;
 

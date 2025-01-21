@@ -1,7 +1,6 @@
 package org.rudi.microservice.projekt.storage.dao.support.impl;
 
-import javax.persistence.EntityManager;
-
+import jakarta.persistence.EntityManager;
 import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
 import org.rudi.microservice.projekt.core.bean.criteria.SupportSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.support.SupportCustomDao;

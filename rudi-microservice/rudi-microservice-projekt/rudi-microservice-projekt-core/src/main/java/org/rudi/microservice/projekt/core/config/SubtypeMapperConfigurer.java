@@ -5,9 +5,8 @@ package org.rudi.microservice.projekt.core.config;
 
 import java.util.Arrays;
 
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.rudi.common.core.json.ObjectMapperUtils;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;

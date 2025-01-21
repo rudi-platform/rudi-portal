@@ -12,17 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 
 class FieldSpecFromJavaField extends ChildFieldSpec {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FieldSpecFromJavaField.class);
@@ -166,7 +163,7 @@ class FieldSpecFromJavaField extends ChildFieldSpec {
 
 		final var schema = fieldOrMethod.getAnnotation(Schema.class);
 		if (schema != null) {
-			return schema.required();
+			return Schema.RequiredMode.REQUIRED.equals(schema.requiredMode());
 		}
 
 		return null;

@@ -11,31 +11,34 @@ import org.springframework.boot.actuate.autoconfigure.security.reactive.Endpoint
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.WebFilter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  */
-@Component
+@Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
 	private static final String[] SB_PERMIT_ALL_URL = {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
-			"/authenticate", "/authenticate/**", "/refresh_token", "/oauth/**", "/acl/v1/kaptcha", "/konsult/v1/cms/**",
-			"/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/scripts/**", "/konsult/v1/robots/{resource}" };
+			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token", "/oauth2/**", "/acl/v1/kaptcha",
+			"/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
+			"/konsult/v1/robots/{resource}" };
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;
@@ -56,22 +59,27 @@ public class WebSecurityConfig {
 			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
 			if (!disableAuthentification) {
 				exchanges.pathMatchers(SB_PERMIT_ALL_URL).permitAll();
-				exchanges.anyExchange().authenticated().and()
-						.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
-						.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+				exchanges.anyExchange().authenticated();
 			} else {
+				log.warn("/!\\ Authentification is disabled");
 				exchanges.anyExchange().permitAll();
 			}
 		});
-		http.httpBasic(Customizer.withDefaults());
-		http.formLogin(Customizer.withDefaults());
-		http.csrf().disable();
-		http.exceptionHandling().authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint());
+
+		http.httpBasic(Customizer.withDefaults()).formLogin(Customizer.withDefaults())
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
+
+		if (!disableAuthentification) {
+			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
+					.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+		}
 		return http.build();
 	}
 
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
+	protected CorsConfigurationSource corsConfigurationSource() {
 		final CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "DELETE"));
 		configuration.addAllowedHeader("*");
@@ -89,16 +97,16 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	GrantedAuthorityDefaults grantedAuthorityDefaults() {
+	protected GrantedAuthorityDefaults grantedAuthorityDefaults() {
 		// Remove the ROLE_ prefix
 		return new GrantedAuthorityDefaults("");
 	}
 
-	private WebFilter createOAuth2Filter() {
+	protected WebFilter createOAuth2Filter() {
 		return new OAuth2WebFilter(SB_PERMIT_ALL_URL, checkTokenUri, internalRestTemplate);
 	}
 
-	public WebFilter createJwtRequestFilter() {
+	protected WebFilter createJwtRequestFilter() {
 		return new JwtWebFilter(SB_PERMIT_ALL_URL, jwtTokenUtil);
 	}
 

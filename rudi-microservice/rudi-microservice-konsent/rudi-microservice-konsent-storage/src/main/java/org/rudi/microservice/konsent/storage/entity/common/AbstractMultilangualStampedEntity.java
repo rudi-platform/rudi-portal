@@ -3,9 +3,8 @@ package org.rudi.microservice.konsent.storage.entity.common;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import org.rudi.common.core.Ordered;
 
 import lombok.Getter;

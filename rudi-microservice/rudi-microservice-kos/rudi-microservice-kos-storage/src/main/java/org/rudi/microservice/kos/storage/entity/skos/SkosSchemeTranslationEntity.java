@@ -1,8 +1,7 @@
 package org.rudi.microservice.kos.storage.entity.skos;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.common.storage.entity.AbstractTranslationEntity;
 import org.rudi.microservice.kos.core.common.SchemaConstants;
 

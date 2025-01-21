@@ -1,11 +1,12 @@
 package org.rudi.common.test;
 
+import java.util.List;
+
 import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ObjectAssert;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +31,6 @@ public class RudiResponseEntityAssert<T> extends RudiObjectAssert<ResponseEntity
 				.hasFieldOrProperty("items");
 
 		final Object items = ReflectionTestUtils.getField(body, "items");
-		return assertThat(items).asList();
+		return assertThat(items).asInstanceOf(InstanceOfAssertFactories.LIST);
 	}
 }

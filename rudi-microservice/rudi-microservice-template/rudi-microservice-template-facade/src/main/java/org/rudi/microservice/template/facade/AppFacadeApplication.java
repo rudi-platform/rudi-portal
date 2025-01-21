@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.PropertySource;
 		"org.rudi.microservice.template.service",
 		"org.rudi.microservice.template.storage",
 })
-@EnableEurekaClient
 @PropertySource(value = { "classpath:template/template-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

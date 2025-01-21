@@ -1,0 +1,23 @@
+{
+	"name": "archive-project",
+	"label": "Vous choisissez d'archiver cette réutilisation. Celle-ci ne sera plus visible sur ${projectName}.",
+	"help": "Les administrateurs de la plateforme conserveront la réutilisation à des fins archivistiques. Les accès aux jeux de données mobilisés seront arrêtés. Dans le cas d'exploitation de jeux de données en accès restreint, une notification sera envoyée aux producteurs afin de les informer de l'archivage.",
+	"readonly": false,
+	"fieldDefinitions": [
+		{
+			"name": "messageToModerator",
+			"label": "Veuillez indiquer la raison de l'archivage de la réutilisation",
+			"type": "TEXT",
+			"readonly": false,
+			"required": true
+		},
+		{
+			"name": "draftType",
+			"label": "draftType",
+			"extendedType": "archive",
+			"type": "HIDDEN",
+			"readonly": true,
+			"required": false
+		}
+	]
+}

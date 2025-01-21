@@ -1,7 +1,6 @@
 package org.rudi.microservice.projekt.storage.dao.reutilisationstatus.impl;
 
-import javax.persistence.EntityManager;
-
+import jakarta.persistence.EntityManager;
 import org.rudi.common.storage.dao.AbstractStampedCustomDaoImpl;
 import org.rudi.microservice.projekt.core.bean.criteria.ReutilisationStatusSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.reutilisationstatus.ReutilisationStatusCustomDao;

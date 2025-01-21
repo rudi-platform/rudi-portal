@@ -32,7 +32,7 @@ import org.rudi.microservice.projekt.service.replacer.TransientDtoReplacerTest;
 import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -64,13 +64,13 @@ class NewDatasetRequestServiceUT {
 
 	private final FormHelper formHelper;
 	
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
-//	@MockBean
+//	@MockitoBean
 //	private RolesHelper rolesHelper;
 
 	@AfterEach

@@ -6,8 +6,7 @@ package org.rudi.microservice.acl.service.helper;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
 
 /**

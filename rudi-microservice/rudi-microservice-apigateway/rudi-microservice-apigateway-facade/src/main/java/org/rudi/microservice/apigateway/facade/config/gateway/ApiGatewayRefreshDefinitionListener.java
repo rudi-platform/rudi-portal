@@ -5,8 +5,7 @@ package org.rudi.microservice.apigateway.facade.config.gateway;
 
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.microservice.apigateway.service.api.ApiEvent;
 import org.rudi.microservice.apigateway.service.api.ApiEventMode;

@@ -13,7 +13,7 @@ import org.rudi.microservice.strukture.core.bean.Producer;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +26,7 @@ class ProducerServiceTI {
 	@Autowired
 	private ProducerService producerService;
 
-	@MockBean
+	@MockitoBean
 	StruktureAuthorisationHelper struktureAuthorisationHelper;
 
 

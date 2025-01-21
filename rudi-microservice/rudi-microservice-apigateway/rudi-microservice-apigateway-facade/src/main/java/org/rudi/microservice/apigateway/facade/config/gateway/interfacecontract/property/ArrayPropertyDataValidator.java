@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.rudi.microservice.apigateway.facade.config.gateway.interfacecontract.SwaggerType;
 
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * @author FNI18300
@@ -24,15 +24,15 @@ public class ArrayPropertyDataValidator extends AbstractPropertyDataValidator {
 	}
 
 	@Override
-	protected boolean internalValidate(Property property, String arrayValue) {
+	protected boolean internalValidate(OpenAPI openAPI, Schema<?> property, String arrayValue) {
 		boolean result = false;
-		Property subProperty = ((ArrayProperty) property).getItems();
+		Schema<?> subProperty = property.getItems();
 		String[] values = arrayValue.split(",");
 		SwaggerType type = SwaggerType.lookupType(property.getType());
 		PropertyDataValidator parameterDataValidator = validators.get(type);
 		if (parameterDataValidator != null) {
 			for (String value : values) {
-				result &= parameterDataValidator.validate(subProperty, value);
+				result &= parameterDataValidator.validate(openAPI, subProperty, value);
 			}
 		} else {
 			// cas non prévu on bloque pas

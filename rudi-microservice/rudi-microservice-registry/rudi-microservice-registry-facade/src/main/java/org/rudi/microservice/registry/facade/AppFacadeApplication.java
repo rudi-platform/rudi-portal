@@ -5,13 +5,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+import org.springframework.cloud.netflix.eureka.server.EurekaServerAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = { "org.rudi.common.facade", "org.rudi.common.service",
-		"org.rudi.common.storage", "org.rudi.microservice.registry.facade" })
+@SpringBootApplication(scanBasePackages = {
+		"org.rudi.common.core",
+		"org.rudi.microservice.registry.facade" })
 @EnableEurekaServer
 @PropertySource(value = { "classpath:registry/registry-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
@@ -28,6 +31,11 @@ public class AppFacadeApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
 		return application.sources(AppFacadeApplication.class);
+	}
+
+	@Bean
+	public EurekaServerAutoConfiguration eurekaServerAutoConfiguration() {
+		return new EurekaServerAutoConfiguration();
 	}
 
 }

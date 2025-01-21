@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.NoResultException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -216,7 +217,7 @@ class ApiServiceTU {
 
 	@Test
 	@DisplayName("Teste la mise à jour d'une API")
-	void updateApi() throws IOException, AppServiceException, javax.persistence.NoResultException {
+	void updateApi() throws IOException, AppServiceException, NoResultException {
 		final Api apiToModify = createApi(JSON_UUID_NULL);
 		apiToModify.setUrl("https://digitalbyopen.sharepoint.com/sites/myopenspace");
 		apiToModify.setMethods(List.of(ApiMethod.POST, ApiMethod.GET));

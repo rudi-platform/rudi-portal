@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.io.FilenameUtils;
 import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.model.GenerationFormat;

@@ -27,7 +27,7 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.konsult.service.KonsultSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Class de test de MetadataService
@@ -45,9 +45,9 @@ class MetadataServiceIT {
 	private DatasetService datasetService;
 	@Autowired
 	private DatasetOperationAPI datasetOperationAPI;
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 	@Value("${security.anonymous.login:anonymous}")
 	private String anonymousUsername;

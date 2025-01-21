@@ -4,7 +4,6 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
 import {NgbPopoverModule} from '@ng-bootstrap/ng-bootstrap';
-import {BotDetectCaptchaModule} from '@shared/angular-captcha/botdetect-captcha.module';
 import {ClipboardFieldComponent} from '@shared/clipboard-field/clipboard-field.component';
 import {ErrorPageComponent} from '@shared/error-page/error-page.component';
 import {ListOrganizationCardComponent} from '@shared/list-organization-card/list-organization-card.component';
@@ -18,10 +17,12 @@ import {WorkflowExpansionDateComponent} from '@shared/workflow-expansion/workflo
 import {WorkflowExpansionLabelComponent} from '@shared/workflow-expansion/workflow-expansion-label/workflow-expansion-label.component';
 import {WorkflowExpansionComponent} from '@shared/workflow-expansion/workflow-expansion.component';
 import {WorkflowFieldDateComponent} from '@shared/workflow-field-date/workflow-field-date.component';
+import {WorkflowFieldHiddenComponent} from '@shared/workflow-field-hidden/workflow-field-hidden.component';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {IsSectionDisplayedPipe} from '@shared/workflow-form/pipes/is-section-displayed.pipe';
 import {IsSectionOnlyHelpPipe} from '@shared/workflow-form/pipes/is-section-only-help.pipe';
 import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
+import {CaptchetatAngularModule} from 'captchetat-angular';
 import {AccountErrorBoxComponent} from './account-error-box/account-error-box.component';
 import {BackPaginationComponent} from './back-pagination/back-pagination.component';
 import {BannerButtonComponent} from './banner-button/banner-button.component';
@@ -140,6 +141,7 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             WorkflowFieldComponent,
             WorkflowFieldTextComponent,
             WorkflowFieldDateComponent,
+            WorkflowFieldHiddenComponent,
             WorkflowFormDialogComponent,
             CopiedButtonComponent,
             PasswordComponent,
@@ -189,12 +191,12 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             WorkflowExpansionDateComponent
         ],
     imports: [
+        CaptchetatAngularModule,
         CommonModule,
         ...MaterialModules,
         CoreModule,
         FilePickerModule,
         MatAutocompleteModule,
-        BotDetectCaptchaModule,
         MatTableModule,
         NgbPopoverModule,
     ],

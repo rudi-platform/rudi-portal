@@ -15,7 +15,7 @@ import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -30,7 +30,7 @@ class LinkedDatasetExpirationHelperUT {
 	private final LinkedDatasetDao linkedDatasetDao;
 	private final JsonResourceReader jsonResourceReader;
 	private final LinkedDatasetExpirationHelper linkedDatasetExpirationHelper;
-	@MockBean
+	@MockitoBean
 	private final LinkedDatasetSubscriptionHelper linkedDatasetSubscriptionHelper;
 
 	private LinkedDatasetEntity createLinkedDatasetFromJson(String jsonPath) throws IOException {

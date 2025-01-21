@@ -46,7 +46,7 @@ import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +71,7 @@ class LinkedDatasetSubscriptionHelperUT {
 	private final ProjectMapper projectMapper;
 	private final LinkedDatasetMapper linkedDatasetMapper;
 	private final LinkedDatasetService linkedDatasetService;
-	@MockBean
+	@MockitoBean
 	private final DatasetService datasetService;
 
 	private static final LinkedDatasetSubscriptionHelperUT.KnownProject ORGANIZATION_PROJECT = new LinkedDatasetSubscriptionHelperUT.KnownProject(
@@ -87,13 +87,13 @@ class LinkedDatasetSubscriptionHelperUT {
 	private static final LinkedDatasetSubscriptionHelperUT.KnownProject PROJET_POUBELLES = new LinkedDatasetSubscriptionHelperUT.KnownProject(
 			"poubelles", "Projet de suivi des poubelles jaunes orangées");
 
-	@MockBean
+	@MockitoBean
 	private RolesHelper rolesHelper;
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
 
 	private LinkedDatasetEntity createLinkedDatasetFromJson(String jsonPath) throws IOException {

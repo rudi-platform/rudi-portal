@@ -3,11 +3,10 @@ package org.rudi.microservice.konsent.storage.entity.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.MappedSuperclass;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MappedSuperclass;
 import org.rudi.common.storage.entity.AbstractLongIdEntity;
 import org.rudi.microservice.konsent.storage.entity.data.DictionaryEntryEntity;
 

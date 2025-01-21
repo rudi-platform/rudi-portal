@@ -24,7 +24,7 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -45,10 +45,10 @@ public class OrganizationHelperTestUT {
 	@Autowired
 	OrganizationHelper organizationHelper;
 
-	@MockBean
+	@MockitoBean
 	OrganizationMembersHelper organizationMembersHelper;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 
 	@AfterEach

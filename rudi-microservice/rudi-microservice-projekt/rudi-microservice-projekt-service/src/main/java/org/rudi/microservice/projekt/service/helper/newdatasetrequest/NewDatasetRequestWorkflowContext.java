@@ -21,7 +21,7 @@ import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
@@ -49,7 +49,7 @@ public class NewDatasetRequestWorkflowContext extends
 	private final ProjectCustomDao projectCustomDao;
 	private final OrganizationHelper organizationHelper;
 
-	public NewDatasetRequestWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
+	public NewDatasetRequestWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			NewDatasetRequestDao assetDescriptionDao, NewDatasetRequestAssigmentHelper assignmentHelper,
 			ACLHelper aclHelper, FormHelper formHelper, ProjectCustomDao projectCustomDao,
 			OrganizationHelper organizationHelper, RolesHelper rolesHelper) {

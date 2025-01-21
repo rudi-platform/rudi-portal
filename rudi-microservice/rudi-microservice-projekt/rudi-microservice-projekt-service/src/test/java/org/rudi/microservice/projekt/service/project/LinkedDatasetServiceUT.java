@@ -31,7 +31,6 @@ import org.rudi.facet.kaccess.bean.MetadataAccessCondition;
 import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
 import org.rudi.facet.kaccess.bean.Organization;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.oauth2.config.WebClientConfig;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.DatasetConfidentiality;
@@ -50,7 +49,8 @@ import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.dao.reutilisationstatus.ReutilisationStatusDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -95,22 +95,22 @@ class LinkedDatasetServiceUT {
 	@InjectMocks
 	private final LinkedDatasetService linkedDatasetService;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 	@SuppressWarnings("unused") // mocké pour les tests via les orga
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
 	@SuppressWarnings("unused") // mocké pour ACLHelper
-	@MockBean(name = "rudi_oauth2")
-	private WebClientConfig webClientConfig;
+	@MockitoBean(name = "rudi_oauth2")
+	private WebClient webClient;
 	@SuppressWarnings("unused") // mocké pour OrganizationHelper
-	@MockBean(name = "struktureWebClient")
-	private WebClientConfig struktureWebClient;
-	@MockBean
+	@MockitoBean(name = "struktureWebClient")
+	private WebClient struktureWebClient;
+	@MockitoBean
 	private DatasetService datasetService;
-	@MockBean
+	@MockitoBean
 	private MyInformationsHelper myInformationsHelper;
 
 	private Project createProject(KnownProject knownProject) throws IOException, AppServiceException {
@@ -478,11 +478,13 @@ class LinkedDatasetServiceUT {
 		// Ajout du JDD lié ouvert
 		Metadata associated1 = createMetadataAssociated(ld1);
 		when(datasetService.getDataset(any(UUID.class))).thenReturn(associated1);
-		assertThrows(AppServiceForbiddenException.class, () -> linkedDatasetService.linkProjectToDataset(projectUuid, ld1));
+		LinkedDataset ldResult = linkedDatasetService.linkProjectToDataset(projectUuid, ld1);
+		assertEquals(ldResult.getComment(), ld1.getComment());
+		assertEquals(ldResult.getDatasetUuid(), ld1.getDatasetUuid());
 	}
 
 	@Test
-	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'en cours' et supprime le JDD, la suppression lance une erreur")
+	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'en cours' et supprime le JDD, la suppression ne se fait pas")
 	void unlinkOpenDatasetToProject_VALIDATED_INPROGRESS()
 			throws IOException, AppServiceException, DataverseAPIException {
 
@@ -511,12 +513,14 @@ class LinkedDatasetServiceUT {
 
 		// changement de statut du projet
 		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
-		createdProject.setReutilisationStatus(createReutilisationStatus(PROJECT));
+		createdProject.setReutilisationStatus(createReutilisationStatus(REUSE));
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.VALIDATED, createdProject.getProjectStatus());
-		assertEquals(Boolean.TRUE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
+		assertEquals(Boolean.FALSE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
 
-		assertThrows(AppServiceForbiddenException.class, () -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+		// tentative de suppression du JDD
+		assertThrows(AppServiceForbiddenException.class,
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
 	}
 
 	@Test
@@ -926,7 +930,7 @@ class LinkedDatasetServiceUT {
 
 		// Normalement le form retourné est null, car il ne contient aucune informations pour l'instant
 		assertThat(linkedDatasetService.getDecisionInformations(projectUuid, linkedDatasetUuid)).as(
-				"Le formulaire retourné doit être null, car aucune information n'a été saisie par que qui ce soit pour l'instant.")
+						"Le formulaire retourné doit être null, car aucune information n'a été saisie par que qui ce soit pour l'instant.")
 				.isNull();
 	}
 
@@ -1406,7 +1410,7 @@ class LinkedDatasetServiceUT {
 
 		// Normalement le form retourné est null, car il ne contient aucune informations pour l'instant
 		assertThat(linkedDatasetService.getDecisionInformations(projectUuid, linkedDatasetUuid)).as(
-				"Le formulaire retourné doit être null, car aucune information n'a été saisie par que qui ce soit pour l'instant.")
+						"Le formulaire retourné doit être null, car aucune information n'a été saisie par que qui ce soit pour l'instant.")
 				.isNull();
 	}
 

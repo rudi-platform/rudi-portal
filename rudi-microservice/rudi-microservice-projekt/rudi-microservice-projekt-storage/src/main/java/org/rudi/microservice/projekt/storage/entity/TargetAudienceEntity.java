@@ -1,13 +1,13 @@
 package org.rudi.microservice.projekt.storage.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.common.storage.entity.AbstractStampedEntity;
 import org.rudi.microservice.projekt.core.common.SchemaConstants;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Public cible

@@ -29,7 +29,7 @@ import org.rudi.microservice.strukture.service.helper.organization.OrganizationM
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,17 +52,17 @@ class OrganizationBeanServiceUT {
 	private OrganizationDao organizationDao;
 
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
-	@MockBean
+	@MockitoBean
 	private ProjektHelper projektHelper;
-	@MockBean
+	@MockitoBean
 	OrganizationMembersHelper organizationMembersHelper;
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
-	@MockBean
+	@MockitoBean
 	StruktureAuthorisationHelper struktureAuthorisationHelper;
 
 	private UUID metalOwner;

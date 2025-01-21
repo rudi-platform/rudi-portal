@@ -90,7 +90,7 @@
             <mat-form-field appearance="outline" hideRequiredMarker>
                 <mat-select placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}" [compareWith]="compareObjects"
                             formControlName="reuse_status">
-                    <mat-option *ngFor="let status of reuseStatus" [value]="status">
+                    <mat-option *ngFor="let status of reuseStatus" [value]="status" class="single-select">
                         {{ status.label }}
                     </mat-option>
                 </mat-select>
@@ -158,7 +158,7 @@
                             [compareWith]="compareObjects"
                             formControlName="echelle">
                     <mat-option *ngFor="let echelle of territoireScale"
-                                [value]="echelle">
+                                [value]="echelle" class="single-select">
                         {{ echelle.label }}
                     </mat-option>
                 </mat-select>
@@ -181,6 +181,7 @@
                 </mat-error>
             </mat-form-field>
         </ng-container>
+
         <!--    Type reutilisation-->
         <ng-container>
             <div class="d-flex">
@@ -195,7 +196,7 @@
                 <mat-select placeholder="{{'project.stepper.submission.step1.selectOption'|translate}}"
                             [compareWith]="compareObjects"
                             formControlName="type">
-                    <mat-option *ngFor="let project of projectType"
+                    <mat-option *ngFor="let project of projectType" class="single-select"
                                 [value]="project">{{project.label}}</mat-option>
                 </mat-select>
                 <mat-error class="stepper-mat-error"

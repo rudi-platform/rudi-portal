@@ -28,7 +28,6 @@ import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMIN
 
 /**
  * @author FNI18300
- *
  */
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public class ProjectKeystoreController implements ProjectKeystoresApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + ")")
 	public ResponseEntity<Void> deleteProjectKeystore(UUID projectKeystoreUuid) throws Exception {
 		projectKeystoreService.deleteProjectKeystore(projectKeystoreUuid);
 		return ResponseEntity.noContent().build();
@@ -53,7 +52,7 @@ public class ProjectKeystoreController implements ProjectKeystoresApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODULE_PROJEKT_ADMINISTRATOR + "," + MODULE_PROJEKT + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
-	public ResponseEntity<ProjectKey>  createProjectKey(UUID projectKeystoreUuid, ProjectKey projectKey)
+	public ResponseEntity<ProjectKey> createProjectKey(UUID projectKeystoreUuid, ProjectKey projectKey)
 			throws Exception {
 		return ResponseEntity.ok(projectKeystoreService.createProjectKey(projectKeystoreUuid, projectKey));
 	}

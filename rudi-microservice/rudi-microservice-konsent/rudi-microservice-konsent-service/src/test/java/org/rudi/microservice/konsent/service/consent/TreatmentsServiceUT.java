@@ -33,11 +33,12 @@ import org.rudi.microservice.konsent.service.treatment.TreatmentsService;
 import org.rudi.microservice.konsent.storage.dao.treatment.TreatmentsDao;
 import org.rudi.microservice.konsent.storage.dao.treatmentversion.TreatmentVersionDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.setAllowComparingPrivateFields;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -61,13 +62,13 @@ public class TreatmentsServiceUT {
 	private final TreatmentsDao treatmentsDao;
 	private final TreatmentVersionDao treatmentVersionDao;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
 
 	private User authenticatedUserToUser(AuthenticatedUser originalUser, UUID userUuid) {
@@ -212,9 +213,12 @@ public class TreatmentsServiceUT {
 		val createdTreatment = createTreatmentFromJson(JSON_BASIC_TREATMENT);
 		final Treatment gotTreatment = treatmentsService.getTreatment(createdTreatment.getUuid(), false);
 
+		setAllowComparingPrivateFields(true);
 		assertThat(gotTreatment)
-				.as("On retrouve le traitement créé")
-				.isEqualToIgnoringGivenFields(createdTreatment, "creationDate", "updatedDate", "version"); // On ignore les dates et la version qui contient des dates car MaJ par le système
+				.as("Le throttling repéré doit être égal à celui passé lors de la création")
+				.usingRecursiveComparison()
+				.ignoringFields("creationDate", "updatedDate", "version")
+				.isEqualTo(createdTreatment);
 	}
 
 	@DisplayName("Publie la version courante d'un traitement")

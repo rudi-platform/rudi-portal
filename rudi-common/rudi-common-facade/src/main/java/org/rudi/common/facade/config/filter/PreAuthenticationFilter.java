@@ -3,6 +3,12 @@
  */
 package org.rudi.common.facade.config.filter;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
 import org.slf4j.Logger;
@@ -10,17 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -39,14 +40,21 @@ public class PreAuthenticationFilter implements Filter {
 	public static final String SEC_ORGANIZATION = "sec-organization";
 	public static final String SEC_TYPE = "sec-type";
 
-	public PreAuthenticationFilter() {
+	private boolean disabled;
+
+	public PreAuthenticationFilter(boolean disabled) {
 		super();
+		this.disabled = disabled;
+	}
+
+	public PreAuthenticationFilter() {
+		this(true);
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (request instanceof HttpServletRequest) {
+		if (request instanceof HttpServletRequest && !disabled) {
 			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 			final String login = httpServletRequest.getHeader(SEC_LOGIN);
 			if (login != null) {

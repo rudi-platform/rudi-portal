@@ -3,15 +3,16 @@
  */
 package org.rudi.common.storage.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import org.rudi.common.core.Coded;
 import org.rudi.common.core.Labelized;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author FNI18300

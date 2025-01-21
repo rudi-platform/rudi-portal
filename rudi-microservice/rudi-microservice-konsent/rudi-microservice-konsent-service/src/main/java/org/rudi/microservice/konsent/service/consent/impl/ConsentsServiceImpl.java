@@ -9,9 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.persistence.NoResultException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.NoResultException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.facade.util.UtilPageable;

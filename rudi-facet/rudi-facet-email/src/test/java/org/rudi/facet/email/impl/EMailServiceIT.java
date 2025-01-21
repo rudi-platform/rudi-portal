@@ -3,15 +3,10 @@
  */
 package org.rudi.facet.email.impl;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doNothing;
-
 import java.io.File;
 import java.net.URL;
 
-import javax.mail.internet.MimeMessage;
-
+import jakarta.mail.internet.MimeMessage;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +18,12 @@ import org.rudi.facet.email.exception.EMailException;
 import org.rudi.facet.email.model.EMailDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 
 /**
  * @author fni18300
@@ -39,7 +38,7 @@ class EMailServiceIT {
 	@Autowired
 	private EMailService emailService;
 
-	@MockBean
+	@MockitoBean
 	private JavaMailSenderImpl javaMailSender;
 
 	@Test

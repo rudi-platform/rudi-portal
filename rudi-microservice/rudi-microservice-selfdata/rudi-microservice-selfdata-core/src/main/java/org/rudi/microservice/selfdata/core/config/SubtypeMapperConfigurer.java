@@ -1,9 +1,8 @@
 package org.rudi.microservice.selfdata.core.config;
 
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
+import jakarta.annotation.PostConstruct;
 import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

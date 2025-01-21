@@ -3,13 +3,13 @@ package org.rudi.microservice.kalim.service.integration.impl.handlers;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,28 +19,39 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.DefaultJackson2ObjectMapperBuilder;
 import org.rudi.common.core.json.JsonResourceReader;
+import org.rudi.common.service.exception.AppServiceUnauthorizedException;
+import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
+import org.rudi.facet.providers.bean.LinkedProducer;
+import org.rudi.facet.providers.bean.NodeProvider;
+import org.rudi.facet.providers.bean.Organization;
+import org.rudi.facet.providers.bean.Provider;
 import org.rudi.facet.providers.helper.ProviderHelper;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.bean.Method;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.IntegrationError;
+import org.rudi.microservice.kalim.service.KalimSpringBootTest;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
 import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,9 +63,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@KalimSpringBootTest
 class PostIntegrationRequestTreatmentHandlerUT {
 
+	private final UserDataFactory userDataFactory;
 	private final ObjectMapper objectMapper = new DefaultJackson2ObjectMapperBuilder().build();
 	private final Error500Builder error500Builder = new Error500Builder();
 	private final JsonResourceReader jsonResourceReader = new JsonResourceReader();
@@ -71,11 +86,11 @@ class PostIntegrationRequestTreatmentHandlerUT {
 	private OrganizationHelper organizationHelper;
 	@Captor
 	private ArgumentCaptor<Metadata> metadataArgumentCaptor;
-	@Mock
+	@MockitoBean
 	ProviderHelper providerHelper;
-	@Mock
+	@MockitoBean
 	ACLHelper aclHelper;
-	@Mock
+	@MockitoBean
 	RolesHelper roleHelper;
 
 
@@ -89,7 +104,54 @@ class PostIntegrationRequestTreatmentHandlerUT {
 	}
 
 	private Metadata buildMetadataToCreate() throws IOException {
-		return jsonResourceReader.read("metadata/create-ok.json", Metadata.class);
+		return jsonResourceReader.read("metadata/creation-ok.json", Metadata.class);
+	}
+
+	private UUID init(){
+		UUID nodeProviderUuid = UUID.randomUUID();
+		NodeProvider nodeProvider = new NodeProvider().uuid(nodeProviderUuid);
+		Provider provider = new Provider();
+		provider.setNodeProviders(List.of(nodeProvider));
+		Organization organization = new Organization();
+		organization.setUuid(UUID.fromString("e6262c50-1628-436b-92f9-82b560729830"));
+		organization.setName("TA RUDI-1460 a accepter");
+		LinkedProducer linkedProducer = new LinkedProducer();
+		linkedProducer.setUuid(UUID.randomUUID());
+		linkedProducer.setOrganization(organization);
+		provider.setLinkedProducers(List.of(linkedProducer));
+		User user = userDataFactory.createUserNodeProvider(nodeProviderUuid.toString());
+
+		when(aclHelper.getUserByLogin(any())).thenReturn(user);
+		when(providerHelper.getNodeProviderByUUID(any())).thenReturn(nodeProvider);
+		when(providerHelper.getFullProviderByNodeProviderUUID(any())).thenReturn(provider);
+
+		return nodeProviderUuid;
+	}
+
+	@Test
+	@DisplayName("Création -> OK")
+	void createIntegrationRequest() throws IOException, AppServiceUnauthorizedException {
+		UUID nodeProviderUuid = init();
+
+		final Metadata metadata = buildMetadataToCreate();
+		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
+		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder()
+				.method(Method.POST)
+				.uuid(UUID.randomUUID())
+				.globalId(metadata.getGlobalId())
+				.progressStatus(ProgressStatus.CREATED)
+				.file(metadataJson)
+				.errors(new HashSet<>())
+				.nodeProviderId(nodeProviderUuid)
+				.build();
+
+		//Les validateurs ne retournent pas d'erreur
+		final Set<IntegrationRequestErrorEntity> errors = Collections.emptySet();
+		when(validator.validateMetadata(metadataArgumentCaptor.capture())).thenReturn(errors);
+
+		handler.handle(integrationRequest);
+
+		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
 	}
 
 	@Test
@@ -117,16 +179,16 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 	@Test
 	@DisplayName("validation passed ✔ ⇒ dataset and API created \uD83E\uDD73")
-	@Disabled
-		// en cours de correction
 	void createIntegrationRequestNoValidationErrorInteractions()
 			throws DataverseAPIException, IOException, ApiGatewayApiException, GetOrganizationException {
+
+		UUID nodeProviderUuid = init();
 
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
 		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.POST)
 				.uuid(UUID.randomUUID()).globalId(metadata.getGlobalId()).progressStatus(ProgressStatus.CREATED)
-				.file(metadataJson).errors(new HashSet<>()).build();
+				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
 
 		final Set<IntegrationRequestErrorEntity> errors = Collections.emptySet();
 		when(validator.validateMetadata(metadataArgumentCaptor.capture())).thenReturn(errors);
@@ -136,8 +198,9 @@ class PostIntegrationRequestTreatmentHandlerUT {
 		final Metadata createdMetadata = mock(Metadata.class);
 		when(datasetService.getDataset(createdMetadataDoi)).thenReturn(createdMetadata);
 
-		when(organizationHelper.getOrganization(any())).thenReturn(new Organization());
 		handler.handle(integrationRequest);
+
+		System.out.println(integrationRequest.getErrors());
 
 		assertThat(integrationRequest.getIntegrationStatus()).isEqualTo(IntegrationStatus.OK);
 
@@ -147,15 +210,20 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 	@Test
 	@DisplayName("getDataset NullPointerException ❌ ⇒ dataset creation cancelled")
-	@Disabled
-// en cours de correction
 	void createIntegrationRequestGetDatasetError() throws DataverseAPIException, IOException {
+		UUID nodeProviderUuid = init();
 
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
-		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.POST)
-				.uuid(UUID.randomUUID()).globalId(metadata.getGlobalId()).progressStatus(ProgressStatus.CREATED)
-				.file(metadataJson).errors(new HashSet<>()).build();
+		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder()
+				.method(Method.POST)
+				.uuid(UUID.randomUUID())
+				.globalId(metadata.getGlobalId())
+				.progressStatus(ProgressStatus.CREATED)
+				.file(metadataJson)
+				.nodeProviderId(nodeProviderUuid)
+				.errors(new HashSet<>())
+				.build();
 
 		final Set<IntegrationRequestErrorEntity> errors = Collections.emptySet();
 		when(validator.validateMetadata(metadataArgumentCaptor.capture())).thenReturn(errors);
@@ -181,14 +249,14 @@ class PostIntegrationRequestTreatmentHandlerUT {
 
 	@Test
 	@DisplayName("API Gateway error ❌ ⇒ dataset creation cancelled")
-	@Disabled
 		// en cours de correction
 	void createIntegrationRequestApiGatewayErrors() throws DataverseAPIException, IOException, ApiGatewayApiException {
+		UUID nodeProviderUuid = init();
 		final Metadata metadata = buildMetadataToCreate();
 		final String metadataJson = jsonResourceReader.getObjectMapper().writeValueAsString(metadata);
 		final IntegrationRequestEntity integrationRequest = IntegrationRequestEntity.builder().method(Method.POST)
 				.uuid(UUID.randomUUID()).globalId(metadata.getGlobalId()).progressStatus(ProgressStatus.CREATED)
-				.file(metadataJson).errors(new HashSet<>()).build();
+				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
 
 		final Set<IntegrationRequestErrorEntity> errors = Collections.emptySet();
 		when(validator.validateMetadata(metadataArgumentCaptor.capture())).thenReturn(errors);

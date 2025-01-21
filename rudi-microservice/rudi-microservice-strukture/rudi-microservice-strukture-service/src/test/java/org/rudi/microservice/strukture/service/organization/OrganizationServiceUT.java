@@ -37,7 +37,7 @@ import org.rudi.microservice.strukture.service.helper.organization.OrganizationM
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -64,19 +64,19 @@ class OrganizationServiceUT {
 	@Autowired
 	private OrganizationDao organizationDao;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	private ProjektHelper projektHelper;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
-	@MockBean
+	@MockitoBean
 	OrganizationMembersHelper organizationMembersHelper;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 	@Autowired
 	private OrganizationDataFactory organizationDataFactory;

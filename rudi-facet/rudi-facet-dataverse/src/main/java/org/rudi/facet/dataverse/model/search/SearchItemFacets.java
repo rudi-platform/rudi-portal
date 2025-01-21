@@ -11,9 +11,11 @@ import lombok.Data;
 @Data
 public class SearchItemFacets implements Serializable {
 
-    @JsonProperty("friendly")
-    private String friendly;
+	private static final long serialVersionUID = -4099268530131992819L;
 
-    @JsonProperty("labels")
-    private List<Map<String, Integer>> labels;
+	@JsonProperty("friendly")
+	private String friendly;
+
+	@JsonProperty("labels")
+	private List<Map<String, Integer>> labels;
 }

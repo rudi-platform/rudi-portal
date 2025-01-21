@@ -45,7 +45,7 @@ import org.rudi.facet.bpmn.mapper.form.FormSectionDefinitionMapper;
 import org.rudi.facet.bpmn.mapper.form.ProcessFormDefinitionMapper;
 import org.rudi.facet.bpmn.mapper.form.SectionDefinitionMapper;
 import org.rudi.facet.bpmn.service.FormService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -87,7 +87,7 @@ public class FormServiceImpl implements FormService {
 
 	private final ProcessFormDefinitionMapper processFormDefinitionMapper;
 
-	private final TemplateGeneratorImpl templateGenerator;
+	private final TemplateGenerator templateGenerator;
 
 	private final FormTemplateConfiguration formTemplateConfiguration;
 

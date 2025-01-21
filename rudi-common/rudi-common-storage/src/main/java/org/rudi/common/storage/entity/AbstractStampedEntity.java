@@ -1,15 +1,16 @@
 package org.rudi.common.storage.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import org.rudi.common.core.Ordered;
 import org.rudi.common.core.Stamped;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Entité technique administrable via un BackOffice

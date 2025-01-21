@@ -109,7 +109,7 @@ public class BpmnHelper {
 		}
 	}
 
-	public org.activiti.engine.task.Task queryTaskByAssetId(Class assetType, Long assetId) {
+	public org.activiti.engine.task.Task queryTaskByAssetId(Class<?> assetType, Long assetId) {
 		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
 		TaskQuery taskQuery = taskService.createTaskQuery();
 

@@ -35,7 +35,7 @@ public abstract class AbstractGlobalFilter implements GlobalFilter, Ordered {
 	private final DatasetService datasetService;
 
 	protected String formatMessage(ServerWebExchange exchange) {
-		return exchange.getLogPrefix() + " " + exchange.getRequest().getMethodValue() + " "
+		return exchange.getLogPrefix() + " " + exchange.getRequest().getMethod().name() + " "
 				+ exchange.getRequest().getURI();
 	}
 
@@ -54,7 +54,7 @@ public abstract class AbstractGlobalFilter implements GlobalFilter, Ordered {
 	}
 
 	protected Metadata getMetadata(UUID globalId) throws DataverseAPIException {
-		return datasetService.getDataset(globalId);
+		return datasetService.getNonBlockingDataset(globalId);
 	}
 
 	protected Pair<UUID, UUID> extractDatasetIdentifiers(ServerWebExchange exchange) {

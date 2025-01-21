@@ -15,7 +15,7 @@ import org.springframework.test.context.TestPropertySource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@SpringBootTest
+@SpringBootTest(classes = SpringBootTestApplication.class)
 @TestPropertySource(properties = "spring.config.name = strukture")
 @ActiveProfiles(profiles = { "test", "${spring.profiles.test:test-env}" })
 public @interface StruktureSpringBootTest {

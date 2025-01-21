@@ -3,7 +3,7 @@ package org.rudi.microservice.selfdata.service.helper.provider;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.rudi.microservice.selfdata.core.bean.MatchingDescription;
 import org.rudi.microservice.selfdata.core.bean.MatchingField;
 import org.rudi.microservice.selfdata.service.exception.ProviderApiException;

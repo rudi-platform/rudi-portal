@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 		"org.rudi.facet.oauth2",
 		"org.rudi.tools.nodestub",
 })
+@EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:nodestub/nodestub-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 

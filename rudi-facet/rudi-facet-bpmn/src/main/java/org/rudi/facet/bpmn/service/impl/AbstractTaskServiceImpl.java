@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-
 import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.event.ActivitiEntityEvent;
@@ -23,6 +21,7 @@ import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricDetail;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -46,6 +45,7 @@ import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.bpmn.helper.workflow.AssetDescriptionHelper;
 import org.rudi.facet.bpmn.helper.workflow.AssignmentHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
@@ -64,13 +64,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
 
 /**
- * @author FNI18300
- *
  * @param <E> l'entité
  * @param <D> le dto
  * @param <R> le dao
@@ -78,9 +79,10 @@ import lombok.extern.slf4j.Slf4j;
  * @param <H> le helper d'assignation
  * @param <W> le workflowcontext d'exécution
  * @param <S> le critère de recherche
+ * @author FNI18300
  */
 @Slf4j
-public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, D extends AssetDescription, R extends AssetDescriptionDao<E>, A extends AssetDescriptionHelper<E, D>, H extends AssignmentHelper<E>>
+public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, D extends AssetDescription, R extends AssetDescriptionDao<E>, A extends AssetDescriptionHelper<E, D>, H extends AssignmentHelper<E>, W extends AbstractWorkflowContext<E, R, H>>
 		implements TaskService<D>, ActivitiEventListener {
 
 	private static final String TASK_DOES_NO_EXISTS_OR_NOT_ACCESSIBLE_BY_YOU_MESSAGE = "Task does no exists or not accessible by you";
@@ -121,6 +123,12 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Getter(value = AccessLevel.PROTECTED)
 	private final InitializationService initializationService;
 
+	@Getter(value = AccessLevel.PROTECTED)
+	private final W workflowContext;
+
+	@Getter(value = AccessLevel.PROTECTED)
+	private final ProcessEngineConfiguration processEngineConfiguration;
+
 	@Autowired(required = false)
 	private List<AssetDescriptionActionListener<E>> assetListeners;
 
@@ -132,7 +140,8 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 	protected AbstractTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService, R assetDescriptionDao,
-			A assetDescriptionHelper, H assignmentHelper) {
+			A assetDescriptionHelper, H assignmentHelper, W workflowContext,
+			ProcessEngineConfiguration processEngineConfiguration) {
 		super();
 		this.processEngine = processEngine;
 		this.formHelper = formHelper;
@@ -143,12 +152,29 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		this.assetDescriptionDao = assetDescriptionDao;
 		this.assignmentHelper = assignmentHelper;
 		this.initializationService = initializationService;
+		this.workflowContext = workflowContext;
+		this.processEngineConfiguration = processEngineConfiguration;
+		registerWorkflowContextAsBean();
 	}
+
+	protected void registerWorkflowContextAsBean() {
+		if (processEngineConfiguration instanceof ProcessEngineConfigurationImpl processEngineConfigurationImpl) {
+			processEngineConfigurationImpl.getBeans().put(getWorkflowContextBeanName(), workflowContext);
+		} else {
+			log.warn("Failed to register {} as workflowContext");
+		}
+	}
+
+	protected abstract String getWorkflowContextBeanName();
 
 	@Override
 	@Nullable
-	public Form lookupDraftForm() throws FormDefinitionException {
-		return formHelper.lookupDraftForm(getProcessDefinitionKey());
+	public Form lookupDraftForm(String formType) throws FormDefinitionException {
+		if (formType == null) {
+			formType = DRAFT_USER_TASK_ID;
+		}
+
+		return formHelper.lookupViewForm(getProcessDefinitionKey(), formType);
 	}
 
 	@Override
@@ -183,7 +209,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		fireAfterCreate(assetDescriptionEntity);
 
 		// conversion
-		return assetDescriptionHelper.createTaskFromAsset(assetDescriptionEntity, lookupDraftForm());
+		return assetDescriptionHelper.createTaskFromAsset(assetDescriptionEntity, lookupDraftForm(null));
 	}
 
 	@Override
@@ -195,7 +221,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		}
 		// récupération du signalement draft
 		E assetDescriptionEntity = assetDescriptionDao.findByUuid(task.getAsset().getUuid());
-		checkTaskValidity(assetDescriptionEntity);
+		checkEntityStatus(assetDescriptionEntity);
 
 		// vérifications du droit pour l'utilisateur de créer la tache
 		checkRightsOnInitEntity(assetDescriptionEntity);
@@ -427,14 +453,15 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	protected void updateDraftAssetData(D assetDescription, E assetDescriptionEntity)
 			throws FormDefinitionException, FormConvertException, InvalidDataException {
 		Map<String, Object> datas = formHelper.hydrateData(assetDescriptionEntity.getData());
-		Form orignalForm = lookupOriginalDraftForm(assetDescriptionEntity);
+		String type = (assetDescription.getForm() != null) ? assetDescription.getForm().getType() : DRAFT_USER_TASK_ID;
+		Form orignalForm = lookupOriginalDraftForm(assetDescriptionEntity, type);
 		formHelper.copyFormData(assetDescription.getForm(), orignalForm);
 		formHelper.fillMap(orignalForm, datas);
 		assetDescriptionEntity.setData(formHelper.deshydrateData(datas));
 	}
 
-	protected Form lookupOriginalDraftForm(E assetDescriptionEntity) throws FormDefinitionException {
-		return formHelper.lookupDraftForm(assetDescriptionEntity.getProcessDefinitionKey());
+	protected Form lookupOriginalDraftForm(E assetDescriptionEntity, String type) throws FormDefinitionException {
+		return formHelper.lookupViewForm(assetDescriptionEntity.getProcessDefinitionKey(), type);
 	}
 
 	protected void updateAssetCreation(E assetDescriptionEntity) {
@@ -571,7 +598,6 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	}
 
 	/**
-	 *
 	 * @param assetDescriptionEntity
 	 * @return
 	 * @throws InvalidDataException
@@ -605,7 +631,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	 * @param variables
 	 * @param assetDescriptionEntity
 	 */
-	protected void fillProcessVariables(Map<String, Object> variables, E assetDescriptionEntity) {
+	protected void fillProcessVariables(Map<String, Object> variables, E assetDescriptionEntity) throws InvalidDataException {
 		// Nothing
 	}
 
@@ -618,14 +644,14 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Transactional(readOnly = false)
 	public void onEvent(ActivitiEvent event) {
 		switch (event.getType()) {
-		case ENTITY_CREATED:
-			cacheEntiy(event);
-			break;
-		case TASK_ASSIGNED:
-			assign(event);
-			break;
-		default:
-			// NOTHING
+			case ENTITY_CREATED:
+				cacheEntiy(event);
+				break;
+			case TASK_ASSIGNED:
+				assign(event);
+				break;
+			default:
+				// NOTHING
 		}
 
 	}
@@ -757,8 +783,8 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		} else {
 			try (InputStream bpmnStream = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(computeBpmnFilename());
-					InputStream lastProcessDefinitionStream = repositoryService.getResourceAsStream(
-							lastProcessDefinition.getDeploymentId(), lastProcessDefinition.getResourceName());) {
+				 InputStream lastProcessDefinitionStream = repositoryService.getResourceAsStream(
+						 lastProcessDefinition.getDeploymentId(), lastProcessDefinition.getResourceName());) {
 				String lastProcessDefinitionMd5 = DigestUtils.md5DigestAsHex(lastProcessDefinitionStream);
 				String bpmnMd5 = DigestUtils.md5DigestAsHex(bpmnStream);
 				if (!lastProcessDefinitionMd5.equals(bpmnMd5)) {
@@ -786,7 +812,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		}
 	}
 
-	protected abstract AbstractTaskServiceImpl<E, D, R, A, H> lookupMe();
+	protected abstract AbstractTaskServiceImpl<E, D, R, A, H, W> lookupMe();
 
 	// assetDescriptionEntity utilisé dans les enfants
 	protected boolean checkUpdate(E assetDescriptionEntity) {// NOSONAR
@@ -797,16 +823,10 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		// nothing to do by default
 	}
 
-	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException {
-		if (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(), assetDescriptionEntity.getId()) != null
-				&& assetDescriptionEntity.getStatus() != Status.DRAFT) {
+	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException, InvalidDataException {
+		if (assetDescriptionEntity == null || (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(), assetDescriptionEntity.getId()) != null
+				&& assetDescriptionEntity.getStatus() != Status.DRAFT)) {
 			throw new IllegalArgumentException("Asset is already linked to a task");
-		}
-	}
-
-	protected void checkTaskValidity(E assetDescriptionEntity) throws IllegalArgumentException {
-		if (assetDescriptionEntity == null || assetDescriptionEntity.getStatus() != Status.DRAFT) {
-			throw new IllegalArgumentException("Invalid task");
 		}
 	}
 

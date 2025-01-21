@@ -5,8 +5,10 @@ package org.rudi.microservice.projekt.service.helper.project;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstactAssetDescriptionHelper;
@@ -20,11 +22,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author FNI18300
- *
  */
 @Component
 public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<ProjectEntity, Project, ProjectMapper> {
-
+	public static final String DRAFT_TYPE_FORM_ARCHIVE_VALUE = "archive";
+	private static final String DRAFT_TYPE_FORM_KEY = "draftType";
 	private final List<ProjectValidator> projectValidators;
 	private final List<ProjectTaskUpdateProcessor> projectTaskUpdateProcessors;
 
@@ -45,7 +47,7 @@ public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<Project
 	 * @param assetDescriptionEntity
 	 */
 	@Override
-	public void updateAssetEntity(Project assetDescription, ProjectEntity assetDescriptionEntity)  throws InvalidDataException {
+	public void updateAssetEntity(Project assetDescription, ProjectEntity assetDescriptionEntity) throws InvalidDataException {
 		projectValidators.forEach(validator -> validator.validate(assetDescription));
 
 		super.updateAssetEntity(assetDescription, assetDescriptionEntity);
@@ -53,9 +55,22 @@ public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<Project
 		for (ProjectTaskUpdateProcessor projectTaskUpdateProcessor : projectTaskUpdateProcessors) {
 			try {
 				projectTaskUpdateProcessor.process(assetDescription, assetDescriptionEntity);
-			} catch (InvocationTargetException|NoSuchMethodException|IllegalAccessException e){
+			} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 				throw new InvalidDataException("Données invalides lors de la mise à jour d'un projet.");
 			}
 		}
 	}
+
+	/**
+	 * @param assetDescriptionEntity
+	 */
+	public String getDraftType(AssetDescriptionEntity assetDescriptionEntity) throws InvalidDataException {
+		FormHelper formHelper = getFormHelper();
+		Map<String, Object> hydrate = formHelper.hydrateData(assetDescriptionEntity.getData());
+		if (hydrate.containsKey(DRAFT_TYPE_FORM_KEY)) {
+			return hydrate.get(DRAFT_TYPE_FORM_KEY).toString();
+		}
+		return null;
+	}
+
 }

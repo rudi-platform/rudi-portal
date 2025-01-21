@@ -14,7 +14,7 @@ public enum ApiMethod {
 	GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
 
 	public HttpMethod convert() {
-		return HttpMethod.resolve(name());
+		return HttpMethod.valueOf(name());
 	}
 
 }

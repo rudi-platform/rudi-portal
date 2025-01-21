@@ -4,10 +4,10 @@ import org.rudi.microservice.acl.facade.controller.api.HealthCheckApi;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class HealthCheckController implements HealthCheckApi, HealthIndicator {
 
 	@Override
@@ -20,7 +20,5 @@ public class HealthCheckController implements HealthCheckApi, HealthIndicator {
 	public Health health() {
 		return Health.up().build();
 	}
-	
-	
 
 }

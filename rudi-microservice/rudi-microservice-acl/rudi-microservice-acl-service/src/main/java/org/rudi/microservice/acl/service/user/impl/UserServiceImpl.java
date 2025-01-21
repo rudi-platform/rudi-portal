@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.LongId;
@@ -54,6 +52,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -447,5 +446,11 @@ public class UserServiceImpl implements UserService {
 		final Page<UserEntity> pagedUserEntities = userCustomDao.searchUsers(searchCriteria, pageable);
 		return pagedUserEntities.getTotalElements();
 
+	}
+
+	@Override
+	public String getUserPassword(UUID uuid) {
+		UserEntity user = userDao.findByUuid(uuid);
+		return user != null ? user.getPassword() : null;
 	}
 }

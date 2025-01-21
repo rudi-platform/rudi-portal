@@ -42,7 +42,7 @@ import org.rudi.microservice.konsent.service.consent.replacer.TransientDtoReplac
 import org.rudi.microservice.konsent.service.treatment.TreatmentsService;
 import org.rudi.microservice.konsent.storage.dao.consent.ConsentDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -77,22 +77,22 @@ class ConsentServiceUT {
 	private final UtilPageable utilPageable;
 	private final ConsentDao consentDao;
 
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
 
-	@MockBean
+	@MockitoBean
 	private OrganizationHelper organizationHelper;
 
-//	@MockBean
+//	@MockitoBean
 //	private PDFSigner pdfSigner;
 //
-//	@MockBean
+//	@MockitoBean
 //	private PDFConvertor pdfConvertor;
 
-	@MockBean
+	@MockitoBean
 	private DocumentStorageService documentStorageService;
 
 	private static final OffsetDateTime expirationDate2 = OffsetDateTime.parse("2022-01-01T15:20:30+08:00");
@@ -197,7 +197,7 @@ class ConsentServiceUT {
 	}
 
 	private AuthenticatedUser getRandomUser() {
-		return getUserWithLogin(RandomStringUtils.random(6));
+		return getUserWithLogin(RandomStringUtils.secure().next(6));
 	}
 
 	private User authenticatedUserToUser(AuthenticatedUser originalUser, UUID userUuid) {

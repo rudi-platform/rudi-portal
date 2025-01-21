@@ -1,5 +1,10 @@
 package org.rudi.microservice.strukture.service.address;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +20,7 @@ import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.storage.dao.address.AddressRoleDao;
 import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Class de test du service AddressRoleService
@@ -34,7 +34,7 @@ class AddressRoleServiceUT {
 	@Autowired
 	private AddressRoleDao addressRoleDao;
 
-	@MockBean
+	@MockitoBean
 	DatasetService datasetService;
 
 	private AddressRole roleSiteWebProjet;
@@ -182,12 +182,10 @@ class AddressRoleServiceUT {
 		criteria = new AddressRoleSearchCriteria();
 		criteria.setType(AddressType.EMAIL);
 		addressRoles = addressRoleService.searchAddressRoles(criteria);
-		assertThat(addressRoles)
-				.as("La taille doit être la même qu'à létat initial")
+		assertThat(addressRoles).as("La taille doit être la même qu'à létat initial")
 				.matches(a -> initialCountEmail == a.size()).as("L'uuid du role mail hotline doit être présent")
 				.anyMatch(a -> a.getUuid().equals(roleMailHotline.getUuid()));
 		assertEquals(initialCountEmail, addressRoles.size());
-
 
 		// suppression d'un role d'adresse
 		// --------------------------------

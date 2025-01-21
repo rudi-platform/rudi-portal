@@ -1,11 +1,5 @@
 package org.rudi.facet.acl.helper;
 
-import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_STORE_UUID_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_UUID_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_LOGIN_AND_DENOMINATION_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_TYPE_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_UUIDS_PARAMETER;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,10 +8,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +41,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import reactor.core.publisher.Mono;
+import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_STORE_UUID_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_UUID_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_LOGIN_AND_DENOMINATION_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_TYPE_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_UUIDS_PARAMETER;
 
 /**
  * L'utilisation de ce helper requiert l'ajout de 2 propriétés dans le fichier de configuration associé

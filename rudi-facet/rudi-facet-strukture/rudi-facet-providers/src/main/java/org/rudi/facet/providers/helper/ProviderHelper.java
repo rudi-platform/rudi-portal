@@ -1,5 +1,7 @@
 package org.rudi.facet.providers.helper;
 
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -20,11 +22,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import reactor.core.publisher.Mono;
 
 /**
  * L'utilisation de ce helper requiert l'ajout de 2 propriétés dans le fichier de configuration associé
@@ -55,8 +56,7 @@ public class ProviderHelper {
 			@Value("${rudi.facet.providers.endpoint.nodes.patch.url:/strukture/v1/providers/{providerUuid}/nodes/{nodeUuid}}") String providersEndpointPatchNodeUrl,
 			@Value("${rudi.facet.providers.service.url:lb://RUDI-STRUKTURE/}") String struktureServiceURL,
 			@Value("${rudi.facet.providers.default-provider-uuid:5596b5b2-b227-4c74-a9a1-719e7c1008c7}") UUID defaultProviderUuid,
-			@Qualifier("rudi_oauth2_builder") WebClient.Builder webClientBuilder
-	) {
+			@Qualifier("rudi_oauth2_builder") WebClient.Builder webClientBuilder) {
 		this.providersEndpointSearchURL = providersEndpointSearchURL;
 		this.providersEndpointGetURL = providersEndpointGetURL;
 		this.providersEndpointPatchNodeUrl = providersEndpointPatchNodeUrl;
@@ -74,12 +74,8 @@ public class ProviderHelper {
 		if (providerUuid == null) {
 			throw new IllegalArgumentException("provider uuid required");
 		}
-		return loadBalancedWebClient
-				.get()
-				.uri(uriBuilder -> buildGetURL(uriBuilder, providerUuid))
-				.retrieve()
-				.bodyToMono(Provider.class)
-				.block();
+		return loadBalancedWebClient.get().uri(uriBuilder -> buildGetURL(uriBuilder, providerUuid)).retrieve()
+				.bodyToMono(Provider.class).block();
 	}
 
 	/**
@@ -95,16 +91,10 @@ public class ProviderHelper {
 			throw new IllegalArgumentException("node provider uuid required");
 		}
 
-		ProviderPageResult pageResult = loadBalancedWebClient
-				.get()
-				.uri(uriBuilder -> searchUriBuilder(uriBuilder)
-						.queryParam(LIMIT_PARAMETER, 1)
-						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId)
-						.build()
-				)
-				.retrieve()
-				.bodyToMono(ProviderPageResult.class)
-				.block();
+		ProviderPageResult pageResult = loadBalancedWebClient.get()
+				.uri(uriBuilder -> searchUriBuilder(uriBuilder).queryParam(LIMIT_PARAMETER, 1)
+						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId).build())
+				.retrieve().bodyToMono(ProviderPageResult.class).block();
 		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
 			result = pageResult.getElements().get(0);
 		}
@@ -124,23 +114,16 @@ public class ProviderHelper {
 			throw new IllegalArgumentException("node provider uuid required");
 		}
 
-		ProviderPageResult pageResult = loadBalancedWebClient
-				.get()
-				.uri(uriBuilder -> searchUriBuilder(uriBuilder)
-						.queryParam(LIMIT_PARAMETER, 1)
-						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId)
-						.queryParam(FULL_PARAMETER, true)
-						.build()
-				)
-				.retrieve()
-				.bodyToMono(ProviderPageResult.class)
-				.block();
+		ProviderPageResult pageResult = loadBalancedWebClient.get()
+				.uri(uriBuilder -> searchUriBuilder(uriBuilder).queryParam(LIMIT_PARAMETER, 1)
+						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId).queryParam(FULL_PARAMETER, true)
+						.build())
+				.retrieve().bodyToMono(ProviderPageResult.class).block();
 		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
 			result = pageResult.getElements().get(0);
 		}
 		return result;
 	}
-
 
 	/**
 	 * Version non null de {@link #getProviderByNodeProviderUUID(UUID)}.
@@ -150,9 +133,9 @@ public class ProviderHelper {
 	@Nonnull
 	public Provider requireProviderByNodeProviderUUID(UUID nodeProviderUUId) {
 		final var provider = getProviderByNodeProviderUUID(nodeProviderUUId);
-		return Objects.requireNonNull(provider, "Fournisseur introuvable pour l'UUID de nœud fournisseur " + nodeProviderUUId);
+		return Objects.requireNonNull(provider,
+				"Fournisseur introuvable pour l'UUID de nœud fournisseur " + nodeProviderUUId);
 	}
-
 
 	/**
 	 * Accède au service µProviders pour trouver un noeud par son uuid
@@ -183,16 +166,11 @@ public class ProviderHelper {
 	}
 
 	protected URI buildGetURL(UriBuilder uriBuilder, UUID value) {
-		return uriBuilder
-				.path(getProvidersEndpointGetURL())
-				.pathSegment(value.toString())
-				.build();
+		return uriBuilder.path(getProvidersEndpointGetURL()).pathSegment(value.toString()).build();
 	}
 
 	protected UriBuilder searchUriBuilder(UriBuilder uriBuilder) {
-		return uriBuilder
-				.path(getProvidersEndpointSearchURL())
-				.queryParam(FULL_PARAMETER, true);
+		return uriBuilder.path(getProvidersEndpointSearchURL()).queryParam(FULL_PARAMETER, true);
 	}
 
 	/**
@@ -200,9 +178,7 @@ public class ProviderHelper {
 	 */
 	public Mono<List<Provider>> getAllProviders() {
 		final Mono<ProviderPageResult> pageResultMono = loadBalancedWebClient.get()
-				.uri(uriBuilder -> searchUriBuilder(uriBuilder)
-						.build())
-				.retrieve()
+				.uri(uriBuilder -> searchUriBuilder(uriBuilder).build()).retrieve()
 				.bodyToMono(ProviderPageResult.class);
 		return pageResultMono.map(pageResult -> {
 			if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
@@ -214,13 +190,12 @@ public class ProviderHelper {
 	}
 
 	public Mono<List<NodeWithProviderUuid>> getHarvestableNodes() {
-		return getAllProviders()
-				.map(providers -> providers.stream()
-						.flatMap(provider -> provider.getNodeProviders().stream()
-								.map(node -> new NodeWithProviderUuid(provider.getUuid(), node)))
-						.filter(nodeWithProviderUuid -> this.isHarvestable(nodeWithProviderUuid.getNode()))
-						.collect(Collectors.toList())
-				);
+		return getAllProviders().map(providers -> providers.stream()
+				.filter(provider -> CollectionUtils.isNotEmpty(provider.getNodeProviders()))
+				.flatMap(provider -> provider.getNodeProviders().stream()
+						.map(node -> new NodeWithProviderUuid(provider.getUuid(), node)))
+				.filter(nodeWithProviderUuid -> this.isHarvestable(nodeWithProviderUuid.getNode()))
+				.collect(Collectors.toList()));
 	}
 
 	private boolean isHarvestable(NodeProvider nodeProvider) {
@@ -228,14 +203,9 @@ public class ProviderHelper {
 	}
 
 	public Mono<NodeProvider> patchNode(UUID providerUuid, UUID nodeUuid, LocalDateTime lastHarvestingDate) {
-		return loadBalancedWebClient
-				.patch()
-				.uri(uriBuilder -> uriBuilder
-						.path(providersEndpointPatchNodeUrl)
-						.queryParam("lastHarvestingDate", lastHarvestingDate)
-						.build(providerUuid, nodeUuid)
-				)
-				.retrieve()
-				.bodyToMono(NodeProvider.class);
+		return loadBalancedWebClient.patch()
+				.uri(uriBuilder -> uriBuilder.path(providersEndpointPatchNodeUrl)
+						.queryParam("lastHarvestingDate", lastHarvestingDate).build(providerUuid, nodeUuid))
+				.retrieve().bodyToMono(NodeProvider.class);
 	}
 }

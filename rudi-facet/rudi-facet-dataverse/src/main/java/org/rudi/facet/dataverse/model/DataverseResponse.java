@@ -7,7 +7,9 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DataverseResponse <T extends Serializable> extends ApiResponseInfo {
+public class DataverseResponse<T extends Serializable> extends ApiResponseInfo {
 
-    private T data;
+	private static final long serialVersionUID = 710847559178534388L;
+
+	private T data;
 }

@@ -27,7 +27,7 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.email.EMailService;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
+import org.rudi.facet.generator.text.TemplateGenerator;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public abstract class AbstractProjektWorkflowContext<E extends AssetDescriptionE
 	@Getter(value = AccessLevel.PROTECTED)
 	private final RolesHelper rolesHelper;
 
-	protected AbstractProjektWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
+	protected AbstractProjektWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			D assetDescriptionDao, A assignmentHelper, ACLHelper aclHelper, FormHelper formHelper,
 			RolesHelper rolesHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);

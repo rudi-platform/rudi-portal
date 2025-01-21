@@ -38,8 +38,8 @@ import org.rudi.facet.email.exception.EMailException;
 import org.rudi.facet.email.model.EMailDescription;
 import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
+import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.generator.text.impl.TemplateGeneratorConstants;
-import org.rudi.facet.generator.text.impl.TemplateGeneratorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	private final EMailService eMailService;
 
 	@Getter(value = AccessLevel.PROTECTED)
-	private final TemplateGeneratorImpl templateGenerator;
+	private final TemplateGenerator templateGenerator;
 
 	@Getter(value = AccessLevel.PROTECTED)
 	private final A assignmentHelper;
@@ -87,7 +87,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	@Autowired
 	private FormTemplateConfiguration formTemplateConfiguration;
 
-	protected AbstractWorkflowContext(EMailService eMailService, TemplateGeneratorImpl templateGenerator,
+	protected AbstractWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			D assetDescriptionDao, A assignmentHelper, ACLHelper aclHelper, FormHelper formHelper) {
 		super();
 		this.eMailService = eMailService;

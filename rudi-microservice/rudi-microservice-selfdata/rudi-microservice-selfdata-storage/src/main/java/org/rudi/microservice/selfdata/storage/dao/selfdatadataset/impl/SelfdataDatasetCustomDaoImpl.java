@@ -3,9 +3,8 @@ package org.rudi.microservice.selfdata.storage.dao.selfdatadataset.impl;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.Predicate;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.Predicate;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetCustomDao;

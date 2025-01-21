@@ -4,12 +4,11 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.entity.AbstractStampedEntity;
 import org.rudi.microservice.strukture.core.common.SchemaConstants;

@@ -3,6 +3,8 @@ package org.rudi.facet.selfdata.helper;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,7 +15,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SelfdataHelper {
 
-	private final WebClient selfdataWebClient;
+	@Autowired
+	@Qualifier("selfdataWebClient")
+	private WebClient selfdataWebClient;
 
 	private final SelfdataProperties selfdataProperties;
 

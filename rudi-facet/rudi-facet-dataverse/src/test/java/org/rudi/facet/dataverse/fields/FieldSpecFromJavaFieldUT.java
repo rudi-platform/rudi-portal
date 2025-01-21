@@ -2,10 +2,9 @@ package org.rudi.facet.dataverse.fields;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -94,7 +93,7 @@ class FieldSpecFromJavaFieldUT {
 
 		private String requiredFieldThroughSchemaAnnotation;
 
-		@Schema(required = true)
+		@Schema(requiredMode = Schema.RequiredMode.REQUIRED)
 		public String getRequiredFieldThroughSchemaAnnotation() {
 			return requiredFieldThroughSchemaAnnotation;
 		}

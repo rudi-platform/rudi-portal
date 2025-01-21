@@ -24,7 +24,7 @@ public class DictionaryEntryHelper {
 	public DictionaryEntry filterByLanguage(List<DictionaryEntry> entries, Language language) {
 
 		if (CollectionUtils.isEmpty(entries)) {
-			throw new IllegalStateException("Aucune entrée DictionaryEntry dans la liste pour trouver" +
+			throw new IllegalStateException("Aucune entrée DictionaryEntry dans la liste pour trouver " +
 					"une entrée par recherche par language");
 		}
 

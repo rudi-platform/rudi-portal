@@ -6,9 +6,8 @@ package org.rudi.microservice.projekt.service.workflow;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -25,6 +24,7 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersExcep
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.helper.newdatasetrequest.NewDatasetRequestAssigmentHelper;
+import org.rudi.microservice.projekt.service.helper.newdatasetrequest.NewDatasetRequestWorkflowContext;
 import org.rudi.microservice.projekt.service.helper.newdatasetrequest.NewDatasetRequestWorkflowHelper;
 import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
@@ -34,6 +34,7 @@ import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,7 +44,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class NewDatasetRequestTaskServiceImpl extends
-		AbstractTaskServiceImpl<NewDatasetRequestEntity, NewDatasetRequest, NewDatasetRequestDao, NewDatasetRequestWorkflowHelper, NewDatasetRequestAssigmentHelper> {
+		AbstractTaskServiceImpl<NewDatasetRequestEntity, NewDatasetRequest, NewDatasetRequestDao, NewDatasetRequestWorkflowHelper, NewDatasetRequestAssigmentHelper, NewDatasetRequestWorkflowContext> {
+	public static final String PROCESS_DEFINITION_ID = "new-dataset-request-process";
+
+	public static final String WORFKLOW_CONTEXT_BEAN_NAME = "newDatasetRequestWorkflowContext";
 
 	private final ProjectCustomDao projectCustomDao;
 
@@ -56,10 +60,26 @@ public class NewDatasetRequestTaskServiceImpl extends
 	public NewDatasetRequestTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
 			NewDatasetRequestDao assetDescriptionDao, NewDatasetRequestWorkflowHelper assetDescriptionHelper,
-			NewDatasetRequestAssigmentHelper assigmentHelper, ProjectCustomDao projectCustomDao) {
+			NewDatasetRequestAssigmentHelper assigmentHelper, NewDatasetRequestWorkflowContext workflowContext,
+			ProcessEngineConfiguration processEngineConfiguration, ProjectCustomDao projectCustomDao) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
-				assetDescriptionHelper, assigmentHelper);
+				assetDescriptionHelper, assigmentHelper, workflowContext, processEngineConfiguration);
 		this.projectCustomDao = projectCustomDao;
+	}
+
+	@Override
+	protected String getWorkflowContextBeanName() {
+		return WORFKLOW_CONTEXT_BEAN_NAME;
+	}
+
+	@Override
+	public String getProcessDefinitionKey() {
+		return PROCESS_DEFINITION_ID;
+	}
+
+	@Override
+	protected AbstractTaskServiceImpl<NewDatasetRequestEntity, NewDatasetRequest, NewDatasetRequestDao, NewDatasetRequestWorkflowHelper, NewDatasetRequestAssigmentHelper, NewDatasetRequestWorkflowContext> lookupMe() {
+		return ApplicationContext.getBean(NewDatasetRequestTaskServiceImpl.class);
 	}
 
 	@Override
@@ -73,20 +93,10 @@ public class NewDatasetRequestTaskServiceImpl extends
 		}
 	}
 
-	@Override
-	public String getProcessDefinitionKey() {
-		return "new-dataset-request-process";
-	}
-
 	@PostConstruct
 	@Override
 	public void loadBpmn() throws IOException {
 		super.loadBpmn();
-	}
-
-	@Override
-	protected AbstractTaskServiceImpl<NewDatasetRequestEntity, NewDatasetRequest, NewDatasetRequestDao, NewDatasetRequestWorkflowHelper, NewDatasetRequestAssigmentHelper> lookupMe() {
-		return ApplicationContext.getBean(NewDatasetRequestTaskServiceImpl.class);
 	}
 
 	/**
@@ -100,21 +110,22 @@ public class NewDatasetRequestTaskServiceImpl extends
 		ProjectEntity projectEntity = projectCustomDao
 				.findProjectByNewDatasetRequestUuid(assetDescriptionEntity.getUuid());
 		if (projectEntity != null) {
-			if(projectEntity.getOwnerType().equals(OwnerType.USER)){
+			if (projectEntity.getOwnerType().equals(OwnerType.USER)) {
 				User user = getAssignmentHelper().getUserByUuid(projectEntity.getOwnerUuid());
 				if (user != null) {
 					assetDescriptionEntity.setInitiator(user.getLogin());
 				}
-			}
-			else {
-				//chargement de l'orga
-				try{
+			} else {
+				// chargement de l'orga
+				try {
 					Organization organization = organizationHelper.getOrganization(projectEntity.getOwnerUuid());
-					if(organization != null){
+					if (organization != null) {
 						assetDescriptionEntity.setInitiator(organization.getUuid().toString());
 					}
-				}catch (GetOrganizationException e){
-					log.error("Une erreur est survenue lors du chargement de l'organization d'uuid {} owner du projet {}",projectEntity.getUuid(), projectEntity.getUuid(),e);
+				} catch (GetOrganizationException e) {
+					log.error(
+							"Une erreur est survenue lors du chargement de l'organization d'uuid {} owner du projet {}",
+							projectEntity.getUuid(), projectEntity.getUuid(), e);
 				}
 			}
 		}

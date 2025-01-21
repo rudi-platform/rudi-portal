@@ -1,8 +1,7 @@
 package org.rudi.microservice.acl.storage.entity.role;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.common.storage.entity.AbstractStampedEntity;
 import org.rudi.microservice.acl.core.common.SchemaConstants;
 

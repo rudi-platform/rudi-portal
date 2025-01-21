@@ -1,7 +1,7 @@
 package org.rudi.microservice.projekt.facade.config.swagger;
 
 import org.rudi.common.facade.config.swagger.OpenApiSwaggerConfig;
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

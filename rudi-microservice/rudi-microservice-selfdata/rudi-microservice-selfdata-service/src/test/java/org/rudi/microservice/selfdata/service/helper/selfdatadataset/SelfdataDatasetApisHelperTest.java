@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,8 +44,8 @@ import org.rudi.microservice.selfdata.service.exception.InvalidSelfdataApisExcep
 import org.rudi.microservice.selfdata.service.exception.MissingApiForMediaException;
 import org.rudi.microservice.selfdata.service.helper.apigateway.SelfdataApiGatewayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -56,10 +56,10 @@ class SelfdataDatasetApisHelperTest {
 
 	private final SelfdataDatasetApisHelper selfdataDatasetApisHelper;
 
-	@MockBean
+	@MockitoBean
 	private ApiGatewayHelper apiGatewayHelper;
 
-	@MockBean
+	@MockitoBean
 	private SelfdataApiGatewayHelper selfdataApiGatewayHelper;
 
 	@ParameterizedTest

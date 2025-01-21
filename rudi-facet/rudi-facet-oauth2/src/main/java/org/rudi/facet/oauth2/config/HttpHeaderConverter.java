@@ -25,8 +25,7 @@ public class HttpHeaderConverter<T extends AbstractOAuth2AuthorizationGrantReque
 		ClientRegistration clientRegistration = clientRegistration(grantRequest);
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.equals(clientRegistration.getClientAuthenticationMethod())
-				|| ClientAuthenticationMethod.BASIC.equals(clientRegistration.getClientAuthenticationMethod())) {
+		if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.equals(clientRegistration.getClientAuthenticationMethod())) {
 			String clientId = encodeClientCredential(clientRegistration.getClientId());
 			String clientSecret = encodeClientCredential(clientRegistration.getClientSecret());
 			headers.setBasicAuth(clientId, clientSecret);

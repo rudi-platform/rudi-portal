@@ -3,17 +3,17 @@
  */
 package org.rudi.microservice.acl.service.helper;
 
+import java.util.HashSet;
+import java.util.Locale;
+
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.rudi.microservice.acl.service.AclSpringBootTest;
 import org.rudi.microservice.acl.storage.entity.address.EmailAddressEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import javax.mail.internet.MimeMessage;
-import java.util.HashSet;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +30,7 @@ class EmailHelperUT {
 	@Autowired
 	private EmailHelper emailHelper;
 
-	@MockBean
+	@MockitoBean
 	private JavaMailSenderImpl javaMailSender;
 
 	@Test

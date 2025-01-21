@@ -5,9 +5,8 @@ package org.rudi.microservice.strukture.service.helper;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.PostConstruct;
 import org.ehcache.Cache;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.core.resources.ResourcesHelper;

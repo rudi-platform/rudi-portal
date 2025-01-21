@@ -5,11 +5,6 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.facade.config.filter.JwtTokenUtil;
 import org.rudi.common.facade.config.filter.Tokens;
@@ -24,6 +19,11 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * @author FNI18300

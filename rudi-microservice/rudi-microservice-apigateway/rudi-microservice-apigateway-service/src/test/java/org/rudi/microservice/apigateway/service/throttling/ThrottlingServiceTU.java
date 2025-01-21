@@ -4,6 +4,7 @@ package org.rudi.microservice.apigateway.service.throttling;
 import java.io.IOException;
 import java.util.UUID;
 
+import jakarta.persistence.NoResultException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +22,14 @@ import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.setAllowComparingPrivateFields;
 
 /**
  * Classe de test de la couche service
  */
 @ApigatewaySpringBootTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ThrottlingServiceTU {
+public class   ThrottlingServiceTU {
 
 	private final ThrottlingService throttlingService;
 	private final ThrottlingDao throttlingDao;
@@ -126,21 +128,24 @@ public class ThrottlingServiceTU {
 		final Throttling throttlingToGet = createThrottling(JSON_CREATE);
 
 		final Throttling throttlingGet = throttlingService.getThrottling(throttlingToGet.getUuid());
+		setAllowComparingPrivateFields(true);
 		assertThat(throttlingGet)
-				.as("Le Throttling récupéré doit être égale à celui passé lors de la création")
-				.isEqualToComparingFieldByField(throttlingToGet);
+				.as("Le throttling recupéré doit être égal à celui passé lors de la création")
+				.usingRecursiveComparison().isEqualTo(throttlingToGet);
 	}
 
 	@Test
 	@DisplayName("Teste de la récupération d'un Throttling inexistant")
 	void getThrottlingError() {
 		assertThatThrownBy(() -> throttlingService.getThrottling(UUID.randomUUID()))
-				.as("Une est exception est lancée").isInstanceOf(EmptyResultDataAccessException.class);
+				.as("Une est exception est lancée")
+				// Anciennement EmptyResultDataAccessException, mais cette exception est catchée pour renvoyer une IllegalArgumentException
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
 	@DisplayName("Teste la mise à jour d'un Throttling")
-	void updateThrottling() throws IOException, AppServiceException, javax.persistence.NoResultException {
+	void updateThrottling() throws IOException, AppServiceException, NoResultException {
 		final Throttling throttlingToModify = createThrottling(JSON_CREATE);
 		throttlingToModify.setCode("TESTE");
 		throttlingToModify.setLabel("TESTE");
@@ -149,16 +154,19 @@ public class ThrottlingServiceTU {
 		throttlingToModify.setBurstCapacity(5);
 
 		final Throttling throttlingUpdated = throttlingService.updateThrottling(throttlingToModify);
+		setAllowComparingPrivateFields(true);
 		assertThat(throttlingUpdated)
-				.as("Le Throttling récupéré après la mise à jour doit être égale à celui passé en paramètre")
-				.isEqualToComparingFieldByField(throttlingToModify);
+				.as("Le throttling recupéré après la mise à jour doit être égal à celui passé en paramètre")
+				.usingRecursiveComparison().isEqualTo(throttlingToModify);
 	}
 
 	@Test
 	@DisplayName("Teste de la mise à jour d'un Throttling inexistant")
 	void updateThrottlingError() {
 		assertThatThrownBy(() -> throttlingService.updateThrottling(jsonResourceReader.read(JSON_CLOSE_DATE_VALID, Throttling.class)))
-				.as("Une est exception est lancée").isInstanceOf(EmptyResultDataAccessException.class);
+				.as("Une est exception est lancée")
+				// Anciennement EmptyResultDataAccessException, mais cette exception est catchée pour renvoyer une IllegalArgumentException
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
@@ -174,6 +182,8 @@ public class ThrottlingServiceTU {
 	@DisplayName("Teste la suppression d'un Throttling inexistant")
 	void deleteThrottlingError() {
 		assertThatThrownBy(() -> throttlingService.deleteThrottling(UUID.randomUUID()))
-				.as("Une est exception est lancée").isInstanceOf(EmptyResultDataAccessException.class);
+				.as("Une est exception est lancée")
+				// Anciennement EmptyResultDataAccessException, mais cette exception est catchée pour renvoyer une IllegalArgumentException
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 }

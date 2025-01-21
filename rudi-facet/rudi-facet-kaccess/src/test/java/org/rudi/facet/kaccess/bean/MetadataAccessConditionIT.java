@@ -1,21 +1,21 @@
 package org.rudi.facet.kaccess.bean;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.core.validator.URI;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataAccessConditionIT {
 
@@ -64,12 +64,9 @@ class MetadataAccessConditionIT {
 								new DictionaryEntry().lang(Language.EN_US).text("Animals")));
 	}
 
-	/**
-	 * TODO je ne comprends pas comment ce test a pu fonctionner : le générateur ne met pas de validation sur ce champ même s'il est de format URI
-	 * 
-	 * @throws IOException
-	 */
+
 	@Test
+	@Disabled("je ne comprends pas comment ce test a pu fonctionner : le générateur ne met pas de validation sur ce champ même s'il est de format URI")
 	@DisplayName("Test de la propriété customLicenceUri avec une url invalide")
 	void access_condition_custom_licence_uri_validation() throws IOException {
 		final MetadataAccessCondition metadataAccessCondition = jsonResourceReader

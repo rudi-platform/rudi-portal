@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.1.2</version>
+		<version>3.1.3</version>
 	</parent>
 
 	<artifactId>rudi-facet-bpmn</artifactId>
@@ -46,10 +46,22 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-acl</artifactId>
 		</dependency>
-		<!-- Swagger 2 doc dependency -->
+		<!-- Swagger UI dependency -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
+			<artifactId>springfox-swagger-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
 		</dependency>
 		<!-- Activiti -->
 		<!--
@@ -57,7 +69,28 @@
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>javax.mail</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
+
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js-scriptengine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-common-service</artifactId>
@@ -94,6 +127,7 @@
 					<configOptions>
 						<dateLibrary>java8</dateLibrary>
 						<containerDefaultToNull>true</containerDefaultToNull>
+						<useJakartaEe>true</useJakartaEe>
 					</configOptions>
 				</configuration>
 				<executions>
@@ -114,7 +148,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-Dfile.encoding=UTF-8</argLine>
+					<argLine>--add-opens java.base/java.util=ALL-UNNAMED
+						-Dfile.encoding=UTF-8</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -134,6 +169,11 @@
 						</goals>
 						<configuration>
 							<skip>false</skip>
+							<excludes>
+								**/org/rudi/facet/bpmn/BpmnSpringBootTest*,
+								**/org/rudi/facet/bpmn/BpmnSpringBootTestApplication*,
+								**/org/rudi/facet/bpmn/**/*UT,
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>

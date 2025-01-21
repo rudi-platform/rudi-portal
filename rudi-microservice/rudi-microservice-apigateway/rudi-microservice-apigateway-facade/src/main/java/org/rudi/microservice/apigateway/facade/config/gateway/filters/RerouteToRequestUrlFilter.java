@@ -28,7 +28,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -140,7 +140,7 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 							.getConnectorParameters().stream()
 							.filter(p -> p.getKey().equalsIgnoreCase(CONTRACT_URL_PARAMETER)).findFirst().orElse(null);
 					if (contractUrlParameter != null) {
-						Swagger swagger = swaggerHelper.getSwaggerContractFromURL(contractUrlParameter.getValue());
+						OpenAPI swagger = swaggerHelper.getSwaggerContractFromURL(contractUrlParameter.getValue());
 						checkParameters(exchange, swagger, uri);
 					}
 				}
@@ -150,7 +150,7 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 		} else {
 			try {
 				String contractPath = StringUtils.join(INTERFACE_CONTRACT_PATH, File.separator, contract, ".json");
-				Swagger swagger = swaggerHelper.getSwaggerContractFromValue(contractPath);
+				OpenAPI swagger = swaggerHelper.getSwaggerContractFromValue(contractPath);
 				checkParameters(exchange, swagger, uri);
 			} catch (Exception e) {
 				log.warn("Failed to get contract", e);
@@ -180,9 +180,9 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 		}
 	}
 
-	private void checkParameters(ServerWebExchange exchange, Swagger swagger, URI uri) {
+	private void checkParameters(ServerWebExchange exchange, OpenAPI swagger, URI uri) {
 		List<ParameterInformation> parameterInformations = interfaceContratHelper.checkParameters(swagger,
-				exchange.getRequest().getMethodValue(), uri.getRawQuery());
+				exchange.getRequest().getMethod().name(), uri.getRawQuery());
 		for (ParameterInformation parameterInformation : parameterInformations) {
 			log.info("checkParameter {}", parameterInformation);
 		}

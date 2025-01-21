@@ -399,7 +399,6 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
-
 				],
 				"responses": {
 					"200": {
@@ -1525,7 +1524,6 @@
 						"example": "5596b5b2-b227-4c74-a9a1-719e7c1008c7"
 					}
 				],
-				
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -1961,7 +1959,6 @@
 						"example": "5596b5b2-b227-4c74-a9a1-719e7c1008c7"
 					}
 				],
-				
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -2566,7 +2563,6 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
-
 				],
 				"responses": {
 					"200": {
@@ -2800,7 +2796,6 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
-
 				],
 				"responses": {
 					"200": {
@@ -3539,10 +3534,20 @@
 				"tags": [
 					"task"
 				],
-				"summary": "Chargement de formulaire draft s'il existe",
-				"description": "Chargement de formulaire draft s'il existe",
+				"summary": "Chargement de formulaire draft par type s'il existe",
+				"description": "Chargement de formulaire draft par type s'il existe",
 				"operationId": "lookupProjectDraftForm",
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "form-type",
+						"description": "Le type du formulaire draft",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-projekt-model.json#/components/schemas/ProjectFormType"
+						}
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -3937,7 +3942,8 @@
 						"schema": {
 							"type": "string"
 						}
-					}, {
+					},
+					{
 						"in": "query",
 						"name": "asAdmin",
 						"required": false,
@@ -4564,7 +4570,8 @@
 						"schema": {
 							"type": "string"
 						}
-					}, {
+					},
+					{
 						"in": "query",
 						"name": "asAdmin",
 						"required": false,
@@ -4996,7 +5003,8 @@
 						"schema": {
 							"type": "string"
 						}
-					}, {
+					},
+					{
 						"in": "query",
 						"name": "asAdmin",
 						"required": false,
@@ -5213,7 +5221,6 @@
 					{
 						"$ref": "#/components/parameters/OrderParam"
 					}
-
 				],
 				"responses": {
 					"200": {

@@ -2,17 +2,18 @@ package org.rudi.tools.nodestub.config.security;
 
 import java.util.Arrays;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,10 +24,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
 	private static final String[] SB_PERMIT_ALL_URL = {
@@ -40,23 +44,28 @@ public class WebSecurityConfig {
 
 	private boolean disableAuthentification = false;
 
+	@Value("${rudi.nodestub.security.pre-authentication.disabled:false}")
+	private boolean disablePreAuthentification = false;
+
 	private final UtilContextHelper utilContextHelper;
 	private final RestTemplate oAuth2RestTemplate;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		if (!disableAuthentification) {
-			http.cors().and().csrf().disable()
-					// starts authorizing configurations
-					.authorizeRequests().antMatchers(SB_PERMIT_ALL_URL).permitAll()
-					// configuring the session on the server
-					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-					// installation du filtre de type header
-					.and().addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterAfter(createPreAuthenticationFilter(), BasicAuthenticationFilter.class);
+			http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
+					.authorizeHttpRequests(
+							authorizeHttpReq -> authorizeHttpReq.requestMatchers(SB_PERMIT_ALL_URL).permitAll())
+					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
+					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+			if (!disablePreAuthentification) {
+				log.warn("Nodestub pre-authentication is enabled");
+				http.addFilterAfter(createPreAuthenticationFilter(), BasicAuthenticationFilter.class);
+			}
 		} else {
-			http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+			http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
+					.authorizeHttpRequests(authorizeHttpReq -> authorizeHttpReq.anyRequest().permitAll());
 		}
 		return http.build();
 	}

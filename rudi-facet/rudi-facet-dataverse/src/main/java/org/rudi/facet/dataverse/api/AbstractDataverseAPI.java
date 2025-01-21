@@ -1,64 +1,34 @@
 package org.rudi.facet.dataverse.api;
 
 import java.io.Serializable;
-import java.util.Collections;
+
+import org.apache.commons.lang3.StringUtils;
+import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
+import org.rudi.facet.dataverse.model.DataverseResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
-import org.rudi.facet.dataverse.helper.RestTemplateHelper;
-import org.rudi.facet.dataverse.model.DataverseResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 public abstract class AbstractDataverseAPI {
 
-	@Getter
-	@Value("${dataverse.api.token}")
-	private String apiToken;
-
-	@Getter
-	@Value("${dataverse.api.url}")
-	private String serverUrl;
-
-	protected static final String API_HEADER_KEY = "X-Dataverse-key";
-
 	private final ObjectMapper objectMapper;
 
-	private RestTemplate restTemplate;
-
-	private RestTemplateHelper restTemplateHelper;
-
 	@Autowired
-	public final void setRestTemplateHelper(RestTemplateHelper restTemplateHelper) {
-		this.restTemplateHelper = restTemplateHelper;
-	}
-
-	protected RestTemplate getRestTemplate() throws DataverseAPIException {
-		if (restTemplate == null) {
-			restTemplate = restTemplateHelper.buildRestTemplate();
-		}
-		return restTemplate;
-	}
-
-	protected HttpHeaders buildHeadersWithApikey() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		headers.add(API_HEADER_KEY, apiToken);
-		return headers;
-	}
+	@Qualifier("rudi_dataverse_client")
+	@Getter
+	private WebClient webClient;
 
 	protected String createUrl(String... pathComponents) {
-		return serverUrl + "/" + StringUtils.join(pathComponents, "/");
+		return "/" + StringUtils.join(pathComponents, "/");
 	}
 
 	protected String marshalObject(Object object) throws DataverseAPIException {
@@ -69,8 +39,14 @@ public abstract class AbstractDataverseAPI {
 		}
 	}
 
-	protected <T extends Serializable> T getDataBody(ResponseEntity<DataverseResponse<T>> responseEntity) {
-		DataverseResponse<T> dataverseResponse = responseEntity.getBody();
+	protected Mono<? extends Throwable> handleError(String message, Throwable error) {
+		if (error instanceof WebClientResponseException && error.getCause() != null) {
+			error = error.getCause();
+		}
+		return Mono.error(new DataverseAPIException(error.getMessage(), error));
+	}
+
+	protected <T extends Serializable> T getDataBody(DataverseResponse<T> dataverseResponse) {
 		return dataverseResponse != null ? dataverseResponse.getData() : null;
 	}
 

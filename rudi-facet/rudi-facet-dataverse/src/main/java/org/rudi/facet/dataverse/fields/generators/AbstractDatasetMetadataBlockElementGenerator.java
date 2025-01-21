@@ -156,6 +156,7 @@ public abstract class AbstractDatasetMetadataBlockElementGenerator {
 	private <R> R applyIfList(Object value, Function<List<Object>, R> function) {
 		if (value instanceof List) {
 			// noinspection unchecked
+			@SuppressWarnings("unchecked")
 			final List<Object> values = (List<Object>) value;
 			return function.apply(values);
 		} else {

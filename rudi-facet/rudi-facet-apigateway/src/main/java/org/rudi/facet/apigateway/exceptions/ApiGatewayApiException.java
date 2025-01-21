@@ -9,12 +9,12 @@ public class ApiGatewayApiException extends MicroserviceException {
 	private static final long serialVersionUID = 1L;
 
 	public ApiGatewayApiException(WebClientResponseException cause) {
-		super("apigateway", cause, cause.getStatusCode(), cause.getResponseBodyAsString());
+		super("apigateway", cause, (HttpStatus) cause.getStatusCode(), cause.getResponseBodyAsString());
 	}
 
 	public ApiGatewayApiException(Throwable cause) {
 		super("apigateway", cause,
-				((cause instanceof WebClientResponseException) ? ((WebClientResponseException) cause).getStatusCode()
+				((cause instanceof WebClientResponseException) ? (HttpStatus) ((WebClientResponseException) cause).getStatusCode()
 						: HttpStatus.NOT_ACCEPTABLE),
 				((cause instanceof WebClientResponseException)
 						? ((WebClientResponseException) cause).getResponseBodyAsString()

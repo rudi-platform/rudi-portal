@@ -3,8 +3,7 @@ package org.rudi.microservice.strukture.facade.controller;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -189,7 +188,7 @@ public class OrganizationsController implements OrganizationsApi {
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + USER + ")")
 	public ResponseEntity<Form> lookupOrganizationDraftForm() throws Exception {
-		return ResponseEntity.ok(organizationTaskService.lookupDraftForm());
+		return ResponseEntity.ok(organizationTaskService.lookupDraftForm(null));
 	}
 
 	@Override

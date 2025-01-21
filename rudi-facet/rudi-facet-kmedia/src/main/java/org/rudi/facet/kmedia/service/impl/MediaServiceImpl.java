@@ -1,7 +1,11 @@
 package org.rudi.facet.kmedia.service.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
@@ -25,10 +29,8 @@ import org.rudi.facet.kmedia.service.MediaService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +109,8 @@ public class MediaServiceImpl implements MediaService {
 		}
 		return mediaDatasetId;
 	}
+
+
 
 	/**
 	 * @param mediaAuthorIdentifier l'auteur dont on cherche le média associé

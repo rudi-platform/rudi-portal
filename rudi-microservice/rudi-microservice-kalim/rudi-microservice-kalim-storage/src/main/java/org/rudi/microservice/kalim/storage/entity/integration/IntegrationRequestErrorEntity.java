@@ -1,17 +1,18 @@
 package org.rudi.microservice.kalim.storage.entity.integration;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.rudi.common.core.Coded;
 import org.rudi.common.storage.entity.AbstractLongIdEntity;
 import org.rudi.microservice.kalim.core.common.SchemaConstants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "integration_request_error", schema = SchemaConstants.DATA_SCHEMA)

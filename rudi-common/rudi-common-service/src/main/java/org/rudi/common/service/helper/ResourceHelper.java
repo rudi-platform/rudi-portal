@@ -3,6 +3,9 @@ package org.rudi.common.service.helper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -102,7 +105,14 @@ public class ResourceHelper {
 
 	@Nonnull
 	public Resource[] getResourcesFromAdditionalLocationOrFromClasspath(String locationPattern) throws IOException {
-		return pathMatchingResourcePatternResolver.getResources(locationPattern);
-		// TODO faire également la recherche dans le additionalLocation et prendre en priorité les fichiers présents dans ce dossier par rapport au classpath
+		Map<String, Resource> resources = new HashMap<>();
+		Arrays.stream(pathMatchingResourcePatternResolver.getResources(locationPattern))
+				.forEach(r -> resources.put(r.getFilename(), r));
+
+		String additionnals = "file:" + (new File(additionalLocation, locationPattern)).getAbsolutePath();
+		Arrays.stream(pathMatchingResourcePatternResolver.getResources(additionnals))
+				.forEach(r -> resources.put(r.getFilename(), r));
+
+		return resources.values().toArray(Resource[]::new);
 	}
 }

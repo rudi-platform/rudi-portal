@@ -29,7 +29,7 @@
         </div>
 
         <div class="btn-container">
-            <a class="btn"
+            <a class="blue-btn"
                href="@self/news/${id!}/rudi-news@one-news-detailed/${urlTitle}">
                 ${localized(newsContent,"link",lang)!}
             </a>

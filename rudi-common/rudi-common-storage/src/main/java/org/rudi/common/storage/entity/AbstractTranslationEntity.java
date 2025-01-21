@@ -2,8 +2,8 @@ package org.rudi.common.storage.entity;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 
 import lombok.Getter;
 import lombok.Setter;

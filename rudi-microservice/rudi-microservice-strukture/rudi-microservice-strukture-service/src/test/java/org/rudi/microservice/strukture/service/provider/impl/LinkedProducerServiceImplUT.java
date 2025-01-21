@@ -34,7 +34,7 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import lombok.RequiredArgsConstructor;
@@ -55,9 +55,9 @@ public class LinkedProducerServiceImplUT {
 	private final OrganizationDataFactory organizationDataFactory;
 	private final UserDataFactory userDataFactory;
 
-	@MockBean
+	@MockitoBean
 	private ACLHelper aclHelper;
-	@MockBean
+	@MockitoBean
 	private UtilContextHelper utilContextHelper;
 
 	private OrganizationEntity mockOrganization(UUID uuid) {
@@ -75,7 +75,7 @@ public class LinkedProducerServiceImplUT {
 	}
 
 	private void mockAuthenticatedUserAsProvider(UUID nodeUuid) throws AppServiceUnauthorizedException {
-		User user = userDataFactory.createUserProvider(nodeUuid.toString());
+		User user = userDataFactory.createUserNodeProvider(nodeUuid.toString());
 
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		AuthenticatedUser authenticatedUser = createAuthenticatedUserFromUser(user);

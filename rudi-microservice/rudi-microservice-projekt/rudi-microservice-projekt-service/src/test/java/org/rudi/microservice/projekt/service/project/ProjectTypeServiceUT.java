@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setAllowComparingPrivateFields;
 
 /**
  * Class de test de la couche service
@@ -89,9 +90,10 @@ class ProjectTypeServiceUT {
 
 		final ProjectType gotProjectType = projectTypeService.getProjectType(createdProjectType.getUuid());
 
+		setAllowComparingPrivateFields(true);
 		assertThat(gotProjectType)
 				.as("On retrouve le type de projet créée")
-				.isEqualToComparingFieldByField(createdProjectType);
+				.usingRecursiveComparison().isEqualTo(createdProjectType);
 	}
 
 	@Test
@@ -150,9 +152,10 @@ class ProjectTypeServiceUT {
 
 		final ProjectType updatedProjectType = projectTypeService.updateProjectType(projectType);
 
+		setAllowComparingPrivateFields(true);
 		assertThat(updatedProjectType)
 				.as("Tous les champs sont bien modifiés")
-				.isEqualToComparingFieldByField(projectType);
+				.usingRecursiveComparison().isEqualTo(projectType);
 	}
 
 	@Test

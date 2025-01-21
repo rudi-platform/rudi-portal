@@ -1,11 +1,10 @@
 package org.rudi.microservice.konsent.storage.entity.data;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Table;
-
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Table;
 import org.rudi.microservice.konsent.core.common.SchemaConstants;
 import org.rudi.microservice.konsent.storage.entity.common.AbstractMultilangualStampedEntity;
 

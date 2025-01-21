@@ -2,8 +2,7 @@ package org.rudi.microservice.selfdata.service.helper.selfdatadataset;
 
 import java.time.OffsetDateTime;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.service.exception.AppServiceBadRequestException;

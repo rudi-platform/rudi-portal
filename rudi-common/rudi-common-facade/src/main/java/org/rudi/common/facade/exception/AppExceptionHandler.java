@@ -1,8 +1,7 @@
 package org.rudi.common.facade.exception;
 
-import javax.validation.ValidationException;
-
 import com.fasterxml.jackson.core.JsonParseException;
+import jakarta.validation.ValidationException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceExceptionsStatus;

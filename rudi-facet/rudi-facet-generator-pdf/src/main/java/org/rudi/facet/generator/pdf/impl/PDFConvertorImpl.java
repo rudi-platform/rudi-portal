@@ -403,12 +403,12 @@ public class PDFConvertorImpl implements PDFConvertor {
 	 * @param value  an element
 	 */
 	protected boolean hasSelfReference(Object parent, COSBase value) {
-		if (value instanceof COSObject) {
-			COSBase actual = ((COSObject) value).getObject();
+		if (value instanceof COSObject cosObject) {
+			COSBase actual = cosObject.getObject();
 			if (actual == parent) {
-				COSObject cosObj = ((COSObject) value);
+
 				log.warn(parent.getClass().getSimpleName() + " object has a reference to itself: "
-						+ cosObj.getObjectNumber() + " " + cosObj.getGenerationNumber() + " R");
+						+ cosObject.getKey().getNumber() + " " + cosObject.getKey().getGeneration() + " R");
 				return true;
 			}
 		}

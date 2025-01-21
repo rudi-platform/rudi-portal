@@ -49,8 +49,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Service
 @Transactional(readOnly = true)
@@ -201,7 +201,6 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 					for (final DeleteLinkedDatasetFieldProcessor processor : deleteLinkedDatasetProcessors) {
 						processor.process(null, linkedDataset);
 					}
-
 					it.remove();
 				}
 			}
@@ -294,10 +293,10 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 	 * de l'organisation peut accéder aux commentaires / Le producteur ou les membres d'une organisation ayant établis le commentaire d'une demande ont
 	 * accès aux commentaires (uniquement via Postman) / L'administrateur peut accéder aux commentaires (uniquement via Postman) / L'animateur ne peut pas
 	 * accéder aux commentaires / Un autre user ne peut pas accéder aux comment
-	 * 
-	 * 
+	 * <p>
+	 * <p>
 	 * Les droits autorisés doivent être cohérents avec ceux définis en PreAuth coté Controller
-	 * 
+	 *
 	 * @param projectEntity       l'entité projet pour laquelle vérifier le droit d'accès
 	 * @param linkedDatasetEntity l'entité projet pour laquelle vérifier le droit d'accès
 	 * @throws GetOrganizationMembersException

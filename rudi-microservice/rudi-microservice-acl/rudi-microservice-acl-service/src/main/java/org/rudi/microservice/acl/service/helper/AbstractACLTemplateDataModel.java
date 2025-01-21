@@ -6,8 +6,7 @@ package org.rudi.microservice.acl.service.helper;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.collections4.MapUtils;
 import org.rudi.facet.generator.model.GenerationFormat;
 import org.rudi.facet.generator.text.model.AbstractTemplateDataModel;
