@@ -37,9 +37,9 @@ import org.rudi.microservice.strukture.service.helper.organization.OrganizationM
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.val;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,8 +87,6 @@ class OrganizationServiceUT {
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
 
-		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
-		organization.setOpeningDate(date);
 		return organization;
 	}
 
@@ -151,7 +149,7 @@ class OrganizationServiceUT {
 
 	@AfterEach
 	void tearDown() {
-		for (OrganizationEntity o : createdOrganizations){
+		for (OrganizationEntity o : createdOrganizations) {
 			organizationDao.delete(o);
 		}
 	}
@@ -178,12 +176,24 @@ class OrganizationServiceUT {
 		assertNotNull(created.getUuid());
 
 		OrganizationEntity inDb = organizationDao.findByUuid(created.getUuid());
-		assertNotNull(inDb);
-		assertEquals(organization.getName(), inDb.getName());
-		assertEquals(organization.getOpeningDate(), inDb.getOpeningDate());
-		assertEquals(organization.getClosingDate(), inDb.getClosingDate());
-		assertEquals(organization.getDescription(), inDb.getDescription());
-		assertEquals(organization.getUrl(), inDb.getUrl());
+
+		assertThat(inDb)
+				.as("Le resultat ne doit pas être null")
+				.isNotNull()
+				.as("Le nom en BDD doit correspondre au nom saisi")
+				.matches(o -> o.getName().equals(organization.getName()))
+				.as("L'opening date ne doit pas être celle saisie, mais celle du jour")
+				.matches(
+						o -> o.getOpeningDate() != organization.getOpeningDate() &&
+								(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+										.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))
+				)
+				.as("La date de cloture doit être égale à celle saisie")
+				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
+				.as("La description doit correspondre à celle saiaie")
+				.matches(o -> o.getDescription().equals(organization.getDescription()))
+				.as("L'url doit correspondre à celui saisi")
+				.matches(o -> o.getUrl().equals(organization.getUrl()));
 
 		organizationDao.delete(inDb);
 	}
@@ -223,22 +233,32 @@ class OrganizationServiceUT {
 		organization.setName("OpeningDate OK");
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
-		organization.setOpeningDate(LocalDateTime.now());
+		LocalDateTime openingDate = LocalDateTime.now().minus(3,ChronoUnit.MONTHS);
+		organization.setOpeningDate(openingDate);
 
 		Organization created = organizationService.createOrganization(organization);
-		assertNotNull(created);
+		assertThat(created).as("Le résultat ne doit pas être null").isNotNull()
+				.as("Et la date ne doit pas être celle renseignée, mais celle du jour")
+				.matches(o -> !o.getOpeningDate().equals(openingDate) &&
+						(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
-	@DisplayName("Création d'une organization sans opening date - KO")
-	void createOrganization_openingDate_KO() {
+	@DisplayName("Création d'une organization sans opening date - OK")
+	void createOrganization_withoutOpeningDate_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
 		organization.setName("Opening date is missing");
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
 
-		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
+		Organization created = organizationService.createOrganization(organization);
+		assertThat(created).as("Le résultat ne doit pas être null").isNotNull()
+				.as("Et la date doit être égale à celle du jour")
+				.matches(o ->
+						(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
@@ -325,7 +345,7 @@ class OrganizationServiceUT {
 		Page<Organization> organizations = organizationService.searchOrganizations(criteria, Pageable.unpaged());
 		assertTrue(organizations.get().anyMatch(collected -> collected.getName().equals(organization.getName())));
 		assertTrue(organizations.get()
-				.anyMatch(collected -> collected.getOpeningDate().equals(organization.getOpeningDate())));
+				.anyMatch(collected -> (collected.getOpeningDate().truncatedTo(ChronoUnit.MINUTES)).equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))));
 	}
 
 	@Test

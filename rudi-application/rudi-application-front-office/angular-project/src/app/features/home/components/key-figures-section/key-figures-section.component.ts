@@ -12,6 +12,7 @@ export class KeyFiguresSectionComponent implements OnInit {
 
     @Input() keyFiguresDescription: KeyFiguresDescription;
     logoSrc: Base64EncodedLogo;
+    defaultLogo: Base64EncodedLogo;
     loadingLogo: boolean;
 
     constructor(
@@ -19,7 +20,7 @@ export class KeyFiguresSectionComponent implements OnInit {
         private readonly imageLogoService: ImageLogoService
     ) {
         this.loadingLogo = true;
-        this.logoSrc = '/assets/images/default_logo_key_figures.svg';
+        this.defaultLogo = '/assets/images/default_logo_key_figures.svg';
     }
 
     ngOnInit(): void {
@@ -30,11 +31,18 @@ export class KeyFiguresSectionComponent implements OnInit {
         if (this.keyFiguresDescription?.keyFiguresLogo) {
             this.konsultService.downloadCustomizationResource(this.keyFiguresDescription.keyFiguresLogo)
                 .pipe(switchMap((blob: Blob) => this.imageLogoService.createImageFromBlob(blob)))
-                .subscribe((base64: Base64EncodedLogo) => {
-                    this.logoSrc = base64;
-                    this.loadingLogo = false;
+                .subscribe({
+                    next: (base64: Base64EncodedLogo) => {
+                        this.logoSrc = base64;
+                        this.loadingLogo = false;
+                    },
+                    error: err => {
+                        this.logoSrc = this.defaultLogo;
+                        this.loadingLogo = false;
+                    }
                 });
         } else {
+            this.logoSrc = this.defaultLogo;
             this.loadingLogo = false;
         }
     }

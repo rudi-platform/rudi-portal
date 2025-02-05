@@ -53,7 +53,7 @@
       <bpmn:documentation id="Documentation_8"><![CDATA[Refuser la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_9" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_5" name="Prise en compte par le porteur de projet du refus de publication">
+    <bpmn:userTask id="UserTask_5" name="Soumission suite au refus de demande de publication">
       <bpmn:incoming>SequenceFlow_22</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_25</bpmn:outgoing>
       <bpmn:potentialOwner id="PotentialOwner_1" name="Potential Owner 1">
@@ -85,7 +85,7 @@
       <bpmn:documentation id="Documentation_15"><![CDATA[Archiver ma réutilisation]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_11" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_6" name="Moderation par l'animateur de la réutilisation" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_6" name="Modération par l'animateur de la réutilisation" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_12</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_28</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_30">
@@ -150,7 +150,7 @@
       <bpmn:outgoing>SequenceFlow_42</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:userTask id="UserTask_11" name="Moderation par l'animateur de la modification de la réutilisation" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_11" name="Modération par l'animateur de la modification de la réutilisation" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_42</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_41</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_7">
@@ -164,7 +164,7 @@
         </bpmn:resourceAssignmentExpression>
       </bpmn:potentialOwner>
     </bpmn:userTask>
-    <bpmn:userTask id="UserTask_12" name="Prise en compte par le porteur de projet du refus de modification">
+    <bpmn:userTask id="UserTask_12" name="Soumission suite au refus de demande de modification">
       <bpmn:incoming>SequenceFlow_43</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_45</bpmn:outgoing>
       <bpmn:potentialOwner id="PotentialOwner_12" name="Potential Owner 1">

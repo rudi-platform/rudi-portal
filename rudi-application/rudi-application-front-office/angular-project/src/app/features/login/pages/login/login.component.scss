@@ -6,6 +6,10 @@ input::-ms-clear {
     display: none;
 }
 
+mat-sidenav-content {
+    overflow: hidden;
+}
+
 .main-container {
     @include card-container-bgcolor;
     height: 110vh;

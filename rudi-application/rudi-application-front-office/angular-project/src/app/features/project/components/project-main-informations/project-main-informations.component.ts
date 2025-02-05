@@ -35,7 +35,8 @@ export class ProjectMainInformationsComponent implements OnInit {
     @Input() showTitle: boolean = true;
 
     @Output() updateForm = new EventEmitter<{ confidentialities: Confidentiality[], form: FormGroup, messageToModerator?: string }>();
-    public  step1FormGroup: FormGroup;
+    @Output() updateInProgress = new EventEmitter<boolean>();
+    public step1FormGroup: FormGroup;
     public messageToModeratorFormGroup: FormGroup;
     public projectType: ProjectType[];
     public suggestions: RadioListItem[];
@@ -125,7 +126,8 @@ export class ProjectMainInformationsComponent implements OnInit {
     }
 
     // Activation du mode modification
-    updateProjectTaskInfo(): void {
+    updateProjectTaskInfo(isUpdate: boolean): void {
+        this.updateInProgress.emit(isUpdate);
         this.loadProjectInformations();
         this.isUpdating = !this.isUpdating;
     }

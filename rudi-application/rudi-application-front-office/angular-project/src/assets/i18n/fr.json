@@ -514,7 +514,8 @@
             "noOrganizations": "Vous n'avez pas encore d'organisations.",
             "img": "Pictogramme d'organisation",
             "errorLoading": "Une erreur est survenue lors du chargement de vos organisations. Merci de recharger la page. Si le problème persiste, veuillez contacter un administrateur en cliquant ",
-            "here": "ici."
+            "here": "ici.",
+            "addOrganization": "Déclarer une organisation"
         }
     },
     "metaData": {
@@ -1168,6 +1169,27 @@
             "nom": "Nom de l'organisation",
             "supplier": "Demandeur"
         },
+        "organization": {
+            "success": "La création de votre organisation a été soumise.",
+            "error": "Une erreur est survenue lors de la création de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
+            "dialog": {
+                "title": "Déclarer une nouvelle organisation",
+                "description": "Vous vous apprêter à déclarer une nouvelle organisation sur Rudi. Suite à son approbation par les équipes Rudi, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
+            },
+            "form": {
+                "errorRequired": "Ce champ est requis",
+                "errorPattern": "Le format d'url est incorrect",
+                "errorMaxlength": "La longueur maximale requise est de {maxLength} caractères.",
+                "name": "Nom de l'organisation",
+                "nameHint": "Définissez le nom de votre organisation.",
+                "description": "Description",
+                "descriptionHint": "Dites-nous en plus sur votre organisation ! Cette description sera visible depuis le catalogue des organisations.",
+                "url": "Url d'accès",
+                "urlHint": "Cette url est le chemin d'accès à la page officielle de votre organisation.",
+                "address": "Adresse postale",
+                "addressHint": "Il s’agit de l’adresse postale de votre organisation."
+            }
+        },
         "linkedProducerDetails": {
             "rattachement": "Demande de rattachement",
             "detachement": "Demande de détachement"
@@ -1273,6 +1295,7 @@
                 "archived": "Archiver la réutilisation",
                 "success": "Votre réutilisation a été archivée.",
                 "error": "Une erreur est survenue lors de l'archivage de la réutilisation. Si l'erreur persiste, merci de contacter un administrateur ",
+                "errorTaskInProgress": "L'archivage de votre réutilisation est impossible car celle-ci comporte une ou plusieurs tâches en cours. ",
                 "here": "en cliquant ici."
             },
             "tabs": {

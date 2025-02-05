@@ -31,6 +31,13 @@ public abstract class AbstractDataverseAPI {
 		return "/" + StringUtils.join(pathComponents, "/");
 	}
 
+	/**
+	 * Conversion en string d'un objet avec le mapper idoine
+	 * 
+	 * @param object
+	 * @return
+	 * @throws DataverseAPIException
+	 */
 	protected String marshalObject(Object object) throws DataverseAPIException {
 		try {
 			return objectMapper.writeValueAsString(object);
@@ -39,11 +46,17 @@ public abstract class AbstractDataverseAPI {
 		}
 	}
 
-	protected Mono<? extends Throwable> handleError(String message, Throwable error) {
+	/**
+	 * 
+	 * @param message le message
+	 * @param error   l'exception
+	 * @return le mono de retour
+	 */
+	protected Mono<Throwable> handleError(String message, Throwable error) {
 		if (error instanceof WebClientResponseException && error.getCause() != null) {
 			error = error.getCause();
 		}
-		return Mono.error(new DataverseAPIException(error.getMessage(), error));
+		return Mono.error(new DataverseAPIException(message + ":" + error.getMessage(), error));
 	}
 
 	protected <T extends Serializable> T getDataBody(DataverseResponse<T> dataverseResponse) {

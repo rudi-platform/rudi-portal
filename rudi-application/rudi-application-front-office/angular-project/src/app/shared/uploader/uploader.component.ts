@@ -6,6 +6,7 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {FilePreviewModel, ValidationError} from '@sleiss/ngx-awesome-uploader';
 import {UploaderCaptions} from '@sleiss/ngx-awesome-uploader/lib/uploader-captions';
+import saveAs from 'file-saver';
 import {AdapterProxy} from './adapter-proxy';
 import {UploaderAdapter} from './uploader.adapter';
 
@@ -91,5 +92,10 @@ export class UploaderComponent<T> {
         };
     }
 
+    onDownLoadFile($event: FilePreviewModel): void {
+        if ($event && $event.file) {
+            saveAs($event.file, $event.fileName, {autoBom: false});
+        }
+    }
 }
 

@@ -25,8 +25,8 @@ public interface ProjectCustomDao {
 	Integer getNumberOfLinkedDatasets(UUID projectUuid);
 
 	Integer getNumberOfNewRequests(UUID projectUuid);
-
-	List<ProjectByOwner> getNumberOfProjectsPerOwners(List<UUID> owners);
+	
+	List<ProjectByOwner> getNumberOfProjectsPerOwners(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria);
 
 	Page<ProjectEntity> searchRelatedProjects(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria, Pageable pageable);
 }

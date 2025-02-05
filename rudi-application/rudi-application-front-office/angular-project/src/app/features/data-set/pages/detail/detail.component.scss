@@ -533,3 +533,14 @@ img {
     max-height: 220px;
     overflow-y: auto;
 }
+
+.selfdata-banner-button {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+        margin-right: 8px;
+    }
+}
+
+

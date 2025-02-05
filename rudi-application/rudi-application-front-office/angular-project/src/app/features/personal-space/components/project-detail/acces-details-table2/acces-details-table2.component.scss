@@ -1,42 +1,51 @@
 @import "common-style";
 
-.mat-table-demandes-acces{
+.mat-table-demandes-acces {
     width: 100%;
 }
+
 .table-title-style {
     font-size: 18px;
     font-weight: bold;
     text-align: left;
 }
-.align-left{
+
+.align-left {
     text-align: left;
 }
-.titre-jdd{
+
+.titre-jdd {
     font-size: 15px;
     font-weight: bold;
     text-align: left;
     color: var(--primary-color);
 }
+
 .table-jdd {
     margin-top: 0.3em;
 }
-.svg-style{
+
+.svg-style {
     margin-right: 1em;
     width: 1.5em;
 }
-.table-header{
+
+.table-header {
     font-size: 13px;
     font-weight: 600;
-    color:var(--primary-text);
+    color: var(--primary-text);
     //overide the mat table margin css
     padding: 0 !important
 }
+
 .table-header:first-child {
     text-decoration: underline;
 }
-.first-row{
+
+.first-row {
     width: 20%;
 }
+
 .fake-btn-status {
     background-color: var(--banner-solid-color);
     border-radius: 14px;
@@ -47,16 +56,24 @@
     height: 2.5em;
     margin-top: 20px;
 }
+
 .second-row {
     width: 50%;
 }
+
 .table-header:last-child {
     display: flex;
     justify-content: center;
     height: inherit;
 }
-.center{
+
+.center {
     display: flex;
     justify-content: center;
     height: 5em;
+}
+
+td {
+    padding: 0;
+    height: 70px;
 }

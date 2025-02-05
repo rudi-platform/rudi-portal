@@ -27,9 +27,7 @@ import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
-import {
-    Project
-} from 'micro_service_modules/projekt/projekt-model';
+import {Project} from 'micro_service_modules/projekt/projekt-model';
 import {forkJoin, of} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 
@@ -84,7 +82,7 @@ export class ProjectTaskDetailComponent
         super(dialog, translateService, snackBarService, taskWithDependenciesService, projectTaskMetierService, logger);
         iconRegistry.addSvgIcon('project-svg-icon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
-        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitlePublication')
+        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitlePublication');
     }
 
 
@@ -117,8 +115,8 @@ export class ProjectTaskDetailComponent
                         this.pageTitleService.setPageTitleFromUrl('/personal-space/my-notifications');
                     }
 
-                    if(taskWithDependencies.asset.project_status == ProjectStatus.Validated){
-                        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitleModification')
+                    if (taskWithDependencies.asset.project_status == ProjectStatus.Validated) {
+                        this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitleModification');
                     }
 
                     this.taskWithDependencies = taskWithDependencies;
@@ -289,7 +287,11 @@ export class ProjectTaskDetailComponent
         });
     }
 
-    public updateProjectTask(obj: { confidentialities: Confidentiality[], form: FormGroup }): void {
+    updateInProgress($event: boolean): void {
+        this.isUpdateInProgress = $event;
+    }
+
+    updateProjectTask(obj: { confidentialities: Confidentiality[], form: FormGroup }): void {
         this.isUpdateInProgress = true;
         this.childrenIsLoading = true;
         this.projectSubmissionService.updateProjectTaskField(this.currentTask, obj.form, obj.confidentialities);

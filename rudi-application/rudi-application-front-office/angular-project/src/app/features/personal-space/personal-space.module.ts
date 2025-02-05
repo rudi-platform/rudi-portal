@@ -7,9 +7,15 @@ import {CoreModule} from '@core/core.module';
 import {
     OrganizationInformationComponent
 } from '@features/personal-space/components/organization-information/organization-information.component';
-import {OwnerInformationComponent} from '@features/personal-space/components/owner-information/owner-information.component';
-import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
-import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
+import {
+    OwnerInformationComponent
+} from '@features/personal-space/components/owner-information/owner-information.component';
+import {
+    ProjectTaskHistoricComponent
+} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
+import {
+    RemoveKeysDialogComponent
+} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {
     LinkedProducerTaskDetailComponent
 } from '@features/personal-space/pages/linked-producer-task-detail/linked-producer-task-detail.component';
@@ -21,28 +27,50 @@ import {GenerateKeysDialogComponent} from './components/generate-keys-dialog/gen
 import {GenericDataComponent} from './components/generic-data/generic-data.component';
 import {MatchingDataCardComponent} from './components/matching-data-card/matching-data-card.component';
 import {MyProfilComponent} from './components/my-profil/my-profil.component';
-import {MyLinkedDatasetsComponent} from './components/my-requests-tables/my-linked-datasets/my-linked-datasets.component';
-import {MyNewDatasetRequestsComponent} from './components/my-requests-tables/my-new-dataset-requests/my-new-dataset-requests.component';
-import {MySelfdataRequestsComponent} from './components/my-requests-tables/my-selfdata-requests/my-selfdata-requests.component';
+import {
+    MyLinkedDatasetsComponent
+} from './components/my-requests-tables/my-linked-datasets/my-linked-datasets.component';
+import {
+    MyNewDatasetRequestsComponent
+} from './components/my-requests-tables/my-new-dataset-requests/my-new-dataset-requests.component';
+import {
+    MySelfdataRequestsComponent
+} from './components/my-requests-tables/my-selfdata-requests/my-selfdata-requests.component';
 import {MyRequestsComponent} from './components/my-requests/my-requests.component';
 import {OrganizationTabComponent} from './components/organization-tab/organization-tab.component';
 import {ProjectApiTabComponent} from './components/project-api-tab/project-api-tab.component';
 import {ProjectBasicDetailsComponent} from './components/project-basic-details/project-basic-details.component';
 import {ProjectDatasetsTabComponent} from './components/project-datasets-tab/project-datasets-tab.component';
-import {AccesDetailsTable1Component} from './components/project-detail/acces-details-table1/acces-details-table1.component';
-import {AccesDetailsTable2Component} from './components/project-detail/acces-details-table2/acces-details-table2.component';
-import {AccesDetailsTable3Component} from './components/project-detail/acces-details-table3/acces-details-table3.component';
+import {
+    AccesDetailsTable1Component
+} from './components/project-detail/acces-details-table1/acces-details-table1.component';
+import {
+    AccesDetailsTable2Component
+} from './components/project-detail/acces-details-table2/acces-details-table2.component';
+import {
+    AccesDetailsTable3Component
+} from './components/project-detail/acces-details-table3/acces-details-table3.component';
 import {ProjectDetailComponent} from './components/project-detail/project-detail.component';
 import {ProjectInformationComponent} from './components/project-information/project-information.component';
 import {ProjectOwnerDetailComponent} from './components/project-owner-detail/project-owner-detail.component';
 import {ProjectTasksComponent} from './components/project-tasks/project-tasks.component';
 import {ReusesComponent} from './components/reuses/reuses.component';
-import {SelfdataDatasetBasicDetailsComponent} from './components/selfdata-dataset-basic-details/selfdata-dataset-basic-details.component';
-import {SelfdataDatasetDataTabComponent} from './components/selfdata-dataset-data-tab/selfdata-dataset-data-tab.component';
-import {SelfdataDatasetRequestsTabComponent} from './components/selfdata-dataset-requests-tab/selfdata-dataset-requests-tab.component';
+import {
+    SelfdataDatasetBasicDetailsComponent
+} from './components/selfdata-dataset-basic-details/selfdata-dataset-basic-details.component';
+import {
+    SelfdataDatasetDataTabComponent
+} from './components/selfdata-dataset-data-tab/selfdata-dataset-data-tab.component';
+import {
+    SelfdataDatasetRequestsTabComponent
+} from './components/selfdata-dataset-requests-tab/selfdata-dataset-requests-tab.component';
 import {SelfdataDatasetsTableComponent} from './components/selfdata-datasets-table/selfdata-datasets-table.component';
-import {SelfdataMainInformationComponent} from './components/selfdata-main-information/selfdata-main-information.component';
-import {SelfdataRequestSectionComponent} from './components/selfdata-request-section/selfdata-request-section.component';
+import {
+    SelfdataMainInformationComponent
+} from './components/selfdata-main-information/selfdata-main-information.component';
+import {
+    SelfdataRequestSectionComponent
+} from './components/selfdata-request-section/selfdata-request-section.component';
 import {TaskDetailComponent} from './components/task-detail/task-detail.component';
 import {TasksComponent} from './components/tasks/tasks.component';
 import {TemporalBarchartDataComponent} from './components/temporal-barchart-data/temporal-barchart-data.component';
@@ -61,9 +89,17 @@ import {
 } from './pages/selfdata-information-request-task-detail/selfdata-information-request-task-detail.component';
 
 import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
+import {
+    OrganizationFormDialogComponent
+} from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
+import {
+    OrganizationFormComponent
+} from '@features/personal-space/components/organization-form/organization-form.component';
 
 @NgModule({
     declarations: [
+        OrganizationFormComponent,
+        OrganizationFormDialogComponent,
         LinkedProducerTaskDetailComponent,
         OwnerInformationComponent,
         OrganizationInformationComponent,

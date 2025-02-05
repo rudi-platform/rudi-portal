@@ -206,7 +206,6 @@
 				"type": "object",
 				"required": [
 					"name",
-					"openingDate",
 					"description"
 				],
 				"allOf": [

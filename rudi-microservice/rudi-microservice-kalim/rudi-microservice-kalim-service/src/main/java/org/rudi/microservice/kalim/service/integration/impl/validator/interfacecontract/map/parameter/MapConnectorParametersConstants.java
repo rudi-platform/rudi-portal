@@ -1,7 +1,5 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.map.parameter;
 
-import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -22,11 +20,4 @@ public class MapConnectorParametersConstants {
 	public static final String TRANSPARENT_PARAMETER = "transparent";
 	public static final String VERSION_PARAMETER = "versions";
 	public static final String MATRIX_SET_PARAMETER = "matrix_set";
-	public static final List<String> WMTS_MANDATORY_PARAMS = List.of(VERSION_PARAMETER, LAYER_PARAMETER,
-			DEFAULT_CRS_PARAMETER, FORMATS_PARAMETER, MATRIX_SET_PARAMETER, MAX_ZOOM_PARAMETER);
-	public static final List<String> WMS_MANDATORY_PARAMS = List.of(VERSION_PARAMETER, LAYER_PARAMETER,
-			DEFAULT_CRS_PARAMETER, FORMATS_PARAMETER);
-	public static final List<String> WFS_MANDATORY_PARAMS = List.of(VERSION_PARAMETER, LAYER_PARAMETER,
-			DEFAULT_CRS_PARAMETER, FORMATS_PARAMETER);
-
 }

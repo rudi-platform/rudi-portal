@@ -1,9 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
-import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
 import {getSectionWithFields} from '@shared/utils/workflow-form-utils';
 import {WorkflowFormUtils} from '@shared/workflow-form/workflow-form.utils';
 import {WorkflowProperties} from '@shared/workflow-form/workflow-properties';
@@ -27,10 +24,8 @@ export class WorkflowFormComponent implements OnInit {
 
     constructor(
         private readonly formBuilder: FormBuilder,
-        private snackBarService: SnackBarService,
-        private translateService: TranslateService,
-        private logService: LogService,
-        private workflowFormUtils: WorkflowFormUtils
+        private readonly logService: LogService,
+        private readonly workflowFormUtils: WorkflowFormUtils
     ) {
         this.formGroup = formBuilder.group({});
         this.submitEvent = new EventEmitter();
@@ -75,12 +70,6 @@ export class WorkflowFormComponent implements OnInit {
         this.markAllAsTouched();
         if (this.invalid) {
             this.logService.debug('Formulaire invalide', this.formGroup);
-            this.translateService.get('common.errorMissingFieldAccount').subscribe(message => {
-                this.snackBarService.openSnackBar({
-                    level: Level.ERROR,
-                    message,
-                }, 2000);
-            });
             return false;
         }
 

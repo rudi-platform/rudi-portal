@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
-import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
+import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 
 @Component({
     selector: 'app-organization-card',
@@ -11,7 +11,7 @@ import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 export class OrganizationCardComponent {
     @Input() organizationBean: OrganizationBean;
     @Input() datasetCountLoading: boolean;
-    @Input() projectCountLoading$: boolean;
+    @Input() projectCountLoading: boolean;
 
     constructor(private readonly router: Router, private readonly uriComponentCodec: URIComponentCodec) {
     }

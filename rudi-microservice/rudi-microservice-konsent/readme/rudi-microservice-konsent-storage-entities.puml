@@ -6,7 +6,7 @@ abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSu
 	{field} +@Column("code") code : String
 	{field} +@Column("label") label : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -16,7 +16,7 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuper
 	{field} +@Column("id") @Id id : Long
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("uuid") uuid : java.util.UUID
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -26,10 +26,10 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongI
 	{field} -id : Long
 	{field} -uuid : java.util.UUID
 	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
-	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +id ( id : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method} +toString () : String
-	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +uuid ( uuid : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 }
 
 
@@ -38,7 +38,7 @@ abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSupe
 	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
 	{field} +@Column("order_") order : int
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -48,14 +48,14 @@ abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<Mapped
 	{field} +@Column("lang") lang : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("text") text : String
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
 
 
 class org.rudi.common.storage.entity.HibernateEntityHelper {
-	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+	{method}  {static} +setCollection ( collectionGetter : java.util.function.Supplier , newCollection : java.util.Collection ) : void
 }
 
 
@@ -84,7 +84,7 @@ abstract class org.rudi.microservice.konsent.storage.entity.common.AbstractMulti
 	{field} {static} +CODE_COLUMN_NAME : String
 	{field} +@Column("code") code : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -95,7 +95,7 @@ abstract class org.rudi.microservice.konsent.storage.entity.common.AbstractMulti
 	{field} +@Column("opening_date") openingDate : java.time.OffsetDateTime
 	{field} +@Column("order_") order : int
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -137,7 +137,7 @@ class org.rudi.microservice.konsent.storage.entity.consent.ConsentEntity <<Entit
 	{field} +@Column("revoke_hash") revokeHash : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("storage_key") storageKey : String
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -153,7 +153,7 @@ class org.rudi.microservice.konsent.storage.entity.data.DataManagerEntity <<Enti
 	{field} +@Column("name") name : String
 	{field} +@Column("phone_number") phoneNumber : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 }
 
@@ -188,7 +188,7 @@ class org.rudi.microservice.konsent.storage.entity.treatment.TreatmentEntity <<E
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("target_uuid") targetUuid : java.util.UUID
 	{field} +@Column("updated_date") updatedDate : java.time.OffsetDateTime
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 }
 
@@ -215,7 +215,7 @@ class org.rudi.microservice.konsent.storage.entity.treatmentversion.RetentionEnt
 --
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("value_") value : Integer
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 }
 
@@ -241,7 +241,7 @@ class org.rudi.microservice.konsent.storage.entity.treatmentversion.TreatmentVer
 	{field} +@Column("treatment_hash") treatmentHash : String
 	{field} +@Column("updated_date") updatedDate : java.time.OffsetDateTime
 	{field} +@Column("version") version : Integer
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 }
 

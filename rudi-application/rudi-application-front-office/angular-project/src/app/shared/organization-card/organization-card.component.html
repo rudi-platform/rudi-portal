@@ -24,7 +24,7 @@
                 {{ datasetsCountTranslationKey | translate: {number: organizationBean.datasetCount} }}
             </button>
         </ng-container>
-        <ng-container *ngIf="!projectCountLoading$ else loader">
+        <ng-container *ngIf="!projectCountLoading else loader">
             <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>
                 {{ projectsCountTranslationKey | translate: {number: organizationBean.projectCount} }}
             </button>

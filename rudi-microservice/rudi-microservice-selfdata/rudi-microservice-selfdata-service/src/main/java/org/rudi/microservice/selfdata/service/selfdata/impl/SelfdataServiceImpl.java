@@ -319,7 +319,12 @@ public class SelfdataServiceImpl implements SelfdataService {
 		return page;
 	}
 
-	private void validEntity(SelfdataInformationRequestEntity entity) {
+	/**
+	 * Validation de l'entité
+	 * 
+	 * @param entity l'entité
+	 */
+	protected void validEntity(SelfdataInformationRequestEntity entity) {
 		// Pour le moment on ne fait aucune vérification supplémentaire sur les entités
 	}
 

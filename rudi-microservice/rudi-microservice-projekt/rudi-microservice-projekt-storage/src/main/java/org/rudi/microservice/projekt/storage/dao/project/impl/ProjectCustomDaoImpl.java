@@ -9,6 +9,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
@@ -167,19 +168,17 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(List<UUID> owners) {
+	public List<ProjectByOwner> getNumberOfProjectsPerOwners(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria) {
 		val builder = entityManager.getCriteriaBuilder();
 		val countQuery = builder.createQuery(ProjectByOwner.class);
 		val countRoot = countQuery.from(entitiesClass);
-		// Ajout des filtres
-		List<Predicate> predicates = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(owners)) {
-			predicates.add(countRoot.get(FIELD_OWNER_UUID).in(owners));
-		}
-		countQuery.where(builder.and(predicates.toArray(Predicate[]::new)));
+
+		addWhereSearchRelatedProjects(builder, countQuery, countRoot, enhancedProjectSearchCriteria);
+
 		countQuery.groupBy(countRoot.get(FIELD_OWNER_UUID));
 		countQuery.select(builder.construct(ProjectByOwner.class, countRoot.get(FIELD_OWNER_UUID),
 				builder.countDistinct(countRoot)));
+
 		return entityManager.createQuery(countQuery).getResultList();
 	}
 
@@ -217,12 +216,27 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), false);
 		Predicate isPrivatePredicate = builder
 				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), true);
-		Predicate owners = root.get(FIELD_OWNER_UUID).in(searchCriteria.getMyOrganizationsUuids());
-		Predicate dataSetOwner = root.join(FIELD_LINKED_DATASETS).get(FIELD_DATASET_UUID)
-				.in(searchCriteria.getMyOrganizationsDatasetsUuids());
-
-		predicates.add(
-				builder.or(isNotPrivatePredicate, builder.and(isPrivatePredicate, builder.or(owners, dataSetOwner))));
+		
+		List<Predicate> or1 = new ArrayList<>();
+		if (!Boolean.TRUE.equals(searchCriteria.getIsPrivate())) {
+			or1.add(isNotPrivatePredicate);
+		}
+		List<Predicate> or2 = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(searchCriteria.getMyOrganizationsUuids())) {
+			Predicate owners = root.get(FIELD_OWNER_UUID).in(searchCriteria.getMyOrganizationsUuids());
+			or2.add(owners);
+		}
+		if (CollectionUtils.isNotEmpty(searchCriteria.getMyOrganizationsDatasetsUuids())) {
+			Predicate dataSetOwner = root.join(FIELD_LINKED_DATASETS, JoinType.LEFT).get(FIELD_DATASET_UUID)
+					.in(searchCriteria.getMyOrganizationsDatasetsUuids());
+			or2.add(dataSetOwner);
+		}
+		if (CollectionUtils.isNotEmpty(or2)) {
+			or1.add(builder.and(isPrivatePredicate, builder.or(or2.toArray(Predicate[]::new))));
+		}
+		if (CollectionUtils.isNotEmpty(or1)) {
+			predicates.add(builder.or(or1.toArray(Predicate[]::new)));
+		}
 
 		ProjectSearchCriteria projectSearchCriteria = searchCriteria.getProjectSearchCriteria();
 

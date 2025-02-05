@@ -1,9 +1,8 @@
 package org.rudi.microservice.strukture.facade.controller;
 
-import java.util.List;
-import java.util.UUID;
-
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -33,8 +32,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import java.util.List;
+import java.util.UUID;
+
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
@@ -58,8 +58,8 @@ public class OrganizationsController implements OrganizationsApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + USER + ")")
-	public ResponseEntity<UUID> createOrganization(Organization organization)
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
+	public ResponseEntity<UUID> requestOrganizationCreation(Organization organization)
 			throws AppServiceBadRequestException, FormDefinitionException, FormConvertException, InvalidDataException {
 		Organization createdOrganization = organizationService.createOrganization(organization);
 
@@ -93,7 +93,7 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	public ResponseEntity<PagedOrganizationList> searchOrganizations(UUID uuid, String name, Boolean active,
-			UUID userUuid, OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) {
+																	 UUID userUuid, OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) {
 		val searchCriteria = new OrganizationSearchCriteria().uuid(uuid).name(name).active(active).userUuid(userUuid).organizationStatus(organizationStatus);
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val page = organizationService.searchOrganizations(searchCriteria, pageable);
@@ -112,7 +112,7 @@ public class OrganizationsController implements OrganizationsApi {
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", " + MODULE_KALIM + ","
 			+ USER + ")")
 	public ResponseEntity<OrganizationMember> addOrganizationMember(UUID organizationUuid,
-			OrganizationMember organizationMember) throws Exception {
+																	OrganizationMember organizationMember) throws Exception {
 		return ResponseEntity.ok(organizationService.addOrganizationMember(organizationUuid, organizationMember));
 	}
 
@@ -134,7 +134,7 @@ public class OrganizationsController implements OrganizationsApi {
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ", " + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ")")
 	public ResponseEntity<PagedOrganizationUserMembers> searchOrganizationUserMembers(UUID uuid, String searchText,
-			OrganizationMemberType memberType, Integer offset, Integer limit, String order) throws Exception {
+																					  OrganizationMemberType memberType, Integer offset, Integer limit, String order) throws Exception {
 		val pageable = utilPageable.getPageable(offset, limit, order);
 		val criteria = OrganizationMembersSearchCriteria.builder().organizationUuid(uuid).searchText(searchText)
 				.type(memberType)
@@ -155,7 +155,7 @@ public class OrganizationsController implements OrganizationsApi {
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ")")
 	public ResponseEntity<OrganizationMember> updateOrganizationMember(UUID organizationUuid, UUID userUuid,
-			OrganizationMember organizationMember) throws Exception {
+																	   OrganizationMember organizationMember) throws Exception {
 		return ResponseEntity
 				.ok(organizationService.updateOrganizationMember(organizationUuid, userUuid, organizationMember));
 	}
@@ -208,5 +208,17 @@ public class OrganizationsController implements OrganizationsApi {
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + USER + ")")
 	public ResponseEntity<Task> updateOrganizationTask(Task task) throws Exception {
 		return ResponseEntity.ok(organizationTaskService.updateTask(task));
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + USER + ")")
+	public ResponseEntity<Organization> createOrganization(Organization organization)
+			throws AppServiceBadRequestException {
+		// Crée une organisation en BDD
+		Organization createdOrganization = organizationService.createOrganization(organization);
+		val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{uuid}")
+				.buildAndExpand(createdOrganization.getUuid()).toUri();
+		//Retourne l'organisation créée
+		return ResponseEntity.created(location).body(createdOrganization);
 	}
 }

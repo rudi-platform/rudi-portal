@@ -35,7 +35,7 @@ public interface ProjectService {
 
 	/**
 	 * Get project information
-	 * 
+	 *
 	 * @param uuid project uuid
 	 * @return project information if access to details is allowed
 	 * @throws AppServiceException if user is not allowed to access to service
@@ -162,11 +162,11 @@ public interface ProjectService {
 	boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
 			throws GetOrganizationException, AppServiceUnauthorizedException, AppServiceNotFoundException;
 
-	List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria);
+	List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException;
 
 	/**
 	 * Création d'une nouvelle clé pour une projet donné
-	 * 
+	 *
 	 * @param projectUuid          l'uuid du projet
 	 * @param projectKeyCredential la demande de clé + mot de passe de l'utilsiateur
 	 * @return la clé
@@ -176,7 +176,7 @@ public interface ProjectService {
 
 	/**
 	 * Révocation d'un clé d'un projet donné
-	 * 
+	 *
 	 * @param projectUuid    l'uuid du projet
 	 * @param projectKeyUuid l'uuid de la clé
 	 * @throws AppServiceException
@@ -185,7 +185,7 @@ public interface ProjectService {
 
 	/**
 	 * Recherche paginée des clés d'un projet
-	 * 
+	 *
 	 * @param searchCriteria
 	 * @return
 	 * @throws AppServiceException

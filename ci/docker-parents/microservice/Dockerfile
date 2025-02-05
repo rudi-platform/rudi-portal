@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM openjdk:17.0.2-jdk-slim-bullseye
 USER root
-MAINTAINER rudi@rennes-metropole.fr
+LABEL org.opencontainers.image.authors="rudi@rennes-metropole.fr"
 ENV TZ=Europe/Paris
 
 RUN apt update && apt upgrade -y

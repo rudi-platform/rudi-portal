@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -74,10 +75,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 @Service
@@ -103,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	private final MediaService mediaService;
 	private final ResourceLoader resourceLoader;
-	private final NewDatasetRequestMapper datasetRequestMapper;
+	private final NewDatasetRequestMapper newDatasetRequestMapper;
 	private final NewDatasetRequestDao datasetRequestDao;
 	private final UtilContextHelper utilContextHelper;
 	private final OrganizationHelper organizationHelper;
@@ -140,7 +140,13 @@ public class ProjectServiceImpl implements ProjectService {
 		return savedProject;
 	}
 
-	private void createProjectDataset(Project project) throws DataverseExternalServiceException {
+	/**
+	 * Création d'un projet
+	 *
+	 * @param project
+	 * @throws DataverseExternalServiceException
+	 */
+	protected void createProjectDataset(Project project) throws DataverseExternalServiceException {
 		// TODO RUDI-1301
 	}
 
@@ -198,7 +204,13 @@ public class ProjectServiceImpl implements ProjectService {
 		return savedProject;
 	}
 
-	private void updateProjectDataset(Project project) throws DataverseExternalServiceException {
+	/**
+	 * Mise à jour du projet
+	 *
+	 * @param project
+	 * @throws DataverseExternalServiceException
+	 */
+	protected void updateProjectDataset(Project project) throws DataverseExternalServiceException {
 		// TODO RUDI-1301
 	}
 
@@ -332,7 +344,7 @@ public class ProjectServiceImpl implements ProjectService {
 		// Vérification du statut du projet avant d'ajouter le lien sur le dataset
 		projektAuthorisationHelper.checkStatusForProjectModification(associatedProject);
 
-		NewDatasetRequestEntity entity = datasetRequestMapper.dtoToEntity(datasetRequest);
+		NewDatasetRequestEntity entity = newDatasetRequestMapper.dtoToEntity(datasetRequest);
 
 		entity.setUuid(UUID.randomUUID());
 		entity.setCreationDate(LocalDateTime.now());
@@ -346,12 +358,12 @@ public class ProjectServiceImpl implements ProjectService {
 		// Enregistrer les 2 entités (mettre tout ça dans le bloc try..catch)
 		NewDatasetRequestEntity savedEntity = datasetRequestDao.save(entity);
 		projectDao.save(associatedProject);
-		return datasetRequestMapper.entityToDto(savedEntity);
+		return newDatasetRequestMapper.entityToDto(savedEntity);
 	}
 
 	@Override
 	public List<NewDatasetRequest> getNewDatasetRequests(UUID projectUuid) throws AppServiceNotFoundException {
-		return datasetRequestMapper.entitiesToDto(getRequiredProjectEntity(projectUuid).getDatasetRequests());
+		return newDatasetRequestMapper.entitiesToDto(getRequiredProjectEntity(projectUuid).getDatasetRequests());
 	}
 
 	@Override
@@ -359,7 +371,7 @@ public class ProjectServiceImpl implements ProjectService {
 			throws AppServiceNotFoundException {
 		for (NewDatasetRequestEntity element : getRequiredProjectEntity(projectUuid).getDatasetRequests()) {
 			if (element.getUuid().equals(requestUuid)) {
-				return datasetRequestMapper.entityToDto(element);
+				return newDatasetRequestMapper.entityToDto(element);
 			}
 		}
 		return null;
@@ -375,7 +387,7 @@ public class ProjectServiceImpl implements ProjectService {
 		// Vérification du statut du projet avant de modifier le lien sur le dataset
 		projektAuthorisationHelper.checkStatusForProjectModification(project);
 
-		NewDatasetRequestEntity entity = datasetRequestMapper.dtoToEntity(newDatasetRequest);
+		NewDatasetRequestEntity entity = newDatasetRequestMapper.dtoToEntity(newDatasetRequest);
 		if (CollectionUtils.isNotEmpty(project.getDatasetRequests())) {
 			for (NewDatasetRequestEntity newDatasetRequestEntity : project.getDatasetRequests()) {
 				if (newDatasetRequestEntity.getUuid().equals(newDatasetRequest.getUuid())) {
@@ -384,9 +396,9 @@ public class ProjectServiceImpl implements ProjectService {
 						processor.process(entity, newDatasetRequestEntity);
 					}
 
-					datasetRequestMapper.dtoToEntity(newDatasetRequest, newDatasetRequestEntity);
+					newDatasetRequestMapper.dtoToEntity(newDatasetRequest, newDatasetRequestEntity);
 					projectDao.save(project);
-					return datasetRequestMapper.entityToDto(newDatasetRequestEntity);
+					return newDatasetRequestMapper.entityToDto(newDatasetRequestEntity);
 				}
 			}
 		}
@@ -470,8 +482,20 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) {
-		return projectCustomDao.getNumberOfProjectsPerOwners(criteria.getOwnerUuids());
+	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException {
+		User user = aclHelper.getAuthenticatedUser();
+		EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(criteria);
+		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
+			enhancedProjectSearchCriteria.setIsPrivate(false);
+		} else if (!projektAuthorisationHelper.hasAnyRole(user,
+				List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR))) {
+			List<UUID> ownersUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
+			List<UUID> datasetUuids = myLinkedDatasetHelper
+					.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
+			enhancedProjectSearchCriteria.setMyOrganizationsUuids(ownersUuid);
+			enhancedProjectSearchCriteria.setMyOrganizationsDatasetsUuids(datasetUuids);
+		}
+		return projectCustomDao.getNumberOfProjectsPerOwners(enhancedProjectSearchCriteria);
 	}
 
 	@Override

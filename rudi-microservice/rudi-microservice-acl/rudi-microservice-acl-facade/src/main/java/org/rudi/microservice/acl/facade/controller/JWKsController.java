@@ -23,7 +23,7 @@ public class JWKsController {
 	@Autowired
 	private JWKSet jwkSet;
 
-	@GetMapping("/oauth/jwks")
+	@GetMapping("/oauth2/jwks")
 	public Map<String, Object> keys() {
 		Map<String, Object> keys = jwkSet.toJSONObject();
 		@SuppressWarnings("unchecked")

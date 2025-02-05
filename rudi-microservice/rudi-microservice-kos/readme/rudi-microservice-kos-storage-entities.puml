@@ -6,7 +6,7 @@ abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSu
 	{field} +@Column("code") code : String
 	{field} +@Column("label") label : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -16,7 +16,7 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuper
 	{field} +@Column("id") @Id id : Long
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("uuid") uuid : java.util.UUID
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -26,10 +26,10 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongI
 	{field} -id : Long
 	{field} -uuid : java.util.UUID
 	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
-	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +id ( id : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method} +toString () : String
-	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +uuid ( uuid : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 }
 
 
@@ -38,7 +38,7 @@ abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSupe
 	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
 	{field} +@Column("order_") order : int
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -48,14 +48,14 @@ abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<Mapped
 	{field} +@Column("lang") lang : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("text") text : String
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
 
 
 class org.rudi.common.storage.entity.HibernateEntityHelper {
-	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+	{method}  {static} +setCollection ( collectionGetter : java.util.function.Supplier , newCollection : java.util.Collection ) : void
 }
 
 
@@ -87,9 +87,9 @@ class org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity <<Entity>>
 	{field} +@Column("concept_role") conceptRole : String
 	{field} +@Column("concept_uri") conceptUri : String
 	{field} {static} -serialVersionUID : long
-	{method} +addSkosRelation ( paramSkosRelationConceptEntity1 : org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity ) : void
+	{method} +addSkosRelation ( skosRelationConceptEntity : org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity ) : void
 	{method} +clearSkosRelations () : void
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -100,7 +100,7 @@ class org.rudi.microservice.kos.storage.entity.skos.SkosConceptTranslationEntity
  {TableSchema=kos_data}
 --
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -112,7 +112,7 @@ class org.rudi.microservice.kos.storage.entity.skos.SkosRelationConceptEntity <<
 --
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("type") type : org.rudi.microservice.kos.core.bean.SkosRelationType
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -125,11 +125,11 @@ class org.rudi.microservice.kos.storage.entity.skos.SkosSchemeEntity <<Entity>> 
 	{field} +@Column("role") role : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("uri") uri : String
-	{method} +addTopConcept ( paramSkosConceptEntity1 : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity ) : void
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +addTopConcept ( skosConceptEntity : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity ) : void
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
-	{method} +lookupSkosConcept ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity
-	{method} +removeTopConcept ( paramUUID1 : java.util.UUID ) : void
+	{method} +lookupSkosConcept ( uuid : java.util.UUID ) : org.rudi.microservice.kos.storage.entity.skos.SkosConceptEntity
+	{method} +removeTopConcept ( skosConceptUuid : java.util.UUID ) : void
 	{method} +toString () : String
 }
 
@@ -139,7 +139,7 @@ class org.rudi.microservice.kos.storage.entity.skos.SkosSchemeTranslationEntity 
  {TableSchema=kos_data}
 --
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }

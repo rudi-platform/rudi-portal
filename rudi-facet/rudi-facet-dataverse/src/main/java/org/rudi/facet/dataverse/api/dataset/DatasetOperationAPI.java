@@ -111,9 +111,15 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		try {
 			ResponseEntity<Flux<DataBuffer>> dataBufferFlux = getWebClient().get().uri(url).retrieve()
 					.toEntityFlux(DataBuffer.class).doOnError(t -> handleError("Failed to search dataset", t)).block();
+			if (dataBufferFlux == null) {
+				throw new IllegalStateException(fileId);
+			}
 			String fileName = dataBufferFlux.getHeaders().getContentDisposition().getFilename();
 			File outputFile = File.createTempFile("rudi", FilenameUtils.getExtension(fileName),
 					new File(temporaryDirectory));
+			if (dataBufferFlux.getBody() == null) {
+				throw new IllegalStateException(fileId);
+			}
 			DataBufferUtils.write(dataBufferFlux.getBody(), Path.of(outputFile.getPath()), StandardOpenOption.CREATE)
 					.share().block();
 			return outputFile;
@@ -123,7 +129,10 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 	}
 
 	/**
-	 * @throws org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException if Dataset does not exist
+	 * 
+	 * @param persistentId l'id du dataset
+	 * @return le dataset
+	 * @throws DataverseAPIException if Dataset does not exist
 	 */
 	@Nonnull
 	public Dataset getDataset(String persistentId) throws DataverseAPIException {
@@ -171,23 +180,26 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 				.doOnError(t -> handleError("Failed to move dataset", t)).block();
 	}
 
+	/**
+	 * Suppresion d'un dataset
+	 * 
+	 * @param persistentId l'id du dataset
+	 * @throws DataverseAPIException si le dataset n'existe pas
+	 */
 	public void deleteDataset(String persistentId) throws DataverseAPIException {
 		String url = createUrl(API_DATASETS_PARAM, API_DATASETS_PERSISTENT_ID_PARAM, API_DATASETS_DESTROY_PARAM);
 
-		getWebClient().delete().uri(uri -> buildGetDataset(uri, url, persistentId))
-				.header(HttpHeaders.TRANSFER_ENCODING, "identity").retrieve().bodyToMono(Void.class)
+		getWebClient().delete().uri(uri -> buildGetDataset(uri, url, persistentId)).retrieve().bodyToMono(Void.class)
 				.doOnError(t -> handleError("Failed to delete dataset", t)).block();
 	}
 
 	protected URI buildGetDataset(UriBuilder uriBuilder, String url, String persistentId) {
-		URI uri = uriBuilder.path(url).queryParam(PERSISTENT_ID, persistentId).build();
-		return uri;
+		return uriBuilder.path(url).queryParam(PERSISTENT_ID, persistentId).build();
 	}
 
 	/**
 	 * @throws org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException if Dataset does not exist
 	 */
-	@Nonnull
 	public Dataset getNonBlockingDataset(String persistentId) throws DataverseAPIException {
 		String url = restTemplateHelper.getServerUrl()
 				+ createUrl(API_DATASETS_PARAM, API_DATASETS_PERSISTENT_ID_PARAM);
@@ -199,7 +211,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		};
 		ResponseEntity<DataverseResponse<Dataset>> dataverseResponse = getRestTemplate().exchange(url, HttpMethod.GET,
 				entity, type);
-		return dataverseResponse != null ? dataverseResponse.getBody().getData() : null;
+		return dataverseResponse.getBody() != null ? dataverseResponse.getBody().getData() : null;
 	}
 
 	/**
@@ -219,7 +231,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 
 		ResponseEntity<DataverseResponse<SearchElements<SearchDatasetInfo>>> dataverseResponse = getRestTemplate()
 				.exchange(url, HttpMethod.GET, createHttpEntity(), type);
-		return dataverseResponse != null ? dataverseResponse.getBody().getData() : null;
+		return dataverseResponse.getBody() != null ? dataverseResponse.getBody().getData() : null;
 	}
 
 	private String buildSearchUrl(String path, SearchParams searchParams) throws DataverseAPIException {
@@ -272,7 +284,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		if (restTemplate == null) {
 			restTemplate = restTemplateHelper.buildRestTemplate();
 			MappingJackson2HttpMessageConverter a = (MappingJackson2HttpMessageConverter) restTemplate
-					.getMessageConverters().stream().filter(mc -> mc instanceof MappingJackson2HttpMessageConverter)
+					.getMessageConverters().stream().filter(MappingJackson2HttpMessageConverter.class::isInstance)
 					.findFirst().orElse(null);
 			if (a != null && !a.getSupportedMediaTypes().contains(MediaType.APPLICATION_OCTET_STREAM)) {
 				ArrayList<MediaType> supportedMediaTypes = new ArrayList<>();

@@ -3,6 +3,8 @@
  */
 package org.rudi.facet.bpmn.service.impl;
 
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -69,7 +71,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
 
 /**
  * @param <E> l'entité
@@ -631,7 +632,8 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	 * @param variables
 	 * @param assetDescriptionEntity
 	 */
-	protected void fillProcessVariables(Map<String, Object> variables, E assetDescriptionEntity) throws InvalidDataException {
+	protected void fillProcessVariables(Map<String, Object> variables, E assetDescriptionEntity)
+			throws InvalidDataException {
 		// Nothing
 	}
 
@@ -644,14 +646,14 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Transactional(readOnly = false)
 	public void onEvent(ActivitiEvent event) {
 		switch (event.getType()) {
-			case ENTITY_CREATED:
-				cacheEntiy(event);
-				break;
-			case TASK_ASSIGNED:
-				assign(event);
-				break;
-			default:
-				// NOTHING
+		case ENTITY_CREATED:
+			cacheEntiy(event);
+			break;
+		case TASK_ASSIGNED:
+			assign(event);
+			break;
+		default:
+			// NOTHING
 		}
 
 	}
@@ -783,8 +785,8 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		} else {
 			try (InputStream bpmnStream = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(computeBpmnFilename());
-				 InputStream lastProcessDefinitionStream = repositoryService.getResourceAsStream(
-						 lastProcessDefinition.getDeploymentId(), lastProcessDefinition.getResourceName());) {
+					InputStream lastProcessDefinitionStream = repositoryService.getResourceAsStream(
+							lastProcessDefinition.getDeploymentId(), lastProcessDefinition.getResourceName());) {
 				String lastProcessDefinitionMd5 = DigestUtils.md5DigestAsHex(lastProcessDefinitionStream);
 				String bpmnMd5 = DigestUtils.md5DigestAsHex(bpmnStream);
 				if (!lastProcessDefinitionMd5.equals(bpmnMd5)) {
@@ -823,9 +825,16 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		// nothing to do by default
 	}
 
+	/**
+	 * Controle de l'état de l'entité
+	 * 
+	 * @param assetDescriptionEntity l'entité
+	 * @throws IllegalArgumentException si l'argument est incorrect
+	 * @throws InvalidDataException     si les données (data) de l'entité ne peuvent être désérialisée
+	 */
 	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException, InvalidDataException {
-		if (assetDescriptionEntity == null || (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(), assetDescriptionEntity.getId()) != null
-				&& assetDescriptionEntity.getStatus() != Status.DRAFT)) {
+		if (assetDescriptionEntity == null || (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(),
+				assetDescriptionEntity.getId()) != null && assetDescriptionEntity.getStatus() != Status.DRAFT)) {
 			throw new IllegalArgumentException("Asset is already linked to a task");
 		}
 	}

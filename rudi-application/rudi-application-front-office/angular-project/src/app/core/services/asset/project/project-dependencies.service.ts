@@ -4,8 +4,8 @@ import {mapEach} from '@shared/utils/ObservableUtils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {NewDatasetRequest, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {LinkedDataset, LinkedDatasetStatus, OwnerInfo, PagedProjectList, Project} from 'micro_service_modules/projekt/projekt-model';
-import {from, Observable} from 'rxjs';
-import {map, mergeMap, reduce, switchMap} from 'rxjs/operators';
+import {from, Observable, of} from 'rxjs';
+import {catchError, map, mergeMap, reduce, switchMap} from 'rxjs/operators';
 import {KonsultMetierService} from '../../konsult-metier.service';
 import {ProjectConsultationService} from './project-consultation.service';
 import {ProjektMetierService} from './projekt-metier.service';
@@ -134,6 +134,7 @@ export class ProjectDependenciesFetchers {
             getValue: projectUuid => this.projektService.getNewDatasetRequests(projectUuid)
         };
     }
+
     /**
      * Check les entrées des dépendances pour savoir si y'a bien la dépendance projet qui a été loadée
      * @param input l'entrée à checker
@@ -154,6 +155,13 @@ export class ProjectDependenciesFetchers {
                             return this.konsultMetierService.getMetadataByUuid(linkedDataset.dataset_uuid).pipe(
                                 map((dataset: Metadata) => {
                                     return {linkedDataset, dataset};
+                                }),
+                                catchError(error => {
+                                    if (error.status === 404) {
+                                        return of();
+                                    }
+
+                                    return error;
                                 })
                             );
                         }),

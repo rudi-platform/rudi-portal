@@ -1,1 +1,1 @@
-${projectName} - Demande de publication acceptée
+${projectName} - Demande d'archivage de publication

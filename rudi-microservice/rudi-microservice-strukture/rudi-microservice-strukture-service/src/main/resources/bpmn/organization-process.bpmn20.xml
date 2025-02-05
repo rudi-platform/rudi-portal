@@ -32,7 +32,9 @@ organizationWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;
       <bpmn:script>organizationWorkflowContext.info(&quot;Update status complete&quot;);
 organizationWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, &quot;Acceptée&quot;); 
 var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/initiator-accepted-subject.txt&quot;,&quot;file:templates/emails/organization/initiator-accepted-body.html&quot;);
-organizationWorkflowContext.sendEmailToOrganizationInitiator(context, execution, emailData, true);</bpmn:script>
+organizationWorkflowContext.sendEmailToOrganizationInitiator(context, execution, emailData, true);
+organizationWorkflowContext.attachInitiatorToOrganization(context, execution);
+organizationWorkflowContext.startAttachOrganizationToProvider(context, execution);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_1" name="Done">
       <bpmn:incoming>SequenceFlow_2</bpmn:incoming>

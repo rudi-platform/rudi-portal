@@ -227,6 +227,8 @@ public class DatasetDecryptGatewayFilterFactory
 				privateKey = encryptionService.getPrivateEncryptionKey(datasetIdentifiers.getRight(), mediaUpdateDate);
 				mediaCipherOperator = new MediaCipherOperator(RudiAlgorithmSpec.DEFAULT);
 			} catch (Exception e) {
+				log.error("Unable to get media private key for dataset/media {}", datasetIdentifiers, e);
+				exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
 				return exchange.getResponse().setComplete();
 			}
 			log.info("Updated date {}", mediaUpdateDate);
@@ -415,7 +417,7 @@ public class DatasetDecryptGatewayFilterFactory
 		private LocalDateTime extractMadiaUpdatedDate(Pair<UUID, UUID> datasetIdentifiers)
 				throws DataverseAPIException, UnauthorizedException {
 			// récupératio du dataset
-			Metadata metadata = datasetService.getDataset(datasetIdentifiers.getLeft());
+			Metadata metadata = datasetService.getNonBlockingDataset(datasetIdentifiers.getLeft());
 
 			// Récupération du media concerné
 			Optional<@Valid Media> media = metadata.getAvailableFormats().stream()

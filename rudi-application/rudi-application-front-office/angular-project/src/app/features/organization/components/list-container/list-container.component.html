@@ -31,7 +31,7 @@
             [totalItems]="totalOrganizations$ | async"
             [currentPage]="currentPage$ | async"
             [datasetCountLoading]="datasetCountLoading$ | async"
-            [projectCountLoading$]="projectCountLoading$ | async"
+            [projectCountLoading]="projectCountLoading$ | async"
             (pageChangeEvent)="onPageChange($event)"
         ></app-list-organization-card>
 

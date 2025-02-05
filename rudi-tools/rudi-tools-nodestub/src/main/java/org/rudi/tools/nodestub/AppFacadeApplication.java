@@ -10,11 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = {
-		"org.rudi.common",
-		"org.rudi.facet.oauth2",
-		"org.rudi.tools.nodestub",
-})
+@SpringBootApplication(scanBasePackages = { "org.rudi.common", "org.rudi.facet.oauth2", "org.rudi.tools.nodestub", })
 @EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:nodestub/nodestub-common.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
@@ -24,7 +20,6 @@ public class AppFacadeApplication extends SpringBootServletInitializer {
 		// Renomage du fichier de properties pour éviter les conflits avec d'autres
 		// applications sur le tomcat
 		System.setProperty("spring.config.name", "nodestub");
-		// System.setProperty("spring.devtools.restart.enabled", "false");
 		SpringApplication.run(AppFacadeApplication.class, args);
 
 	}

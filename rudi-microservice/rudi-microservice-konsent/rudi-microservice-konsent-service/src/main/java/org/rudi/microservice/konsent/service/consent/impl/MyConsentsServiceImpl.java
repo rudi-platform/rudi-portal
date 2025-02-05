@@ -3,6 +3,7 @@ package org.rudi.microservice.konsent.service.consent.impl;
 import java.util.List;
 import java.util.UUID;
 
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.microservice.konsent.core.bean.ConsentSearchCriteria;
 import org.rudi.microservice.konsent.core.bean.PagedConsentList;
@@ -27,7 +28,8 @@ public class MyConsentsServiceImpl implements MyConsentsService {
 	private final ConsentsMapper consentsMapper;
 
 	@Override
-	public PagedConsentList searchMyConsents(ConsentSearchCriteria searchCriteria, Pageable pageable) throws Exception {
+	public PagedConsentList searchMyConsents(ConsentSearchCriteria searchCriteria, Pageable pageable)
+			throws AppServiceException {
 		UUID userUuid = aclHelper.getAuthenticatedUserUuid(); // ne peut pas être null
 
 		searchCriteria.setUserUuids(List.of(userUuid));

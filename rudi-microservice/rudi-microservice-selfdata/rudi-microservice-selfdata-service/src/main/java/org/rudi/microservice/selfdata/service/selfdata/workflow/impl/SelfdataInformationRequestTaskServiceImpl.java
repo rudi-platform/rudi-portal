@@ -1,11 +1,12 @@
 package org.rudi.microservice.selfdata.service.selfdata.workflow.impl;
 
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import bean.workflow.SelfdataTaskSearchCriteria;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,15 +37,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
 import bean.workflow.SelfdataTaskSearchCriteria;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 
-
 /**
  * @author KOU21310 Ce service permet de gérer les étapes du wkf associées à selfdataInformationRequest. Elle fait ainsi des actions sur des tasks
- * notamment et non sur des entity (ou asset)
+ *         notamment et non sur des entity (ou asset)
  */
 @Service
 @Transactional(readOnly = true)

@@ -122,9 +122,11 @@
                 </app-banner-button>
 
                 <!-- Faire une demande d'information sur ses données personnelles detenues -->
-                <app-banner-button *ngIf="isSelfdata" (click)="handleClickSelfdataInformationRequest()">
-                    <mat-icon class="key-icon me-2" svgIcon="icone_donnees_personnelles"></mat-icon>
-                    <span>{{ 'metaData.selfdataInformationRequest.wholeTitle'|translate }}</span>
+                <app-banner-button *ngIf="isSelfdata" (click)="handleClickSelfdataInformationRequest()" >
+                    <div class="selfdata-banner-button">
+                        <mat-icon [svgIcon]="'icone_donnees_personnelles'"></mat-icon>
+                        <span>{{ 'metaData.selfdataInformationRequest.wholeTitle'|translate }}</span>
+                    </div>
                 </app-banner-button>
 
                 <!-- Demander l'accès à un JDD restreint -->

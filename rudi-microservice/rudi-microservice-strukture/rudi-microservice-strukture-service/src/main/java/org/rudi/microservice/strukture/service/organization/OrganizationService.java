@@ -1,8 +1,5 @@
 package org.rudi.microservice.strukture.service.organization;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -18,6 +15,9 @@ import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSea
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Service de gestion des organisations
  *
@@ -26,8 +26,6 @@ import org.springframework.data.domain.Pageable;
 public interface OrganizationService {
 
 	OwnerInfo getOrganizationOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException;
-
-	Organization createOrganization(Organization organization) throws AppServiceBadRequestException;
 
 	Organization getOrganization(UUID uuid) throws AppServiceNotFoundException;
 
@@ -48,10 +46,17 @@ public interface OrganizationService {
 	void removeOrganizationMembers(UUID organizationUuid, UUID userUuid) throws AppServiceException;
 
 	Page<OrganizationUserMember> searchOrganizationMembers(OrganizationMembersSearchCriteria searchCriteria,
-			Pageable pageable) throws AppServiceException;
+														   Pageable pageable) throws AppServiceException;
 
 	Boolean isAuthenticatedOrganizationAdministrator(UUID organizationUuid) throws AppServiceException;
 
 	OrganizationMember updateOrganizationMember(UUID organizationUuid, UUID userUuid,
-			OrganizationMember organizationMember) throws AppServiceException;
+												OrganizationMember organizationMember) throws AppServiceException;
+
+	/**
+	 * Create an organization
+	 */
+
+	Organization createOrganization(Organization organization) throws AppServiceBadRequestException;
+
 }

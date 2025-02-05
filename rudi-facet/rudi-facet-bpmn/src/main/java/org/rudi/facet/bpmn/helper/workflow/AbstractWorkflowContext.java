@@ -460,8 +460,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			E assetDescriptionEntity = getAssetDescriptionDao().findByUuid(uuid);
 			if (assetDescriptionEntity != null) {
-				cleanDataBySection(userKey, actionName, sectionName, processInstanceBusinessKey,
-						assetDescriptionEntity);
+				cleanDataBySection(userKey, actionName, sectionName, assetDescriptionEntity);
 			}
 		}
 	}
@@ -477,10 +476,11 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 * @param assetDescriptionEntity     l'entité à corriger
 	 */
 	private void cleanDataBySection(String userKey, String actionName, String sectionName,
-			@Nonnull String processInstanceBusinessKey, @Nonnull E assetDescriptionEntity) {
+			@Nonnull E assetDescriptionEntity) {
 		try {
 			Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
-			Form userKeyForm = getFormHelper().lookupForm(processInstanceBusinessKey, userKey, actionName);
+			Form userKeyForm = getFormHelper().lookupForm(assetDescriptionEntity.getProcessDefinitionKey(), userKey,
+					actionName);
 
 			if (userKeyForm != null) {
 				userKeyForm.getSections().stream().filter(section -> section.getName().equals(sectionName)).findFirst()

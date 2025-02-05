@@ -3,6 +3,9 @@
  */
 package org.rudi.microservice.projekt.service.workflow;
 
+import static org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +45,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -99,13 +100,15 @@ public class ProjectTaskServiceImpl extends
 	}
 
 	@Override
-	protected void fillProcessVariables(Map<String, Object> variables, ProjectEntity assetDescriptionEntity) throws InvalidDataException {
+	protected void fillProcessVariables(Map<String, Object> variables, ProjectEntity assetDescriptionEntity)
+			throws InvalidDataException {
 		variables.put(ProjektWorkflowConstants.TITLE, assetDescriptionEntity.getTitle());
 		if (assetDescriptionEntity.getProjectStatus() != null) {
 			variables.put(ProjektWorkflowConstants.PROJECT_STATUS, assetDescriptionEntity.getProjectStatus().name());
 		}
 		if (assetDescriptionEntity.getData() != null) {
-			variables.put(ProjektWorkflowConstants.PROJECT_DRAFT_TYPE, projectWorkflowHelper.getDraftType(assetDescriptionEntity));
+			variables.put(ProjektWorkflowConstants.PROJECT_DRAFT_TYPE,
+					projectWorkflowHelper.getDraftType(assetDescriptionEntity));
 		}
 	}
 
@@ -143,9 +146,12 @@ public class ProjectTaskServiceImpl extends
 	 * @param assetDescriptionEntity
 	 */
 	@Override
-	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity) throws IllegalArgumentException, InvalidDataException {
-		if (assetDescriptionEntity == null || getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getClass(), assetDescriptionEntity.getId()) != null
-				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT) || assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
+	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity)
+			throws IllegalArgumentException, InvalidDataException {
+		if (assetDescriptionEntity == null || getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getClass(),
+				assetDescriptionEntity.getId()) != null
+				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
+						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
 			throw new IllegalArgumentException("Asset is already linked to a task");
 		}
 
@@ -197,9 +203,7 @@ public class ProjectTaskServiceImpl extends
 		Form form = super.lookupDraftForm(formType);
 
 		if (form != null) {
-			form.getSections().stream()
-					.filter(s -> s.getName().equals(DRAFT_FORM_SECTION_NAME))
-					.findFirst()
+			form.getSections().stream().filter(s -> s.getName().equals(DRAFT_FORM_SECTION_NAME)).findFirst()
 					.ifPresent(value -> projektFormEnhancerHelper.enhance(value));
 		}
 
@@ -210,8 +214,10 @@ public class ProjectTaskServiceImpl extends
 		// vérif des etats des linkeddatasets
 		// ils doivent être COMPLETED | CANCELLED | DELETED
 		for (final LinkedDatasetEntity linkedDataset : assetDescriptionEntity.getLinkedDatasets()) {
-			if (linkedDataset.getStatus() != Status.COMPLETED && linkedDataset.getStatus() != Status.CANCELLED && linkedDataset.getStatus() != Status.DELETED) {
-				throw new IllegalArgumentException("Invalid dataset status type for project " + assetDescriptionEntity.getUuid());
+			if (linkedDataset.getStatus() != Status.COMPLETED && linkedDataset.getStatus() != Status.CANCELLED
+					&& linkedDataset.getStatus() != Status.DELETED) {
+				throw new IllegalArgumentException(
+						"Invalid dataset status type for project " + assetDescriptionEntity.getUuid());
 			}
 		}
 	}
@@ -220,8 +226,10 @@ public class ProjectTaskServiceImpl extends
 		// vérif des etats des NewDatasetRequest
 		// ils doivent être COMPLETED | CANCELLED | DELETED
 		for (final NewDatasetRequestEntity newDatasetRequest : assetDescriptionEntity.getDatasetRequests()) {
-			if (newDatasetRequest.getStatus() != Status.COMPLETED && newDatasetRequest.getStatus() != Status.CANCELLED && newDatasetRequest.getStatus() != Status.DELETED) {
-				throw new IllegalArgumentException("Invalid dataset status type for project " + assetDescriptionEntity.getUuid());
+			if (newDatasetRequest.getStatus() != Status.COMPLETED && newDatasetRequest.getStatus() != Status.CANCELLED
+					&& newDatasetRequest.getStatus() != Status.DELETED) {
+				throw new IllegalArgumentException(
+						"Invalid dataset status type for project " + assetDescriptionEntity.getUuid());
 			}
 		}
 	}

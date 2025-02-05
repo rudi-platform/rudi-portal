@@ -65,7 +65,8 @@
     justify-content: center;
     height: inherit;
 }
-.center{
+
+.center {
     display: flex;
     justify-content: center;
     height: 5em;
@@ -76,4 +77,9 @@
     margin-bottom: 0.5em;
     padding-top: 0.2em;
     padding-bottom: 0.2em;
+}
+
+td {
+    padding: 0;
+    height: 70px;
 }

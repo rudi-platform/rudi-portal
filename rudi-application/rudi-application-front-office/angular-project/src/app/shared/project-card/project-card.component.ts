@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
+import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
 
 @Component({
@@ -13,6 +14,7 @@ import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
 export class ProjectCardComponent implements OnInit {
     @Input() projectCatalogItem: ProjectCatalogItem;
     @Input() mediaSize: MediaSize;
+    defaultLogo: Base64EncodedLogo;
 
     constructor(
         private readonly breakpointObserver: BreakpointObserverService,
@@ -20,6 +22,7 @@ export class ProjectCardComponent implements OnInit {
         private readonly router: Router,
         private readonly projektMetierService: ProjektMetierService,
     ) {
+        this.defaultLogo = '/assets/images/logo_projet_par_defaut.png';
     }
 
     ngOnInit(): void {
@@ -39,11 +42,7 @@ export class ProjectCardComponent implements OnInit {
     }
 
     get projectPicture(): string {
-        if (this.projectCatalogItem != null && this.projectCatalogItem.logo != null) {
-            return this.projectCatalogItem.logo;
-        } else {
-            return '/assets/images/logo_projet_par_defaut.png';
-        }
+        return this.projectCatalogItem?.logo !== null ? this.projectCatalogItem.logo : this.defaultLogo;
     }
 
     get projectOwnerInfo(): string {

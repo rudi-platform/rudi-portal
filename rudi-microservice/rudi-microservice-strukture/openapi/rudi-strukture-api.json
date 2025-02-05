@@ -1475,12 +1475,10 @@
 				"tags": [
 					"organization"
 				],
-				"summary": "Ajout d'une nouvelle organisation",
-				"description": "Permet d'ajouter une nouvelle organisation",
+				"summary": "Création d'une organisation",
+				"description": "Permet de créer une organisation",
 				"operationId": "createOrganization",
 				"requestBody": {
-					"description": "infos de l'organisation",
-					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
@@ -1495,16 +1493,33 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string",
-									"format": "uuid"
+									"$ref": "rudi-strukture-model.json#/components/schemas/Organization"
 								}
 							}
 						}
 					},
-					"409": {
-						"description": "Une organisation possédant cet UUID existe déjà."
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
 					},
 					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
 					}
 				}
@@ -1604,6 +1619,46 @@
 				"responses": {
 					"204": {
 						"description": "Organisation modifiée avec succès"
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/request": {
+			"post": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Ajout d'une nouvelle organisation",
+				"description": "Permet d'ajouter une nouvelle organisation",
+				"operationId": "requestOrganizationCreation",
+				"requestBody": {
+					"description": "infos de l'organisation",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-strukture-model.json#/components/schemas/Organization"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Organisation créée avec succès",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Une organisation possédant cet UUID existe déjà."
 					},
 					"500": {
 						"$ref": "#/components/responses/ServiceUnavailable"

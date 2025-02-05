@@ -21,6 +21,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
     @Input() heroDescription: HeroDescription;
 
+    defaultPicto: Base64EncodedLogo;
     leftPictoSrc$: Observable<Base64EncodedLogo>;
     loadingLeftPicto: boolean;
     rightPictoSrc$: Observable<Base64EncodedLogo>;
@@ -54,7 +55,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
                 },
                 error: (error) => {
                     this.logger.error(error);
-                    this.leftPictoSrc$ = of(DEFAULT_PICTO);
+                    this.leftPictoSrc$ = of(this.defaultPicto);
                     this.loadingLeftPicto = false;
                 }
             });
@@ -74,7 +75,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
                 },
                 error: (error) => {
                     this.logger.error(error);
-                    this.rightPictoSrc$ = of(DEFAULT_PICTO);
+                    this.rightPictoSrc$ = of(this.defaultPicto);
                     this.loadingRightPicto = false;
                 }
             });
@@ -96,8 +97,9 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
         this.searchbarPlaceholder = this.translateService.instant('home.heroSection.searchbarPlaceholder');
         this.title1 = this.heroDescription?.title1 ?? this.translateService.instant('home.heroSection.title1');
         this.title2 = this.heroDescription?.title2 ?? this.translateService.instant('home.heroSection.title2');
-        this.leftPictoSrc$ = of(DEFAULT_PICTO);
-        this.rightPictoSrc$ = of(DEFAULT_PICTO);
+        this.defaultPicto = DEFAULT_PICTO;
+        this.leftPictoSrc$ = of(this.defaultPicto);
+        this.rightPictoSrc$ = of(this.defaultPicto);
 
         if (this.heroDescription?.left_image) {
             this.initLeftPicto();

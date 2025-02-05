@@ -25,7 +25,7 @@ const routes: Routes = [
         path: 'detail/:organizationUuid/:name',
         component: DetailComponent,
         canActivate: mapToCanActivate([AuthGuard])
-    }
+    },
 ];
 
 @NgModule({

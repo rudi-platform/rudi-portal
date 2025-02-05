@@ -1,8 +1,6 @@
 package org.rudi.microservice.strukture.service.provider.impl;
 
 import java.security.InvalidParameterException;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Status;
@@ -13,6 +11,7 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
 import org.rudi.microservice.strukture.core.bean.criteria.LinkedProducerSearchCriteria;
+import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
 import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
@@ -20,7 +19,6 @@ import org.rudi.microservice.strukture.service.mapper.LinkedProducerMapper;
 import org.rudi.microservice.strukture.service.provider.LinkedProducerService;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerCustomDao;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
-import org.rudi.microservice.strukture.storage.dao.provider.ProviderDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
@@ -40,16 +38,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class LinkedProducerServiceImpl implements LinkedProducerService {
-	public static final String INITIAL_FUNCTIONNAL_STATUS = "Lien créé";
-
-	private final OrganizationHelper organizationHelper;
-	private final LinkedProducerMapper linkedProducerMapper;
-	private final ProviderHelper providerHelper;
-	private final ProviderDao providerDao;
 	private final LinkedProducerDao linkedProducerDao;
 	private final LinkedProducerCustomDao linkedProducerCustomDao;
+
 	private final OwnerInfoHelper ownerInfoHelper;
+	private final ProviderHelper providerHelper;
+	private final OrganizationHelper organizationHelper;
+	private final LinkedProducerHelper linkedProducerHelper;
+
 	private final UtilPageable utilPageable;
+
+	private final LinkedProducerMapper linkedProducerMapper;
 
 	@Override
 	public OwnerInfo getLinkedProducerOwnerInfo(UUID uuid)
@@ -89,22 +88,7 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 			return reinitializeLinkedProducer(linkedProducer.getUuid());
 		}
 
-		// Rattachement de l'organization au provider
-		provider.getLinkedProducers().add(createLinkedProducer(organization, provider));
-
-		// Récupération de l'entité sauvegardée en base
-		ProviderEntity savedProvider = providerDao.save(provider);
-		Optional<LinkedProducerEntity> createdLinkedProducer = savedProvider.getLinkedProducers().stream().filter(
-				linkedProducerEntity -> linkedProducerEntity.getOrganization().getUuid().equals(organizationUuid))
-				.findFirst();
-
-		if (createdLinkedProducer.isEmpty()) {
-			throw new AppServiceBadRequestException(
-					String.format("Une erreur est survenue lors du rattachement de l'organisation %s au provider %s",
-							organizationUuid, provider.getUuid()));
-		}
-
-		return linkedProducerMapper.entityToDto(createdLinkedProducer.get());
+		return linkedProducerHelper.createLinkedProducer(organization, provider);
 	}
 
 	@Override
@@ -137,27 +121,6 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		}
 
 		return pagedLinkedProducer.getContent().get(0);
-	}
-
-	private LinkedProducerEntity createLinkedProducer(OrganizationEntity organization, ProviderEntity provider) {
-		LocalDateTime now = LocalDateTime.now();
-
-		// Création de l'objet LinkedProducer
-		LinkedProducerEntity linkedProducerEntity = new LinkedProducerEntity();
-		linkedProducerEntity.setUuid(UUID.randomUUID());
-		linkedProducerEntity.setDescription(String.format("Rattachement de l'organsiation %s au provider %s",
-				organization.getName(), provider.getLabel()));
-		linkedProducerEntity.setFunctionalStatus(INITIAL_FUNCTIONNAL_STATUS);
-		linkedProducerEntity.setProcessDefinitionKey("linked-producer-process");
-		linkedProducerEntity.setOrganization(organization);
-		linkedProducerEntity.setLinkedProducerStatus(LinkedProducerStatus.DRAFT);
-		linkedProducerEntity.setStatus(Status.DRAFT);
-		linkedProducerEntity.setCreationDate(now);
-		linkedProducerEntity.setUpdatedDate(now);
-		linkedProducerEntity.setInitiator(provider.getUuid().toString());
-		linkedProducerEntity.setUpdator(provider.getUuid().toString());
-
-		return linkedProducerEntity;
 	}
 
 	private OrganizationEntity getOrganizationEntityValidatedFromUuid(UUID uuid) throws AppServiceNotFoundException {

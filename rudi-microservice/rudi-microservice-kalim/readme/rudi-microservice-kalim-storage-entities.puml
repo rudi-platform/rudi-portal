@@ -6,7 +6,7 @@ abstract class org.rudi.common.storage.entity.AbstractLabelizedEntity <<MappedSu
 	{field} +@Column("code") code : String
 	{field} +@Column("label") label : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -16,7 +16,7 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity <<MappedSuper
 	{field} +@Column("id") @Id id : Long
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("uuid") uuid : java.util.UUID
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -26,10 +26,10 @@ abstract class org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongI
 	{field} -id : Long
 	{field} -uuid : java.util.UUID
 	{method}  {abstract} +build () : org.rudi.common.storage.entity.AbstractLongIdEntity
-	{method} +id ( paramLong1 : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +id ( id : Long ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method}  {abstract} #self () : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 	{method} +toString () : String
-	{method} +uuid ( paramUUID1 : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+	{method} +uuid ( uuid : java.util.UUID ) : org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 }
 
 
@@ -38,7 +38,7 @@ abstract class org.rudi.common.storage.entity.AbstractStampedEntity <<MappedSupe
 	{field} +@Column("opening_date") openingDate : java.time.LocalDateTime
 	{field} +@Column("order_") order : int
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -48,14 +48,14 @@ abstract class org.rudi.common.storage.entity.AbstractTranslationEntity <<Mapped
 	{field} +@Column("lang") lang : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("text") text : String
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
 
 
 class org.rudi.common.storage.entity.HibernateEntityHelper {
-	{method}  {static} +setCollection ( paramSupplier1 : java.util.function.Supplier , paramCollection2 : java.util.Collection ) : void
+	{method}  {static} +setCollection ( collectionGetter : java.util.function.Supplier , newCollection : java.util.Collection ) : void
 }
 
 
@@ -99,7 +99,7 @@ class org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestE
 	{field} +@Column("version") version : String
 	{method}  {static} -$default$rapportTransmissionAttempts () : int
 	{method}  {static} +builder () : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }
@@ -121,22 +121,22 @@ abstract class org.rudi.microservice.kalim.storage.entity.integration.Integratio
 	{field} -treatmentDate : java.time.LocalDateTime
 	{field} -version : String
 	{method}  {abstract} +build () : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity
-	{method} +errors ( paramSet1 : java.util.Set ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +file ( paramString1 : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +globalId ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +integrationStatus ( paramIntegrationStatus1 : org.rudi.microservice.kalim.core.bean.IntegrationStatus ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +method ( paramMethod1 : org.rudi.microservice.kalim.core.bean.Method ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +nodeProviderId ( paramUUID1 : java.util.UUID ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +progressStatus ( paramProgressStatus1 : org.rudi.microservice.kalim.core.bean.ProgressStatus ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +rapportTransmissionAttempts ( paramint1 : int ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +resourceTitle ( paramString1 : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +errors ( errors : java.util.Set ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +file ( file : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +globalId ( globalId : java.util.UUID ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +integrationStatus ( integrationStatus : org.rudi.microservice.kalim.core.bean.IntegrationStatus ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +method ( method : org.rudi.microservice.kalim.core.bean.Method ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +nodeProviderId ( nodeProviderId : java.util.UUID ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +progressStatus ( progressStatus : org.rudi.microservice.kalim.core.bean.ProgressStatus ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +rapportTransmissionAttempts ( rapportTransmissionAttempts : int ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +resourceTitle ( resourceTitle : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
 	{method}  {abstract} #self () : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +sendRequestDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +submissionDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +submittedByHarvesting ( paramboolean1 : boolean ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +sendRequestDate ( sendRequestDate : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +submissionDate ( submissionDate : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +submittedByHarvesting ( submittedByHarvesting : boolean ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
 	{method} +toString () : String
-	{method} +treatmentDate ( paramLocalDateTime1 : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
-	{method} +version ( paramString1 : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +treatmentDate ( treatmentDate : java.time.LocalDateTime ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
+	{method} +version ( version : String ) : org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder
 }
 
 
@@ -149,7 +149,7 @@ class org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestE
 	{field} +@Column("field_name") fieldName : String
 	{field} +@Column("message") message : String
 	{field} {static} -serialVersionUID : long
-	{method} +equals ( paramObject1 : Object ) : boolean
+	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
 }

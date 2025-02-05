@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectCatalogItem, ProjectCatalogItemPage} from '@features/project/model/project-catalog-item';
 import {DEFAULT_PROJECT_ORDER, Order} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {ProjectListService} from '@core/services/project-list.service';
+import {ProjectCatalogItem, ProjectCatalogItemPage} from '@features/project/model/project-catalog-item';
 
 const FIRST_PAGE = 1;
 
@@ -15,7 +15,7 @@ export class ProjectListComponent implements OnInit {
     mediaSize: MediaSize;
     projectList: ProjectCatalogItemPage;
     @Input() maxResultsPerPage = 12;
-    @Input() allPage = true;
+    @Input() allPage = false;
     @Input() isTransparent = false;
     @Input() ownerId: string;
     @Input() producerUuid: string;

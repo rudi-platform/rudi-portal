@@ -13,6 +13,8 @@
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 1em;
+    display: flex;
+    justify-content: space-between;
 }
 
 .card-no-result {
@@ -66,10 +68,10 @@
         font-style: normal !important;
 
     }
-
 }
 
 .triplet-card {
     flex-basis: 33%;
     padding-right: 50px;
 }
+

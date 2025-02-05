@@ -1,13 +1,8 @@
 package org.rudi.microservice.strukture.service.organization.impl;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -38,6 +33,7 @@ import org.rudi.microservice.strukture.service.organization.impl.fields.UpdateOr
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -47,9 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -166,12 +166,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 					"L'utilisateur connecté n'est pas autorisé à agir sur l'organisation %s", organizationUuid));
 		}
 
-		val organizationEntity = organizationHelper.getOrganizationEntity(organizationUuid);
+		OrganizationEntity organizationEntity = organizationHelper.getOrganizationEntity(organizationUuid);
 		// Verifier que le membre qu'on ajoute est user ACL
-		val correspondingUser = organizationMembersHelper.getUserByLoginOrByUuid(organizationMember.getLogin(),
+		User correspondingUser = organizationMembersHelper.getUserByLoginOrByUuid(organizationMember.getLogin(),
 				organizationMember.getUserUuid());
 		organizationMember.setUserUuid(correspondingUser.getUuid()); // Utile si le DTO ne contenait que le login
-		val organizationMemberEntity = organizationMemberMapper.dtoToEntity(organizationMember);
+		OrganizationMemberEntity organizationMemberEntity = organizationMemberMapper.dtoToEntity(organizationMember);
 		organizationMemberEntity.setAddedDate(LocalDateTime.now());
 		organizationMembersHelper.checkUserIsNotMember(organizationEntity, organizationMemberEntity);
 		organizationEntity.getMembers().add(organizationMemberEntity);
@@ -202,7 +202,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = { CannotRemoveLastAdministratorException.class, RuntimeException.class })
+	@Transactional(rollbackFor = {CannotRemoveLastAdministratorException.class, RuntimeException.class})
 	// readOnly = false
 	public void removeOrganizationMembers(UUID organizationUuid, UUID userUuid) throws AppServiceException {
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
@@ -247,7 +247,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	public Page<OrganizationUserMember> searchOrganizationMembers(OrganizationMembersSearchCriteria searchCriteria,
-			Pageable pageable) throws AppServiceException {
+																  Pageable pageable) throws AppServiceException {
 
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
 				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
@@ -281,7 +281,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	@Transactional
 	public OrganizationMember updateOrganizationMember(UUID organizationUuid, UUID userUuid,
-			OrganizationMember organizationMember) throws AppServiceException {
+													   OrganizationMember organizationMember) throws AppServiceException {
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_ACCESS();
 
 		// Vérifie que l'utilisateur connecté est bien administrateur de l'organisation
@@ -330,6 +330,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 		return organizationMemberMapper.entityToDto(member);
 	}
+
 
 	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {
 		val adminMembers = organization.getMembers().stream()

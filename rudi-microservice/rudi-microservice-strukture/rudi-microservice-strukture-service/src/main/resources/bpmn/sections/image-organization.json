@@ -1,0 +1,11 @@
+{
+	"help": "Zone pour la définition de l'image",
+	"fieldDefinitions": [
+		{
+			"name": "organizationImage",
+			"label": "Logo de l'organisation",
+			"type": "ATTACHMENT",
+			"required": false
+		}
+	]
+}

@@ -8,13 +8,14 @@ import {OrganizationMetierService} from '@core/services/organization/organizatio
 import {PageTitleService} from '@core/services/page-title.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
-import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
+import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
 import {TabComponent} from '@shared/tab/tab.component';
 import {TabsComponent} from '@shared/tabs/tabs.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {WorkflowFormDialogOutputData} from '@shared/workflow-form-dialog/types';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {Form, Status} from 'micro_service_modules/api-bpmn';
 import {OwnerType} from 'micro_service_modules/konsent/konsent-api';
@@ -165,8 +166,7 @@ export class MyProjectDetailsComponent implements OnInit {
     }
 
     isProjectUpdatable(): boolean {
-        const containsLinkedDatasets = this.project?.linked_datasets
-            .filter((d) => d?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
+        const containsLinkedDatasets = this.project?.linked_datasets?.filter((d) => d?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
         return this.project?.status === Status.Completed && !containsLinkedDatasets;
     }
 
@@ -266,8 +266,8 @@ export class MyProjectDetailsComponent implements OnInit {
                 title: this.translateService.instant('personalSpace.project.archive.archived'),
                 form: this.form
             }
-        }).afterClosed().subscribe(result => {
-            if (result?.closeEvent !== null && result.closeEvent === CloseEvent.VALIDATION) {
+        }).afterClosed().subscribe((result: DialogClosedData<WorkflowFormDialogOutputData>) => {
+            if (result?.closeEvent === CloseEvent.VALIDATION) {
                 this.archiveProject().subscribe({
                     next: (value: Task) => {
                         this.snackBarService.openSnackBar({
@@ -278,10 +278,17 @@ export class MyProjectDetailsComponent implements OnInit {
                         this.loadProject();
                     },
                     error: err => {
-                        this.snackBarService.openSnackBar({
-                            level: Level.ERROR,
-                            message: `${this.translateService.instant('personalSpace.project.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('personalSpace.project.archive.here')}</a>`,
-                        }, 3000);
+                        if (err.status === 400) {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
+                                message: this.translateService.instant('personalSpace.project.archive.errorTaskInProgress'),
+                            }, 3000);
+                        } else {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
+                                message: `${this.translateService.instant('personalSpace.project.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('personalSpace.project.archive.here')}</a>`,
+                            }, 3000);
+                        }
                     }
                 });
             }
