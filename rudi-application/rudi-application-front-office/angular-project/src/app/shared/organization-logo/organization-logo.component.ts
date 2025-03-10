@@ -35,7 +35,7 @@ export class OrganizationLogoComponent {
                     this.isLoading = false;
                 },
                 error: () => {
-                    this.content = '/assets/images/rudi_picto_profil_user.png';
+                    this.content = '/assets/images/rudi_default_picto_organization.png';
                     this.isLoading = false;
                 }
             });

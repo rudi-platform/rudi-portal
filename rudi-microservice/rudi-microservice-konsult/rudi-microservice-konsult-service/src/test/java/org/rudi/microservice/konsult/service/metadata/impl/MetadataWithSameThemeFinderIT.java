@@ -1,11 +1,14 @@
 package org.rudi.microservice.konsult.service.metadata.impl;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
@@ -34,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.RequiredArgsConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 @KonsultSpringBootTest
 @RequiredArgsConstructor
@@ -55,11 +59,14 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Nonnull
-	private String createDataset(String basename) throws DataverseAPIException, IOException {
+	private String createDataset(String basename) throws DataverseAPIException, IOException, InterruptedException {
 		final var metadata = jsonResourceReader.read("metadataWithSameThemeFinder/" + basename, Metadata.class);
 		fillOtherFields(metadata);
 		final var doi = datasetService.createDataset(metadata);
 		this.createdDatasetDoiList.add(doi);
+
+		await().timeout(10, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() ->  datasetService.getDataset(doi) != null);
+
 		return doi;
 	}
 
@@ -113,7 +120,7 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Test
-	void find_theme() throws DataverseAPIException, IOException {
+	void find_theme() throws DataverseAPIException, IOException, InterruptedException {
 		final var baseDatasetDoi = createDataset("base.json");
 		final var datasetWithSameThemeDoi = createDataset("same-theme.json");
 		final var datasetWithDifferentThemeDoi = createDataset("different-theme.json");
@@ -127,7 +134,7 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Test
-	void find_producer() throws DataverseAPIException, IOException {
+	void find_producer() throws DataverseAPIException, IOException, InterruptedException {
 		final var baseDatasetDoi = createDataset("base.json");
 		final var datasetWithSameProducer = createDataset("producer-rudi.json");
 		final var datasetWithDifferentProducer1 = createDataset("producer-ademe-1keyword.json");
@@ -144,7 +151,7 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Test
-	void find_producer_keywords() throws DataverseAPIException, IOException {
+	void find_producer_keywords() throws DataverseAPIException, IOException, InterruptedException {
 		final var baseDatasetDoi = createDataset("base.json");
 		final var datasetProducerAWithCommonKeywords = createDataset("producer-ademe.json");
 		final var datasetProducerAWithoutKeywords = createDataset("producer-ademe-0keyword.json");
@@ -165,12 +172,13 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Test
-	void find_keywords() throws DataverseAPIException, IOException {
+	void find_keywords() throws DataverseAPIException, IOException, InterruptedException {
 		final var baseDatasetDoi = createDataset("base.json");
 		final var datasetWith0Keyword = createDataset("producer-ademe-0keyword.json");
 		final var datasetWith1Keyword = createDataset("producer-ademe-1keyword.json");
 		final var datasetWith2Keywords = createDataset("producer-ademe-2keywords.json");
 		final var datasetWith3Keywords = createDataset("producer-ademe-3keywords.json");
+
 
 		final var metadataList = metadataWithSameThemeFinder.find(baseDatasetDoi, 3);
 
@@ -183,7 +191,7 @@ class MetadataWithSameThemeFinderIT {
 	}
 
 	@Test
-	void find_minimal() throws DataverseAPIException, IOException {
+	void find_minimal() throws DataverseAPIException, IOException, InterruptedException {
 		final var baseDatasetDoi = createDataset("base.json");
 		final var datasetWith0Keyword = createDataset("producer-ademe-0keyword.json");
 

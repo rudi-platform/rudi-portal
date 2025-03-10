@@ -35,7 +35,7 @@
                 </app-tab>
                 <app-tab [label]="'personalSpace.project.tabs.datasets.title' | translate" [icon]="'jdd_icon'">
                     <ng-template>
-                        <app-project-datasets-tab [project]="project"></app-project-datasets-tab>
+                        <app-project-datasets-tab [project]="project" (onProjectIsUpdate)="loadProject()"></app-project-datasets-tab>
                     </ng-template>
                 </app-tab>
                 <app-tab *ngIf="displayApiTab" [label]="'personalSpace.project.tabs.api.title' | translate"
@@ -47,7 +47,7 @@
 
                 <!-- Bouton "Archiver la réutilisation" -->
                 <app-banner-button (click)="openPopinArchive(tabs, tabInformation)"
-                                   *ngIf="this.project?.status === Status.Completed">
+                                   *ngIf="isProjectArchived()">
                     {{ 'personalSpace.project.archive.archived' | translate }}
                 </app-banner-button>
 

@@ -1631,8 +1631,8 @@
 				"tags": [
 					"organization"
 				],
-				"summary": "Ajout d'une nouvelle organisation",
-				"description": "Permet d'ajouter une nouvelle organisation",
+				"summary": "Demande de création d'une nouvelle organisation",
+				"description": "Demande de création d'une nouvelle organisation avec validation par le moderateur",
 				"operationId": "requestOrganizationCreation",
 				"requestBody": {
 					"description": "infos de l'organisation",
@@ -1646,8 +1646,8 @@
 					}
 				},
 				"responses": {
-					"201": {
-						"description": "Organisation créée avec succès",
+					"200": {
+						"description": "Demande de création d'Organisation créée avec succès",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1657,10 +1657,136 @@
 							}
 						}
 					},
-					"409": {
-						"description": "Une organisation possédant cet UUID existe déjà."
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"description": "Une organisation possédant cet UUID existe déjà.",
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
 					},
 					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Demande de modification d'une organisation",
+				"description": "Demande de modification d'une organisation avec validation par le moderateur",
+				"operationId": "requestOrganizationUpdate",
+				"requestBody": {
+					"description": "Données de l'organisation",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-strukture-model.json#/components/schemas/Organization"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Demande de modification d'Organisation créée avec succès",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"description": "Aucune organisation possédant cet UUID existe.",
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/organizations/request/{uuid}": {
+			"delete": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Demande de suppression d'une organisation",
+				"description": "Demande de suppression d'une organisation avec validation par le moderateur",
+				"operationId": "requestOrganizationDelete",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Organisation supprimée avec succès"
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
 					}
 				}

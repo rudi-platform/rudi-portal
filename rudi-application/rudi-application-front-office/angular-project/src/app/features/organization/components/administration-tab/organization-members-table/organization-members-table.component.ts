@@ -34,6 +34,7 @@ export class OrganizationMembersTableComponent implements OnInit {
     displayedColumns: string[] = ['lastname', 'firstname', 'login', 'last_connexion', 'added_date', 'role', 'dash'];
     searchIsRunning = false;
     isSearchError = false;
+    linkError: string;
 
     DEFAULT_SORT = {order: this.DEFAULT_SORT_ORDER, page: 1};
     backPaginationSort = new BackPaginationSort();
@@ -99,6 +100,9 @@ export class OrganizationMembersTableComponent implements OnInit {
             next: (page: PagedOrganizationUserMembers) => this.handleSearchOrganizationMembersSuccess(page),
             error: (error) => this.handleSearchOrganizationMembersError(error)
         });
+        this.propertiesMetierService.get('front.contact').subscribe(linkError => {
+            this.linkError = linkError;
+        });
     }
 
     get organizationMembersList(): OrganizationUserMember[] {
@@ -158,7 +162,7 @@ export class OrganizationMembersTableComponent implements OnInit {
         this.isSearchError = true;
         this.logService.error(error);
         this.snackbarService.openSnackBar({
-            message: this.translateService.instant('metaData.administrationTab.membersTable.errorPagination'),
+            message: `${this.translateService.instant('metaData.administrationTab.membersTable.errorPagination')}<a href="${this.linkError}">${this.translateService.instant('metaData.administrationTab.membersTable.here')}</a>`,
             level: Level.ERROR,
         }, 3000);
     }

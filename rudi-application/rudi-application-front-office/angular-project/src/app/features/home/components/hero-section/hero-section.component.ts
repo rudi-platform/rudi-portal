@@ -36,7 +36,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private imageLogoService: ImageLogoService,
         private logger: LogService,
-        private router: Router,
+        private router: Router
     ) {
         this.destroy$ = new Subject<boolean>();
     }

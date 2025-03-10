@@ -15,7 +15,6 @@ import javax.script.ScriptContext;
 
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.apache.commons.collections4.CollectionUtils;
-import org.rudi.common.core.security.Role;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
@@ -83,26 +82,33 @@ public abstract class AbstractProjektWorkflowContext<E extends AssetDescriptionE
 		log.debug("Send email to initiator...");
 		try {
 			AssetDescriptionEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
-			List<String> assigneesEmails = new ArrayList<>();
+
 			if (assetDescription != null && eMailData != null) {
+				List<String> assigneesEmails = new ArrayList<>();
 				User initiator = lookupUser(assetDescription.getInitiator());
-
-				assigneesEmails = lookupEMailAddresses(List.of(initiator));
-				if (CollectionUtils.isEmpty(assigneesEmails) && rolesHelper.hasAnyRole(initiator, Role.ORGANIZATION)) {
-					List<User> users = getAssignmentHelper()
-							.computeOrganizationMembers(UUID.fromString(initiator.getLogin()));
-
-					CollectionUtils.addAll(assigneesEmails, getAclHelper().lookupEmailAddresses(users));
-				} else {
+				if (initiator != null) {
+					// Utilisateur de type USER
+					assigneesEmails = lookupEMailAddresses(List.of(initiator));
 					assigneesEmails
 							.add(Objects.requireNonNull(getAclHelper().getUserByUUID(initiator.getUuid())).getLogin());
+				} else {
+					// Utilisateur non trouvé comme USER, recherche comme ORGANIZATION
+					List<User> users = getAssignmentHelper()
+							.computeOrganizationMembers(UUID.fromString(assetDescription.getInitiator()));
+					CollectionUtils.addAll(assigneesEmails, getAclHelper().lookupEmailAddresses(users));
+				}
+
+				if (CollectionUtils.isNotEmpty(assigneesEmails)) {
+					// suppression des duplications
+					assigneesEmails = assigneesEmails.stream().distinct().collect(Collectors.toList());
+					sendEMail(executionEntity, assetDescription, eMailData, assigneesEmails, null);
+				} else {
+					log.error("Unable to find email for asset {} and initiator {}", assetDescription.getUuid(),
+							assetDescription.getInitiator());
 				}
 			}
-			if (CollectionUtils.isNotEmpty(assigneesEmails)) {
-				// suppression des duplications
-				assigneesEmails = assigneesEmails.stream().distinct().collect(Collectors.toList());
-				sendEMail(executionEntity, assetDescription, eMailData, assigneesEmails, null);
-
+			else {
+				log.error("Unable to send email : asset description {} or emailData {} is invalid", assetDescription, eMailData);
 			}
 		} catch (Exception e) {
 			log.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);

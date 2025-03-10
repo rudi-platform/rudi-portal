@@ -184,7 +184,7 @@ export class DataSetInfosComponent implements OnInit {
                 error: () => {
                     this.isLoading = false;
                     const message = this.translateService.instant('common.echec');
-                    const linkLabel = this.translateService.instant('snackbarTemplate.ici');
+                    const linkLabel = this.translateService.instant('common.ici');
                     this.propertiesMetierService.get('front.contact').subscribe(link => {
                         this.snacbackService.openSnackBar({
                             message: `${message} <a href="${link}">${linkLabel}</a>.`,

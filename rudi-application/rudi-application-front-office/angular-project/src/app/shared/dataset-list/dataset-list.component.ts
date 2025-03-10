@@ -58,6 +58,9 @@ export class DatasetListComponent implements OnInit {
             this.page = FIRST_PAGE;
         });
 
+        //on set le filter par défaut sur la date pour éviter un rechargement une fois celui-ci mis à jour
+        this.filtersService.orderFilter.value = '-dataset_dates.created';
+
         // Dans une liste de JDD on ne peut faire une recherche que toutes les demi secondes
         this.metadatasSearcher.pipe(
             debounceTime(500),

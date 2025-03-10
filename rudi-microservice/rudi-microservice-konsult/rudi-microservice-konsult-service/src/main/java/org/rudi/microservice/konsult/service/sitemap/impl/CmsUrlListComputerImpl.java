@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,13 +126,16 @@ public class CmsUrlListComputerImpl extends AbstractUrlListComputer {
 	 *         http://localhost:4200/cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/politique-de-confidentialite-de-la-plateforme-rudi)
 	 */
 	private String buildLocation(String link) {
-		if (link.startsWith("/")) {
-			link = link.substring(1);
-		}
-		int lastSlashIndex = link.lastIndexOf('/');
-		String baseUrl = link.substring(0, lastSlashIndex + 1);
-		String lastPart = link.substring(lastSlashIndex + 1);
-		String encodedLastPart = normalize(URLDecoder.decode(lastPart, StandardCharsets.UTF_8));
-		return StringUtils.join(urlServer, (baseUrl + encodedLastPart));
+		link = StringUtils.removeStart(link, "/"); // retrait du 1er /, qui sera rajouté systématiquement à la reconstruction de l'URL
+
+		List<String> urlParts = new ArrayList<>();
+		urlParts.add(StringUtils.removeEnd(urlServer, "/")); // retrait du "/" éventuellement présent dans la config
+		urlParts.addAll(Arrays.asList(StringUtils.split(link, '/'))); // extraction des différentes parties de l'URL et ajout dans la liste qui permet de reconstruire l'URL
+
+		String lastPart = urlParts.remove(urlParts.size() - 1); // extraction de la partie d'URL à normaliser
+
+		String encodedLastPart = normalize(URLDecoder.decode(lastPart, StandardCharsets.UTF_8)); // normalisation de la dernière partie
+		urlParts.add(encodedLastPart);
+		return StringUtils.joinWith("/", urlParts.toArray()); // reconstruction de l'URL avec les "/" entre chaque partie
 	}
 }

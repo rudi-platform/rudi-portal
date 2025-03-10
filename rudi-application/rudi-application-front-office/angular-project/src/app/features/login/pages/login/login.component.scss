@@ -12,7 +12,6 @@ mat-sidenav-content {
 
 .main-container {
     @include card-container-bgcolor;
-    height: 110vh;
     position: relative;
     padding-bottom: 19px;
 }

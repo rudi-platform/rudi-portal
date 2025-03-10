@@ -1,14 +1,5 @@
 package org.rudi.microservice.projekt.service.project;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -86,6 +77,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Class de test de la couche service
@@ -717,8 +716,8 @@ class ProjectServiceUT {
 		final Project createdProject = projectService.createProject(projectToCreate);
 		final UUID projectUuid = createdProject.getUuid();
 
-		// on fait en sorte que le helper renvoit un autre utilisateur que celui connecté
-		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(UUID.randomUUID()));
+		// On se connecte avec un autre utilisateur
+		mockAuthenticatedUserNotOwner(UUID.randomUUID());
 
 		assertThat(projectService.isAuthenticatedUserProjectOwner(projectUuid))
 				.as("L'utilisateur connecté n'est pas celui qui a créé le projet, il ne doit donc pas avoir accès.")

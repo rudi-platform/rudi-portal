@@ -7,9 +7,11 @@ import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
+import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.facet.acl.bean.ProjectKey;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
@@ -159,8 +161,8 @@ public interface ProjectService {
 	 * @throws AppServiceUnauthorizedException erreur lors de l'identification de l'utilisateur connecté
 	 * @throws AppServiceNotFoundException     erreur lors de la récupération du projet
 	 */
-	boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
-			throws GetOrganizationException, AppServiceUnauthorizedException, AppServiceNotFoundException;
+	boolean isAuthenticatedUserProjectOwner(UUID projectUuid) throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException;
+
 
 	List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException;
 

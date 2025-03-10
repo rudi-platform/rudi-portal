@@ -377,7 +377,7 @@ export class DetailComponent implements OnInit {
                     error: () => {
                         this.isLoading = false;
                         const message = this.translateService.instant('common.echec');
-                        const linkLabel = this.translateService.instant('snackbarTemplate.ici');
+                        const linkLabel = this.translateService.instant('common.ici');
                         this.propertiesMetierService.get('front.contact').subscribe(link => {
                             this.snackBarService.openSnackBar({
                                 message: `${message} <a href="${link}">${linkLabel}</a>.`,
@@ -626,19 +626,14 @@ export class DetailComponent implements OnInit {
      * @private
      */
     private handleMetadataProperties(metadata: Metadata): void {
-        if (this.datasetIsMap(metadata)) {
+        if (this.isMapDisplayed) {
             const connectorParameters: ConnectorConnectorParameters[] = metadata.available_formats[0].connector.connector_parameters;
-            this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, MAP_CONNECTOR_PARAMETERS_REQUIRED);
+            if (connectorParameters) {
+                this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, MAP_CONNECTOR_PARAMETERS_REQUIRED);
+            } else {
+                this.mapHasError = true;
+            }
         }
-    }
-
-    // Vérifie que le JDD est un JDD cartographique
-    private datasetIsMap(metadata: Metadata): boolean {
-        const mediaFile: MediaFile = this.metadata.available_formats[0] as MediaFile;
-        return (metadata.available_formats[0].media_type === MediaTypeEnum.File
-                && (mediaFile.file_type === MediaType.ApplicationGeojson || mediaFile.file_type === MediaType.ApplicationGeojsoncrypt)) ||
-            (metadata.available_formats[0].media_type === MediaTypeEnum.Service
-                && MAP_PROTOCOLS_SUPPORTED.includes(metadata.available_formats[0].connector.interface_contract));
     }
 
     // Vérification que toutes les clés obligatoires sont présentes et valides

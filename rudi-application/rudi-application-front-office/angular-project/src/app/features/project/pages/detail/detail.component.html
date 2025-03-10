@@ -8,7 +8,7 @@
             <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}">
                 <app-project-heading [logo]="projectLogo" [ownerDescription]="userIdentity"
                                      [projectTitle]="project.title"
-                                     [status]="project.reutilisation_status.label"></app-project-heading>
+                                     [status]="getHeaderStatus()"></app-project-heading>
             </div>
             <!-- Fin Icon et titre de la ressource -->
 

@@ -190,23 +190,22 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="container-fluid px-4">
-            <div *ngIf="metadata.dataset_dates.updated" class="rudi-panel-card row g-0">
+            <div *ngIf="metadata.dataset_dates.updated && false" class="rudi-panel-card row g-0">
                 <span
                     class="col-sm-12 col-md-6 rudi-panel-card-libelle w-75">{{'metaData.derniereMajDonnee'|translate}}</span>
                 <span class="col-sm-12 col-md-6 text-sm-left text-md-right w-25"
                       [ngClass]="{'rudi-panel-card-large': mediaSize.isMd || mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
                     {{ metadata?.dataset_dates.updated | date :'dd/MM/yyyy'}}
-                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.updated | date :'HH:mm'}}</span>
+<!--                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.updated | date :'HH:mm'}}</span>-->
                 </span>
             </div>
-            <div *ngIf="metadata.metadata_info.metadata_dates.updated" class="rudi-panel-card row g-0">
+            <div *ngIf="metadata.metadata_info.metadata_dates.updated && false" class="rudi-panel-card row g-0">
                 <span
                     class="col-sm-12 col-md-6 rudi-panel-card-libelle w-75">{{'metaData.derniereMajDonneeInfo'|translate}}</span>
                 <span class="col-sm-12 col-md-6 text-sm-left text-md-right w-25"
                       [ngClass]="{'rudi-panel-card-large': mediaSize.isMd || mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
                     {{metadata?.metadata_info.metadata_dates.updated | date :'dd/MM/yyyy'}}
-                    <span
-                        class="rudi-panel-card-hour ms-2">{{ metadata?.metadata_info.metadata_dates.updated | date :'HH:mm'}}</span>
+<!--                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.metadata_info.metadata_dates.updated | date :'HH:mm'}}</span>-->
               </span>
             </div>
             <div *ngIf="metadata.dataset_dates.published" class="rudi-panel-card row g-0">
@@ -214,8 +213,7 @@
                 <span class="col-sm-12 col-md-6 text-sm-left text-md-right w-25"
                       [ngClass]="{'rudi-panel-card-large': mediaSize.isMd || mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
                     {{metadata?.dataset_dates.published | date :'dd/MM/yyyy'}}
-                    <span
-                        class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.published | date :'HH:mm'}}</span>
+<!--                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.published | date :'HH:mm'}}</span>-->
           </span>
             </div>
             <div *ngIf="metadata.dataset_dates.created" class="rudi-panel-card row g-0">
@@ -224,7 +222,7 @@
                 <span class="col-sm-12 col-md-6 text-sm-left text-md-right w-25"
                       [ngClass]="{'rudi-panel-card-large': mediaSize.isMd || mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
                     {{metadata?.dataset_dates.created | date :'dd/MM/yyyy'}}
-                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.created | date :'HH:mm'}}</span>
+<!--                    <span class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.created | date :'HH:mm'}}</span>-->
           </span>
             </div>
             <div *ngIf="metadata.dataset_dates.validated" class="rudi-panel-card row g-0">

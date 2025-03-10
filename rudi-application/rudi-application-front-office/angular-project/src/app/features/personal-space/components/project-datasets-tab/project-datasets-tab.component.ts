@@ -1,6 +1,5 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {KonsultApiAccessService} from '@core/services/api-access/konsult/konsult-api-access.service';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {
@@ -12,7 +11,9 @@ import {ProjectSubmissionService} from '@core/services/asset/project/project-sub
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
+import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
+import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {Level} from '@shared/notification-template/notification-template.component';
@@ -30,7 +31,7 @@ import {switchMap, tap} from 'rxjs/operators';
     templateUrl: './project-datasets-tab.component.html',
     styleUrls: ['./project-datasets-tab.component.scss']
 })
-export class ProjectDatasetsTabComponent {
+export class ProjectDatasetsTabComponent implements OnInit {
 
     /**
      * Toutes les demandes d'un projet avec le JDD
@@ -70,6 +71,7 @@ export class ProjectDatasetsTabComponent {
 
     addActionAuthorized = false;
     deleteActionAuthorized = false;
+    linkError: string;
 
 
     /**
@@ -99,6 +101,12 @@ export class ProjectDatasetsTabComponent {
         this.restrictedLinkedDatasetLoading = false;
         this.newLinkedDatasetLoading = false;
     }
+
+    /**
+     * event emitter qui emit lorsqu'on rajoute un JDD à une réutilisation
+     */
+    @Output()
+    onProjectIsUpdate: EventEmitter<void>;
 
     @Input()
     set project(value: Project) {
@@ -157,10 +165,18 @@ export class ProjectDatasetsTabComponent {
         private readonly translateService: TranslateService,
         private readonly projektService: ProjektService,
         private readonly dataSetActionsAuthorizationService: DataSetActionsAuthorizationService,
+        private readonly propertiesMetierService: PropertiesMetierService,
         iconRegistryService: IconRegistryService,
     ) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
+        this.onProjectIsUpdate = new EventEmitter<void>;
         this.loadingCommentData = false;
+    }
+
+    ngOnInit(): void {
+        this.propertiesMetierService.get('front.contact').subscribe(linkError => {
+            this.linkError = linkError;
+        });
     }
 
 
@@ -203,6 +219,9 @@ export class ProjectDatasetsTabComponent {
                 }
             }),
         ).subscribe({
+            next: res => {
+                this.onProjectIsUpdate.emit();
+            },
             error: err => {
                 console.error(err);
                 this.openedLinkedDatasetLoading = false;
@@ -229,6 +248,9 @@ export class ProjectDatasetsTabComponent {
                 this.updateAddButtonStatus(false);
             })
         ).subscribe({
+            next: res => {
+                this.onProjectIsUpdate.emit();
+            },
             error: err => {
                 console.error(err);
                 this.newLinkedDatasetLoading = false;
@@ -255,7 +277,7 @@ export class ProjectDatasetsTabComponent {
                 console.error(err);
                 this.openedLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -279,7 +301,7 @@ export class ProjectDatasetsTabComponent {
                 console.error(err);
                 this.restrictedLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -303,7 +325,7 @@ export class ProjectDatasetsTabComponent {
                 console.error(err);
                 this.newLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -316,14 +338,18 @@ export class ProjectDatasetsTabComponent {
             this.projektService
                 .getDecisionInformationsForLinkedDataset(this._project.uuid, element.uuid)
                 .pipe(
-                    tap(() => { this.loadingCommentData = false; })
+                    tap(() => {
+                        this.loadingCommentData = false;
+                    })
                 )
                 .subscribe((data: Form) => this.showCommentPopupOrSnackbar(data));
         } else {
             this.projektService
                 .getDecisionInformationsForNewRequest(this._project.uuid, element.uuid)
                 .pipe(
-                    tap(() => { this.loadingCommentData = false; })
+                    tap(() => {
+                        this.loadingCommentData = false;
+                    })
                 )
                 .subscribe((data: Form) => this.showCommentPopupOrSnackbar(data));
         }
@@ -332,8 +358,8 @@ export class ProjectDatasetsTabComponent {
     private showCommentPopupOrSnackbar(form: Form): void {
         const commentExistPredicate = (field: Field) => field.definition.name === 'commentDate' && field.values.length;
         const formHasComment: boolean = !!(form?.sections
-            .map((section: Section) => !!section.fields?.filter(commentExistPredicate).length)
-            .some(Boolean)
+                .map((section: Section) => !!section.fields?.filter(commentExistPredicate).length)
+                .some(Boolean)
         );
 
         if (formHasComment) {

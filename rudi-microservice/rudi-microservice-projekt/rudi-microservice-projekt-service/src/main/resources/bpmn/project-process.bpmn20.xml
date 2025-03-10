@@ -27,7 +27,12 @@
       <bpmn:documentation id="Documentation_41"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_35</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.startSubProcess(execution); projectWorkflowContext.info(&quot;Update status complete&quot;); var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
+      <bpmn:script>projectWorkflowContext.info(&quot;Update status complete&quot;); 
+var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution); 
+projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus); 
+projectWorkflowContext.startSubProcess(execution); 
+var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;); 
+projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_1" name="Done">
       <bpmn:incoming>SequenceFlow_2</bpmn:incoming>
@@ -238,7 +243,14 @@ projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;,
       <bpmn:documentation id="Documentation_49"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_11</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info(&quot;Suppression des liens du projet vers les JDD&quot;);projectWorkflowContext.archiveProject(execution);
+      <bpmn:script>projectWorkflowContext.info(&quot;Suppression des liens du projet vers les JDD&quot;);
+        var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution);
+        var producerEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/notify-producer-archive-subject.txt&quot;,&quot;file:templates/emails/project/notify-producer-archive-body.html&quot;);
+        producerEmailData.addData(&quot;projectOwner&quot;,projectOwner);
+        var moderatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/notify-moderator-archive-subject.txt&quot;,&quot;file:templates/emails/project/notify-moderator-archive-body.html&quot;);
+        moderatorEmailData.addData(&quot;projectOwner&quot;,projectOwner);
+        var projectOwnerEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/notify-project-owner-archive-subject.txt&quot;,&quot;file:templates/emails/project/notify-project-owner-archive-body.html&quot;);
+        projectWorkflowContext.archiveProject(context, execution, producerEmailData, moderatorEmailData, projectOwnerEmailData);
 </bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_11" name="Archivage" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_8">
@@ -303,7 +315,7 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_1" bpmnElement="InclusiveGateway_1" isMarkerVisible="true">
         <dc:Bounds height="50.0" width="50.0" x="262.0" y="131.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_43" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="74.0" x="250.0" y="181.0"/>
+          <dc:Bounds height="30.0" width="78.0" x="248.0" y="181.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_5" bpmnElement="ExclusiveGateway_5" isMarkerVisible="true">
@@ -351,7 +363,7 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_17" bpmnElement="ScriptTask_17" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="357.0" y="487.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_13" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="51.0" width="79.0" x="372.0" y="502.0"/>
+          <dc:Bounds height="30.0" width="97.0" x="363.0" y="512.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_11" bpmnElement="UserTask_11" isExpanded="true">
@@ -387,13 +399,13 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_4" bpmnElement="InclusiveGateway_4" isMarkerVisible="true">
         <dc:Bounds height="50.0" width="50.0" x="1105.0" y="502.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_2" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="64.0" x="1098.0" y="552.0"/>
+          <dc:Bounds height="15.0" width="73.0" x="1094.0" y="552.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_2" bpmnElement="ScriptTask_2" isExpanded="true">
         <dc:Bounds height="50.0" width="110.0" x="1192.0" y="501.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_33" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="89.0" x="1202.0" y="509.0"/>
+          <dc:Bounds height="15.0" width="97.0" x="1198.0" y="518.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_3" bpmnElement="ScriptTask_3" isExpanded="true">
@@ -405,7 +417,7 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_8" bpmnElement="ScriptTask_8" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="390.0" y="819.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_56" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="51.0" width="101.0" x="394.0" y="834.0"/>
+          <dc:Bounds height="30.0" width="110.0" x="390.0" y="844.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_9" bpmnElement="ScriptTask_9" isExpanded="true">

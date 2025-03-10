@@ -456,6 +456,8 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	public void resetFormData(ScriptContext context, ExecutionEntity executionEntity, String userKey, String actionName,
 			String sectionName) {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		log.debug("WkC - Cleaning data of asset {} : user key {}, action {}, section {}", processInstanceBusinessKey,
+				userKey, actionName, sectionName);
 		if (processInstanceBusinessKey != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			E assetDescriptionEntity = getAssetDescriptionDao().findByUuid(uuid);
@@ -463,6 +465,8 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 				cleanDataBySection(userKey, actionName, sectionName, assetDescriptionEntity);
 			}
 		}
+		log.debug("WkC - Done cleaning data of asset {} : user key {}, action {}, section {}",
+				processInstanceBusinessKey, userKey, actionName, sectionName);
 	}
 
 	/**
@@ -491,7 +495,6 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 						}, () -> log.error("No section {} found in form: {}", sectionName, userKey));
 				String newData = getFormHelper().deshydrateData(data);
 				assetDescriptionEntity.setData(newData);
-				getAssetDescriptionDao().save(assetDescriptionEntity);
 			}
 		} catch (InvalidDataException e) {
 			log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());

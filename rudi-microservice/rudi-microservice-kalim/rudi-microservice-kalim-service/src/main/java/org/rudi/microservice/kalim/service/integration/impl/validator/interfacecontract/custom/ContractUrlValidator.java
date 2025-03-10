@@ -2,7 +2,6 @@ package org.rudi.microservice.kalim.service.integration.impl.validator.interface
 
 import static org.rudi.microservice.kalim.service.integration.impl.validator.interfacecontract.custom.CustomConnectorParametersConstants.CONTRACT_URL_PARAMETER;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,9 +56,12 @@ public class ContractUrlValidator extends AbstractConnectorParametersValidator {
 					validateEntryPoint(swagger, integrationRequestsErrors);
 
 					PathItem path = swagger.getPaths().values().stream().findFirst().orElse(null);
-					valideOneOperation(path, integrationRequestsErrors);
-					valideMethods(path, integrationRequestsErrors);
-				} catch (IOException e) {
+					if (path != null) {
+						valideOneOperation(path, integrationRequestsErrors);
+						valideMethods(path, integrationRequestsErrors);
+					}
+					throw new IllegalAccessException("Path not found");
+				} catch (Exception e) {
 					integrationRequestsErrors
 							.add(buildError307(INVALID_SWAGGER_MESSAGE, value, CONTRACT_URL_PARAMETER));
 				}

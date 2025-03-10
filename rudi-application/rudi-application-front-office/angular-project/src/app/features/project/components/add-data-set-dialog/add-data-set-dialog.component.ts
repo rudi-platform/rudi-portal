@@ -28,8 +28,8 @@ export class AddDataSetDialogComponent implements OnInit {
     orders: OrderValue[] = [
         'resource_title',
         '-resource_title',
-        'dataset_dates.updated',
-        '-dataset_dates.updated',
+        'dataset_dates.created',
+        '-dataset_dates.created',
         'producer.organization_name',
         '-producer.organization_name',
     ];

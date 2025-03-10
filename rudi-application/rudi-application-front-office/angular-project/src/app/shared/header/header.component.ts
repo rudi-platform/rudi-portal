@@ -14,7 +14,7 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
-import {switchMap} from 'rxjs';
+import {forkJoin, switchMap} from 'rxjs';
 import {Level} from '../notification-template/notification-template.component';
 
 
@@ -47,6 +47,7 @@ export class HeaderComponent implements OnInit {
      * Url d'accès à la documentation depuis le header
      */
     urlToDoc: string;
+    linkHref: string;
 
     logoIsLoading: boolean;
     logo: Base64EncodedLogo;
@@ -152,7 +153,7 @@ export class HeaderComponent implements OnInit {
             error: (err) => {
                 console.error(err);
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('header.logOutError'),
+                    message: `${this.translateService.instant('header.logOutError')}<a href="${this.linkHref}">${this.translateService.instant('header.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -173,11 +174,15 @@ export class HeaderComponent implements OnInit {
                     return this.konsultService.downloadCustomizationResource(customizationDescription.main_logo);
                 }),
                 switchMap((blob: Blob) => {
-                    return this.imageLogoService.createImageFromBlob(blob);
+                    return forkJoin({
+                        logo: this.imageLogoService.createImageFromBlob(blob),
+                        linkHref: this.propertiesMetierService.get('front.contact'),
+                    });
                 })
             ).subscribe({
-            next: (logo: Base64EncodedLogo) => {
-                this.logo = logo;
+            next: (data: { logo: Base64EncodedLogo, linkHref: string }) => {
+                this.logo = data.logo;
+                this.linkHref = data.linkHref;
                 this.logoIsLoading = false;
             },
             error: (error) => {

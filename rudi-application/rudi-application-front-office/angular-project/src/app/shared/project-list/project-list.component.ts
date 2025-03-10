@@ -15,8 +15,6 @@ export class ProjectListComponent implements OnInit {
     mediaSize: MediaSize;
     projectList: ProjectCatalogItemPage;
     @Input() maxResultsPerPage = 12;
-    @Input() allPage = false;
-    @Input() isTransparent = false;
     @Input() ownerId: string;
     @Input() producerUuid: string;
     /**

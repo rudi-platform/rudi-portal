@@ -11,6 +11,7 @@ import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
 import {LogService} from '@core/services/log.service';
 import {PageTitleService} from '@core/services/page-title.service';
+import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {
     ProjectDependencies,
@@ -59,6 +60,7 @@ export class ProjectTaskDetailComponent
     project: Project;
     readonly panelInitialTaskOpenState = signal(false);
     hasSections: boolean = false;
+    linkError: string;
 
     constructor(
         private readonly route: ActivatedRoute,
@@ -77,7 +79,8 @@ export class ProjectTaskDetailComponent
         readonly projektMetierService: ProjektMetierService,
         readonly projectSubmissionService: ProjectSubmissionService,
         readonly projectConsultService: ProjectConsultationService,
-        private readonly pageTitleService: PageTitleService
+        private readonly pageTitleService: PageTitleService,
+        private readonly propertiesMetierService: PropertiesMetierService,
     ) {
         super(dialog, translateService, snackBarService, taskWithDependenciesService, projectTaskMetierService, logger);
         iconRegistry.addSvgIcon('project-svg-icon',
@@ -89,6 +92,9 @@ export class ProjectTaskDetailComponent
     ngOnInit(): void {
         this.route.params.subscribe(params => {
             this.taskId = params.taskId;
+        });
+        this.propertiesMetierService.get('front.contact').subscribe(linkError => {
+            this.linkError = linkError;
         });
     }
 
@@ -217,7 +223,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingOpenDataset = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -238,7 +244,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingRestrictedDataset = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -280,7 +286,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingNewDatasetRequest = false;
                 this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('personalSpace.projectDatasets.delete.error'),
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
                     level: Level.ERROR
                 });
             }

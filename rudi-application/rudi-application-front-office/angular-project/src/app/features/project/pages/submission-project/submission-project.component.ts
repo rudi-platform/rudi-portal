@@ -9,18 +9,20 @@ import {AuthenticationService} from '@core/services/authentication.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {FiltersService} from '@core/services/filters.service';
 import {AccessStatusFiltersType} from '@core/services/filters/access-status-filters-type';
+import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
 import {RequestDetails} from '@shared/models/request-details';
+import {Level} from '@shared/notification-template/notification-template.component';
 import {RadioListItem} from '@shared/radio-list/radio-list-item';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Confidentiality, OwnerType, Project, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
-import {Observable, throwError} from 'rxjs';
+import {forkJoin, Observable, throwError} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
 import {ReuseProjectCommonComponent} from '../../components/reuse-project-common/reuse-project-common.component';
 import {DataRequestItem} from '../../model/data-request-item';
@@ -64,7 +66,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
      * @private
      */
     private updateImageAction: UpdateAction;
-
+    private linkError: string;
 
     constructor(
         readonly projektMetierService: ProjektMetierService,
@@ -76,7 +78,8 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         private readonly router: Router,
         private readonly redirectService: RedirectService,
         private readonly authenticationService: AuthenticationService,
-        private readonly uriComponentCodec: URIComponentCodec
+        private readonly uriComponentCodec: URIComponentCodec,
+        private readonly propertiesMetierService: PropertiesMetierService
     ) {
         super(projektMetierService, filtersService, projectSubmissionService);
     }
@@ -95,41 +98,44 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         });
 
         this.isLoading = true;
+        forkJoin({
+            link: this.propertiesMetierService.get('front.contact'),
+            confidentialities: this.projectSubmissionService.loadDependenciesProject().pipe(
+                switchMap((dependencies: FormProjectDependencies) => {
+                    this.confidentialities = dependencies.confidentialities;
+                    this.publicCible = dependencies.projectPublicCible;
+                    this.territorialScales = dependencies.territorialScales;
+                    this.projectType = dependencies.projectTypes;
+                    this.supports = dependencies.supports;
+                    this.user = dependencies.user;
+                    this.reuseStatus = dependencies.reuseStatus;
 
-        this.projectSubmissionService.loadDependenciesProject().pipe(
-            switchMap((dependencies: FormProjectDependencies) => {
-                this.confidentialities = dependencies.confidentialities;
-                this.publicCible = dependencies.projectPublicCible;
-                this.territorialScales = dependencies.territorialScales;
-                this.projectType = dependencies.projectTypes;
-                this.supports = dependencies.supports;
-                this.user = dependencies.user;
-                this.reuseStatus = dependencies.reuseStatus;
+                    if (this.user) {
+                        this.step2FormGroup.setValue({
+                            ownerType: OwnerType.User,
+                            lastname: this.user.lastname,
+                            firstname: this.user.firstname,
+                            organizationUuid: null,
+                            contactEmail: this.user.login
+                        });
+                    }
+                    if (dependencies.organizations?.length) {
+                        this.organizationItems = dependencies.organizations.map((organization: Organization) => ({
+                            name: organization.name,
+                            uuid: organization.uuid
+                        }));
+                    } else {
+                        this.organizationItems = [];
+                    }
+                    this.isLoading = false;
+                    this.suggestions = [];
 
-                if (this.user) {
-                    this.step2FormGroup.setValue({
-                        ownerType: OwnerType.User,
-                        lastname: this.user.lastname,
-                        firstname: this.user.firstname,
-                        organizationUuid: null,
-                        contactEmail: this.user.login
-                    });
-                }
-                if (dependencies.organizations?.length) {
-                    this.organizationItems = dependencies.organizations.map((organization: Organization) => ({
-                        name: organization.name,
-                        uuid: organization.uuid
-                    }));
-                } else {
-                    this.organizationItems = [];
-                }
-                this.isLoading = false;
-                this.suggestions = [];
-
-                return this.projektMetierService.searchProjectConfidentialities({active: true});
-            })
-        ).subscribe(values => {
-            this.suggestions = values.map(value => ({
+                    return this.projektMetierService.searchProjectConfidentialities({active: true});
+                })
+            )
+        }).subscribe((result: { link: string, confidentialities: Confidentiality[] }) => {
+            this.linkError = result.link;
+            this.suggestions = result.confidentialities.map(value => ({
                 code: value.code,
                 label: value.label,
                 description: value.description
@@ -325,9 +331,10 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                     },
                     error: (e) => {
                         console.error(e);
-                        this.snackBarService.add(
-                            this.translateService.instant('project.stepper.submission.publish.error-update')
-                        );
+                        this.snackBarService.openSnackBar({
+                            message: `${this.translateService.instant('project.stepper.submission.publish.error-update')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                            level: Level.ERROR,
+                        });
                         this.isLoading = false;
                     }
                 });
@@ -344,7 +351,10 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                     },
                     error: (e) => {
                         console.error(e);
-                        this.snackBarService.add(this.translateService.instant('project.stepper.submission.publish.error'));
+                        this.snackBarService.openSnackBar({
+                            message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                            level: Level.ERROR,
+                        });
                         this.isLoading = false;
                     }
                 });
@@ -471,7 +481,10 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 },
                 error: (e) => {
                     console.error(e);
-                    this.snackBarService.add(this.translateService.instant('project.stepper.submission.publish.error'));
+                    this.snackBarService.openSnackBar({
+                        message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                        level: Level.ERROR,
+                    });
                     this.isLoading = false;
                 }
             }

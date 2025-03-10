@@ -153,7 +153,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Project getProject(UUID uuid) throws AppServiceException {
 		final var projectEntity = getRequiredProjectEntity(uuid);
-		if (projectEntity.getConfidentiality().isPrivateAccess()) {
+		if (projectEntity.getConfidentiality().isPrivateAccess() ||
+				ProjectStatus.DISENGAGED.equals(projectEntity.getProjectStatus())) {
 			projektAuthorisationHelper.checkRightsAdministerProject(projectEntity);
 		}
 		return projectMapper.entityToDto(projectEntity);
@@ -469,22 +470,20 @@ public class ProjectServiceImpl implements ProjectService {
 
 		searchCriteria.setOwnerUuids(organizationsUuid);
 
-		// call searchProjects
-		return this.searchProjects(searchCriteria, pageable);
+		return projectMapper.entitiesToDto(projectCustomDao.searchProjects(searchCriteria, pageable), pageable);
 	}
 
 	@Override
 	public boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
-			throws GetOrganizationException, AppServiceUnauthorizedException, AppServiceNotFoundException {
-		var uuids = myInformationsHelper.getMeAndMyOrganizationsUuids();
-		final var projectEntity = getRequiredProjectEntity(projectUuid);
-		return CollectionUtils.containsAny(uuids, projectEntity.getOwnerUuid());
+			throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException {
+		return projektAuthorisationHelper.isAccessGrantedForUserOnProject(getRequiredProjectEntity(projectUuid));
 	}
 
 	@Override
 	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(criteria);
+		enhancedProjectSearchCriteria.setStatus(List.of(org. rudi. microservice. projekt. core. bean. ProjectStatus.VALIDATED));
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
 			enhancedProjectSearchCriteria.setIsPrivate(false);
 		} else if (!projektAuthorisationHelper.hasAnyRole(user,

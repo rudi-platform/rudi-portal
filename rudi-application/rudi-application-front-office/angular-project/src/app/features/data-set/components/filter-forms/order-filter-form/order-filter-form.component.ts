@@ -13,7 +13,7 @@ export interface OrderItem extends Item {
     value: OrderValue;
 }
 
-const DEFAULT_ORDER: OrderValue = '-dataset_dates.updated';
+const DEFAULT_ORDER: OrderValue = '-dataset_dates.created';
 
 @Component({
     selector: 'app-order-filter-form',
@@ -21,6 +21,8 @@ const DEFAULT_ORDER: OrderValue = '-dataset_dates.updated';
     styleUrls: ['./order-filter-form.component.scss']
 })
 export class OrderFilterFormComponent extends FilterFormComponent<string, OrderFilter, OrderItem> implements OnInit {
+
+    items?: OrderItem[];
 
     constructor(
         protected readonly filtersService: FiltersService,
@@ -69,7 +71,6 @@ export class OrderFilterFormComponent extends FilterFormComponent<string, OrderF
     set order(order: OrderValue) {
         this.filter.value = order;
     }
-    items?: OrderItem[];
 
     private static i18KeyFor(value: OrderValue): string {
         return `sortBox.${value}`;

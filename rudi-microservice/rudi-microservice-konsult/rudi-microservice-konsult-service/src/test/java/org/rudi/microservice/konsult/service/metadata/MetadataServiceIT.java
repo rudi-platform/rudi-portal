@@ -1,14 +1,12 @@
 package org.rudi.microservice.konsult.service.metadata;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
@@ -28,6 +26,12 @@ import org.rudi.microservice.konsult.service.KonsultSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * Class de test de MetadataService
@@ -70,7 +74,8 @@ class MetadataServiceIT {
 	}
 
 	@Test
-	void testSearchMetadata_searchByProducerUUID() throws DataverseAPIException, IOException {
+	void testSearchMetadata_searchByProducerUUID() throws DataverseAPIException, IOException, InterruptedException {
+
 		String username = "rudi";
 		mockUserData(username);
 		DatasetSearchCriteria searchCriteria = new DatasetSearchCriteria().producerUuids(List.of(firstProducerUUID));
@@ -86,6 +91,8 @@ class MetadataServiceIT {
 
 		// Mauvais producer UUID
 		final Metadata secondJddOuvert = creerJddOuvert(false);
+		// On attend que les JDDs se créent
+
 		MetadataList metadataList = metadataService.searchMetadatas(searchCriteria);
 
 		assertThat(metadataList.getItems()).as("Vérifier que la liste retournée n'est pas nulle").isNotNull();
@@ -132,6 +139,8 @@ class MetadataServiceIT {
 		Metadata jddCree = datasetService.getDataset(doi);
 
 		jddCrees.add(jddCree);
+
+		await().timeout(10, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() ->  datasetService.getDataset(doi) != null);
 		return jddCree;
 	}
 

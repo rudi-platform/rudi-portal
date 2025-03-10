@@ -35,11 +35,11 @@
         }
     },
     "pageNotFound": {
-        "invalidUrlErrorMessage": "L'URL saisie est invalide",
+        "invalidUrlErrorMessage": "L'URL saisie est invalide.",
         "ressourceNotFoundErrorMessage": "La ressource est introuvable.",
-        "defaultErrorMessage": "Une erreur interne est survenue",
-        "contactAdmin": "Merci de contacter un administrateur si le problème persiste",
-        "clickHere": "en cliquant ici"
+        "defaultErrorMessage": "Une erreur interne est survenue.",
+        "contactAdmin": "Merci de contacter un administrateur si le problème persiste ",
+        "clickHere": "en cliquant ici."
     },
     "pageTitle": {
         "/": "Catalogue",
@@ -76,7 +76,7 @@
             "descriptionField": "Description",
             "descriptionFieldHint": "Vous n'avez pas trouvé le jeu de données dont vous avez besoin pour réaliser votre réutilisation ? Expliquer votre besoin en complétant ce formulaire. Votre demande sera ensuite étudiée afin d'y répondre au mieux. Vous serez contacté par l'animateur via votre adresse mail de contact."
         },
-        "buttonSubmitParagraph1": "Vous préparez une réutilisation et vous avez besoin d'accompagnement ou de données spécifiques pour la mettre en œuvre ? \nVotre réutilisation est finalisée et vous avez mobilisé de la donnée provenant de Rudi ?",
+        "buttonSubmitParagraph1": "Vous préparez une réutilisation et vous avez besoin d'accompagnement ou de données spécifiques pour la mettre en œuvre ? \nVotre réutilisation est finalisée et vous avez mobilisé de la donnée provenant de {projectName} ?",
         "buttonSubmitParagraph2": "Cliquez ici pour commencer la soumission de votre réutilisation.",
         "addDatasetPopup": {
             "title1": "Ajouter un jeu de données",
@@ -94,7 +94,7 @@
                     "1": "Nouvelle",
                     "2": "réutilisation"
                 },
-                "description": "Renseignez le formulaire ci-dessous afin de soumettre votre réutilisation à l'équipe Rudi. Les 2 premières étapes vous permettent de contextualiser votre réutilisation. La dernière étape vous permet de demander l'accès à des jeux de données. Une fois créée, votre réutilisation sera envoyée en modération à l'équipe Rudi.",
+                "description": "Renseignez le formulaire ci-dessous afin de soumettre votre réutilisation à l'équipe {projectName}. Les 2 premières étapes vous permettent de contextualiser votre réutilisation. La dernière étape vous permet de demander l'accès à des jeux de données. Une fois créée, votre réutilisation sera envoyée en modération à l'équipe {projectName}.",
                 "step1": {
                     "label": "Réutilisation",
                     "header-title": "Réutilisation",
@@ -126,7 +126,7 @@
                     "reuseType": "Type de réutilisation",
                     "reuseTypeHint": "Le type de réutilisation définit le type de service que votre réutilisation permettra de mettre en oeuvre.",
                     "accompagnementSouhaite": "Accompagnement souhaité",
-                    "accompagnementSouhaiteHint": "Le type d'accompagnement nous indique dans quelle mesure Rudi pourra vous aider. Vous pouvez sélectionner plusieurs options.",
+                    "accompagnementSouhaiteHint": "Le type d'accompagnement nous indique dans quelle mesure {projectName} pourra vous aider. Vous pouvez sélectionner plusieurs options.",
                     "projectConfidentiality": "Confidentialité de la réutilisation",
                     "errorFieldRequired": "Ce champ est requis",
                     "reuseStatus": "Statut de votre réutilisation",
@@ -138,8 +138,8 @@
                     "description": "Qui soumet la réutilisation ? Vous pouvez soumettre votre réutilisation en votre nom ou au nom d’une organisation à laquelle vous appartenez. \nLes informations ci-dessous sont reprises de votre compte.",
                     "requiredInformation": "Informations obligatoires à renseigner.",
                     "ownerType": {
-                        "title": "Identité du porteur de projet",
-                        "description": "Le porteur de projet est la personne qui gère la réutilisation.",
+                        "title": "Identité du réutilisateur",
+                        "description": "Le réutilisateur est la personne qui gère la réutilisation.",
                         "firstname": "Prénom",
                         "lastname": "Nom",
                         "user": {
@@ -154,9 +154,9 @@
                                 "placeholder": "Sélectionner une option"
                             },
                             "userHasNoOrganization": {
-                                "messageBeforeLink": "Vous n'êtes rattaché à aucune organisation dans Rudi. Veuillez contacter l'équipe Rudi en cliquant ",
-                                "linkLabel": "ici",
-                                "messageAfterLink": ", afin de paramétrer votre compte."
+                                "messageBeforeLink": "Vous n'êtes rattaché à aucune organisation dans {projectName}. Veuillez contacter l'équipe {projectName} ",
+                                "linkLabel": "en cliquant ici, ",
+                                "messageAfterLink": "afin de paramétrer votre compte."
                             }
                         }
                     },
@@ -184,8 +184,9 @@
                 "publish": {
                     "button": "Publier",
                     "submit": "Soumettre",
-                    "error-update": "Une erreur est survenue lors de la mise à jour de la  réutilisation. Veuillez contacter un administrateur.",
-                    "error": "Une erreur est survenue lors de la création de la réutilisation. Veuillez contacter un administrateur.",
+                    "error-update": "Une erreur est survenue lors de la mise à jour de la  réutilisation. Veuillez contacter un administrateur ",
+                    "error": "Une erreur est survenue lors de la création de la réutilisation. Veuillez contacter un administrateur ",
+                    "here": "en cliquant ici.",
                     "ok": {
                         "title": "Votre réutilisation a bien été soumise.",
                         "description1": "Vos demandes seront transmises aux producteurs dès qu'un animateur aura validé votre demande de publication. Vous serez averti par mail des avancées de celle-ci.",
@@ -243,7 +244,7 @@
     "header": {
         "creationPortal": "Portail en cours de création.",
         "appointment": "Pour en savoir plus, rendez-vous sur ",
-        "site": "le site de présentation du projet Rudi",
+        "site": "le site de présentation du projet {projectName}",
         "versionBeta": "VERSION BETA 1.0",
         "catalogue": "Catalogue",
         "organisations": "Organisations",
@@ -256,8 +257,9 @@
         "monCompte": "Mon compte",
         "logIn": "Se connecter",
         "logOut": "Se déconnecter",
-        "logOutSuccess": "Vous avez été correctement déconnecté. À bientôt sur Rudi !",
-        "logOutError": "Une erreur est survenue lors de la connexion, veuillez reessayer plus tard.",
+        "logOutSuccess": "Vous avez été correctement déconnecté. À bientôt sur {projectName} !",
+        "logOutError": "Une erreur est survenue lors de la déconnexion. Si l'erreur persiste, merci de contacter un administrateur ",
+        "here": "en cliquant ici.",
         "accountMenu": {
             "myAccount": "Mon compte",
             "myActivity": "Mon activité",
@@ -296,8 +298,8 @@
         "connectez-vous-mobileFin": "avec votre adresse e-mail",
         "error-body": "L'identifiant ou le mot de passe que vous avez saisi n’est pas valide. Essayez une nouvelle combinaison ou ",
         "error-footer": "inscrivez-vous dès maintenant.",
-        "errorBodyAccountNotActif": "Votre compte n'a pas encore été activé. Veuillez vérifier votre boite mail et activer votre compte en cliquant sur le lien présent dans le mail envoyé par Rudi. En cas de non réception du mail ou tout autre problème, veuillez contacter ",
-        "errorFooterAccountNotActif": "l'équipe technique de Rudi",
+        "errorBodyAccountNotActif": "Votre compte n'a pas encore été activé. Veuillez vérifier votre boite mail et activer votre compte en cliquant sur le lien présent dans le mail envoyé par {projectName}. Veuillez consulter vos spams. Si le problème persiste veuillez contacter un administrateur ",
+        "errorFooterAccountNotActif": "en cliquant ici.",
         "errorServerIsNotActive": "Une erreur s'est produite lors de la vérification de votre compte",
         "errorServerAuthent": "Erreur interne du serveur pendant l'authentification. Veuillez contacter un administrateur",
         "errorLoginLocked": "Votre compte a été bloqué pendant 20 minutes suite à 10 essais infructueux d'authentification. Passé ce délai vous pourrez de nouveau vous authentifier. Vous avez oublié votre mot de passe ? Cliquez ",
@@ -307,17 +309,17 @@
     "resetPassword": {
         "reset": "Page de réinitialisation du mot de passe",
         "resetPasswordLabel": "Réinitialiser son mot de passe",
-        "resetMail": "Saisissez votre adresse mail",
+        "resetMail": "Saisissez votre adresse e-mail",
         "resetPasswordPageTitle": "Veuillez saisir votre nouveau mot de passe",
         "snackbar": {
-            "messageBeforeLink": "Si l'adresse renseignée est connue de Rudi, nous vous avons envoyé un mail. Vous n'avez pas reçu de mail ? Veuillez consulter vos spams puis contacter le ",
-            "linkLabel": "support"
+            "messageBeforeLink": "Si l'adresse renseignée est connue de {projectName}, nous vous avons envoyé un e-mail. Vous n'avez pas reçu d'e-mail ? Veuillez consulter vos spams. Si le problème persiste veuillez contacter un administrateur ",
+            "linkLabel": "en cliquant ici."
         }
     },
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
-        "technicalError": "Le portail Rudi est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée."
+        "technicalError": "Le portail {projectName} est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée."
     },
     "common": {
         "modifier": "Modifier",
@@ -330,7 +332,8 @@
         "datetimeFormat": "dd/MM/yyyy à HH:mm",
         "appliquer": "Appliquer",
         "et": "et",
-        "echec": "Echec du téléchargement. Veuillez contacter un administrateur en cliquant",
+        "echec": "Echec du téléchargement. Veuillez contacter un administrateur ",
+        "ici": "en cliquant ici.",
         "fileValidationError": {
             "EXTENSIONS": "Veuillez ajouter une image au bon format (.pdf, .png, .jpg ou .tiff). ",
             "FILE_MAX_COUNT": "Nombre maximal de fichiers atteint.",
@@ -347,7 +350,7 @@
         "loaderDescription": "Chargement...",
         "requiredInformation": "Informations obligatoires à renseigner.",
         "requiredInformationError": "Cette information est obligatoire.",
-        "requiredCheckboxError": "Cette case obligatoire doit être cochée.",
+        "requiredCheckboxError": "Cette case doit être cochée afin de poursuivre.",
         "errorMissingFieldAccount": "Au moins un champ obligatoire n'est pas rempli.",
         "validatorsErrors": {
             "required": "Cette information est obligatoire.",
@@ -371,7 +374,7 @@
         "password": "Mot de passe",
         "ConfirmPassword": "Confirmation de mot de passe",
         "lu": "J'ai lu et j'accepte les",
-        "subscribeToNotifications": "J'accepte d'être contacté(e) par l'équipe Rudi concernant mon utilisation de la plateforme et pour être informé(e) des nouveautés et des évènements à venir.",
+        "subscribeToNotifications": "J'accepte d'être contacté(e) par l'équipe {projectName} concernant mon utilisation de la plateforme et pour être informé(e) des nouveautés et des évènements à venir.",
         "sinscrire": "S'inscrire",
         "connceter": "Se connecter",
         "sansCompte": "Vous avez déjà un compte ?",
@@ -380,14 +383,13 @@
         "passwordMsgPost": " caractères. Votre mot de passe doit contenir des majuscules, minuscules, chiffres et caractères spéciaux.",
         "passwordErrorPre": "Votre mot de passe ne doit pas être inférieur à ",
         "passwordErrorPost": " caractères.",
-        "passwordRequired": "Vous n'avez pas saisi votre Mot de passe. Veuillez le renseigner afin de vous inscrire.",
-        "passwordConfirmError": "Votre mot de passe ne correspond pas. Veuillez réessayer.",
+        "passwordRequired": "Veuillez renseigner un mot de passe, afin de vous inscrire.",
+        "passwordConfirmError": "Les mots de passe ne sont pas identiques.",
         "passwordConfirmRequired": "Vous n'avez pas saisi la confirmation de votre mot de passe. Veuillez le renseigner afin de vous inscrire.",
         "cguError": "Vous devez accepter les conditions générales pour pouvoir vous inscrire.",
         "compteExistant": "Vous avez déjà un compte ?",
         "pSeconnecter": "Se connecter",
         "errorCreateAccount": "Erreur lors de la création du compte : ",
-        "errorAutoLogin": "Erreur lors de l'authentification automatique après la création du compte : ",
         "errorServer": "Erreur interne du serveur, veuillez contacter un Administrateur.",
         "errorMissingFieldAccount": "Un champ obligatoire n'était pas rempli. Pour une adresse obligatoire, assurez-vous de sélectionner un élément dans la liste proposée",
         "errorLoginNotMail": "Le champ login n'est pas au format : adresse e-mail",
@@ -411,7 +413,7 @@
     },
     "snackbarTemplate": {
         "successIncription": "Votre compte a bien été créé. Pour vous connecter, vous devez maintenant activer votre compte en cliquant sur le lien contenu dans le mail que nous venons de vous envoyer. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter",
-        "successIncriptionLinkText": "l'équipe technique de {projectName}-{teamName}",
+        "successIncriptionLinkText": "l'équipe technique de {projectName}",
         "successAccountValidation": "Votre compte est bien activé, vous pouvez maintenant vous connecter au portail {projectName}.",
         "errorAccountValidationStart": "Une erreur est survenue. Veuillez renouveler la création de votre compte en cliquant ",
         "errorAccountValidationEnd": "Vous pouvez saisir la même adresse mail que précédemment.",
@@ -458,6 +460,8 @@
         "-resource_title": "Titre de Z à A",
         "dataset_dates.updated": "Le plus ancien",
         "-dataset_dates.updated": "Le plus récent",
+        "dataset_dates.created": "Le plus ancien",
+        "-dataset_dates.created": "Le plus récent",
         "producer.organization_name": "Nom de producteur de A à Z",
         "-producer.organization_name": "Nom de producteur de Z à A"
     },
@@ -470,8 +474,8 @@
         "storagePeriod": "Durée de conservation des données personnelles chez le producteur",
         "treatmentPeriod": "Durée de traitement des demandes RGPD",
         "erasableData": "Données effaçables",
-        "apiAccessMode": "Données consultables dans Rudi",
-        "outAccessMode": "Données consultables en dehors de Rudi",
+        "apiAccessMode": "Données consultables dans {projectName}",
+        "outAccessMode": "Données consultables en dehors de {projectName}",
         "needsJustificatif": "(pièce justificative nécessaire)",
         "deletionReason": "Il n'est pas possible de faire une demande d'effacement sur ce jeu de données pour le ou les motif(s) suivant(s) :",
         "day": "jour",
@@ -505,7 +509,7 @@
     "accountInfo": {
         "nom": "Nom",
         "prenom": "Prénom",
-        "adresseEmail": "Adresse Email",
+        "adresseEmail": "Adresse e-mail",
         "myOrganizations": "Mes organisations",
         "contactUs": "Vous souhaitez créer, modifier ou être rattaché à une organisation ? Contactez-nous en cliquant sur le bouton \"Nous contacter\" ci-dessous",
         "moreInfo": "Plus d'informations sur les organisations sont disponibles sur",
@@ -513,8 +517,8 @@
             "myOrganizations": "Mes organisations",
             "noOrganizations": "Vous n'avez pas encore d'organisations.",
             "img": "Pictogramme d'organisation",
-            "errorLoading": "Une erreur est survenue lors du chargement de vos organisations. Merci de recharger la page. Si le problème persiste, veuillez contacter un administrateur en cliquant ",
-            "here": "ici.",
+            "errorLoading": "Une erreur est survenue lors du chargement de vos organisations. Merci de recharger la page. Si le problème persiste, veuillez contacter un administrateur ",
+            "here": "en cliquant ici.",
             "addOrganization": "Déclarer une organisation"
         }
     },
@@ -582,7 +586,7 @@
         "octets": "octets",
         "reutilisations": {
             "titre": "Réutilisation",
-            "aucuneReutilisation": "Aucune réutilisation n'a été déclarée pour le moment."
+            "aucuneReutilisation": "Aucune réutilisation n'a été déclarée."
         },
         "otherDatasets": "Sur le même thème",
         "seeMoreDatasets": "Voir plus dans le catalogue",
@@ -592,13 +596,14 @@
         "restrictedDatasetRequest": "Demander l'accès",
         "error-request-access": "Une erreur s'est produite lors de la demande d'accès. Veuillez contacter un administrateur.",
         "error-server-while-checking-project": "Une erreur s'est produite pendant le contrôle du projet choisi. Veuillez contacter un administrateur.",
-        "error-project-already-linked": "Le projet sélectionné possède déjà une demande d'accès vers ce jeu de données.",
+        "error-project-already-linked": "La réutilisation sélectionnée possède déjà une demande d'accès vers ce jeu de données.",
         "restrictedDatasetRequestDialog": {
             "title": "Demande d'accès",
             "description": "Une demande d’accès doit obligatoirement être réalisée dans le cadre d’une réutilisation. Vous n'avez pas encore créé de réutilisation ?",
             "description-2": "Cliquez-ici",
             "selectProject": "Sélectionner une réutilisation existante",
             "chooseProject": "Choisir une réutilisation",
+            "noReuse": "Aucune réutilisation n'est déclarée.",
             "ok": {
                 "title": "Votre demande d'accès a bien été envoyée.",
                 "description1": "La demande a bien été ajoutée à la réutilisation. Elle sera envoyée quand votre réutilisation sera soumise. Vous pouvez soumettre votre réutilisation depuis votre",
@@ -622,14 +627,14 @@
                     "title2": "d'accès",
                     "subtitle": "Votre demande a bien été envoyée.",
                     "additionalInformation": "Elle sera traitée dans un délai maximal de {maximumDelay} mois à compter de la date d'envoi.",
-                    "description3": "Vous serez notifié par mail du traitement de votre demande. Vous pouvez également suivre le statut de son traitement à tout moment dans votre espace personnel.",
+                    "description3": "Vous serez notifié(e) par mail du traitement de votre demande. Vous pouvez également suivre le statut de son traitement à tout moment dans votre espace personnel.",
                     "backToPersonalSpace": "Retour à mon espace personnel"
                 },
                 "deletionError": "Erreur lors de la suppression de la demande après une erreur de lancement du workflow",
                 "worflowError": "Une erreur a eu lieu lors du démarrage du workflow de la demande d'information",
                 "errorToUser": "Une erreur est survenue lors de la prise en compte des informations renseignées. Merci de renouveler votre demande. Si le problème persiste, veuillez contacter un administrateur du portail {projectName}",
                 "error": {
-                    "errorUpload": "Erreur lors de l'upload de la pièce-jointe.",
+                    "errorUpload": "Erreur lors du chargement de la pièce-jointe.",
                     "errorLookupAttachment": "L'information n'a pas été renseignée.",
                     "errorDownload": "Erreur lors du téléchargement de la pièce-jointe."
                 }
@@ -667,7 +672,7 @@
         "tabulatedDataTab": {
             "errorDownloading": "Erreur lors du chargement des données",
             "errorFileSize": "Les données sont trop volumineuses, merci de les télécharger afin de les visualiser.",
-            "errorAccess": "Afin de pouvoir visualiser la donnée vous devez avoir été autorisé à la mobiliser dans le cadre d'une réutilisation. Merci d'effectuer une demande d'accès en cliquant sur le bouton \"Demander l'accès\" situé en dessous de la zone de titre du jeu de données.",
+            "errorAccess": "Afin de pouvoir visualiser la donnée vous devez avoir été autorisé(e) à la mobiliser dans le cadre d'une réutilisation. Merci d'effectuer une demande d'accès en cliquant sur le bouton \"Demander l'accès\" situé en dessous de la zone de titre du jeu de données.",
             "tableHeadingBtn": "Ce tableau comporte des en-têtes"
         },
         "mapData": "Carte",
@@ -698,14 +703,16 @@
                 "searchbox": "Rechercher ...",
                 "editor": "Éditeur",
                 "administrator": "Administrateur",
-                "errorPagination": "Une erreur est survenue. Merci de relancer la procédure. Si le problème persiste veuillez contacter un administrateur",
+                "errorPagination": "Une erreur est survenue. Si l'erreur persiste, merci de contacter un administrateur ",
                 "update": "Modifier le rôle",
                 "delete": "Détacher de l'organisation",
                 "addMember": "Ajouter un membre",
+                "error": "Une erreur est survenue. Merci de recharger la page. Si le problème persiste veuillez contacter un administrateur ",
+                "here": "en cliquant ici.",
                 "addPopin": {
                     "title": "Ajouter un membre",
                     "subTitle": "Attention : seules les personnes ayant déjà créé un compte sur {projectName} peuvent être ajoutées à une organisation.",
-                    "descriptionMail": "Veuillez renseigner l'adresse email du compte {projectName} de la personne que vous souhaitez ajouter à votre organisation",
+                    "descriptionMail": "Veuillez renseigner l'adresse e-mail du compte {projectName} de la personne que vous souhaitez ajouter à votre organisation",
                     "descriptionRole": "Saisissez le rôle que vous souhaitez attribuer à ce membre. Un éditeur peut agir sur {projectName} au nom de cette organisation. Un administrateur peut gérer l'organisation et ses membres",
                     "success": "L'utilisateur a bien été ajouté à l’organisation."
                 },
@@ -719,33 +726,13 @@
                     "descriptionRole": "Indiquez le nouveau rôle à attribuer à ce membre. Un éditeur peut agir sur {projectName} au nom de l'organisation. Un administrateur peut gérer l'organisation et ses membres.",
                     "success": "Le rôle de l’utilisateur a bien été modifié."
                 },
-                "updatePassword": {
-                    "title": "Modifier le mot de passe",
-                    "text": " Chaque organisation dispose d'un mot de passe, utilisé pour attribuer certaines autorisations sur {projectName}. Seuls les administrateurs peuvent modifier le mot de passe.",
-                    "text2": "Informations obligatoires à renseigner. ",
-                    "passwordOld": "Ancien mot de passe ",
-                    "descriptionPasswordOld": "Veuillez renseigner ici votre mot de passe actuel de votre organisation.",
-                    "password": "Nouveau mot de passe ",
-                    "descriptionPassword": "Le nouveau mot de passe de votre organisation doit comporter au minimum 12 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
-                    "passwordConfirmation": "Confirmation du mot de passe",
-                    "descriptionPasswordConfirmation": "Veuillez réécrire le mot de passe de votre organisation",
-                    "validate": "Modifier",
-                    "succes": "Le mot de passe de l’organisation a bien été modifié",
-                    "error": "Une erreur est survenue. Veuillez renouveler l'operation .",
-                    "passwordConfirmRequired": "Vous n'avez pas saisi la confirmation de votre mot de passe. Veuillez le renseigner.",
-                    "passwordOldRequired": "Veuillez renseigner votre ancien mot de passe.",
-                    "passwordRequired": "Vous n'avez pas saisi votre Mot de passe. Veuillez le renseigner.",
-                    "errorCaptcha": "Le Captcha est invalide, merci de le saisir à nouveau"
-                },
                 "deletePopin": {
                     "title": "Détacher de l'organisation",
                     "text": "Êtes-vous sûr de vouloir détacher cet utilisateur de votre organisation ?",
                     "text2": "Cette personne ne pourra plus agir au nom de l'organisation et ne pourra plus gérer les contenus de votre organisation. L'utilisateur recevra un e-mail l'informant de cette modification.",
                     "text3": "Il sera toujours possible d'ajouter à nouveau cette personne à votre organisation.",
                     "success": "L'utilisateur a bien été détaché de l’organisation."
-                },
-                "error": "Une erreur est survenue. Merci de recharger la page. Si le problème persiste veuillez contacter un administrateur en cliquant ",
-                "here": "ici."
+                }
             }
         }
     },
@@ -1137,7 +1124,7 @@
     },
     "personalSpace": {
         "apiAccess": {
-            "errorPassword": "Le mot de passe que vous avez saisi n'est pas valide. Veuillez re-saisir le mot de passe."
+            "errorPassword": "Le mot de passe saisi est invalide. Veuillez le ressaisir."
         },
         "myNotifications": {
             "title1": "Mes notifications",
@@ -1174,7 +1161,7 @@
             "error": "Une erreur est survenue lors de la création de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
             "dialog": {
                 "title": "Déclarer une nouvelle organisation",
-                "description": "Vous vous apprêter à déclarer une nouvelle organisation sur Rudi. Suite à son approbation par les équipes Rudi, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
+                "description": "Vous vous apprêtez à déclarer une nouvelle organisation sur {projectName}. Suite à son approbation par les équipes Rudi, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
             },
             "form": {
                 "errorRequired": "Ce champ est requis",
@@ -1203,7 +1190,7 @@
                 "currentProject": "Réutilisation actuelle"
             },
             "projectHistorique": "Historique",
-            "projectOwner": "Porteur de projet"
+            "projectOwner": "Réutilisateur"
         },
         "projectTaskHistoric": {
             "title": "Historique de la demande",
@@ -1239,7 +1226,7 @@
             "noResult": "Vous n'avez pas de nouvelle demande. Vous pouvez consulter l'historique de vos demandes dans l'onglet \"Toutes les demandes\".",
             "receivedDate": "Reçue le",
             "datasetTitle": "Titre du jeu de données",
-            "ownerName": "Porteur de projet",
+            "ownerName": "Réutilisateur",
             "status": "Statut",
             "endDate": "Fin d’accès",
             "unknown": "inconnu",
@@ -1258,8 +1245,8 @@
             "confidentiality": "Confidentialité",
             "status": "Statut de la réutilisation",
             "numberOfDataset": "Jeux de données",
-            "noResult": "Vous n'avez pas encore créé de réutilisation sur {projectName}. Les formulaires de création de réutilisation sont accessibles en cliquant ",
-            "here": " ici",
+            "noResult": "Vous n'avez pas encore créé de réutilisation sur {projectName}. Les formulaires de création de réutilisation sont accessibles ",
+            "here": "en cliquant ici.",
             "resultTilte": "réutilisation(s)"
         },
         "project": {
@@ -1285,7 +1272,7 @@
             "updateMyReuse": "Modifier la réutilisation",
             "myReuseRecap": "Récapitulatif de votre utilisation : ",
             "msgToModeratorLabel": "Message à l'attention de l'équipe {projectName} : ",
-            "updateMyReuseHint": "Vous vous appretez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                            être soumise à la modération auprès de l'équipe {projectName} afin d'être publiée sur le catalogue des réutilisations.",
+            "updateMyReuseHint": "Vous vous apprêtez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                           être soumise à la modération auprès de l'équipe {projectName} afin d'être publiée sur le catalogue des réutilisations.",
             "basicInfos": {
                 "projectType": "Type de réutilisation",
                 "creationDate": "Date de création",
@@ -1314,14 +1301,14 @@
                     "title": "Jeux de données",
                     "addButton": "Ajouter",
                     "openDatasets": {
-                        "tableLabel": "Tableau des JDDs ouverts associés à un projet",
-                        "tableTitle": "Jeux de données ouverts ajoutés au projet",
+                        "tableLabel": "Tableau des jeux de données ouverts associés à une réutilisation",
+                        "tableTitle": "Jeux de données ouverts ajoutés à la réutilisation",
                         "columnAddedData": "Ajouté le",
                         "columnDataset": "Jeu de données",
                         "columnStatus": "Statut"
                     },
                     "restrictedDatasets": {
-                        "tableLabel": "Tableau des demandes d'accès à des JDDs restreints associées à un projet",
+                        "tableLabel": "Tableau des demandes d'accès à des jeux de données restreints associés à une réutilisation",
                         "tableTitle": "Demande d'accès à des jeux de données à accès restreint",
                         "columnAddedData": "Ajouté le",
                         "columnDataset": "Jeu de données",
@@ -1351,11 +1338,11 @@
                         "cancel": "Annuler",
                         "validate": "Confirmer"
                     },
-                    "success": "Votre réutilisation a été mise à jour.",
+                    "success": "Vos modifications ont été soumises à l’équipe {projectName} avant publication. ",
                     "error": "Modification echouée."
                 },
                 "deletion": {
-                    "impossible": "Vous ne pouvez pas retirer ce jeu de données de votre projet car votre demande n'a pas encore été traitée par l'équipe {projectName}.",
+                    "impossible": "Vous ne pouvez pas retirer ce jeu de données de votre réutilisation car votre demande n'a pas encore été traitée par l'équipe {projectName}.",
                     "title": "Retirer un jeu de données",
                     "text1": "Vous souhaitez retirer un jeu de données de votre réutilisation ? Cliquer sur confirmer.",
                     "text2": "Attention dans le cas d'un jeu de données à accès restreint, vous ne pourrez plus accéder au jeu de données pour cette réutilisation.",
@@ -1379,7 +1366,7 @@
                 "new-data": "Demandes de nouvelles données",
                 "submited": "Soumis le",
                 "name": "Titre de la demande",
-                "projectDatas": "Jeux de données ajoutés au projet ",
+                "projectDatas": "Jeux de données ajoutés à la réutilisation ",
                 "datas": "Jeu de données"
             }
         },
@@ -1394,7 +1381,7 @@
             "comment": "Commentaire",
             "notAuthorized": "Vous n'êtes pas autorisé à accéder à cette ressource",
             "projectOwner": {
-                "label": "Porteur de projet"
+                "label": "Réutilisateur"
             },
             "tabs": {
                 "demand": "Demande",
@@ -1412,16 +1399,15 @@
         "projectApi": {
             "identificationKey": "Clés d'identification",
             "explainationText": "Vous trouverez ici vos clés d'identification nécessaires pour requêter des jeux de données en vous authentifiant. De plus amples informations sont disponibles sur ",
-            "explainationTextLink": "la documentation de Rudi",
+            "explainationTextLink": "la documentation de {projectName}",
             "acces": "Accès",
             "textOwner": "Saisissez le mot de passe de votre compte pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
-            "textUser": "Saisissez le mot de passe de votre organisation pour consulter vos clés d’identification (Consumer Key et Consumer Secret).",
             "consult": "Consulter",
             "password": "Mot de passe",
             "required": "Champ obligatoire",
             "consumerKey": "Consumer Key",
             "consumerSecret": "Consumer Secret",
-            "errorPassword": "Le mot de passe que vous avez saisi n'est pas valide. Veuillez re-saisir le mot de passe.",
+            "errorPassword": "Le mot de passe saisi est invalide. Veuillez le ressaisir.",
             "textConsumerKey": "Votre Consumer Key est le login à renseigner pour vous authentifier lorsque vous requêtez des API.",
             "textConsumerSecret": "Votre Consumer Secret est le mot de passe à renseigner pour vous authentifier lorsque vous requêtez des API.",
             "generateKey": "Générer une clé",
@@ -1459,7 +1445,8 @@
             "errorInitialization": "Erreur lors du chargement des données nécessaires à l'onglet.",
             "explainationText": "Vous trouverez ici vos données issues de votre demande d'accès. De plus amples informations sont disponibles sur ",
             "delete": {
-                "error": "Echec de la suppression du jeu de données. Merci de renouveler la suppression. Si le problème persiste veuillez contacter un administrateur.",
+                "error": "Une erreur est survenue lors de la suppression du jeu de données. Si l'erreur persiste, merci de contacter un administrateur ",
+                "here": "en cliquant ici.",
                 "alt": "bouton de suppression "
             },
             "show-comment": {
@@ -1555,7 +1542,7 @@
         }
     },
     "businessException": {
-        "tooManyAddressesException": "Erreur lors de la recherche des adresses. Veuillez préciser votre adresse."
+        "tooManyAddressesException": "Erreur lors de la recherche des adresses. Veuillez préciser votre recherche."
     },
     "organization": {
         "label": "Organisation",

@@ -23,6 +23,7 @@ import {
     Confidentiality,
     DatasetConfidentiality,
     Field,
+    LinkedDatasetStatus,
     OwnerInfo,
     Project,
     ProjectFormType,
@@ -32,14 +33,8 @@ import {
 } from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
 import * as moment from 'moment';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
-
-interface MyProjectDetailsDependencies {
-    project?: Project;
-    logo?: string;
-    ownerInfo?: OwnerInfo;
-}
 
 @Component({
     selector: 'app-my-project-details',
@@ -95,28 +90,25 @@ export class MyProjectDetailsComponent implements OnInit {
                     logo: dependencies.logo,
                     ownerInfo: dependencies.ownerInfo
                 };
-            })
-        )
-            .subscribe({
-                next: (data) => {
-                    getDraftFrom(data.project.status);
-                    loadProjectData(data);
-                },
-                error: (error) => {
-                    console.error(error);
-                    this.loading = false;
-                }
-            });
-
-        const getDraftFrom = (status) => {
-            if (status === Status.Completed) {
-                this.isLoading = true;
-                this.taskService.lookupProjectDraftForm(ProjectFormType.DraftArchive).subscribe((form: Form) => {
+            }),
+            switchMap(data => {
+                return forkJoin([
+                    this.taskService.lookupProjectDraftForm(ProjectFormType.DraftArchive),
+                    of(data)
+                ]);
+            }),
+        ).subscribe({
+            next: ([form, data]) => {
+                if (data?.project?.status === Status.Completed) {
                     this.form = form;
-                    this.isLoading = false;
-                });
+                }
+                loadProjectData(data);
+            },
+            error: (error) => {
+                console.error(error);
+                this.loading = false;
             }
-        };
+        });
 
         const loadProjectData = (dependencies) => {
             if (dependencies.project.title) {
@@ -165,13 +157,22 @@ export class MyProjectDetailsComponent implements OnInit {
         return moment(this.project[fieldName]).format('DD/MM/YYYY');
     }
 
-    isProjectUpdatable(): boolean {
-        const containsLinkedDatasets = this.project?.linked_datasets?.filter((d) => d?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
-        return this.project?.status === Status.Completed && !containsLinkedDatasets;
+    isProjectCompleted(): boolean {
+        return this.project?.status === Status.Completed;
     }
 
-    onHandleModified(): void {
-        this.isModified = !this.isModified;
+    projectContainsNewDatasetRequestInProgress(): boolean {
+        return this.project?.dataset_requests?.filter((newDatasetRequest) => newDatasetRequest?.status !== Status.Completed).length > 0;
+    }
+
+    isProjectUpdatable(): boolean {
+        const containsLinkedDatasetsRestricted = this.project?.linked_datasets?.filter((linkedDataset) => linkedDataset?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
+        return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsRestricted;
+    }
+
+    isProjectArchived(): boolean {
+        const containsLinkedDatasetsInProgress = this.project?.linked_datasets?.filter((linkedDataset) => linkedDataset?.linked_dataset_status === LinkedDatasetStatus.InProgress || linkedDataset?.linked_dataset_status === LinkedDatasetStatus.Draft).length > 0;
+        return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsInProgress;
     }
 
     updateProjectTask(formModified: {
@@ -222,6 +223,7 @@ export class MyProjectDetailsComponent implements OnInit {
                 })
             ).subscribe({
                 next: (task) => {
+                    this.loadProject();
                     this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.success'));
                     this.childrenIsLoading = false;
                     this.isUpdateInProgress = false;

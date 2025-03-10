@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -46,9 +47,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import reactor.core.publisher.Flux;
 
 /**
@@ -154,8 +152,15 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		String url = createUrl(API_DATAVERSES_PARAM, dataverseIdentifier, API_DATASETS_PARAM);
 		ParameterizedTypeReference<DataverseResponse<Identifier>> type = new ParameterizedTypeReference<>() {
 		};
-		DataverseResponse<Identifier> resp = getWebClient().post().uri(url).bodyValue(marshalObject(dataset)).retrieve()
-				.bodyToMono(type).doOnError(t -> handleError("Failed to create dataset", t)).block();
+		DataverseResponse<Identifier> resp = getWebClient()
+				.post()
+				.uri(url)
+				.headers(headers -> headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+				.bodyValue(marshalObject(dataset))
+				.retrieve()
+				.bodyToMono(type)
+				.doOnError(t -> handleError("Failed to create dataset", t))
+				.block();
 		return getDataBody(resp);
 	}
 
@@ -167,7 +172,9 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		};
 
 		DataverseResponse<DatasetVersion> resp = getWebClient().put()
-				.uri(uri -> buildGetDataset(uri, url, persistentId)).bodyValue(marshalObject(datasetVersion)).retrieve()
+				.uri(uri -> buildGetDataset(uri, url, persistentId))
+				.headers(headers -> headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+				.bodyValue(marshalObject(datasetVersion)).retrieve()
 				.bodyToMono(type).doOnError(t -> handleError("Failed to update dataset", t)).block();
 		return getDataBody(resp);
 	}

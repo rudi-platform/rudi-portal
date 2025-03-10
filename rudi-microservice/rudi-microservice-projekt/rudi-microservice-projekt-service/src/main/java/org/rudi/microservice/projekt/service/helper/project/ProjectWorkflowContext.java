@@ -7,6 +7,7 @@ import static org.rudi.common.core.security.RoleCodes.MODERATOR;
 import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 import static org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus.ARCHIVED;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,9 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.email.EMailService;
+import org.rudi.facet.email.exception.EMailException;
+import org.rudi.facet.generator.exception.GenerationException;
+import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
 import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -213,18 +217,8 @@ public class ProjectWorkflowContext
 				UUID uuid = UUID.fromString(processInstanceBusinessKey);
 				ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
 
-				if (assetDescription != null) {
-
-					if (assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)) {
-						List<User> users = getAssignmentHelper()
-								.computeOrganizationMembers(assetDescription.getOwnerUuid());
-
-						CollectionUtils.addAll(assigneesEmails, aclHelper.lookupEmailAddresses(users));
-					} else {
-						assigneesEmails.add(Objects
-								.requireNonNull(aclHelper.getUserByUUID(assetDescription.getOwnerUuid())).getLogin());
-					}
-				}
+				// Récupération des mails de contact que le project owner soit une organisation ou un user
+				assigneesEmails = computeProjectOwnerMail(assetDescription);
 
 				if (eMailData != null && CollectionUtils.isNotEmpty(assigneesEmails)) {
 					sendEMail(executionEntity, assetDescription, eMailData, assigneesEmails, null);
@@ -320,7 +314,7 @@ public class ProjectWorkflowContext
 						Task t = linkedDatasetTaskService.createDraft(linkedDatasetMapper.entityToDto(linkedDataset));
 						linkedDatasetTaskService.startTask(t);
 					} catch (Exception e) {
-						log.error("Failed to start workflow for linkedDataset:" + linkedDataset);
+						log.error("Failed to start workflow for linkedDataset:" + linkedDataset, e);
 					}
 				}
 			}
@@ -335,7 +329,7 @@ public class ProjectWorkflowContext
 							.createDraft(newDatasetRequestMapper.entityToDto(newDatasetRequest));
 					newDatasetRequestTaskService.startTask(t);
 				} catch (Exception e) {
-					log.error("Failed to start workflow for newDatasetRequest:" + newDatasetRequest);
+					log.error("Failed to start workflow for newDatasetRequest:" + newDatasetRequest, e);
 				}
 			}
 		}
@@ -389,6 +383,23 @@ public class ProjectWorkflowContext
 		return result;
 	}
 
+	private List<String> computeProjectOwnerMail(ProjectEntity assetDescription) {
+		List<String> assigneesEmails = new ArrayList<>();
+
+		if (assetDescription != null) {
+			if (assetDescription.getOwnerType().equals(OwnerType.ORGANIZATION)) {
+				List<User> users = getAssignmentHelper().computeOrganizationMembers(assetDescription.getOwnerUuid());
+
+				CollectionUtils.addAll(assigneesEmails, aclHelper.lookupEmailAddresses(users));
+			} else {
+				assigneesEmails.add(
+						Objects.requireNonNull(aclHelper.getUserByUUID(assetDescription.getOwnerUuid())).getLogin());
+			}
+		}
+
+		return assigneesEmails;
+	}
+
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void resetDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
@@ -396,8 +407,11 @@ public class ProjectWorkflowContext
 
 	@Transactional(readOnly = false)
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
-	public void archiveProject(ExecutionEntity executionEntity) {
+	public void archiveProject(ScriptContext context, ExecutionEntity executionEntity, EMailData producerEmailData,
+			EMailData moderatorEmailData, EMailData projectOwnerEmailData)
+			throws EMailException, GenerationException, IOException, GenerationModelNotFoundException {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		String ownerName = computeProjectOwnerName(context, executionEntity);
 		if (processInstanceBusinessKey != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
 			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
@@ -407,13 +421,25 @@ public class ProjectWorkflowContext
 				assetDescription.setStatus(Status.DELETED);
 				assetDescription.setFunctionalStatus("Archivée");
 				assetDescription.setUpdatedDate(LocalDateTime.now());
-				handleArchivedLinkedDatasets(assetDescription, executionEntity);
+
+				// Gestion des jeux de données
+				handleArchivedLinkedDatasets(assetDescription, executionEntity, producerEmailData);
+
+				// Gestion des demande de nouvelles données
 				handleArchivedNewDatasetRequest(assetDescription, executionEntity);
 
+				// Envoie du mail de notification de l'archivage au moderator
 				getAssetDescriptionDao().save(assetDescription);
-				EMailData emailDataToAnim = new EMailData("file:templates/emails/project/notify-animator-subject.txt",
-						"file:templates/emails/project/notify-animator-body.html");
-				sendEMailToRole(null, executionEntity, emailDataToAnim, MODERATOR);
+				sendEMailToRole(null, executionEntity, moderatorEmailData, MODERATOR);
+
+				// Envoie du mail de notification de l'archivage au project owner
+				// Récupération des mails de contact que le project owner soit une organisation ou un user
+				List<String> assigneesEmails = computeProjectOwnerMail(assetDescription);
+
+				if (CollectionUtils.isNotEmpty(assigneesEmails)) {
+					sendEMail(executionEntity, assetDescription, projectOwnerEmailData, assigneesEmails, null);
+				}
+
 			} else {
 				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
 			}
@@ -451,7 +477,13 @@ public class ProjectWorkflowContext
 		}
 	}
 
-	private void handleArchivedNewDatasetRequest(ProjectEntity assetDescription, ExecutionEntity executionEntity) {
+	/**
+	 * Prise en compte des requests archivés
+	 * 
+	 * @param assetDescription l'asset
+	 * @param executionEntity  l'exécution en cours
+	 */
+	protected void handleArchivedNewDatasetRequest(ProjectEntity assetDescription, ExecutionEntity executionEntity) {
 		for (NewDatasetRequestEntity newDatasetRequestEntity : assetDescription.getDatasetRequests()) {
 			newDatasetRequestEntity.setNewDatasetRequestStatus(ARCHIVED);
 			newDatasetRequestEntity.setStatus(Status.DELETED);
@@ -460,7 +492,15 @@ public class ProjectWorkflowContext
 		}
 	}
 
-	private void handleArchivedLinkedDatasets(ProjectEntity assetDescription, ExecutionEntity executionEntity) {
+	/**
+	 * Prise en compte des requests archivés
+	 * 
+	 * @param assetDescription l'asset
+	 * @param executionEntity  l'exécution en cours
+	 * @param emailData        données des courriels
+	 */
+	protected void handleArchivedLinkedDatasets(ProjectEntity assetDescription, ExecutionEntity executionEntity,
+			EMailData emailData) {
 		for (LinkedDatasetEntity linkedDataset : assetDescription.getLinkedDatasets()) {
 			try {
 				linkedDataset.setLinkedDatasetStatus(LinkedDatasetStatus.ARCHIVED);
@@ -469,8 +509,7 @@ public class ProjectWorkflowContext
 				linkedDataset.setUpdatedDate(LocalDateTime.now());
 				Metadata dataset = datasetService.getDataset(linkedDataset.getDatasetUuid());
 				if (dataset.getAccessCondition().getConfidentiality().getRestrictedAccess()) {
-					EMailData emailData = new EMailData("file:templates/emails/project/notify-producer-subject.txt",
-							"file:templates/emails/project/notify-producer-body.html");
+
 					sendEmailToProducer(executionEntity, assetDescription, dataset, emailData);
 				}
 			} catch (Exception e) {

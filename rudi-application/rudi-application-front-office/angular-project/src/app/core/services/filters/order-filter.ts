@@ -10,8 +10,8 @@ export type OrderValue =
     '-resource_title' |
     'producer.organization_name' |
     '-producer.organization_name' |
-    'dataset_dates.updated' |
-    '-dataset_dates.updated';
+    'dataset_dates.created' |
+    '-dataset_dates.created';
 
 export const DEFAULT_VALUE: OrderValue = 'resource_title';
 

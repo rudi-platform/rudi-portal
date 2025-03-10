@@ -1,6 +1,7 @@
-import {AfterViewInit, Component, Input} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+import {PropertiesMetierService} from '@app/core/services/properties-metier.service';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService, GPS_PROJECTION} from '@core/services/data-set/display-map.service';
 import {LogService} from '@core/services/log.service';
 import {MAP_PROTOCOLS} from '@core/services/map/map-protocols';
@@ -31,14 +32,13 @@ import {createWmtsBaseLayer, MapLayerFunction} from './map.layer.function';
 import {getDefaultCrs} from './map.media.layer.function';
 import {ADDRESS_STYLE, getHoveredStyle, LINE_STYLE, POINT_STYLE, POLYGON_STYLE} from './map.style.function';
 import MediaTypeEnum = Media.MediaTypeEnum;
-import { PropertiesMetierService } from '@app/core/services/properties-metier.service';
 
 @Component({
     selector: 'app-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnInit {
 
     /**
      * Coordonnées du point de centrage de la carte en WGS84 (Rennes par défaut)

@@ -5,12 +5,11 @@ import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PASSWORD_REGEX} from '@core/const';
 import {AccountService} from '@core/services/account.service';
-import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
-import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/notification-template/notification-template.component';
 import {ResetPasswordErrorBoxComponent} from '@shared/reset-password-error-box/reset-password-error-box.component';
 import {first} from 'rxjs/operators';
 import {ConfirmedValidator} from '../sign-up/confirmed-validator';
@@ -65,17 +64,15 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     constructor(
-        private formBuilder: FormBuilder,
-        private routeHistoryService: RouteHistoryService,
-        private authenticationService: AuthenticationService,
-        private snackBarService: SnackBarService,
-        private translateService: TranslateService,
-        private breakpointObserver: BreakpointObserverService,
-        private router: Router,
-        private snackbar: MatSnackBar,
+        private readonly formBuilder: FormBuilder,
+        private readonly routeHistoryService: RouteHistoryService,
+        private readonly snackBarService: SnackBarService,
+        private readonly translateService: TranslateService,
+        private readonly breakpointObserver: BreakpointObserverService,
+        private readonly router: Router,
+        private readonly snackbar: MatSnackBar,
         private readonly route: ActivatedRoute,
-        private accountService: AccountService,
-        private propertiesService: PropertiesMetierService,
+        private readonly accountService: AccountService
     ) {
         // Construction du formulaire d'inscription
         this.signupForm = this.formBuilder.group({
@@ -124,11 +121,10 @@ export class ResetPasswordComponent implements OnInit {
                     this.routeHistoryService.resetHistory();
                     // Si on s'est bien authentifié on revient sur la page d'avant Si on peut go back on go back
                     this.router.navigate(['/login']);
-                    this.propertiesService.get('front.contact').subscribe(contactLink => {
-                        this.snackBarService.openSnackBar({
-                            message: `${this.translateService.instant('snackbarTemplate.successResetPassword')}`,
-                            keepBeforeSecondRouteChange: true
-                        });
+                    this.snackBarService.openSnackBar({
+                        message: `${this.translateService.instant('snackbarTemplate.successResetPassword')}`,
+                        level: Level.SUCCESS,
+                        keepBeforeSecondRouteChange: true
                     });
                 },
                 error: (errorString: string) => {

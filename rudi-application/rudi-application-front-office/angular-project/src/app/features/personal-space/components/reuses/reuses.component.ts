@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Sort} from '@angular/material/sort';
+import {Sort, SortDirection} from '@angular/material/sort';
 import {ProjectDependenciesFetchers, ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
-import {Order, ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
+import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {UserService} from '@core/services/user.service';
 import {BackPaginationSort} from '@shared/back-pagination/back-pagination-sort';
@@ -21,7 +21,8 @@ export interface ProjectSummary {
     numberOfDatasets: number;
 }
 
-const DEFAULT_SORT_ORDER: Order = '-updatedDate';
+const DEFAULT_SORT_ORDER: string = 'updatedDate';
+const DEFAULT_SORT_DIRECTION: SortDirection = 'desc';
 
 @Component({
     selector: 'app-reuses',
@@ -57,7 +58,11 @@ export class ReusesComponent implements OnInit {
 
     ngOnInit(): void {
         // Permet de trier par défaut les projets par ordre décroissant
-        const defaultSortTable: SortTableInterface = {order: DEFAULT_SORT_ORDER, page: 1};
+        const defaultSortTable: SortTableInterface = this.backPaginationSort.sortTable({
+            active: DEFAULT_SORT_ORDER,
+            direction: DEFAULT_SORT_DIRECTION
+        });
+        defaultSortTable.page = 1;
         this.loadProjects(defaultSortTable);
     }
 
@@ -122,8 +127,13 @@ export class ReusesComponent implements OnInit {
      * Fonctions de tris
      */
     sortTable(sort: Sort): void {
-        if (!sort.active || sort.direction === '') {
-            return;
+        if (!sort.active || !sort.direction) {
+            this.sortIsRunning = true;
+            this.backPaginationSort.currentPage = this.page;
+            this.backPaginationSort.currentSortAsc = true;
+            this.backPaginationSort.currentSort = '';
+            sort.direction = '';
+            this.loadProjects({page: this.page, order: null});
         } else {
             this.sortIsRunning = true;
             this.backPaginationSort.currentPage = this.page;

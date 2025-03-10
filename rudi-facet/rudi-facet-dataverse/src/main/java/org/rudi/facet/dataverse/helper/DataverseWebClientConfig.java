@@ -10,10 +10,10 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import reactor.netty.http.client.HttpClient;
 
 /**
  * @author FNI18300

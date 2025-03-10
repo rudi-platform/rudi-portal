@@ -12,7 +12,6 @@
                    (click)="goToSubmitProject()">{{'metaData.restrictedDatasetRequestDialog.description-2'|translate}}</a>.
             </p>
 
-
             <form [formGroup]="formGroup">
                 <!-- selectionner projet -->
                 <ng-container>
@@ -32,10 +31,13 @@
                                             [value]="myProject">{{myProject.title}}</mat-option>
                             </mat-select>
                             <mat-error class="stepper-mat-error"
-                                       *ngIf="formGroup.get('selectProject').errors?.required">
+                                       *ngIf="formGroup.get('selectProject').errors?.required && myProjects.length > 0">
                                 <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformation'|translate}}
                             </mat-error>
                         </mat-form-field>
+                        <mat-error class="stepper-mat-error error-container" *ngIf="myProjects.length === 0 && !isLoading">
+                            <mat-icon>info-circle</mat-icon>{{'metaData.restrictedDatasetRequestDialog.noReuse'|translate}}
+                        </mat-error>
                         <div class="d-flex justify-content-center" *ngIf="isProjectValidationLoading">
                             <mat-spinner [diameter]="30"></mat-spinner>
                         </div>
@@ -57,7 +59,7 @@
                     <span>{{'project.addDatasetPopup.cancel'|translate}}</span>
                 </button>
                 <button class="primary-raised-button" mat-raised-button (click)="validate()"
-                        [disabled]="formGroup.invalid || isProjectInvalid || isProjectValidationLoading">
+                        [disabled]="formGroup.invalid || isProjectInvalid || isProjectValidationLoading || myProjects.length === 0">
                     <span>{{'project.addDatasetPopup.validate'|translate}}</span>
                 </button>
             </mat-dialog-actions>

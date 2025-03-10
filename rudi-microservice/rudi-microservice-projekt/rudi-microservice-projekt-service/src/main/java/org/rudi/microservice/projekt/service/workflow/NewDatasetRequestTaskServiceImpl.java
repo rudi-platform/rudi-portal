@@ -8,11 +8,13 @@ import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.service.InitializationService;
@@ -146,6 +148,25 @@ public class NewDatasetRequestTaskServiceImpl extends
 			}
 		}
 
+	}
+
+	/**
+	 * @param assetDescriptionEntity
+	 */
+	@Override
+	protected void checkEntityStatus(NewDatasetRequestEntity assetDescriptionEntity)
+			throws IllegalArgumentException, InvalidDataException {
+		super.checkEntityStatus(assetDescriptionEntity);
+
+		ProjectEntity projectEntity = projectCustomDao
+				.findProjectByNewDatasetRequestUuid(assetDescriptionEntity.getUuid());
+
+		if (projectEntity == null
+				|| getBpmnHelper().queryTaskByAssetId(projectEntity.getClass(), projectEntity.getId()) != null
+						&& (projectEntity.getStatus().equals(Status.DRAFT)
+								|| projectEntity.getStatus().equals(Status.PENDING))) {
+			throw new IllegalArgumentException("Projekt is linked to a running task");
+		}
 	}
 
 }

@@ -17,7 +17,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {AclService} from 'micro_service_modules/acl/acl-api';
 import {LinkedDatasetStatus, OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import {Project} from 'micro_service_modules/projekt/projekt-model';
+import {Project, ProjectStatus} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -152,4 +152,12 @@ export class DetailComponent implements OnInit {
         window.open(this.project.access_url, '_blank');
     }
 
+    getHeaderStatus(): string {
+        // Cas spécifique, on ne souhaite pas afficher le réutilisation status
+        // On souhaite précisé de manière visible que la réutilisation est "Archivée"
+        if (this.project.project_status === ProjectStatus.Disengaged) {
+            return this.project.functional_status;
+        }
+        return this.project.reutilisation_status.label;
+    }
 }
