@@ -206,6 +206,44 @@ interface org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity {
 }
 
 
+class org.rudi.facet.doks.entity.DocumentEntity <<Entity>>  <<Table>>  {
+ {TableName=document}
+--
+	{field} +@Column("") contentType : String
+	{field} +@Column("") encrypted : boolean
+	{field} +@Column("") fileContents : java.sql.Blob
+	{field} +@Column("") fileName : String
+	{field} +@Column("") fileSize : long
+	{field} {static} -serialVersionUID : long
+	{field} +@Column("") uploaderUuid : java.util.UUID
+	{method}  {static} -$default$encrypted () : boolean
+	{method}  {static} +builder () : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +equals ( o : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toBuilder () : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +toString () : String
+}
+
+
+class org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder {
+	{field} -contentType : String
+	{field} -encrypted$set : boolean
+	{field} -encrypted$value : boolean
+	{field} -fileContents : java.sql.Blob
+	{field} -fileName : String
+	{field} -fileSize : long
+	{field} -uploaderUuid : java.util.UUID
+	{method} +build () : org.rudi.facet.doks.entity.DocumentEntity
+	{method} +contentType ( contentType : String ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +encrypted ( encrypted : boolean ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +fileContents ( fileContents : java.sql.Blob ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +fileName ( fileName : String ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +fileSize ( fileSize : long ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+	{method} +toString () : String
+	{method} +uploaderUuid ( uploaderUuid : java.util.UUID ) : org.rudi.facet.doks.entity.DocumentEntity$DocumentEntityBuilder
+}
+
+
 abstract class org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity <<Entity>>  <<Table>>  {
  {TableName=abstract_address}
  {TableSchema=strukture_data}
@@ -412,6 +450,7 @@ org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity --|>  org.rudi.common.st
 org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
 org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity ..|>  org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity
 org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity$AbstractAssetDescriptionEntityBuilder --|>  org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
+org.rudi.facet.doks.entity.DocumentEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
 org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity -->  org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity :  @ManyToOne\naddressRole
 org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity -->  org.rudi.microservice.strukture.storage.entity.address.AddressType :  @Column("type")\ntype
 org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity

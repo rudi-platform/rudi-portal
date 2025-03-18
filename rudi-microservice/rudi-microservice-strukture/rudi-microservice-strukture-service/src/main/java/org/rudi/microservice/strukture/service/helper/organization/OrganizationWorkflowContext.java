@@ -15,6 +15,7 @@ import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
@@ -40,6 +41,7 @@ import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.ReportHelper;
 import org.rudi.microservice.strukture.service.helper.ReportSendExecutor;
+import org.rudi.microservice.strukture.service.helper.attachments.AttachmentsHelper;
 import org.rudi.microservice.strukture.service.integration.errors.IntegrationError;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
@@ -52,6 +54,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
 
 @Component(value = "organizationWorkflowContext")
 @Transactional
@@ -72,11 +75,12 @@ public class OrganizationWorkflowContext
 	private final ProviderHelper providerHelper;
 	private final OwnerInfoHelper ownerInfoHelper;
 	private final TaskService<LinkedProducer> linkedProducerTaskService;
+	private final AttachmentsHelper attachmentsHelper;
 
 	public OrganizationWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper,
 			FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper,
-			ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper, TaskService<LinkedProducer> linkedProducerTaskService, LinkedProducerHelper linkedProducerHelper) {
+			ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper, TaskService<LinkedProducer> linkedProducerTaskService, LinkedProducerHelper linkedProducerHelper, AttachmentsHelper attachmentsHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
@@ -84,6 +88,7 @@ public class OrganizationWorkflowContext
 		this.ownerInfoHelper = ownerInfoHelper;
 		this.linkedProducerTaskService = linkedProducerTaskService;
 		this.linkedProducerHelper = linkedProducerHelper;
+		this.attachmentsHelper = attachmentsHelper;
 	}
 
 	@Transactional(readOnly = false)
@@ -186,6 +191,23 @@ public class OrganizationWorkflowContext
 			organizationMemberEntity.setUserUuid(initiator.getUuid());
 
 			assetDescriptionEntity.getMembers().add(organizationMemberEntity);
+		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void saveMedia(ScriptContext context, ExecutionEntity executionEntity) throws AppServiceException {
+		OrganizationEntity assetDescriptionEntity = lookupAssetDescriptionEntity(executionEntity);
+		Map<String, Object> data = null;
+		try {
+			data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
+		} catch (InvalidDataException e) {
+			log.warn("Impossible de récupérer les datas");
+		}
+
+		if(data != null && data.containsKey(FIELD_NAME_IMAGE_ORGANIZATION)){
+			UUID mediaUuid = UUID.fromString((String) data.get(FIELD_NAME_IMAGE_ORGANIZATION));
+
+			attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescriptionEntity.getUuid());
 		}
 	}
 

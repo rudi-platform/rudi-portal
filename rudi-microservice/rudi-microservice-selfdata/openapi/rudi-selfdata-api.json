@@ -1084,6 +1084,40 @@
 						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
+			},
+			"delete": {
+				"tags": [
+					"selfdata"
+				],
+				"summary": "Supprime une pièce-jointe.",
+				"description": "Supprime une pièce-jointe.",
+				"operationId": "deleteAttachment",
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"description": "UUID de la pièce-jointe.",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "La pièce-jointe a été supprimée avec succès."
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
 			}
 		},
 		"/attachments/{uuid}/content": {
@@ -1117,40 +1151,6 @@
 								}
 							}
 						}
-					},
-					"400": {
-						"$ref": "#/components/responses/BadRequestError"
-					},
-					"404": {
-						"$ref": "#/components/responses/NotFound"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			},
-			"delete": {
-				"tags": [
-					"selfdata"
-				],
-				"summary": "Supprime une pièce-jointe.",
-				"description": "Supprime une pièce-jointe.",
-				"operationId": "deleteAttachment",
-				"parameters": [
-					{
-						"name": "uuid",
-						"in": "path",
-						"description": "UUID de la pièce-jointe.",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "La pièce-jointe a été supprimée avec succès."
 					},
 					"400": {
 						"$ref": "#/components/responses/BadRequestError"

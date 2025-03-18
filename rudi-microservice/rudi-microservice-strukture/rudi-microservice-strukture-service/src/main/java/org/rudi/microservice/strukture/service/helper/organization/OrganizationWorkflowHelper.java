@@ -21,4 +21,6 @@ public class OrganizationWorkflowHelper extends AbstactAssetDescriptionHelper<Or
 	protected OrganizationEntity createAsset() {
 		return new OrganizationEntity();
 	}
+
+
 }

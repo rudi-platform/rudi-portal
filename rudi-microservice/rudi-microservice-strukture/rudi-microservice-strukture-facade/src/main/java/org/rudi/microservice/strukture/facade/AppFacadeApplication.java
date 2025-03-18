@@ -23,6 +23,8 @@ import org.springframework.context.annotation.PropertySource;
 		"org.rudi.facet.projekt.helper",
 		"org.rudi.facet.generator",
 		"org.rudi.facet.bpmn",
+		"org.rudi.facet.crypto",
+		"org.rudi.facet.doks",
 		"org.rudi.microservice.strukture.core",
 		"org.rudi.microservice.strukture.facade",
 		"org.rudi.microservice.strukture.service",

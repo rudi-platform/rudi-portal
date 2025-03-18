@@ -1,14 +1,9 @@
 package org.rudi.microservice.strukture.service.producer.impl;
 
-import java.io.File;
-import java.io.IOException;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import jakarta.validation.constraints.NotNull;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.core.util.ContentTypeUtils;
 import org.rudi.common.service.exception.AppServiceException;
@@ -19,6 +14,7 @@ import org.rudi.facet.kmedia.bean.MediaOrigin;
 import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.StruktureResourceHelper;
+import org.rudi.microservice.strukture.service.helper.attachments.AttachmentsHelper;
 import org.rudi.microservice.strukture.service.producer.ProducerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,6 +33,7 @@ public class ProducerServiceImpl implements ProducerService {
 	private final MediaService mediaService;
 	private final StruktureAuthorisationHelper struktureAuthorisationHelper;
 	private final StruktureResourceHelper strukureResourceHelper;
+	private final AttachmentsHelper attachmentsHelper;
 
 	@Value("${rudi.producer.attachement.allowed.types:image/jpeg,image/png}")
 	List<String> allowedLogoType;
@@ -79,20 +76,12 @@ public class ProducerServiceImpl implements ProducerService {
 			throw new AppServiceUnauthorizedException(StruktureAuthorisationHelper.USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 
-		try {
-			if (kindOfData.equals(KindOfData.LOGO)) {
-				// Vérifie que le type de contenu est bien autorisé pour un logo
-				ContentTypeUtils.checkMediaType(documentContent.getContentType(), allowedLogoType);
-			}
-
-			File tempFile = File.createTempFile(UUID.randomUUID().toString(),
-					"." + FilenameUtils.getExtension(documentContent.getFileName()));
-			FileUtils.copyInputStreamToFile(documentContent.getFileStream(), tempFile);
-			mediaService.setMediaFor(MediaOrigin.PRODUCER, producerUuid, kindOfData, tempFile);
-		} catch (final DataverseAPIException | IOException e) {
-			throw new AppServiceException(String.format("Erreur lors de l'upload du %s du producteur d'id %s",
-					kindOfData.getValue(), producerUuid), e);
+		if (kindOfData.equals(KindOfData.LOGO)) {
+			// Vérifie que le type de contenu est bien autorisé pour un logo
+			ContentTypeUtils.checkMediaType(documentContent.getContentType(), allowedLogoType);
 		}
+
+		attachmentsHelper.saveMedia(documentContent, producerUuid, kindOfData);
 	}
 
 	@Override

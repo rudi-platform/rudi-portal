@@ -25,7 +25,7 @@
             <!-- Individuel -->
             <div class="mat-radio-button-container">
 
-                <mat-radio-button checked="true"
+                <mat-radio-button checked="true" (change)="onChangeOwnerType($event)"
                                   value="USER">{{'project.stepper.submission.step2.ownerType.user.label' | translate}}</mat-radio-button>
 
                 <div class="mat-radio-button-panel">
@@ -83,6 +83,14 @@
                     </div>
                 </div>
             </div>
+
+            <app-error-box *ngIf="error?.isError"
+                           [text]="error.message.messageBeforeLink"
+                           [clickableText]="error.message.linkLabel"
+                           [textAfterLink]="error.message.messageAfterLink"
+                           (clickableTextClicked)="redirectContact()"
+            >
+            </app-error-box>
 
         </mat-radio-group>
 

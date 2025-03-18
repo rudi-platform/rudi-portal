@@ -3,6 +3,10 @@
  */
 package org.rudi.facet.bpmn.helper.form;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,11 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -67,8 +66,8 @@ public class FormHelper {
 	/**
 	 * Parse une définition de formulaire
 	 *
-	 * @param formDefinition
-	 * @return
+	 * @param datas string à réhydrater en map
+	 * @return map issue de la réhydratation de la string
 	 * @throws ParseException
 	 */
 	public Map<String, Object> hydrateData(String datas) throws InvalidDataException {
@@ -89,8 +88,8 @@ public class FormHelper {
 	/**
 	 * Serialize une définition de formulaire
 	 *
-	 * @param form
-	 * @return
+	 * @param datas Map<clé, valeur> que le souhaite déshydrater
+	 * @return String déshydratée de la map passée en paramètre
 	 * @throws IOException
 	 */
 	public String deshydrateData(Map<String, Object> datas) throws InvalidDataException {

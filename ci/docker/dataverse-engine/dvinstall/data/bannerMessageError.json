@@ -1,9 +1,0 @@
-{
-  "dismissible": "false",
-  "messageTexts": [
-  {
-    "lang": "en",
-    "text": "Invalid json"
-  }
-  ]
-}

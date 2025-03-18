@@ -28,6 +28,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 		"org.rudi.facet.bpmn.helper",
 		"org.rudi.facet.bpmn.mapper",
 		"org.rudi.facet.bpmn.service",
+		"org.rudi.facet.crypto",
+		"org.rudi.facet.doks",
 		"org.rudi.microservice.strukture.core",
 		"org.rudi.microservice.strukture.service",
 		"org.rudi.microservice.strukture.storage"

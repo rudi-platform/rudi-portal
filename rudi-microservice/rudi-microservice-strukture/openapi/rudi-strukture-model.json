@@ -821,6 +821,36 @@
 					"USER",
 					"ORGANIZATION"
 				]
+			},
+			"AllowedAttachementType": {
+				"type": "object",
+				"description": "Type de fichier accepté pour les logo et extension associée",
+				"properties": {
+					"mediaType": {
+						"type": "string"
+					},
+					"associatedExtensions": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"OrganizationLogoInformations": {
+				"type": "object",
+				"description": "Type de fichier accepté pour les logo, extension associée et max size",
+				"properties": {
+					"maxSize": {
+						"type": "integer"
+					},
+					"types": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/AllowedAttachementType"
+						}
+					}
+				}
 			}
 		}
 	}

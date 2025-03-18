@@ -115,10 +115,12 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 			String fileName = dataBufferFlux.getHeaders().getContentDisposition().getFilename();
 			File outputFile = File.createTempFile("rudi", FilenameUtils.getExtension(fileName),
 					new File(temporaryDirectory));
-			if (dataBufferFlux.getBody() == null) {
+
+			Flux<DataBuffer> body = dataBufferFlux.getBody();
+			if (body == null) {
 				throw new IllegalStateException(fileId);
 			}
-			DataBufferUtils.write(dataBufferFlux.getBody(), Path.of(outputFile.getPath()), StandardOpenOption.CREATE)
+			DataBufferUtils.write(body, Path.of(outputFile.getPath()), StandardOpenOption.CREATE)
 					.share().block();
 			return outputFile;
 		} catch (Exception e) {
@@ -127,7 +129,6 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 	}
 
 	/**
-	 * 
 	 * @param persistentId l'id du dataset
 	 * @return le dataset
 	 * @throws DataverseAPIException if Dataset does not exist
@@ -189,7 +190,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 
 	/**
 	 * Suppresion d'un dataset
-	 * 
+	 *
 	 * @param persistentId l'id du dataset
 	 * @throws DataverseAPIException si le dataset n'existe pas
 	 */
@@ -223,7 +224,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 
 	/**
 	 * Cette méthode est à destination de l'API Gateway qui ne peut pas utiliser le webclient en block
-	 * 
+	 *
 	 * @param searchParams
 	 * @return
 	 * @throws DataverseAPIException

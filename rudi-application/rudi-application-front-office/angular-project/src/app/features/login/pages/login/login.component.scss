@@ -46,7 +46,12 @@ mat-error {
 .forgot-password {
     cursor: pointer;
     font-size: 14px;
-    color: var(--primary-text);
+    font-weight: bold;
+    color: var(--primary-color);
+
+    &:hover {
+        color: var(--focus);
+    }
 }
 
 .login-text-title {
@@ -78,12 +83,4 @@ mat-error {
 
 .login-btn-mobile {
     @include card-main-button-mobile;
-}
-
-a {
-    color: var(--primary-color);
-    font-size: 14px;
-    text-decoration: none;
-    white-space: normal;
-    font-weight: bold;
 }

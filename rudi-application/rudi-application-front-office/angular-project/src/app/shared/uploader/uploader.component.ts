@@ -37,6 +37,7 @@ export class UploaderComponent<T> {
     /** Max size of selected file in MB. Default: no limit */
     @Input() fileMaxSize: number;
     @Input() fileExtensions: string[];
+    @Input() cropperOptions: object;
 
     @Output() fileChanged: EventEmitter<FilePreviewModel> = new EventEmitter<FilePreviewModel>();
 
@@ -46,6 +47,12 @@ export class UploaderComponent<T> {
         private matIconRegistry: MatIconRegistry,
         private domSanitizer: DomSanitizer,
     ) {
+        this.cropperOptions = {
+            aspectRatio: 416 / 220,
+            minContainerWidth: 600,
+            minContainerHeight: 450,
+            autoCropArea: 1,
+        };
         this.matIconRegistry.addSvgIcon(
             'rudi_picto_image.svg',
             this.domSanitizer.bypassSecurityTrustResourceUrl('/assets/images/rudi_picto_image.svg')
@@ -80,15 +87,6 @@ export class UploaderComponent<T> {
                 uploadError: '',
                 download: ''
             }
-        };
-    }
-
-    get cropperOptions(): object {
-        return {
-            aspectRatio: 416 / 220,
-            minContainerWidth: 600,
-            minContainerHeight: 450,
-            autoCropArea: 1,
         };
     }
 

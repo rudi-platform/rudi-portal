@@ -1,14 +1,25 @@
 package org.rudi.facet.kaccess.service.dataset;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
+import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
+
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONException;
@@ -36,14 +47,8 @@ import org.rudi.facet.kaccess.exceptions.DatasetAlreadyExistsException;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.MetadataBlockHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
-import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
+import lombok.extern.slf4j.Slf4j;
 
 @KaccessSpringBootTest
 @Slf4j
@@ -269,8 +274,20 @@ class DatasetServiceIT {
 
 		metadata.setDataverseDoi(dataverseDoi);
 
+		await().timeout(10, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() -> {
+			try {
+				boolean trouve = datasetService.getDataset(metadata.getGlobalId()) != null;
+				log.info("dataset trouvé ? {} doi {}, globalId {}", trouve, dataverseDoi, globalId.toString());
+				return trouve;
+			} catch (Exception e) {
+				log.info("dataset PAS trouvé ! doi {}, globalId {}", dataverseDoi, globalId.toString());
+				return false; // Ignore l'exception et continue les retentatives
+			}
+		});
+
 		createdDatasets.add(metadata);
 
+		log.info("dataset créé : doi {}, globalId {}", dataverseDoi, globalId.toString());
 		return dataverseDoi;
 	}
 
@@ -485,5 +502,4 @@ class DatasetServiceIT {
 		assertThat(nonExistingResult.getMetadataList().getItems()).isEmpty();
 
 	}
-
 }

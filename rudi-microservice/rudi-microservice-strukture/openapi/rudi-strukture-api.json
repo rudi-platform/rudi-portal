@@ -3468,6 +3468,171 @@
 					}
 				}
 			}
+		},
+		"/attachments": {
+			"post": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Ajout d'une pièce-jointe.",
+				"description": "Upload le contenu d'une pièce-jointe.",
+				"operationId": "uploadAttachment",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"file": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "L'UUID de la pièce-jointe créée.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/attachments/{uuid}": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Recupère les informations principales d'un fichier.",
+				"description": "Recupère les informations principales d'un fichier. Il s'agit du nom et de la taille notamment",
+				"operationId": "getAttachmentMetadata",
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"description": "UUID de la pièce-jointe.",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Les informations basiques sur la pièce-jointe.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-doks/openapi/rudi-doks-model.json#/components/schemas/DocumentMetadata"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Supprime une pièce-jointe.",
+				"description": "Supprime une pièce-jointe.",
+				"operationId": "deleteAttachment",
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"description": "UUID de la pièce-jointe.",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "La pièce-jointe a été supprimée avec succès."
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/attachments/{uuid}/content": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Télécharge le contenu d'une pièce-jointe.",
+				"description": "Télécharge le contenu d'une pièce-jointe.",
+				"operationId": "downloadAttachment",
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"description": "UUID de la pièce-jointe.",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Le contenu de la pièce-jointe.",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -3507,6 +3672,16 @@
 			},
 			"BadRequestError": {
 				"description": "Bad Request Error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/ApiError"
+						}
+					}
+				}
+			},
+			"NotFound": {
+				"description": "La ressource demandée est introuvable.",
 				"content": {
 					"application/json": {
 						"schema": {

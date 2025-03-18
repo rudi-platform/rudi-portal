@@ -1,12 +1,15 @@
 import {HttpErrorResponse} from '@angular/common/http';
+import {AttachmentService} from '@core/services/attachment.service';
+import {DataSize} from '@shared/models/data-size';
+import {UploaderAdapter} from '@shared/uploader/uploader.adapter';
 import {DependencyFetcher} from '@shared/utils/dependencies-utils';
 import {mapEach} from '@shared/utils/ObservableUtils';
 import {TaskWithDependencies} from '@shared/utils/task-utils';
 import {AclService, User} from 'micro_service_modules/acl/acl-api';
-import {AssetDescription, Task} from 'micro_service_modules/api-bpmn';
+import {AssetDescription, Field, Task} from 'micro_service_modules/api-bpmn';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {validate as validateUuid} from 'uuid';
 import {TaskMetierService} from './task-metier.service';
@@ -65,6 +68,18 @@ export abstract class TaskDependencyFetchers<T extends TaskWithDependencies<A, D
     ) {
     }
 
+    get attachmentService(): AttachmentService {
+        return null;
+    }
+
+    get attachmentAdapter(): UploaderAdapter<string> {
+        return null;
+    }
+
+    getAllowedExtensions(field?: Field): Observable<string[]> {
+        return of([]);
+    }
+
     get initiatorInfo(): DependencyFetcher<T, string> {
         return {
             hasPrerequisites: (input: T) => input != null && input.dependencies != null,
@@ -99,5 +114,9 @@ export abstract class TaskDependencyFetchers<T extends TaskWithDependencies<A, D
                 );
             }
         };
+    }
+
+    getFileMaxSize(field: Field): Observable<DataSize> {
+        return undefined;
     }
 }

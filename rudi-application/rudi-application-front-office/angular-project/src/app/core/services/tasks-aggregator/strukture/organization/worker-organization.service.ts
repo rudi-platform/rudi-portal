@@ -3,7 +3,7 @@ import {
     OrganizationDependencies,
     OrganizationTask,
     OrganizationTaskDependenciesService,
-    OrganizationTaskDependencyFetcher
+    OrganizationTaskDependencyFetchers
 } from '@core/services/tasks/strukture/organization/organization-task-dependencies.service';
 import {OrganizationTaskSearchCriteria} from '@core/services/tasks/strukture/organization/organization-task-search-criteria.interface';
 import {Task} from 'micro_service_modules/api-bpmn';
@@ -19,8 +19,8 @@ export class WorkerOrganizationService extends WorkerService
 
     constructor(
         organizationTaskDependenciesService: OrganizationTaskDependenciesService,
-        organizationDependenciyFetcher: OrganizationTaskDependencyFetcher) {
-        super(organizationTaskDependenciesService, organizationDependenciyFetcher);
+        organizationDependencyFetchers: OrganizationTaskDependencyFetchers) {
+        super(organizationTaskDependenciesService, organizationDependencyFetchers);
     }
 
     mapToRequestToStudy(task: Task, assetDescription: Organization, dependencies: OrganizationDependencies): RequestToStudy {

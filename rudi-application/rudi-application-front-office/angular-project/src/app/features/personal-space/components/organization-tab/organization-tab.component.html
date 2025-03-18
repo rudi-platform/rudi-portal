@@ -1,5 +1,11 @@
 <app-loader [allPage]="false" [isLight]="true" [noText]="true"
             [active]="isLoading"></app-loader>
+
+<ng-template #loadingForm>
+    <app-loader [allPage]="false" [isLight]="true" [noText]="true"
+                [active]="draftForm.isLoading" ></app-loader>
+</ng-template>
+
 <div *ngIf="!isLoading && errorLoading">
     <app-error-box [text]="'accountInfo.tab.errorLoading' | translate"
                    [clickableText]="'accountInfo.tab.here'|translate"
@@ -9,10 +15,12 @@
 <div *ngIf="!isLoading">
     <div class="my-organisation-count">
         <span> {{ 'accountInfo.tab.myOrganizations'| translate }} ({{ totalOrganizations$ | async }})</span>
-        <button class="primary-raised-button" mat-raised-button
-                (click)="handleAddOrganization()">
-            {{ 'accountInfo.tab.addOrganization' | translate }}
-        </button>
+        <ng-container *ngIf="!draftForm.isError">
+            <button *ngIf="!draftForm.isLoading; else loadingForm" class="primary-raised-button" mat-raised-button
+                    (click)="handleAddOrganization()">
+                {{ 'accountInfo.tab.addOrganization' | translate }}
+            </button>
+        </ng-container>
     </div>
 
     <!--Pas d'organisation -->

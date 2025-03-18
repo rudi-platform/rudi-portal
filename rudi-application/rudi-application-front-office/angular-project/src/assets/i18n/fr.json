@@ -155,8 +155,8 @@
                             },
                             "userHasNoOrganization": {
                                 "messageBeforeLink": "Vous n'êtes rattaché à aucune organisation dans {projectName}. Veuillez contacter l'équipe {projectName} ",
-                                "linkLabel": "en cliquant ici, ",
-                                "messageAfterLink": "afin de paramétrer votre compte."
+                                "linkLabel": "en cliquant ici,",
+                                "messageAfterLink": " afin de paramétrer votre compte."
                             }
                         }
                     },
@@ -1171,6 +1171,7 @@
                 "nameHint": "Définissez le nom de votre organisation.",
                 "description": "Description",
                 "descriptionHint": "Dites-nous en plus sur votre organisation ! Cette description sera visible depuis le catalogue des organisations.",
+                "image": "Image",
                 "url": "Url d'accès",
                 "urlHint": "Cette url est le chemin d'accès à la page officielle de votre organisation.",
                 "address": "Adresse postale",

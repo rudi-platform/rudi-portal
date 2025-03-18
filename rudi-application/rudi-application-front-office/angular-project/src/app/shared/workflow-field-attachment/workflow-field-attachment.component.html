@@ -11,14 +11,15 @@
         [fileMaxCount]="1"
         [fileMaxSize]="properties.fileMaxSize.toMegabytes()"
         [fileFormControl]="formControl"
-        [fileExtensions]="fileExtensions"
+        [fileExtensions]="allowedFileExtensions"
+        (fileChanged)="submit.emit()"
         imageText="metaData.selfdataInformationRequest.imageUploader"
         imageFormat="metaData.selfdataInformationRequest.formatImage"
         errorText="metaData.selfdataInformationRequest.creation.error.errorUpload"
     ></app-uploader>
     <app-loader [allPage]="false" [isLight]="true" [noText]="true"
-                [active]="attachmentLoading"></app-loader>
-    <div *ngIf="readonly && !attachmentLoading" class="row attachment"
+                [active]="attachmentLoading || fileSizeLoading"></app-loader>
+    <div *ngIf="readonly && !(attachmentLoading || fileSizeLoading)" class="row attachment"
          [ngClass]="attachmentNotFound ? 'error-fake-input' : 'fake-input'">
         <div class="col-1">
             <mat-icon class="attachment-icon" svgIcon="attachment"></mat-icon>

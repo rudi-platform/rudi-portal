@@ -5,6 +5,7 @@ import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.service';
 import {SelfdataInformationRequestSubmissionService} from '@core/services/selfdata-information-request-submission.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
+import {SELFDATA_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
 import {DataSize} from '@shared/models/data-size';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
@@ -126,7 +127,8 @@ export class SelfdataInformationRequestCreationComponent implements OnInit {
 
     get properties(): WorkflowProperties {
         return {
-            fileMaxSize: this.fileMaxSize
+            fileMaxSize: this.fileMaxSize,
+            processDefinitionKey: SELFDATA_PROCESS_KEY_DEFINITION
         };
     }
 }

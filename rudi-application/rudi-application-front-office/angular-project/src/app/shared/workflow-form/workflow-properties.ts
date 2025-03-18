@@ -1,5 +1,6 @@
 import {DataSize} from '../models/data-size';
 
 export interface WorkflowProperties {
-    fileMaxSize: DataSize;
+    fileMaxSize?: DataSize;
+    processDefinitionKey?: string;
 }

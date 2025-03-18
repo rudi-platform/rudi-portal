@@ -1,16 +1,18 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import {AttachmentService} from '@core/services/attachment.service';
 import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {IconRegistryService} from '@core/services/icon-registry.service';
-import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.service';
-import {DocumentMetadata, SelfdataService} from 'micro_service_modules/selfdata/selfdata-api';
-import {SelfdataRequestAllowedAttachementType} from 'micro_service_modules/selfdata/selfdata-model';
+import {TaskDependencyFetchers} from '@core/services/tasks/task-with-dependencies-service';
+import {SELFDATA_PROCESS_KEY_DEFINITION, TaskDependencyFetcherFactory} from '@core/services/tasks/TaskDependencyFetcherFactory';
+import {DataSize} from '@shared/models/data-size';
+import {UploaderAdapter} from '@shared/uploader/uploader.adapter';
+import {DocumentMetadata} from 'micro_service_modules/selfdata/selfdata-api';
 import {Observable} from 'rxjs';
 import {ALL_TYPES} from '../models/title-icon-type';
 import {AttachmentPopinData} from '../workflow-field-attachment-popin/attachment-popin-data';
 import {WorkflowFieldAttachmentPopinComponent} from '../workflow-field-attachment-popin/workflow-field-attachment-popin.component';
 import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component';
-import {AttachmentAdapter} from './attachment.adapter';
 
 @Component({
     selector: 'app-workflow-field-attachment',
@@ -18,22 +20,30 @@ import {AttachmentAdapter} from './attachment.adapter';
     styleUrls: ['./workflow-field-attachment.component.scss']
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
-    attachmentLoading: boolean;
+    attachmentLoading: boolean = false;
+    fileSizeLoading: boolean = false;
     attachment: DocumentMetadata;
-    fileExtensions: string[] = [];
+    allowedFileExtensions: string[] = [];
+    attachmentService: AttachmentService;
+    attachmentAdapter: UploaderAdapter<string>;
+    private taskDependencyFetchers: TaskDependencyFetchers<any, any, any>;
 
     constructor(
         protected readonly dialog: MatDialog,
-        readonly attachmentAdapter: AttachmentAdapter,
-        private readonly selfdataAttachmentService: SelfdataAttachmentService,
-        private readonly iconRegistryService: IconRegistryService,
-        private readonly selfdataService: SelfdataService,
+        private readonly taskDependencyFetcherFactory: TaskDependencyFetcherFactory,
+        private readonly iconRegistryService: IconRegistryService
     ) {
         super();
-        iconRegistryService.addAllSvgIcons(ALL_TYPES);
+        this.iconRegistryService.addAllSvgIcons(ALL_TYPES);
     }
 
     ngOnInit(): void {
+        const processDefinitionKey: string = this.properties.processDefinitionKey ?? SELFDATA_PROCESS_KEY_DEFINITION;
+        this.taskDependencyFetchers = this.taskDependencyFetcherFactory.getService(processDefinitionKey);
+
+        this.attachmentService = this.taskDependencyFetchers.attachmentService;
+        this.attachmentAdapter = this.taskDependencyFetchers.attachmentAdapter;
+
         if (this.readonly) {
             this.lookupAttachment();
         }
@@ -46,7 +56,7 @@ export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent imp
 
     lookupAttachment(): void {
         this.attachmentLoading = true;
-        this.selfdataAttachmentService.getAttachmentMetadata(this.formControl.value).subscribe({
+        this.attachmentService.getAttachmentMetadata(this.formControl.value).subscribe({
             next: (result: DocumentMetadata) => {
                 this.attachment = result;
                 this.attachmentLoading = false;
@@ -56,16 +66,16 @@ export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent imp
             },
             error: (e) => {
                 this.attachmentLoading = false;
-                console.error(e);
             }
         });
     }
 
     loadAllowedFileExtensions(): void {
         this.attachmentLoading = true;
-        this.selfdataService.getAllowedAttachementTypes().subscribe( {
-            next: (result: SelfdataRequestAllowedAttachementType[]) => {
-                result.forEach(attachementType => attachementType.associatedExtensions.forEach(value => this.fileExtensions.push(value)));
+
+        this.taskDependencyFetchers.getAllowedExtensions(this.field).subscribe({
+            next: (values: string[]) => {
+                values.forEach((v: string) => this.allowedFileExtensions.push(v));
                 this.attachmentLoading = false;
             },
             complete: () => {
@@ -73,11 +83,25 @@ export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent imp
             },
             error: (e) => {
                 this.attachmentLoading = false;
-                console.error(e);
             }
         });
-    }
 
+        if (!this.properties.fileMaxSize) {
+            this.fileSizeLoading = true;
+            this.taskDependencyFetchers.getFileMaxSize(this.field).subscribe({
+                next: (value: DataSize) => {
+                    this.properties.fileMaxSize = value;
+                    this.fileSizeLoading = false;
+                },
+                complete: () => {
+                    this.fileSizeLoading = false;
+                },
+                error: (e) => {
+                    this.fileSizeLoading = false;
+                }
+            });
+        }
+    }
 
     public handleClickAttachment(): void {
         this.openDialogWorkflowFieldAttachment(this.formControl.value).subscribe();
@@ -87,6 +111,7 @@ export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent imp
         const dialogConfig = new DefaultMatDialogConfig<AttachmentPopinData>();
         dialogConfig.data = {attachmentUuid};
         const dialogRef = this.dialog.open(WorkflowFieldAttachmentPopinComponent, dialogConfig);
+        dialogRef.componentInstance.attachmentService = this.attachmentService;
         return dialogRef.afterClosed();
     }
 }

@@ -3,9 +3,10 @@
 	"fieldDefinitions": [
 		{
 			"name": "organizationImage",
-			"label": "Logo de l'organisation",
+			"label": "Nous vous conseillons de choisir l'image de votre organisation. Cette image est visible depuis le catalogue. Si vous n'en avez pas, une image par défaut sera utilisée.",
 			"type": "ATTACHMENT",
-			"required": false
+			"required": false,
+			"extendedType": "{\"maxSize\":\"10\",\"types\":[{\"mediaType\":\"image/jpeg\",\"associatedExtensions\":[\"jpeg\",\"jpg\"]},{\"mediaType\":\"image/png\",\"associatedExtensions\":[\"png\"]}]}"
 		}
 	]
 }

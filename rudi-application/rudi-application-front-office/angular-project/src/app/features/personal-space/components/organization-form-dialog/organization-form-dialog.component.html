@@ -10,7 +10,8 @@
             <div class="dialog-title">{{ 'personalSpace.organization.dialog.title'|translate }}</div>
             <div class="dialog-description">{{ 'personalSpace.organization.dialog.description'|translate }}</div>
 
-            <app-organization-form #OrganizationForm>
+            <app-organization-form #OrganizationForm
+            [draftForm]="draftForm">
             </app-organization-form>
 
             <mat-dialog-actions class="dialog-buttons">

@@ -276,7 +276,8 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         RudiSwiperComponent,
         WorkflowExpansionComponent,
         WorkflowExpansionLabelComponent,
-        WorkflowExpansionDateComponent
+        WorkflowExpansionDateComponent,
+        WorkflowFieldComponent
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},

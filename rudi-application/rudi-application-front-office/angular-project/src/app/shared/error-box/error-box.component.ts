@@ -23,6 +23,12 @@ export class ErrorBoxComponent {
     public clickableText: string;
 
     /**
+     * Le texte après le lien cliquable
+     */
+    @Input()
+    public textAfterLink: string;
+
+    /**
      * Evenement : j'ai cliqué sur le texte cliquable donc je fais quelque chose
      */
     @Output()

@@ -80,7 +80,6 @@ export class WorkflowFormComponent implements OnInit {
                 if (!control) {
                     throw new Error(`Cannot find control for WorkFlow Field ${fieldKey} with name "${field.definition.name}" in section "${section.name}"`);
                 }
-                // TODO Traiter le cas des champs date
                 field.values = [control.value]; // Pour le moment on ne gère que les champs non multiples
             });
         });

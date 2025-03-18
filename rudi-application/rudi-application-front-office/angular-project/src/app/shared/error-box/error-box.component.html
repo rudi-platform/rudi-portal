@@ -9,5 +9,7 @@
         <!-- le texte cliquable -->
         <span *ngIf="hasClickableText()" class="error-clickable"
               (click)="handleClickClickableText()">{{clickableText}}</span>
+
+        <span>{{textAfterLink}}</span>
     </div>
 </div>

@@ -1,22 +1,28 @@
-import {Component, ViewChild} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
-import {
-    OrganizationFormComponent
-} from '@features/personal-space/components/organization-form/organization-form.component';
+import {OrganizationFormComponent} from '@features/personal-space/components/organization-form/organization-form.component';
+import {Form} from 'micro_service_modules/strukture/api-strukture';
 
 @Component({
     selector: 'app-organization-form-dialog',
     templateUrl: './organization-form-dialog.component.html',
     styleUrls: ['./organization-form-dialog.component.scss']
 })
-export class OrganizationFormDialogComponent {
+export class OrganizationFormDialogComponent implements OnInit {
     @ViewChild('OrganizationForm', {static: true})
     organizationFormComponent: OrganizationFormComponent;
 
+    draftForm: Form;
+
     constructor(
         public dialogRef: MatDialogRef<OrganizationFormDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: { draftForm: Form }
     ) {
+    }
+
+    ngOnInit(): void {
+        this.draftForm = this.data.draftForm;
     }
 
     onClickClose(): void {
@@ -39,5 +45,4 @@ export class OrganizationFormDialogComponent {
     isValidForm(): boolean {
         return this.organizationFormComponent.isValidForm();
     }
-
 }

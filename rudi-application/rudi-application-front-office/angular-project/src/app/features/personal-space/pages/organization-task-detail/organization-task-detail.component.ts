@@ -9,7 +9,7 @@ import {
     OrganizationDependencies,
     OrganizationTask,
     OrganizationTaskDependenciesService,
-    OrganizationTaskDependencyFetcher
+    OrganizationTaskDependencyFetchers
 } from '@core/services/tasks/strukture/organization/organization-task-dependencies.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {OrganizationTaskSearchCriteria} from '@core/services/tasks/strukture/organization/organization-task-search-criteria.interface';
@@ -50,7 +50,7 @@ export class OrganizationTaskDetailComponent
         protected logger: LogService,
         private readonly route: ActivatedRoute,
         private readonly pageTitleService: PageTitleService,
-        readonly organizationTaskDependencyFetcher: OrganizationTaskDependencyFetcher,
+        readonly organizationTaskDependencyFetchers: OrganizationTaskDependencyFetchers,
         private readonly processDefinitionsKeyIconRegistryService: ProcessDefinitionsKeyIconRegistryService,
         private readonly router: Router
     ) {
@@ -75,8 +75,8 @@ export class OrganizationTaskDetailComponent
                     this.taskWithDependencies = taskWithDependencies;
                 }),
                 injectDependencies({
-                    organization: this.organizationTaskDependencyFetcher.organization,
-                    userInfo: this.organizationTaskDependencyFetcher.userInfo
+                    organization: this.organizationTaskDependencyFetchers.organization,
+                    userInfo: this.organizationTaskDependencyFetchers.userInfo
                 }),
                 map(({task, asset, dependencies}) => {
                     return {
