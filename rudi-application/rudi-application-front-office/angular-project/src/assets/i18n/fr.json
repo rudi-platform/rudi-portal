@@ -149,14 +149,10 @@
                         "organization": {
                             "label": "Organisation",
                             "description": "Vous réalisez cette réutilisation au sein d'une organisation. Les coordonnées de votre organisation seront visibles depuis votre réutilisation.",
+                            "userHasNoOrganization": "Vous devez être rattaché à une organisation dans {projectName} afin de déclarer une réutilisation en son nom.",
                             "name": {
                                 "label": "Nom de l’organisation",
                                 "placeholder": "Sélectionner une option"
-                            },
-                            "userHasNoOrganization": {
-                                "messageBeforeLink": "Vous n'êtes rattaché à aucune organisation dans {projectName}. Veuillez contacter l'équipe {projectName} ",
-                                "linkLabel": "en cliquant ici,",
-                                "messageAfterLink": " afin de paramétrer votre compte."
                             }
                         }
                     },
@@ -335,7 +331,8 @@
         "echec": "Echec du téléchargement. Veuillez contacter un administrateur ",
         "ici": "en cliquant ici.",
         "fileValidationError": {
-            "EXTENSIONS": "Veuillez ajouter une image au bon format (.pdf, .png, .jpg ou .tiff). ",
+            "EXTENSIONS": "Veuillez ajouter une image au bon format ({imageFormat}).",
+            "or": " ou .",
             "FILE_MAX_COUNT": "Nombre maximal de fichiers atteint.",
             "FILE_MAX_SIZE": "Taille maximale pour un fichier atteinte."
         },
@@ -415,8 +412,9 @@
         "successIncription": "Votre compte a bien été créé. Pour vous connecter, vous devez maintenant activer votre compte en cliquant sur le lien contenu dans le mail que nous venons de vous envoyer. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter",
         "successIncriptionLinkText": "l'équipe technique de {projectName}",
         "successAccountValidation": "Votre compte est bien activé, vous pouvez maintenant vous connecter au portail {projectName}.",
-        "errorAccountValidationStart": "Une erreur est survenue. Veuillez renouveler la création de votre compte en cliquant ",
-        "errorAccountValidationEnd": "Vous pouvez saisir la même adresse mail que précédemment.",
+        "errorAccountValidationStart": "Une erreur est survenue. Veuillez renouveler la création de votre compte ",
+        "clickHere": "en cliquant ici.",
+        "errorAccountValidationEnd": " Vous pouvez saisir la même adresse mail que précédemment.",
         "successResetPassword": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter au portail {projectName}.",
         "resetPasswordError": "Le délai de réinitialisation de votre mot de passe est dépassé. Nous vous invitons à renouveler votre demande en cliquant ",
         "ici": "ici",
@@ -1339,7 +1337,8 @@
                         "cancel": "Annuler",
                         "validate": "Confirmer"
                     },
-                    "success": "Vos modifications ont été soumises à l’équipe {projectName} avant publication. ",
+                    "success": "Vos modifications ont été soumises à l’équipe {projectName} avant publication.",
+                    "successUpdate": "Les modifications ont été appliquées. Veuillez soumettre votre réutilisation afin que celle-ci soit transmises à l'équipe {projectName}.",
                     "error": "Modification echouée."
                 },
                 "deletion": {
@@ -1556,6 +1555,7 @@
         "description": "Description",
         "catalogue": "Catalogue ",
         "desOrganisations": "des organisations",
+        "organizationLogo": "Logo de l'organisation",
         "card": {
             "projectsCount": {
                 "single": "{number} réutilisation",

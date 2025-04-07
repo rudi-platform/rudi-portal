@@ -46,6 +46,10 @@ export class DatasetsInfosComponent {
     restrictedDatasetIcon = 'key_icon_88_secondary-color';
     mediaSize: MediaSize;
 
+    @Input() defaultAlt: string;
+
+    @Input() defaultLogo: string;
+
 
     constructor(
         private readonly breakpointObserverService: BreakpointObserverService,

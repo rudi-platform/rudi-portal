@@ -1,5 +1,8 @@
 package org.rudi.facet.kaccess.helper.search.mapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
+
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -15,9 +18,6 @@ import org.rudi.facet.dataverse.bean.SearchType;
 import org.rudi.facet.dataverse.helper.dataset.metadatablock.mapper.DateTimeMapper;
 import org.rudi.facet.dataverse.model.search.SearchParams;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
 
 class SearchCriteriaMapperIT {
 
@@ -45,7 +45,7 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery())
-				.containsExactly("rudi_global_id:\"5141496d\\-8ae7\\-4da4\\-8c32\\-0a528db9af2e\"");
+				.containsExactly("(rudi_global_id:\"5141496d\\-8ae7\\-4da4\\-8c32\\-0a528db9af2e\")");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class SearchCriteriaMapperIT {
 		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria().keywords(keywords);
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
-		assertThat(searchParams.getFilterQuery()).containsExactly("rudi_keywords_ss:(\"bières\" \"gratuites\")");
+		assertThat(searchParams.getFilterQuery()).containsExactly("(rudi_keywords_ss:(\"bières\" \"gratuites\"))");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class SearchCriteriaMapperIT {
 		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria().themes(keywords);
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
-		assertThat(searchParams.getFilterQuery()).containsExactly("rudi_theme_s:(\"bières\" \"gratuites\")");
+		assertThat(searchParams.getFilterQuery()).containsExactly("(rudi_theme_s:(\"bières\" \"gratuites\"))");
 	}
 
 	@Test
@@ -83,7 +83,7 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery())
-				.containsExactly("rudi_producer_organization_name_s:(\"Lucas\" \"Spielberg\")");
+				.containsExactly("(rudi_producer_organization_name_s:(\"Lucas\" \"Spielberg\"))");
 	}
 
 	@Test
@@ -92,8 +92,8 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery())
-				.contains("rudi_access_condition_confidentiality_restricted_access:\"true\"")
-				.doesNotContain("rudi_access_condition_confidentiality_gdpr_sensitive:\"true\"");
+				.contains("(rudi_access_condition_confidentiality_restricted_access:\"true\")")
+				.doesNotContain("(rudi_access_condition_confidentiality_gdpr_sensitive:\"true\")");
 	}
 
 	@Test
@@ -104,8 +104,8 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery()).containsExactly(
-				"rudi_temporal_spread_start_date:[1627453800000000000 TO *]",
-				"rudi_temporal_spread_end_date:[* TO 1627486200000000000]");
+				"(rudi_temporal_spread_start_date:[1627453800000000000 TO *])",
+				"(rudi_temporal_spread_end_date:[* TO 1627486200000000000])");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class SearchCriteriaMapperIT {
 		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria().doi("10.5072/FK2/OFKEB1");
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
-		assertThat(searchParams.getFilterQuery()).containsExactly("rudi_doi:\"10.5072\\/FK2\\/OFKEB1\"");
+		assertThat(searchParams.getFilterQuery()).containsExactly("(rudi_doi:\"10.5072\\/FK2\\/OFKEB1\")");
 	}
 
 	@Test
@@ -123,39 +123,34 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery())
-				.containsExactly("rudi_local_id:\"2020.11\\-Laennec\\-AQMO\\-air quality sensors measures\"");
+				.containsExactly("(rudi_local_id:\"2020.11\\-Laennec\\-AQMO\\-air quality sensors measures\")");
 	}
 
 	@ParameterizedTest
 	@CsvSource({
-			"09/09/2021,           rudi_resource_title:*09\\/09\\/2021* OR rudi_abstract_text:*09\\/09\\/2021*", // one word with handled special characters
-			"31/08+,               rudi_resource_title:*31\\/08* OR rudi_abstract_text:*31\\/08*", // one word with not handled special characters
-			"911992100 09/09/2021, (rudi_resource_title:*911992100* AND rudi_resource_title:*09\\/09\\/2021*) OR (rudi_abstract_text:*911992100* AND rudi_abstract_text:*09\\/09\\/2021*)", // two words with handled special characters
+			"09/09/2021,      (rudi_resource_title:09\\/09\\/2021) OR (rudi_abstract_text:09\\/09\\/2021) OR (rudi_resource_title:09\\/09\\/2021*) OR (rudi_abstract_text:09\\/09\\/2021*)", // one word with handled special characters
+			"31/08+,               (rudi_resource_title:31\\/08) OR (rudi_abstract_text:31\\/08) OR (rudi_resource_title:31\\/08*) OR (rudi_abstract_text:31\\/08*)", // one word with not handled special characters
+			"911992100 09/09/2021, (rudi_resource_title:911992100 09\\/09\\/2021) OR (rudi_abstract_text:911992100 09\\/09\\/2021) OR ((rudi_resource_title:911992100*) AND (rudi_resource_title:09\\/09\\/2021*)) OR ((rudi_abstract_text:911992100*) AND (rudi_abstract_text:09\\/09\\/2021*))", // two words with handled special characters
 	})
 	void datasetSearchCriteriaToSearchParams_freeText(final String freeText, final String expectedQuery) {
-		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria()
-				.freeText(freeText);
-		final SearchParams searchParams = searchCriteriaMapper.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
+		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria().freeText(freeText);
+		final SearchParams searchParams = searchCriteriaMapper
+				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getQ()).isEqualTo(expectedQuery);
 	}
 
 	@Test
 	void datasetSearchCriteriaToSearchParamsOrderByScoreOfKeywords() {
 		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria()
-				.keywords(Arrays.asList("biogaz", "agriculture", "méthane"))
-				.orderByScoreOfKeywords(true);
-		final SearchParams searchParams = searchCriteriaMapper.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
-		assertThat(searchParams.getFilterQuery())
-				.as("Le paramètre fq n'est pas utilisé")
-				.isEmpty()
-		;
-		assertThat(searchParams)
-				.as("Le paramètre q est utilisé pour une recherche par keywords non stricte (on veut conserver les JDD sans mots-clés en commun)")
-				.hasFieldOrPropertyWithValue("q", "rudi_keywords:(\"biogaz\" \"agriculture\" \"méthane\") OR *:*")
+				.keywords(Arrays.asList("biogaz", "agriculture", "méthane")).orderByScoreOfKeywords(true);
+		final SearchParams searchParams = searchCriteriaMapper
+				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
+		assertThat(searchParams.getFilterQuery()).as("Le paramètre fq n'est pas utilisé").isEmpty();
+		assertThat(searchParams).as(
+				"Le paramètre q est utilisé pour une recherche par keywords non stricte (on veut conserver les JDD sans mots-clés en commun)")
+				.hasFieldOrPropertyWithValue("q", "(rudi_keywords:(\"biogaz\" \"agriculture\" \"méthane\")) OR *:*")
 				.as("Les résultats sont ordonnés par score décroissant, pour avoir les JDD avec le plus de mots-clés en commun en premier")
-				.hasFieldOrPropertyWithValue("sortBy", "score")
-				.hasFieldOrPropertyWithValue("sortOrder", "desc")
-		;
+				.hasFieldOrPropertyWithValue("sortBy", "score").hasFieldOrPropertyWithValue("sortOrder", "desc");
 	}
 
 }

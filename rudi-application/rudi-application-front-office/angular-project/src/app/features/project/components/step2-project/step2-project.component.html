@@ -83,15 +83,11 @@
                     </div>
                 </div>
             </div>
-
-            <app-error-box *ngIf="error?.isError"
-                           [text]="error.message.messageBeforeLink"
-                           [clickableText]="error.message.linkLabel"
-                           [textAfterLink]="error.message.messageAfterLink"
-                           (clickableTextClicked)="redirectContact()"
-            >
-            </app-error-box>
-
+            <mat-error class="stepper-mat-error d-flex p-0"
+                       *ngIf="hasNoOrganizationError">
+                <em class="fa fa-info-circle fa-2x me-2"></em>
+                <span>{{'project.stepper.submission.step2.ownerType.organization.userHasNoOrganization' | translate}}</span>
+            </mat-error>
         </mat-radio-group>
 
         <label class="step-form-card-label" for="contactEmail">

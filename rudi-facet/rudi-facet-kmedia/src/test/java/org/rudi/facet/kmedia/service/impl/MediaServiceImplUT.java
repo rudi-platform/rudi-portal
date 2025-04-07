@@ -1,11 +1,23 @@
 package org.rudi.facet.kmedia.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
 import org.rudi.facet.dataverse.api.dataset.FileOperationAPI;
@@ -23,19 +35,10 @@ import org.rudi.facet.kmedia.helper.dataset.metadatablock.MediaDatasetBlockHelpe
 import org.rudi.facet.kmedia.helper.search.mapper.MediaSearchCriteriaMapper;
 import org.rudi.facet.kmedia.helper.search.mapper.MediaSearchElementMapper;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
-class MediaServiceImplTest {
+class MediaServiceImplUT {
 	@InjectMocks
+	@Spy
 	private MediaServiceImpl mediaService;
 	@Mock
 	private DatasetOperationAPI datasetOperationAPI;
@@ -61,33 +64,33 @@ class MediaServiceImplTest {
 
 		final UUID providerUuid = UUID.fromString("2cbd3aca-1240-56ba-cd5b-7a81398825f2");
 		final File tempFile = new File("tempFile");
-		final SearchParams searchParams = SearchParams.builder()
-				.q("MOCK QUERY")
-				.build();
+		final SearchParams searchParams = SearchParams.builder().q("MOCK QUERY").build();
 		final MediaDatasetList emptyMediaDatasetList = new MediaDatasetList();
+		final MediaDatasetList oneMediaDatasetList = new MediaDatasetList();
+		oneMediaDatasetList.addItemsItem(new MediaDataset());
 		final DatasetMetadataBlock datasetMetadataBlock = mock(DatasetMetadataBlock.class);
-		final Identifier createdMediaDatasetIdentifier = new Identifier()
-				.persistentId("doi:10.5072/FK2/1QOX4J");
+		final Identifier createdMediaDatasetIdentifier = new Identifier().persistentId("doi:10.5072/FK2/1QOX4J");
 
-		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture())).thenReturn(searchParams);
-		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams))).thenReturn(emptyMediaDatasetList);
-		when(mediaDatasetBlockHelper.mediaDatasetToDatasetMetadataBlock(createdMediaDatasetCaptor.capture())).thenReturn(datasetMetadataBlock);
-		when(datasetOperationAPI.createDataset(createdDatasetCaptor.capture(), any())).thenReturn(createdMediaDatasetIdentifier);
+		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture()))
+				.thenReturn(searchParams);
+		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams)))
+				.thenReturn(emptyMediaDatasetList);
+		when(mediaDatasetBlockHelper.mediaDatasetToDatasetMetadataBlock(createdMediaDatasetCaptor.capture()))
+				.thenReturn(datasetMetadataBlock);
+		when(datasetOperationAPI.createDataset(createdDatasetCaptor.capture(), any()))
+				.thenReturn(createdMediaDatasetIdentifier);
+		doNothing().when(mediaService).waitIndexation(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO);
 
 		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO, tempFile);
 
 		final MediaDataset createdMediaDataset = createdMediaDatasetCaptor.getValue();
-		assertThat(createdMediaDataset)
-				.hasFieldOrPropertyWithValue("kindOfData", KindOfData.LOGO)
+		assertThat(createdMediaDataset).hasFieldOrPropertyWithValue("kindOfData", KindOfData.LOGO)
 				.hasFieldOrPropertyWithValue("authorAffiliation", MediaOrigin.PROVIDER)
-				.hasFieldOrPropertyWithValue("authorIdentifier", providerUuid)
-		;
+				.hasFieldOrPropertyWithValue("authorIdentifier", providerUuid);
 
 		final Dataset createdDataset = createdDatasetCaptor.getValue();
-		assertThat(createdDataset)
-				.hasFieldOrPropertyWithValue("datasetVersion.metadataBlocks", datasetMetadataBlock)
-				.hasFieldOrPropertyWithValue("datasetVersion.files", Collections.emptyList())
-		;
+		assertThat(createdDataset).hasFieldOrPropertyWithValue("datasetVersion.metadataBlocks", datasetMetadataBlock)
+				.hasFieldOrPropertyWithValue("datasetVersion.files", Collections.emptyList());
 
 		verify(fileOperationAPI).setSingleDatasetFile(createdMediaDatasetIdentifier.getPersistentId(), tempFile);
 	}
@@ -97,33 +100,31 @@ class MediaServiceImplTest {
 
 		final UUID providerUuid = UUID.fromString("2cbd3aca-1240-56ba-cd5b-7a81398825f2");
 		final File tempFile = new File("tempFile");
-		final SearchParams searchParams = SearchParams.builder()
-				.q("MOCK QUERY")
-				.build();
+		final SearchParams searchParams = SearchParams.builder().q("MOCK QUERY").build();
 		final MediaDatasetList emptyMediaDatasetList = new MediaDatasetList();
 		final DatasetMetadataBlock datasetMetadataBlock = mock(DatasetMetadataBlock.class);
-		final Identifier createdMediaDatasetIdentifier = new Identifier()
-				.persistentId("doi:10.5072/FK2/1QOX4J");
+		final Identifier createdMediaDatasetIdentifier = new Identifier().persistentId("doi:10.5072/FK2/1QOX4J");
 
-		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture())).thenReturn(searchParams);
-		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams))).thenReturn(emptyMediaDatasetList);
-		when(mediaDatasetBlockHelper.mediaDatasetToDatasetMetadataBlock(createdMediaDatasetCaptor.capture())).thenReturn(datasetMetadataBlock);
-		when(datasetOperationAPI.createDataset(createdDatasetCaptor.capture(), any())).thenReturn(createdMediaDatasetIdentifier);
+		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture()))
+				.thenReturn(searchParams);
+		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams)))
+				.thenReturn(emptyMediaDatasetList);
+		when(mediaDatasetBlockHelper.mediaDatasetToDatasetMetadataBlock(createdMediaDatasetCaptor.capture()))
+				.thenReturn(datasetMetadataBlock);
+		when(datasetOperationAPI.createDataset(createdDatasetCaptor.capture(), any()))
+				.thenReturn(createdMediaDatasetIdentifier);
+		doNothing().when(mediaService).waitIndexation(MediaOrigin.PRODUCER, providerUuid, KindOfData.LOGO);
 
 		mediaService.setMediaFor(MediaOrigin.PRODUCER, providerUuid, KindOfData.LOGO, tempFile);
 
 		final MediaDataset createdMediaDataset = createdMediaDatasetCaptor.getValue();
-		assertThat(createdMediaDataset)
-				.hasFieldOrPropertyWithValue("kindOfData", KindOfData.LOGO)
+		assertThat(createdMediaDataset).hasFieldOrPropertyWithValue("kindOfData", KindOfData.LOGO)
 				.hasFieldOrPropertyWithValue("authorAffiliation", MediaOrigin.PRODUCER)
-				.hasFieldOrPropertyWithValue("authorIdentifier", providerUuid)
-		;
+				.hasFieldOrPropertyWithValue("authorIdentifier", providerUuid);
 
 		final Dataset createdDataset = createdDatasetCaptor.getValue();
-		assertThat(createdDataset)
-				.hasFieldOrPropertyWithValue("datasetVersion.metadataBlocks", datasetMetadataBlock)
-				.hasFieldOrPropertyWithValue("datasetVersion.files", Collections.emptyList())
-		;
+		assertThat(createdDataset).hasFieldOrPropertyWithValue("datasetVersion.metadataBlocks", datasetMetadataBlock)
+				.hasFieldOrPropertyWithValue("datasetVersion.files", Collections.emptyList());
 
 		verify(fileOperationAPI).setSingleDatasetFile(createdMediaDatasetIdentifier.getPersistentId(), tempFile);
 	}
@@ -133,16 +134,16 @@ class MediaServiceImplTest {
 
 		final UUID providerUuid = UUID.fromString("2cbd3aca-1240-56ba-cd5b-7a81398825f2");
 		final File tempFile = new File("tempFile");
-		final SearchParams searchParams = SearchParams.builder()
-				.q("MOCK QUERY")
-				.build();
+		final SearchParams searchParams = SearchParams.builder().q("MOCK QUERY").build();
 		final MediaDataset existingMediaDataset = new MediaDataset().dataverseDoi("doi:10.5072/FK2/1QOX4J");
 		final MediaDatasetList mediaDatasetList = new MediaDatasetList().addItemsItem(existingMediaDataset);
 		final Identifier existingMediaDatasetIdentifier = new Identifier()
 				.persistentId(existingMediaDataset.getDataverseDoi());
 
-		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture())).thenReturn(searchParams);
-		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams))).thenReturn(mediaDatasetList);
+		when(mediaSearchCriteriaMapper.mediaSearchCriteriaToSearchParams(mediaSearchCriteriaCaptor.capture()))
+				.thenReturn(searchParams);
+		when(mediaSearchElementMapper.toMediaDatasetList(datasetOperationAPI.searchDataset(searchParams)))
+				.thenReturn(mediaDatasetList);
 
 		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO, tempFile);
 

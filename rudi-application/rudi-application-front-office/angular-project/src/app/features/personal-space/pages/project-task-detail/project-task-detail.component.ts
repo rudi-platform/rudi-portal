@@ -320,7 +320,7 @@ export class ProjectTaskDetailComponent
                 this.isUpdateInProgress = false;
                 this.childrenIsLoading = false;
                 this.taskId = this.idTask;
-                this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.success'));
+                this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.successUpdate'));
             },
             error: (e) => {
                 console.error(e);

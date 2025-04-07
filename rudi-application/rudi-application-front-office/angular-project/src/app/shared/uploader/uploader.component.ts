@@ -63,8 +63,19 @@ export class UploaderComponent<T> {
         this.fileFormControl.reset();
         this.fileFormControl.updateValueAndValidity();
         const {error} = validationError;
+        let formatsText: string;
+        // Vérifie si l'erreur est liée aux extensions de fichiers.
+        if (error === 'EXTENSIONS') {
+            // Si la longueur de la liste des extensions de fichiers est égale à 1, on affiche seulement cette extension.
+            if (this.fileExtensions.length === 1) {
+                formatsText = `.${this.fileExtensions[0]}`;
+            } else {
+                // Si plusieurs extensions sont présentes, on les affiche avec un espace entre chaque extension sauf la dernière, à laquelle on ajoute "ou"
+                formatsText = this.fileExtensions.map(format => `.${format}`).slice(0, -1).join(' ') + this.translateService.instant('common.fileValidationError.or') + this.fileExtensions[this.fileExtensions.length - 1];
+            }
+        }
         const key = `common.fileValidationError.${error}`;
-        this.snackBarService.add(this.translateService.instant(key));
+        this.snackBarService.add(this.translateService.instant(key, {imageFormat: formatsText}));
     }
 
     public onUploadSuccess($event: FilePreviewModel): void {

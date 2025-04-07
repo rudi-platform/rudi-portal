@@ -2,6 +2,6 @@
     <app-loader [active]="isLoading" [allPage]="false" [isTransparent]="true" [noText]="true"></app-loader>
     <ng-container *ngIf="!isLoading">
         <img *ngIf="content" [alt]="name | translate" [class]="cssClass" [src]="content">
-        <img *ngIf="!content" [class]="cssClass" alt="{{'project.detail.newRequestLogo'|translate}}" src='/assets/images/rudi_picto_nouvelle_demande.svg'>
+        <img *ngIf="!content" [class]="cssClass" [alt]="defaultAlt" [src]="defaultLogo">
     </ng-container>
 </div>

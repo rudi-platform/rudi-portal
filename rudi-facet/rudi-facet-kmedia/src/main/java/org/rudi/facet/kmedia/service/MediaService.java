@@ -1,13 +1,14 @@
 package org.rudi.facet.kmedia.service;
 
+import java.io.File;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.bean.MediaOrigin;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.UUID;
 
 public interface MediaService {
 
@@ -23,7 +24,8 @@ public interface MediaService {
 	 * @throws DataverseAPIException en cas d'erreur avec l'API Dataverse
 	 */
 	@Nullable
-	DocumentContent getMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException;
+	DocumentContent getMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException;
 
 	/**
 	 * Remplace le fichier du média pour cet auteur
@@ -34,15 +36,18 @@ public interface MediaService {
 	 * @param media                  fichier à remplacer
 	 * @throws DataverseAPIException en cas d'erreur avec l'API Dataverse
 	 */
-	void setMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData, File media) throws DataverseAPIException;
+	void setMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData, File media)
+			throws DataverseAPIException;
 
 	/**
-	 * Supprime le média associé à cet auteur.
-	 * La suppression par DataVerse du DataSet associé au média, supprime également tous les fichiers de ce DataSet.
+	 * Supprime le média associé à cet auteur. La suppression par DataVerse du DataSet associé au média, supprime également tous les fichiers de ce
+	 * DataSet.
 	 *
 	 * @param mediaAuthorAffiliation type d'auteur
 	 * @param mediaAuthorIdentifier  l'uuid de l'auteur
 	 * @param kindOfData             type du média à supprimer
 	 */
-	void deleteMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException;
+	void deleteMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException;
+
 }

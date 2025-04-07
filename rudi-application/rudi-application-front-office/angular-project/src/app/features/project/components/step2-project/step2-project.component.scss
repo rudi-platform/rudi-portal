@@ -1,2 +1,14 @@
 // Tous les styles sont définis dans le composant parent
 @import "create-project-stepper";
+
+.stepper-mat-error {
+    margin-left: 30px;
+}
+
+.error-clickable {
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+

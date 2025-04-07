@@ -1,8 +1,13 @@
 package org.rudi.facet.kmedia.service.impl;
 
+import static org.awaitility.Awaitility.await;
+
 import java.io.File;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -36,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MediaServiceImpl implements MediaService {
 
+	private static final int WAIT_TIME = 60;
 	private static final String SEARCH_CRITERIA_MISSING_MESSAGE = "MediaSearchCriteria missing";
 	private static final String MEDIA_AUTHOR_IDENTIFIER_MISSING_MESSAGE = "Media Author Identifier missing";
 	private static final String MEDIA_KIND_OF_DATA_MISSING_MESSAGE = "Media Kind of data missing";
@@ -55,14 +61,11 @@ public class MediaServiceImpl implements MediaService {
 
 	@Override
 	@Nullable
-	public DocumentContent getMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException {
+	public DocumentContent getMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier,
+			KindOfData kindOfData) throws DataverseAPIException {
 		return getSingleMediaFile(
-				new MediaSearchCriteria()
-						.kindOfData(kindOfData)
-						.mediaAuthorAffiliation(mediaAuthorAffiliation)
-						.mediaAuthorIdentifier(mediaAuthorIdentifier)
-						.limit(1)
-						.offset(0));
+				new MediaSearchCriteria().kindOfData(kindOfData).mediaAuthorAffiliation(mediaAuthorAffiliation)
+						.mediaAuthorIdentifier(mediaAuthorIdentifier).limit(1).offset(0));
 	}
 
 	@Nullable
@@ -93,12 +96,15 @@ public class MediaServiceImpl implements MediaService {
 	}
 
 	@Override
-	public void setMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData, File media) throws DataverseAPIException {
-		final Identifier mediaDatasetId = getOrCreateMediaDatasetFor(mediaAuthorAffiliation, mediaAuthorIdentifier, kindOfData);
+	public void setMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData,
+			File media) throws DataverseAPIException {
+		final Identifier mediaDatasetId = getOrCreateMediaDatasetFor(mediaAuthorAffiliation, mediaAuthorIdentifier,
+				kindOfData);
 		fileOperationAPI.setSingleDatasetFile(mediaDatasetId.getPersistentId(), media);
 	}
 
-	private Identifier getOrCreateMediaDatasetFor(MediaOrigin mediaOrigin, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException {
+	private Identifier getOrCreateMediaDatasetFor(MediaOrigin mediaOrigin, UUID mediaAuthorIdentifier,
+			KindOfData kindOfData) throws DataverseAPIException {
 		final MediaDataset existingMediaDataset = getMediaDatasetFor(mediaAuthorIdentifier, mediaOrigin, kindOfData);
 
 		final Identifier mediaDatasetId;
@@ -110,27 +116,24 @@ public class MediaServiceImpl implements MediaService {
 		return mediaDatasetId;
 	}
 
-
-
 	/**
-	 * @param mediaAuthorIdentifier l'auteur dont on cherche le média associé
-	 * @param kindOfData            type du média demandé
-	 * @param mediaAuthorAffiliation            Affiliation du propriétaire (Producteur ou fournisseur)
+	 * @param mediaAuthorIdentifier  l'auteur dont on cherche le média associé
+	 * @param kindOfData             type du média demandé
+	 * @param mediaAuthorAffiliation Affiliation du propriétaire (Producteur ou fournisseur)
 	 * @return le DataSet du média pour cet auteur, <code>null</code> s'il n'existe aucun média du type demandé pour cet auteur
 	 */
 	@Nullable
-	private MediaDataset getMediaDatasetFor(UUID mediaAuthorIdentifier, MediaOrigin mediaAuthorAffiliation, KindOfData kindOfData) throws DataverseAPIException {
-		final MediaSearchCriteria mediaSearchCriteria = new MediaSearchCriteria()
-				.kindOfData(kindOfData)
+	private MediaDataset getMediaDatasetFor(UUID mediaAuthorIdentifier, MediaOrigin mediaAuthorAffiliation,
+			KindOfData kindOfData) throws DataverseAPIException {
+		final MediaSearchCriteria mediaSearchCriteria = new MediaSearchCriteria().kindOfData(kindOfData)
 				.mediaAuthorAffiliation(mediaAuthorAffiliation) // before : .mediaAuthorAffiliation(MediaOrigin.PROVIDER)
-				.mediaAuthorIdentifier(mediaAuthorIdentifier)
-				.offset(0)
-				.limit(1);
+				.mediaAuthorIdentifier(mediaAuthorIdentifier).offset(0).limit(1);
 		final MediaDatasetList mediaDatasetList = searchMedia(mediaSearchCriteria);
 		return CollectionUtils.isNotEmpty(mediaDatasetList.getItems()) ? mediaDatasetList.getItems().get(0) : null;
 	}
 
-	private Identifier createMediaDatasetFor(MediaOrigin mediaOrigin, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException {
+	private Identifier createMediaDatasetFor(MediaOrigin mediaOrigin, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException {
 		final MediaDataset mediaDatasetToCreate = new MediaDataset();
 		mediaDatasetToCreate.setKindOfData(kindOfData);
 		mediaDatasetToCreate.setAuthorAffiliation(mediaOrigin);
@@ -183,7 +186,12 @@ public class MediaServiceImpl implements MediaService {
 				.files(new ArrayList<>());
 		Dataset dataset = new Dataset().datasetVersion(datasetVersion);
 
-		return datasetOperationAPI.createDataset(dataset, mediaDataAlias);
+		Identifier identifier = datasetOperationAPI.createDataset(dataset, mediaDataAlias);
+
+		waitIndexation(mediaDataset.getAuthorAffiliation(), mediaDataset.getAuthorIdentifier(),
+				mediaDataset.getKindOfData());
+
+		return identifier;
 	}
 
 	/**
@@ -197,11 +205,44 @@ public class MediaServiceImpl implements MediaService {
 	}
 
 	@Override
-	public void deleteMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData) throws DataverseAPIException {
+	public void deleteMediaFor(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException {
 		final MediaDataset mediaDataset = getMediaDatasetFor(mediaAuthorIdentifier, mediaAuthorAffiliation, kindOfData);
 		if (mediaDataset != null) {
 			deleteMedia(getIdentifier(mediaDataset));
 		}
+		waitDeletion(mediaAuthorAffiliation, mediaAuthorIdentifier, kindOfData);
+	}
+
+	protected void waitDeletion(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData) {
+		await().timeout(WAIT_TIME, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() -> {
+			try {
+				return isMissing(mediaAuthorAffiliation, mediaAuthorIdentifier, kindOfData);
+			} catch (Exception e) {
+				return false;
+			}
+		});
+	}
+
+	protected void waitIndexation(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier,
+			KindOfData kindOfData) {
+		await().timeout(WAIT_TIME, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() -> {
+			try {
+				return isPresent(mediaAuthorAffiliation, mediaAuthorIdentifier, kindOfData);
+			} catch (Exception e) {
+				return false;
+			}
+		});
+	}
+
+	protected boolean isMissing(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException {
+		return getMediaDatasetFor(mediaAuthorIdentifier, mediaAuthorAffiliation, kindOfData) == null;
+	}
+
+	protected boolean isPresent(MediaOrigin mediaAuthorAffiliation, UUID mediaAuthorIdentifier, KindOfData kindOfData)
+			throws DataverseAPIException {
+		return getMediaDatasetFor(mediaAuthorIdentifier, mediaAuthorAffiliation, kindOfData) != null;
 	}
 
 }

@@ -2,7 +2,6 @@ package org.rudi.facet.dataverse.helper.query;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -20,33 +19,14 @@ class ItemBuilder<T> {
 	/**
 	 * https://solr.apache.org/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-EscapingSpecialCharacters
 	 */
-	static final String[] SPECIAL_CHARACTERS = {
-			"+",
-			"-",
-			"&&",
-			"||",
-			"!",
-			"(",
-			")",
-			"{",
-			"}",
-			"[",
-			"]",
-			"^",
-			"\"",
-			"~",
-			"*",
-			"?",
-			":",
-			"/"
-	};
+	static final String[] SPECIAL_CHARACTERS = { "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"",
+			"~", "*", "?", ":", "/" };
 
 	/**
 	 * https://solr.apache.org/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-EscapingSpecialCharacters
 	 */
 	static final String[] ESCAPED_SPECIAL_CHARACTERS = Arrays.stream(SPECIAL_CHARACTERS)
-			.map(specialCharacter -> "\\" + specialCharacter)
-			.toArray(String[]::new);
+			.map(specialCharacter -> "\\" + specialCharacter).toArray(String[]::new);
 
 	protected final T value;
 	private boolean withWildcard = false;
@@ -56,9 +36,9 @@ class ItemBuilder<T> {
 		final String filterQueryForExistingField = buildFilterQuery(fieldSpec.getName());
 		if (isDefaultValue(fieldSpec)) {
 			final String filterQueryForMissingField = buildFilterQueryForMissingField(fieldSpec);
-			return filterQueryForExistingField + " OR " + filterQueryForMissingField;
+			return "(" + filterQueryForExistingField + " OR " + filterQueryForMissingField + ")";
 		} else {
-			return filterQueryForExistingField;
+			return "(" + filterQueryForExistingField + ")";
 		}
 	}
 
@@ -94,20 +74,15 @@ class ItemBuilder<T> {
 	}
 
 	protected <V> String valueToString(@Nonnull V value) {
-		return Stream.of(value)
-				.map(Object::toString)
-				.map(this::escapeSpecialCharacters)
-				.map(escapedStringValue -> {
-					if (withWildcard) {
-						return ANY_VALUE + escapedStringValue + ANY_VALUE;
-					} else if (needQuotes()) {
-						return "\"" + escapedStringValue + "\"";
-					} else {
-						return escapedStringValue;
-					}
-				})
-				.collect(Collectors.toList())
-				.get(0);
+		return Stream.of(value).map(Object::toString).map(this::escapeSpecialCharacters).map(escapedStringValue -> {
+			if (withWildcard) {
+				return escapedStringValue + ANY_VALUE;
+			} else if (needQuotes()) {
+				return "\"" + escapedStringValue + "\"";
+			} else {
+				return escapedStringValue;
+			}
+		}).toList().get(0);
 	}
 
 	/**

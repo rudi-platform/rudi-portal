@@ -1,10 +1,10 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {AccountErrorBoxComponent} from '@shared/account-error-box/account-error-box.component';
+import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
 
 @Component({templateUrl: 'account-validation.component.html'})
@@ -18,8 +18,8 @@ export class AccountValidationComponent implements OnInit {
         private route: ActivatedRoute,
         private snackBarService: SnackBarService,
         private router: Router,
-        private snackbar: MatSnackBar,
-        private accountService: AccountService
+        private accountService: AccountService,
+        private translateService: TranslateService
     ) {
     }
 
@@ -39,10 +39,10 @@ export class AccountValidationComponent implements OnInit {
                     this.loading = false;
                     // Si l'utilisateur a dépassé le délai de 24 heures ou Si l'utilisateur a déjà cliqué sur le lien d'activation
                     if (err.status === badRequestStatus) {
-                        const config = new MatSnackBarConfig();
-                        config.panelClass = ['mat-elevation-z3', 'account-error-style'];
-                        config.horizontalPosition = 'center';
-                        this.snackbar.openFromComponent(AccountErrorBoxComponent, config);
+                        this.snackBarService.openSnackBar({
+                            message: `${this.translateService.instant('snackbarTemplate.errorAccountValidationStart')} <a href="${'/login/sign-up'}">${this.translateService.instant('snackbarTemplate.clickHere')}</a> ${this.translateService.instant('snackbarTemplate.errorAccountValidationEnd')}`,
+                            level: Level.ERROR
+                        });
                     }
 
                 },

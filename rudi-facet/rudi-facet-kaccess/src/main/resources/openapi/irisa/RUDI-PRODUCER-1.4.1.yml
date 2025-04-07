@@ -62,7 +62,7 @@
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
-  version: 1.4.0
+  version: 1.4.1
   title: Public API for RUDI producer node
   description: "API pour l'accès aux données au niveau du nœud producteur RUDI"
   termsOfService: 'no'

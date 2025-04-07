@@ -42,6 +42,7 @@ import {Level} from '@shared/notification-template/notification-template.compone
 import {AccessConditionConfidentiality} from '@shared/utils/access-condition-confidentiality';
 import {ActionFallbackUtils} from '@shared/utils/action-fallback-utils';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
+import {RudiValidators} from '@shared/validators/rudi-validators';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {DatasetConfidentiality, ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
@@ -305,7 +306,7 @@ export class ProjectSubmissionService {
                 },
                 Validators.required
             ],
-            contactEmail: ['', Validators.email],
+            contactEmail: ['', [RudiValidators.email]],
             organizationUuid: [null]
         }, {
             validators: [this.organizationUuidValidator]

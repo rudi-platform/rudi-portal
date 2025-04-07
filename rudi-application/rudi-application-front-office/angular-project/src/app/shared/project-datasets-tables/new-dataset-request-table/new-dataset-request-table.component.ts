@@ -1,12 +1,12 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
-import {DataRequestItem} from '@features/project/model/data-request-item';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
 import {ObjectType} from '@core/services/tasks/object-type.enum';
+import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
+import {DataRequestItem} from '@features/project/model/data-request-item';
 import {NewDatasetRequestTableData, RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {NewDatasetRequest, NewDatasetRequestStatus} from 'micro_service_modules/projekt/projekt-model';
 import * as moment from 'moment';
@@ -20,7 +20,7 @@ export class NewDatasetRequestTableComponent {
     newDatasetsRequest: NewDatasetRequestTableData[] = [];
     displayedColumns: string[] = ['addedDate', 'title', 'status', 'delete-img'];
     dataSource: MatTableDataSource<NewDatasetRequestTableData> = new MatTableDataSource(this.newDatasetsRequest);
-    @Output() requestUuidEmitter: EventEmitter<string> = new EventEmitter<string>();
+    defaultLogo: string;
 
     /**
      * Boolean indiquant l'état du tableau (chargement en cours)
@@ -39,10 +39,13 @@ export class NewDatasetRequestTableComponent {
     hasDeleteButton = false;
     @Input()
     hasCommentButton = false;
+
+    @Output() requestUuidEmitter: EventEmitter<string> = new EventEmitter<string>();
     @Output()
     addNewDatasetRequestEvent = new EventEmitter<NewDatasetRequest>();
     @Output()
     addingElementToNewDatasetTable = new EventEmitter<boolean>();
+
     @Output()
     commentActionEvent: EventEmitter<RowTableData> = new EventEmitter();
 
@@ -52,6 +55,7 @@ export class NewDatasetRequestTableComponent {
         private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
         private readonly projectConsultationService: ProjectConsultationService,
     ) {
+        this.defaultLogo  = '/assets/images/rudi_picto_nouvelle_demande.svg';
     }
 
     @Input()

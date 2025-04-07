@@ -7,6 +7,8 @@
     [hasDeleteButton]="hasDeleteButton"
     [disableAddButton]="disableAddButton"
     [hasCommentButton]="hasCommentButton"
+    [defaultAlt]="'project.detail.newRequestLogo' | translate"
+    [defaultLogo]="defaultLogo"
     (addActionEvent)="openNewDatasetRequestPopin()"
     (deleteActionEvent)="deleteRequest($event)"
     (commentActionEvent)="showComment($event)"

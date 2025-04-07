@@ -15,9 +15,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
+@Slf4j
 public abstract class AbstractDataverseAPI {
 
 	private final ObjectMapper objectMapper;
@@ -55,6 +57,9 @@ public abstract class AbstractDataverseAPI {
 	protected Mono<Throwable> handleError(String message, Throwable error) {
 		if (error instanceof WebClientResponseException && error.getCause() != null) {
 			error = error.getCause();
+		}
+		if (log.isInfoEnabled() && error instanceof WebClientResponseException apiError) {
+			log.info("handleError body:", apiError.getResponseBodyAsString());
 		}
 		return Mono.error(new DataverseAPIException(message + ":" + error.getMessage(), error));
 	}

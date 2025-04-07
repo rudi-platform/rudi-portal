@@ -23,7 +23,6 @@ import {IsSectionDisplayedPipe} from '@shared/workflow-form/pipes/is-section-dis
 import {IsSectionOnlyHelpPipe} from '@shared/workflow-form/pipes/is-section-only-help.pipe';
 import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
 import {CaptchetatAngularModule} from 'captchetat-angular';
-import {AccountErrorBoxComponent} from './account-error-box/account-error-box.component';
 import {BackPaginationComponent} from './back-pagination/back-pagination.component';
 import {BannerButtonComponent} from './banner-button/banner-button.component';
 import {BannerComponent} from './banner/banner.component';
@@ -112,7 +111,6 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             TruncateTextPipe,
             ReplaceIfNullPipe,
             ToStringPipe,
-            AccountErrorBoxComponent,
             FooterComponent,
             HeaderComponent,
             NotificationTemplateComponent,
@@ -209,7 +207,6 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         MaterialModules,
         LabelSeparatorComponent,
         OrganizationLogoComponent,
-        AccountErrorBoxComponent,
         SplitPipe,
         TruncateTextPipe,
         ReplaceIfNullPipe,

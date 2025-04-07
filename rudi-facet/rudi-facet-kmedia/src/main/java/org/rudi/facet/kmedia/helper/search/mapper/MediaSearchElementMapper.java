@@ -1,5 +1,9 @@
 package org.rudi.facet.kmedia.helper.search.mapper;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.dataverse.bean.Dataset;
@@ -8,21 +12,17 @@ import org.rudi.facet.dataverse.model.search.SearchElements;
 import org.rudi.facet.kmedia.bean.MediaDataset;
 import org.rudi.facet.kmedia.bean.MediaDatasetList;
 import org.rudi.facet.kmedia.helper.dataset.metadatablock.MediaDatasetBlockHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class MediaSearchElementMapper {
 
-	@Autowired
-	private DatasetOperationAPI datasetOperationAPI;
+	private final DatasetOperationAPI datasetOperationAPI;
 
-	@Autowired
-	private MediaDatasetBlockHelper mediaDatasetBlockHelper;
+	private final MediaDatasetBlockHelper mediaDatasetBlockHelper;
 
 	public MediaDatasetList toMediaDatasetList(SearchElements<SearchDatasetInfo> searchElements)
 			throws DataverseAPIException {

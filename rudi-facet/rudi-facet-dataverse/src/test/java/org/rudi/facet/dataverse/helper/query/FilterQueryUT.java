@@ -1,11 +1,11 @@
 package org.rudi.facet.dataverse.helper.query;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.rudi.facet.dataverse.fields.FieldSpec;
 import org.rudi.facet.dataverse.fields.FieldSpecNamingCase;
 import org.rudi.facet.dataverse.fields.RootFieldSpec;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FilterQueryUT {
 
@@ -21,7 +21,7 @@ class FilterQueryUT {
 	void addNullableFieldWithNotDefaultValue() {
 		final FilterQuery filterQuery = new FilterQuery();
 		filterQuery.add(FIELD, !DEFAULT_VALUE_IF_MISSING);
-		assertThat(filterQuery).containsExactly("root_field:true");
+		assertThat(filterQuery).containsExactly("(root_field:true)");
 	}
 
 	/**
@@ -31,7 +31,7 @@ class FilterQueryUT {
 	void addNullableFieldWithDefaultValue() {
 		final FilterQuery filterQuery = new FilterQuery();
 		filterQuery.add(FIELD, DEFAULT_VALUE_IF_MISSING);
-		assertThat(filterQuery).containsExactly("root_field:false OR (*:* NOT root_field:*)");
+		assertThat(filterQuery).containsExactly("(root_field:false OR (*:* NOT root_field:*))");
 	}
 
 	/**

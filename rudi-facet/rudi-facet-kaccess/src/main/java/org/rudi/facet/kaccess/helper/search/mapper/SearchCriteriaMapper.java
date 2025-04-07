@@ -102,18 +102,32 @@ public class SearchCriteriaMapper extends DatasetSearchCriteriaMapper {
 
 		if (StringUtils.isNotBlank(freeText)) {
 			// recherche texte libre : on cherche sa présence dans le titre OU le résumé court (synopsis)
-			final String sanitizedFreeText = sanitize(freeText);
-			final String[] terms = sanitizedFreeText.split(" ");
+			String sanitizedFreeText = sanitize(freeText);
 
-			val query = new FilterQuery();
+			FilterQuery query = new FilterQuery();
+
+			// on ajout les termes en l'état et donc on prend en compte de cette manière la recherche de base lucene
 			for (final FieldSpec field : FREE_TEXT_FIELDS) {
-				val fieldQuery = new FilterQuery();
-				for (final String term : terms) {
-					fieldQuery.addWithWildcard(field, term);
-				}
+				FilterQuery fieldQuery = new FilterQuery();
+				fieldQuery.add(field, sanitizedFreeText);
 				query.add(fieldQuery.joinWithAnd());
 			}
+
+			// si la recherche initial contient des * ou des quotes on ne fait pas de recherche par portion de mot
+			if (!isAdvancedQuery(sanitizedFreeText)) {
+				// on ajoute les termes avec une étoile au bout pour chercher les portions de mots
+				final String[] terms = sanitizedFreeText.split(" ");
+				for (final FieldSpec field : FREE_TEXT_FIELDS) {
+					FilterQuery fieldQuery = new FilterQuery();
+					for (final String term : terms) {
+						fieldQuery.addWithWildcard(field, term);
+					}
+					query.add(fieldQuery.joinWithAnd());
+				}
+			}
+
 			return query.joinWithOr();
+
 		}
 
 		// q est obligatoire dans la requete solr
@@ -123,6 +137,10 @@ public class SearchCriteriaMapper extends DatasetSearchCriteriaMapper {
 	@Nonnull
 	private String sanitize(@Nonnull final String freeText) {
 		return freeText.replaceAll(DELIMITER_FOR_CLASSIC_TOKENIZER_REGEX, " ").replaceAll(" +", " ").trim();
+	}
+
+	private boolean isAdvancedQuery(String query) {
+		return query.contains(FilterQuery.ANY_VALUE) || query.contains("\"") || query.contains("~");
 	}
 
 	@Nonnull

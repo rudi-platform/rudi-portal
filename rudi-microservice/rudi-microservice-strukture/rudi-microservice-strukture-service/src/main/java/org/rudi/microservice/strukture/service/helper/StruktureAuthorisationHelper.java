@@ -16,6 +16,7 @@ import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -86,6 +87,14 @@ public class StruktureAuthorisationHelper {
 		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODERATOR, Boolean.TRUE);
 	}
 
+	private static final Map<String, Boolean> INIT_ACCES = new HashMap<>();
+	static {
+		INIT_ACCES.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
+		INIT_ACCES.put(RoleCodes.MODERATOR, Boolean.TRUE);
+		INIT_ACCES.put(RoleCodes.PROVIDER, Boolean.TRUE);
+		INIT_ACCES.put(RoleCodes.USER, Boolean.TRUE);
+	}
+
 	public static final String NOT_USER = "NOT_USER";
 
 	/**
@@ -103,6 +112,7 @@ public class StruktureAuthorisationHelper {
 	 */
 	private static final List<String> TRANSVERSAL_ROLES = Arrays.asList(RoleCodes.ADMINISTRATOR, RoleCodes.ANONYMOUS,
 			RoleCodes.MODERATOR, NOT_USER);
+
 
 	public boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
 		if (user == null) { // NOSONAR il faut pouvoir traiter le cas où le user n'est pas positionné (pour les TU par exemple)
@@ -159,9 +169,19 @@ public class StruktureAuthorisationHelper {
 		}
 	}
 
+	private boolean isAuthenticatedUserOrganizationsInitiator(OrganizationEntity organizationEntity) throws AppServiceUnauthorizedException {
+		return organizationEntity.getInitiator() != null && organizationEntity.getInitiator().equals(aclHelper.getAuthenticatedUser().getLogin());
+	}
+
 	public boolean isAccessGrantedForUserOnOrganizationAsAdministrator(UUID organizationUuid)
 			throws AppServiceException {
 		return isAccessGrantedForUserOnOrganization(organizationUuid)
 				&& organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
+	}
+
+	public void checkRightsOnInitOrganization(OrganizationEntity assetDescriptionEntity) throws AppServiceUnauthorizedException {
+		if(!(isAccessGrantedByRole(INIT_ACCES)) && !isAuthenticatedUserOrganizationsInitiator(assetDescriptionEntity) && ! isAccessGrantedForUserOnOrganization(assetDescriptionEntity.getUuid())) {
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
+		}
 	}
 }

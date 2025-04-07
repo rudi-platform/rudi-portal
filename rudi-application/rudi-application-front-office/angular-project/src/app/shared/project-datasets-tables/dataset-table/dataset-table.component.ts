@@ -61,6 +61,10 @@ export class DatasetTableComponent {
     @Input()
     hasCommentButton: boolean;
 
+    @Input() defaultAlt: string;
+
+    @Input() defaultLogo: string;
+
     @Output()
     addActionEvent: EventEmitter<void>;
 

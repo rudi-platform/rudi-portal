@@ -1,5 +1,7 @@
 package org.rudi.facet.kmedia.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.util.UUID;
 
@@ -10,8 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.test.UUIDUtils;
 import org.rudi.facet.dataverse.api.dataset.DatasetOperationAPI;
@@ -22,9 +26,11 @@ import org.rudi.facet.kmedia.bean.MediaDataset;
 import org.rudi.facet.kmedia.bean.MediaOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import lombok.extern.slf4j.Slf4j;
 
 @KmediaSpringBootIT
+@TestMethodOrder(OrderAnnotation.class)
+@Slf4j
 class MediaServiceIT {
 
 	@Autowired
@@ -50,6 +56,7 @@ class MediaServiceIT {
 	@AfterEach
 	void tearDown() throws DataverseAPIException {
 		mediaService.deleteMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO);
+		log.info("tearDown");
 	}
 
 	@AfterAll
@@ -60,6 +67,7 @@ class MediaServiceIT {
 	}
 
 	@Test
+	@Order(4)
 	// RUDI-576 : La recherche de media doit être plus stricte et doit se faire sur le providerId complet
 	void rechercheProviderNonExistant() throws DataverseAPIException {
 		uploaderLogoParDefaut();
@@ -72,7 +80,9 @@ class MediaServiceIT {
 	}
 
 	@Test
+	@Order(1)
 	void uploadEtDownload() throws DataverseAPIException {
+		log.info("uploadEtDownload");
 		// ajout du logo au media créé
 		final File file = uploaderLogoParDefaut();
 
@@ -87,49 +97,10 @@ class MediaServiceIT {
 				.hasSameBinaryContentAs(file);
 	}
 
-	@Nullable
-	private DocumentContent telechargerLogo() throws DataverseAPIException {
-		return mediaService.getMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO);
-	}
-
-	@Nonnull
-	private File uploaderLogoParDefaut() throws DataverseAPIException {
-		final File file = getLogo("LogoIRISA-web.png");
-		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO, file);
-		return file;
-	}
-
-	@Nonnull
-	private File getLogo(final String name) {
-		return new File("src/test/resources/documentContent/" + name);
-	}
-
-	/**
-	 *  TODO : RUDI-5174 : Montée de version SpringBoot, réactiver ce bug
-	 * @throws DataverseAPIException
-	 */
 	@Test
-	@Disabled("Ne fonctionne plus suite à la montée de version de spring boot")
-	void remplacerFichierMemeContenu() throws DataverseAPIException {
-		// ajout du logo au media créé
-		final File file = uploaderLogoParDefaut();
-
-		// On essaie d'écraser le fichier par le même contenu
-		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO, file);
-
-		// téléchargement du logo pour vérifier son contenu
-		final DocumentContent documentContent = telechargerLogo();
-
-		assertThat(documentContent).isNotNull().as("Le document téléchargé a les propriétés attendues")
-				.hasFieldOrPropertyWithValue("contentType", "image/png").hasFieldOrPropertyWithValue("fileSize", 33505L)
-				.hasNoNullFieldsOrPropertiesExcept("url", "fileStream");
-		assertThat(documentContent.getFileName()).as("L'extension du fichier n'a pas changé").endsWith(".png");
-		assertThat(documentContent.getFile()).as("Le fichier téléchargé a le même contenu que celui téléversé")
-				.hasSameBinaryContentAs(file);
-	}
-
-	@Test
+	@Order(2)
 	void remplacerFichierContenuDifferent() throws DataverseAPIException {
+		log.info("remplacerFichierContenuDifferent");
 		// ajout du logo V1 au media créé
 		uploaderLogoParDefaut();
 
@@ -148,4 +119,49 @@ class MediaServiceIT {
 				.hasSameBinaryContentAs(logoV2);
 	}
 
+	/**
+	 * 
+	 * @throws DataverseAPIException
+	 */
+	@Test
+	@Order(6)
+	// @Disabled("Ne fonctionne plus suite à la montée de version de spring boot")
+	void remplacerFichierMemeContenu() throws DataverseAPIException {
+		log.info("remplacerFichierMemeContenu");
+		// ajout du logo au media créé
+		uploaderLogoParDefaut();
+		File file = getLogo("LogoIRISA-bleu.png");
+
+		// On essaie d'écraser le fichier par le même contenu
+		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO, file);
+
+		// téléchargement du logo pour vérifier son contenu
+		final DocumentContent documentContent = telechargerLogo();
+
+		assertThat(documentContent).isNotNull().as("Le document téléchargé a les propriétés attendues")
+				.hasFieldOrPropertyWithValue("contentType", "image/png")
+				.hasFieldOrPropertyWithValue("fileSize", file.length())
+				.hasNoNullFieldsOrPropertiesExcept("url", "fileStream");
+		assertThat(documentContent.getFileName()).as("L'extension du fichier n'a pas changé").endsWith(".png");
+		assertThat(documentContent.getFile()).as("Le fichier téléchargé a le même contenu que celui téléversé")
+				.hasSameBinaryContentAs(file);
+	}
+
+	@Nullable
+	private DocumentContent telechargerLogo() throws DataverseAPIException {
+		return mediaService.getMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO);
+	}
+
+	@Nonnull
+	private File uploaderLogoParDefaut() throws DataverseAPIException {
+		log.info("uploaderLogoParDefaut");
+		final File file = getLogo("LogoIRISA-web.png");
+		mediaService.setMediaFor(MediaOrigin.PROVIDER, providerId, KindOfData.LOGO, file);
+		return file;
+	}
+
+	@Nonnull
+	private File getLogo(final String name) {
+		return new File("src/test/resources/documentContent/" + name);
+	}
 }

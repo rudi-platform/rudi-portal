@@ -13,11 +13,13 @@ button, .button {
     padding-left: 20px;
     padding-right: 20px;
     color: var(--primary-text);
+    --mat-icon-color: var(--primary-text);
     border: solid 1px var(--4-contours-blocs-menus);
     background-color: var(--secondary-color);
 
     &.active {
         color: var(--secondary-color);
+        --mat-icon-color: var(--secondary-color);
         background-color: var(--0-classic-blue);
     }
 }
