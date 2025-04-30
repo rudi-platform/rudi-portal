@@ -4,21 +4,32 @@
 package org.rudi.microservice.apigateway.facade.config.security;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.net.ssl.SSLException;
 
 import org.rudi.common.core.webclient.HttpClientHelper;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.AnonymousWebFilter;
+import org.rudi.microservice.apigateway.facade.config.gateway.exception.GenericErrorWebExceptionHandler;
 import org.rudi.microservice.apigateway.facade.config.security.jwt.JwtWebFilter;
 import org.rudi.microservice.apigateway.facade.config.security.oauth2.OAuth2WebFilter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -50,6 +61,8 @@ import reactor.netty.http.client.HttpClient;
 @RequiredArgsConstructor
 @Slf4j
 public class WebSecurityConfig {
+
+	private static final List<String> SB_INCLUDE_URLS = List.of("\\/medias\\/.*", "\\/apigateway\\/datasets\\/.*");
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;
@@ -100,6 +113,8 @@ public class WebSecurityConfig {
 		http.httpBasic(Customizer.withDefaults()).formLogin(Customizer.withDefaults())
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.anonymous(anonymous -> anonymous
+						.authenticationFilter(new AnonymousWebFilter(jwtTokenUtil, null, SB_INCLUDE_URLS)))
 				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
 
 		if (!disableAuthentification) {
@@ -166,4 +181,17 @@ public class WebSecurityConfig {
 		return new OAuth2WebFilter(SecurityConstants.SB_PERMIT_ALL_URL, checkTokenUri, internalRestTemplate);
 	}
 
+	@Bean
+	@Order(-2)
+	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
+			WebProperties webProperties, ServerProperties serverProperties,
+			ObjectProvider<org.springframework.web.reactive.result.view.ViewResolver> viewResolvers,
+			ServerCodecConfigurer serverCodecConfigurer, ApplicationContext applicationContext) {
+		GenericErrorWebExceptionHandler exceptionHandler = new GenericErrorWebExceptionHandler(errorAttributes,
+				webProperties.getResources(), serverProperties.getError(), applicationContext);
+		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().toList());
+		exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
+		exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
+		return exceptionHandler;
+	}
 }

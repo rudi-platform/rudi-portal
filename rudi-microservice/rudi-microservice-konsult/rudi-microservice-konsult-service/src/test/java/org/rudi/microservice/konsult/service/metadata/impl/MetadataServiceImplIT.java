@@ -1,9 +1,5 @@
 package org.rudi.microservice.konsult.service.metadata.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +18,13 @@ import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.konsult.service.exception.DataverseExternalServiceException;
 import org.rudi.microservice.konsult.service.exception.MetadataNotFoundException;
+import org.rudi.microservice.konsult.service.helper.media.MediaUrlHelper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MetadataServiceImplIT {
@@ -29,6 +32,8 @@ class MetadataServiceImplIT {
 	private MetadataServiceImpl service;
 	@Mock
 	private DatasetService datasetService;
+	@Mock
+	private MediaUrlHelper mediaUrlHelper;
 
 	@Test
 	void getMetadataByIdRewrittenMediaUrlOk() throws AppServiceException, DataverseAPIException {
@@ -41,6 +46,8 @@ class MetadataServiceImplIT {
 				.availableFormats(Collections.singletonList(originalMedia));
 
 		when(datasetService.getDataset(originalMetadata.getGlobalId())).thenReturn(originalMetadata);
+		doCallRealMethod().when(mediaUrlHelper).rewriteMediaUrls(any());
+		doCallRealMethod().when(mediaUrlHelper).rewriteMediaUrl(any(), any());
 
 		final Metadata metadataById = service.getMetadataById(originalMetadata.getGlobalId());
 

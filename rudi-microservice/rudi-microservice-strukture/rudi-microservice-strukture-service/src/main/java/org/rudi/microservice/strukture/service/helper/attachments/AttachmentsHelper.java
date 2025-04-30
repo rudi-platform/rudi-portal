@@ -128,5 +128,9 @@ public class AttachmentsHelper {
 		}
 	}
 
+	public void checkIfAuthenticatedUserCanDeleteDocument(UUID documentUuid) throws AppServiceNotFoundException, AppServiceForbiddenException, AppServiceUnauthorizedException {
+		documentContentHelper.checkIfAuthenticatedUserCanDeleteDocument(documentUuid, attachmentsAuthorizationPolicy);
+	}
+
 
 }

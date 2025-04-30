@@ -368,7 +368,6 @@
 						"type": "string"
 					},
 					"status": {
-						"type": "object",
 						"$ref": "#/components/schemas/Status"
 					},
 					"functionalStatus": {

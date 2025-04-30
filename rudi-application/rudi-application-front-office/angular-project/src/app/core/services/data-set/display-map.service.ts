@@ -14,6 +14,7 @@ import {Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {KonsultRvaService} from '../rva/konsult/konsult-rva.service';
 import {readFile} from './display.function';
+import { boundingExtent } from 'ol/extent';
 
 /**
  * Projection utilisée par la vue OpenLayers par défaut
@@ -241,8 +242,7 @@ export class DisplayMapService {
         return this.konsultService.getProj4Information(projectionString).pipe(
             map((proj4Information: Proj4Information) => {
                 const proj4String = proj4Information.proj4;
-                const epsgDigits = proj4Information.code;
-                const epsgString = 'EPSG:' + epsgDigits;
+                const epsgString = proj4Information.code;
 
                 // ça c'est bbox, mais attention le format voulu par OL c'est [minlon, minlat, maxlon, maxlat]
                 const worldExtent = [
@@ -252,10 +252,18 @@ export class DisplayMapService {
                     proj4Information.bbox.north_latitude
                 ];
 
+                const mapCenterTopleft = [worldExtent[0], worldExtent[1]];
+                const mapCenterBottomRight = [worldExtent[2], worldExtent[3]];
+
                 proj4.defs(epsgString, proj4String);
                 register(proj4);
                 const customProjection = get(epsgString);
-                customProjection.setWorldExtent(worldExtent);
+
+                const topLeft = proj4(GPS_PROJECTION, epsgString, mapCenterTopleft);
+                const bottomRight = proj4(GPS_PROJECTION, epsgString, mapCenterBottomRight);
+                const worldExtent2 = boundingExtent([topLeft, bottomRight]);
+
+                customProjection.setWorldExtent(worldExtent2);
                 return customProjection;
             })
         );

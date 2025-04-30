@@ -1,0 +1,90 @@
+{
+	"@vocab": "http://www.w3.org/ns/dcat#",
+	"accessURL": {
+		"@id": "dcat:accessURL",
+		"@type": "@id"
+	},
+	"accrualPeriodicity": "dct:accrualPeriodicity",
+	"algorithm": {
+		"@id": "spdx:algorithm",
+		"@type": "@id"
+	},
+	"checksum": "spdx:checksum",
+	"checksumValue": "spdx:checksumValue",
+	"dataset": {
+		"@id": "dcat:dataset",
+		"@type": "@id"
+	},
+	"dcat": "http://www.w3.org/ns/dcat#",
+	"dct": "http://purl.org/dc/terms/",
+	"description": "dct:description",
+	"distribution": {
+		"@id": "dcat:distribution",
+		"@type": "@id"
+	},
+	"downloadURL": {
+		"@id": "dcat:downloadURL",
+		"@type": "@id"
+	},
+	"endDate": "schema:endDate",
+	"first": {
+		"@id": "hydra:first",
+		"@type": "@id"
+	},
+	"fn": "vcard:fn",
+	"foaf": "http://xmlns.com/foaf/0.1/",
+	"format": "dct:format",
+	"freq": "http://purl.org/cld/freq/",
+	"hasEmail": "vcard:email",
+	"homepage": {
+		"@id": "foaf:homepage",
+		"@type": "@id"
+	},
+	"hydra": "http://www.w3.org/ns/hydra/core#",
+	"identifier": "dct:identifier",
+	"issued": {
+		"@id": "dct:issued",
+		"@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+	},
+	"label": "rdfs:label",
+	"language": "dct:language",
+	"last": {
+		"@id": "hydra:last",
+		"@type": "@id"
+	},
+	"license": "dct:license",
+	"modified": {
+		"@id": "dct:modified",
+		"@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+	},
+	"name": "foaf:name",
+	"next": {
+		"@id": "hydra:next",
+		"@type": "@id"
+	},
+	"org": "http://www.w3.org/ns/org#",
+	"previous": {
+		"@id": "hydra:previous",
+		"@type": "@id"
+	},
+	"publisher": {
+		"@id": "dct:publisher",
+		"@type": "@id"
+	},
+	"rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+	"rights": "dct:rights",
+	"schema": "http://schema.org/",
+	"skos": "http://www.w3.org/2004/02/skos/core#",
+	"spatial": "dct:spatial",
+	"spdx": "http://spdx.org/rdf/terms#",
+	"startDate": "schema:startDate",
+	"subOrganizationOf": "org:subOrganizationOf",
+	"temporal": "dct:temporal",
+	"title": "dct:title",
+	"totalItems": "hydra:totalItems",
+	"vcard": "http://www.w3.org/2006/vcard/ns#",
+	"view": {
+		"@id": "hydra:view",
+		"@type": "@id"
+	}
+}

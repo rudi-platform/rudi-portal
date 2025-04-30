@@ -11,14 +11,16 @@ import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
-import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataFacets;
 import org.rudi.facet.kaccess.bean.MetadataList;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.microservice.konsult.core.harvest.DcatJsonLdContext;
 import org.rudi.microservice.konsult.service.exception.DataverseExternalServiceException;
 import org.rudi.microservice.konsult.service.exception.MetadataNotFoundException;
+import org.rudi.microservice.konsult.service.helper.media.MediaUrlHelper;
+import org.rudi.microservice.konsult.service.mapper.jsonld.DcatJsonLdMapper;
 import org.rudi.microservice.konsult.service.metadata.MetadataService;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +32,11 @@ public class MetadataServiceImpl implements MetadataService {
 
 	private static final Integer DEFAULT_START = 0;
 	private static final Integer DEFAULT_RESULTS_NUMBER = 100;
+
 	private final DatasetService datasetService;
 	private final MetadataWithSameThemeFinder metadataWithSameThemeFinder;
+	private final DcatJsonLdMapper dcatJsonLdMapper;
+	private final MediaUrlHelper mediaUrlHelper;
 
 	@Override
 	public MetadataList searchMetadatas(DatasetSearchCriteria datasetSearchCriteria) throws DataverseAPIException {
@@ -54,7 +59,7 @@ public class MetadataServiceImpl implements MetadataService {
 		}
 		try {
 			final Metadata metadata = datasetService.getDataset(globalId);
-			rewriteMediaUrls(metadata);
+			mediaUrlHelper.rewriteMediaUrls(metadata);
 			return metadata;
 		} catch (DatasetNotFoundException e) {
 			throw new MetadataNotFoundException(e);
@@ -84,6 +89,26 @@ public class MetadataServiceImpl implements MetadataService {
 
 	}
 
+	/**
+	 * Moissonage des métadonnées
+	 *
+	 * @param datasetSearchCriteria critères de recherches
+	 * @return une string au format jsonld
+	 */
+	@Override
+	public String generateDcatJsonLd(DatasetSearchCriteria datasetSearchCriteria) throws DataverseAPIException, AppServiceException {
+		MetadataList metadataList = searchMetadataWithFacets(datasetSearchCriteria, Collections.emptyList()).getMetadataList();
+
+		long total = metadataList != null ? metadataList.getTotal() : 0L;
+
+		DcatJsonLdContext context = DcatJsonLdContext.builder()
+				.datasetSearchCriteria(datasetSearchCriteria)
+				.totalDatasets(Long.valueOf(total))
+				.build();
+
+		return dcatJsonLdMapper.toJsonLd(metadataList, context).toString();
+	}
+
 	private MetadataListFacets searchMetadataWithFacets(DatasetSearchCriteria datasetSearchCriteria,
 			List<String> facets) throws DataverseAPIException {
 		if (datasetSearchCriteria.getOffset() == null) {
@@ -95,21 +120,5 @@ public class MetadataServiceImpl implements MetadataService {
 		return datasetService.searchDatasets(datasetSearchCriteria, facets);
 	}
 
-	private void rewriteMediaUrls(Metadata metadata) {
-		for (final Media media : metadata.getAvailableFormats()) {
-			this.rewriteMediaUrl(metadata, media);
-		}
-	}
 
-	/**
-	 * On crée l'url tel qu'attendu à partir des metadata et du media :
-	 *
-	 * /media/{globalId}/{mediaId}/{contact} ou /media/4ff87569-dafc-45ad-ae5b-fac9a5ccbbb1/5d3ef922-bc72-4a89-84ef-21138b512f78/dwnl
-	 *
-	 */
-	private void rewriteMediaUrl(Metadata metadata, Media media) {
-		String url = String.format("/medias/%s/%s/%s", metadata.getGlobalId().toString(), media.getMediaId().toString(),
-				media.getConnector().getInterfaceContract());
-		media.getConnector().setUrl(url);
-	}
 }

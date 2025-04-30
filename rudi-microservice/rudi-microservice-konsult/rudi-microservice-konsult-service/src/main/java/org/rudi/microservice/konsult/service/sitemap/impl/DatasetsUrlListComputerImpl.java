@@ -1,7 +1,5 @@
 package org.rudi.microservice.konsult.service.sitemap.impl;
 
-import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Component;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class DatasetsUrlListComputerImpl extends AbstractUrlListComputer {
 	private String urlServer;
 
 	@Getter(AccessLevel.PUBLIC)
-	@Value("/catalogue/detail/")
+	@Value("${front.urlCatalog:/catalogue/detail/}")
 	private String catalogueUrlPrefixe;
 
 	@Override

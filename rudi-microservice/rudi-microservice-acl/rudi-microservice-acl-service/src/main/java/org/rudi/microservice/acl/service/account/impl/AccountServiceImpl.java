@@ -127,9 +127,15 @@ public class AccountServiceImpl implements AccountService {
 		// On cherche maintenant dans la BDD si le login existe déjà
 		UserSearchCriteria criteria = new UserSearchCriteria();
 		criteria.setLogin(account.getLogin());
-		User duplicate = userService.getUserByLogin(account.getLogin(), false);
-		if (duplicate != null) {
+		User duplicateUser = userService.getUserByLogin(account.getLogin(), false);
+		if (duplicateUser != null) {
 			throw new LoginAlreadyExistsException(account.getLogin());
+		}
+
+		AccountRegistrationEntity duplicatedAccountRegistration = accountRegistrationDao.findByLogin(account.getLogin());
+		if(duplicatedAccountRegistration != null) {
+			// Si la demande a déjà été faite précédemment, on la supprime pour éviter les doublons en base
+			accountRegistrationDao.delete(duplicatedAccountRegistration);
 		}
 	}
 

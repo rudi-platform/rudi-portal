@@ -1,7 +1,5 @@
 package org.rudi.facet.doks.helper;
 
-import javax.annotation.Nonnull;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +7,9 @@ import java.security.GeneralSecurityException;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.function.BiPredicate;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.io.IOUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -111,6 +112,10 @@ public class DocumentContentHelper {
 	 */
 	private void checkIfAuthenticatedUserCanDownloadDocument(DocumentEntity document, AuthorizationPolicy authorizationPolicy) throws AppServiceUnauthorizedException, AppServiceForbiddenException {
 		checkIfAuthenticatedUser(authorizationPolicy::isAllowedToDownloadDocument, document, "download document");
+	}
+
+	public void checkIfAuthenticatedUserCanDeleteDocument(UUID documentUuid, AuthorizationPolicy authorizationPolicy) throws AppServiceForbiddenException, AppServiceUnauthorizedException, AppServiceNotFoundException {
+		checkIfAuthenticatedUser(authorizationPolicy::isAllowedToDeleteDocument, getDocumentEntity(documentUuid), "delete document");
 	}
 
 	/**

@@ -22,6 +22,7 @@
         },
         "changeOrigin": true
     },
+
     "/konsult/v1": {
         "target": "https://localhost:8082/konsult/v1",
         "secure": false,

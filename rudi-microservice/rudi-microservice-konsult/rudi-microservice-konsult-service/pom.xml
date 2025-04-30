@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-konsult</artifactId>
-		<version>3.2.1</version>
+		<version>3.2.2</version>
 	</parent>
 
 	<artifactId>rudi-microservice-konsult-service</artifactId>
@@ -50,7 +50,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-rva</artifactId>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>

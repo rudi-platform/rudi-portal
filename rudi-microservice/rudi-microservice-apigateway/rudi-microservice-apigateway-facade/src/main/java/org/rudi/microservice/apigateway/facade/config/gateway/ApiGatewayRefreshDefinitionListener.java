@@ -5,7 +5,6 @@ package org.rudi.microservice.apigateway.facade.config.gateway;
 
 import java.util.UUID;
 
-import jakarta.annotation.PostConstruct;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.microservice.apigateway.service.api.ApiEvent;
 import org.rudi.microservice.apigateway.service.api.ApiEventMode;
@@ -13,6 +12,8 @@ import org.springframework.cloud.gateway.route.RouteDefinitionRepository;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * @author FNI18300
@@ -25,8 +26,7 @@ public class ApiGatewayRefreshDefinitionListener implements ApplicationListener<
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApiEvent) {
-			ApiEvent e = (ApiEvent) event;
+		if (event instanceof ApiEvent e) {
 			if (e.getMode() == ApiEventMode.CREATE || e.getMode() == ApiEventMode.UPDATE) {
 				apiPathRouteDefinitionLocator.publish((UUID) e.getSource());
 			} else {

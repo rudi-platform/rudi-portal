@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.gateway.facade.config;
+package org.rudi.microservice.gateway.facade.config.oauth2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
+import org.rudi.microservice.gateway.facade.config.AbstractAuthenticationWebFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;

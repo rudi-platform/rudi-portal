@@ -2,6 +2,7 @@ package org.rudi.microservice.konsult.facade.config.security;
 
 import java.util.Arrays;
 
+import jakarta.servlet.Filter;
 import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
@@ -24,7 +25,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +44,10 @@ public class WebSecurityConfig {
 			"/konsult/v1/sitemap/{resource}", "/konsult/v1/robots/{resource}",
 			// swagger ui / openapi
 			"/konsult/v3/api-docs/**", "/konsult/swagger-ui/**", "/konsult/swagger-ui.html",
-			"/konsult/swagger-resources/**", "/configuration/ui", "/configuration/security", "/webjars/**" };
+			"/konsult/swagger-resources/**", "/configuration/ui", "/configuration/security", "/webjars/**",
+			//Url pour le harvester
+			"/konsult/v1/datasets/metadatas/dcat"
+	};
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import jakarta.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.rudi.common.core.DocumentContent;
@@ -465,10 +466,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 		if (organizationsUuid != null) {
 			// Add userUuid to this list before to searchProjects
-			organizationsUuid.add(userUuid);
+			searchCriteria.setOwnerUuids(ListUtils.union(ListUtils.emptyIfNull(organizationsUuid), List.of(userUuid)));
+		} else {
+			searchCriteria.setOwnerUuids(organizationsUuid);
 		}
-
-		searchCriteria.setOwnerUuids(organizationsUuid);
 
 		return projectMapper.entitiesToDto(projectCustomDao.searchProjects(searchCriteria, pageable), pageable);
 	}

@@ -1,0 +1,266 @@
+{
+    "@context": {
+        "@vocab": "http://www.w3.org/ns/dcat#",
+        "accessURL": {
+            "@id": "dcat:accessURL",
+            "@type": "@id"
+        },
+        "accrualPeriodicity": "dct:accrualPeriodicity",
+        "algorithm": {
+            "@id": "spdx:algorithm",
+            "@type": "@id"
+        },
+        "checksum": "spdx:checksum",
+        "checksumValue": "spdx:checksumValue",
+        "dataset": {
+            "@id": "dcat:dataset",
+            "@type": "@id"
+        },
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dct": "http://purl.org/dc/terms/",
+        "description": "dct:description",
+        "distribution": {
+            "@id": "dcat:distribution",
+            "@type": "@id"
+        },
+        "downloadURL": {
+            "@id": "dcat:downloadURL",
+            "@type": "@id"
+        },
+        "endDate": "schema:endDate",
+        "first": {
+            "@id": "hydra:first",
+            "@type": "@id"
+        },
+        "fn": "vcard:fn",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "format": "dct:format",
+        "freq": "http://purl.org/cld/freq/",
+        "hasEmail": "vcard:email",
+        "homepage": {
+            "@id": "foaf:homepage",
+            "@type": "@id"
+        },
+        "hydra": "http://www.w3.org/ns/hydra/core#",
+        "identifier": "dct:identifier",
+        "issued": {
+            "@id": "dct:issued",
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "label": "rdfs:label",
+        "language": "dct:language",
+        "last": {
+            "@id": "hydra:last",
+            "@type": "@id"
+        },
+        "license": "dct:license",
+        "modified": {
+            "@id": "dct:modified",
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "name": "foaf:name",
+        "next": {
+            "@id": "hydra:next",
+            "@type": "@id"
+        },
+        "org": "http://www.w3.org/ns/org#",
+        "previous": {
+            "@id": "hydra:previous",
+            "@type": "@id"
+        },
+        "publisher": {
+            "@id": "dct:publisher",
+            "@type": "@id"
+        },
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "rights": "dct:rights",
+        "schema": "http://schema.org/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "spatial": "dct:spatial",
+        "spdx": "http://spdx.org/rdf/terms#",
+        "startDate": "schema:startDate",
+        "subOrganizationOf": "org:subOrganizationOf",
+        "temporal": "dct:temporal",
+        "title": "dct:title",
+        "totalItems": "hydra:totalItems",
+        "vcard": "http://www.w3.org/2006/vcard/ns#",
+        "view": {
+            "@id": "hydra:view",
+            "@type": "@id"
+        }
+    },
+    "@graph": [
+        {
+            "@id": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=2&page_size=1",
+            "@type": "hydra:PartialCollectionView",
+            "first": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=1&page_size=1",
+            "last": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=61658&page_size=1",
+            "next": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=3&page_size=1",
+            "previous": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=1&page_size=1"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-abd8aeef-55c9-4ec0-b931-56cdb973063b",
+            "@type": "Distribution",
+            "accessService": {
+                "@id": "_:N13ab0cc50f134aa2a609490a6f102cbc"
+            },
+            "accessURL": "https://www.data.gouv.fr/fr/datasets/r/abd8aeef-55c9-4ec0-b931-56cdb973063b",
+            "description": "",
+            "downloadURL": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs?map=/opt/data/stack/mapfiles/1.4/org_38174/623742b1-e2a5-4f3d-9e78-02e471e6c989.internet.map&SERVICE=WMS&REQUEST=GetCapabilities",
+            "format": "n3c9ac772d39a4ab19a61923e8bb21256",
+            "identifier": "abd8aeef-55c9-4ec0-b931-56cdb973063b",
+            "issued": "2025-03-19T04:59:53.435000",
+            "license": {
+                "@id": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+            },
+            "modified": "2025-03-19T04:59:53.435000",
+            "rights": "Licence Ouverte / Open Licence version 2.0",
+            "title": "URL du GetCapabilities du service wms sur internet"
+        },
+        {
+            "@id": "_:N13ab0cc50f134aa2a609490a6f102cbc",
+            "@type": "DataService",
+            "contactPoint": {
+                "@id": "https://www.data.gouv.fr/api/1/contacts/673788422681d108c1c25365/"
+            },
+            "dct:conformsTo": {
+                "@id": "http://www.opengeospatial.org/standards/wms"
+            },
+            "endpointDescription": {
+                "@id": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs?map=/opt/data/stack/mapfiles/1.4/org_38174/623742b1-e2a5-4f3d-9e78-02e471e6c989.internet.map&SERVICE=WMS&REQUEST=GetCapabilities"
+            },
+            "endpointURL": {
+                "@id": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs"
+            },
+            "license": {
+                "@id": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+            },
+            "rights": "Licence Ouverte / Open Licence version 2.0",
+            "title": "URL du GetCapabilities du service wms sur internet"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/organizations/5891ab1688ee384eb89b81a4/",
+            "@type": "foaf:Organization",
+            "homepage": "http://www.paca.developpement-durable.gouv.fr/",
+            "label": "DREAL Provence-Alpes-Côte d'Azur",
+            "name": "DREAL Provence-Alpes-Côte d'Azur"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-e25d77ec-2cb5-49c9-98a9-e19ad52c19f4",
+            "@type": "Distribution",
+            "accessURL": "https://www.data.gouv.fr/fr/datasets/r/e25d77ec-2cb5-49c9-98a9-e19ad52c19f4",
+            "description": "",
+            "downloadURL": "https://atom.geo-ide.developpement-durable.gouv.fr/atomArchive/GetResource?id=623742b1-e2a5-4f3d-9e78-02e471e6c989&dataType=dataset",
+            "format": "n3d8239bdd20349259f2b3aac7b0f699c",
+            "identifier": "e25d77ec-2cb5-49c9-98a9-e19ad52c19f4",
+            "issued": "2025-03-19T04:59:53.435000",
+            "license": {
+                "@id": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+            },
+            "modified": "2025-03-19T04:59:53.435000",
+            "rights": "Licence Ouverte / Open Licence version 2.0",
+            "title": "Téléchargement simple (Atom) du jeu et des documents associés via internet"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-7c69acc1-1e8e-4228-b70a-a0d41c8db90e",
+            "@type": "Distribution",
+            "accessService": {
+                "@id": "_:N51d289e62d8443098f32035d54a61166"
+            },
+            "accessURL": "https://www.data.gouv.fr/fr/datasets/r/7c69acc1-1e8e-4228-b70a-a0d41c8db90e",
+            "description": "",
+            "downloadURL": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs?map=/opt/data/stack/mapfiles/1.4/org_38174/623742b1-e2a5-4f3d-9e78-02e471e6c989.internet.map&SERVICE=WFS&REQUEST=GetCapabilities",
+            "format": "n0979ca68d3a645ce9a340b69852074aa",
+            "identifier": "7c69acc1-1e8e-4228-b70a-a0d41c8db90e",
+            "issued": "2025-03-19T04:59:53.436000",
+            "license": {
+                "@id": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+            },
+            "modified": "2025-03-19T04:59:53.436000",
+            "rights": "Licence Ouverte / Open Licence version 2.0",
+            "title": "URL du GetCapabilities du service wfs sur internet"
+        },
+        {
+            "@id": "_:N51d289e62d8443098f32035d54a61166",
+            "@type": "DataService",
+            "contactPoint": {
+                "@id": "https://www.data.gouv.fr/api/1/contacts/673788422681d108c1c25365/"
+            },
+            "dct:conformsTo": {
+                "@id": "http://www.opengeospatial.org/standards/wfs"
+            },
+            "endpointDescription": {
+                "@id": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs?map=/opt/data/stack/mapfiles/1.4/org_38174/623742b1-e2a5-4f3d-9e78-02e471e6c989.internet.map&SERVICE=WFS&REQUEST=GetCapabilities"
+            },
+            "endpointURL": {
+                "@id": "https://ogc.geo-ide.developpement-durable.gouv.fr/wxs"
+            },
+            "license": {
+                "@id": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+            },
+            "rights": "Licence Ouverte / Open Licence version 2.0",
+            "title": "URL du GetCapabilities du service wfs sur internet"
+        },
+        {
+            "@id": "http://descartes-dev.cete-mediterranee.i2/623742b1-e2a5-4f3d-9e78-02e471e6c989",
+            "@type": "Dataset",
+            "contactPoint": {
+                "@id": "https://www.data.gouv.fr/api/1/contacts/673788422681d108c1c25365/"
+            },
+            "description": "Cours d’eau et espaces de mobilité associés retenus comme éléments de trame verte et bleue régionale et cartographiés comme des linéaires dans le Schéma Régional de Cohérence Écologique (SRCE).",
+            "distribution": [
+                "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-e25d77ec-2cb5-49c9-98a9-e19ad52c19f4",
+                "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-abd8aeef-55c9-4ec0-b931-56cdb973063b",
+                "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/#resource-7c69acc1-1e8e-4228-b70a-a0d41c8db90e"
+            ],
+            "http://www.w3.org/ns/adms#identifier": {
+                "@id": "_:N8c5737e236f241a6873e1350f859e810"
+            },
+            "identifier": "http://descartes-dev.cete-mediterranee.i2/623742b1-e2a5-4f3d-9e78-02e471e6c989",
+            "issued": "2017-11-08T00:00:00",
+            "keyword": [
+                "amenagement-urbanisme-zonages-amenagement",
+                "donnees-ouvertes",
+                "nature-paysage-biodiversite-zonages-nature",
+                "schema-regional-de-coherence-ecologique",
+                "srce",
+                "usage-des-sols"
+            ],
+            "landingPage": {
+                "@id": "http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/fr-120066022-jdd-3a7386cd-7318-42a9-ac41-f094632e1257"
+            },
+            "modified": "2016-01-08T00:00:00",
+            "publisher": "https://www.data.gouv.fr/organizations/5891ab1688ee384eb89b81a4/",
+            "title": "Schéma Régional de Cohérence Écologique (SRCE) - Cours d'eau - en Provence-Alpes-Côte d'Azur"
+        },
+        {
+            "@id": "_:N8c5737e236f241a6873e1350f859e810",
+            "@type": "http://www.w3.org/ns/adms#Identifier",
+            "dct:creator": "data.gouv.fr",
+            "skos:notation": "https://www.data.gouv.fr/datasets/67da4f49e619b91cb4d6061f/"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/api/1/site/catalog",
+            "@type": [
+                "Catalog",
+                "hydra:Collection"
+            ],
+            "dataset": "http://descartes-dev.cete-mediterranee.i2/623742b1-e2a5-4f3d-9e78-02e471e6c989",
+            "description": "data.gouv.fr",
+            "homepage": "https://www.data.gouv.fr/",
+            "language": "fr",
+            "publisher": "_:N468858b71b254ff689b24ff33175b4b8",
+            "title": "data.gouv.fr",
+            "totalItems": 61658,
+            "view": "https://www.data.gouv.fr/api/1/site/catalog.jsonld?page=2&page_size=1"
+        },
+        {
+            "@id": "https://www.data.gouv.fr/api/1/contacts/673788422681d108c1c25365/",
+            "@type": "vcard:Kind",
+            "fn": "DREAL Provence-Alpes-Côte d'Azur",
+            "vcard:hasEmail": {
+                "@id": "mailto:geomatique-paca@developpement-durable.gouv.fr"
+            }
+        }
+    ]
+}

@@ -4,8 +4,12 @@
 package org.rudi.microservice.gateway.facade.config;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.AnonymousWebFilter;
+import org.rudi.microservice.gateway.facade.config.jwt.JwtWebFilter;
+import org.rudi.microservice.gateway.facade.config.oauth2.OAuth2WebFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -38,7 +42,12 @@ public class WebSecurityConfig {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
 			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token", "/oauth2/**", "/acl/v1/kaptcha",
 			"/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
-			"/konsult/v1/robots/{resource}" };
+			"/konsult/v1/robots/{resource}",
+			// Url pour le harvester
+			"/konsult/v1/datasets/metadatas/dcat" };
+
+	private static final List<String> SB_INCLUDE_URLS = List.of("\\/medias\\/.*", "\\/apigateway\\/datasets\\/.*",
+			"\\/konsult\\/v1\\/datasets\\/.*");
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;
@@ -48,6 +57,9 @@ public class WebSecurityConfig {
 
 	@Value("${rudi.gateway.security.authentication.disabled:false}")
 	private boolean disableAuthentification = false;
+
+	@Value("${rudi.gateway.security.anonymous.disabled:false}")
+	private boolean disableAnonymous = false;
 
 	private final AbstractJwtTokenUtil jwtTokenUtil;
 
@@ -70,6 +82,11 @@ public class WebSecurityConfig {
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
+
+		if (!disableAnonymous) {
+			http.anonymous(anonymous -> anonymous
+					.authenticationFilter(new AnonymousWebFilter(jwtTokenUtil, null, SB_INCLUDE_URLS)));
+		}
 
 		if (!disableAuthentification) {
 			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)

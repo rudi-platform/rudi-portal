@@ -1,5 +1,11 @@
 package org.rudi.facet.acl.helper;
 
+import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_STORE_UUID_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_UUID_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_LOGIN_AND_DENOMINATION_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_TYPE_PARAMETER;
+import static org.rudi.facet.acl.helper.ACLConstants.USER_UUIDS_PARAMETER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,9 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,16 +44,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_STORE_UUID_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.PROJECT_KEY_UUID_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_LOGIN_AND_DENOMINATION_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_TYPE_PARAMETER;
-import static org.rudi.facet.acl.helper.ACLConstants.USER_UUIDS_PARAMETER;
+import reactor.core.publisher.Mono;
 
 /**
  * L'utilisation de ce helper requiert l'ajout de 2 propriétés dans le fichier de configuration associé
@@ -507,8 +508,10 @@ public class ACLHelper {
 	 */
 	public Page<ProjectKeystore> searchProjectKeystores(ProjectKeystoreSearchCriteria searchCriteria, Pageable page) {
 		ProjectKeystorePageResult projectKeystorePageResult = searchMonoProjectKeystores(searchCriteria, page).block();
-		return new PageImpl<>(projectKeystorePageResult != null ? projectKeystorePageResult.getElements() : List.of(),
-				page, projectKeystorePageResult != null ? projectKeystorePageResult.getTotal() : 0);
+		List<ProjectKeystore> p = (projectKeystorePageResult != null) ? projectKeystorePageResult.getElements()
+				: List.of();
+		long total = (projectKeystorePageResult != null) ? projectKeystorePageResult.getTotal() : 0;
+		return new PageImpl<>(p, page, total);
 	}
 
 	/**

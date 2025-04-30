@@ -1,4 +1,4 @@
-package org.rudi.microservice.gateway.facade.config;
+package org.rudi.microservice.gateway.facade.config.jwt;
 
 import java.io.Serializable;
 import java.util.Date;

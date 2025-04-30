@@ -11,7 +11,9 @@ import java.util.function.Function;
 import org.rudi.common.core.util.SecretKeyUtils;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
@@ -65,7 +67,8 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	private final transient Map<String, Tokens> refreshTokens = new HashMap<>();
 
 	@Getter(value = AccessLevel.PROTECTED)
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = new ObjectMapper().configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true)
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	/**
 	 * récupération une propriété d'un token

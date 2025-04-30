@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.rudi.microservice.gateway.facade.config;
+package org.rudi.microservice.gateway.facade.config.filter;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;

@@ -1,5 +1,6 @@
 package org.rudi.microservice.gateway.facade.config;
 
+import org.rudi.microservice.gateway.facade.config.filter.CustomGlobalFilter;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

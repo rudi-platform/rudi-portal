@@ -213,6 +213,66 @@
 				}
 			}
 		},
+		"/datasets/metadatas/dcat": {
+			"get": {
+				"tags": [
+					"konsult"
+				],
+				"summary": "Recherche retournant les jeux de données au format JSON-LD sous le standard DCAT-AP",
+				"description": "Retourne un JSONLD paginé des jeux de données",
+				"operationId": "generateDcatJsonLd",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/FreeTextParam"
+					},
+					{
+						"$ref": "#/components/parameters/ThemesParam"
+					},
+					{
+						"$ref": "#/components/parameters/KeywordsParam"
+					},
+					{
+						"$ref": "#/components/parameters/ProducerNamesParam"
+					},
+					{
+						"$ref": "#/components/parameters/ProducerUuidsParam"
+					},
+					{
+						"$ref": "#/components/parameters/DateDebutParam"
+					},
+					{
+						"$ref": "#/components/parameters/DateFinParam"
+					},
+					{
+						"$ref": "#/components/parameters/RestrictedAccessParam"
+					},
+					{
+						"$ref": "#/components/parameters/GdprSensitiveParam"
+					},
+					{
+						"$ref": "#/components/parameters/PageSizeParam"
+					},
+					{
+						"$ref": "#/components/parameters/PageParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/ld+json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
 		"/datasets/metadatas/facets": {
 			"get": {
 				"tags": [
@@ -1067,6 +1127,22 @@
 				"required": false,
 				"schema": {
 					"type": "string"
+				}
+			},
+			"PageSizeParam": {
+				"in": "query",
+				"name": "pageSize",
+				"description": "Nombre d'éléments par page",
+				"schema": {
+					"type": "integer"
+				}
+			},
+			"PageParam": {
+				"in": "query",
+				"name": "page",
+				"description": "Page souhaitée. Commence à 1",
+				"schema": {
+					"type": "integer"
 				}
 			}
 		},

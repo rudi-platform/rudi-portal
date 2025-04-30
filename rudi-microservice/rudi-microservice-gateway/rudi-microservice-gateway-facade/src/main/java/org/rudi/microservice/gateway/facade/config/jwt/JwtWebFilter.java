@@ -1,11 +1,12 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.gateway.facade.config;
+package org.rudi.microservice.gateway.facade.config.jwt;
 
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
 import org.rudi.common.facade.config.filter.JwtTokenData;
+import org.rudi.microservice.gateway.facade.config.AbstractAuthenticationWebFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -52,4 +52,13 @@ public interface MetadataService {
 	 * @return nombre de dataset sur le même thème
 	 */
 	Integer getNumberOfDatasetsOnTheSameTheme(UUID globalId) throws AppServiceException;
+
+
+	/**
+	 * Moissonage des métadonnées
+	 *
+	 * @param datasetSearchCriteria critères de recherches
+	 * @return une string au format jsonld
+	 */
+	String generateDcatJsonLd(DatasetSearchCriteria datasetSearchCriteria) throws DataverseAPIException, AppServiceException;
 }
