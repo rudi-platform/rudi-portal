@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-gateway</artifactId>
-		<version>3.1.5</version>
+		<version>3.1.6</version>
 	</parent>
 
 	<artifactId>rudi-microservice-gateway-facade</artifactId>

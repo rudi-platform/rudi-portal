@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-konsult</artifactId>
-		<version>3.1.5</version>
+		<version>3.1.6</version>
 	</parent>
 
 	<artifactId>rudi-microservice-konsult-core</artifactId>
@@ -75,6 +75,16 @@
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.locationtech.proj4j</groupId>
+			<artifactId>proj4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.locationtech.proj4j</groupId>
+			<artifactId>proj4j-epsg</artifactId>
 		</dependency>
 
 	</dependencies>

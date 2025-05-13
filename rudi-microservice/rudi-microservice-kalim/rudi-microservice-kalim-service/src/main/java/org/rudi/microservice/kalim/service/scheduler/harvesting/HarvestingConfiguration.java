@@ -1,5 +1,7 @@
 package org.rudi.microservice.kalim.service.scheduler.harvesting;
 
+import java.util.concurrent.Executors;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +49,7 @@ class HarvestingConfiguration {
 
 	@Bean
 	public TaskScheduler taskScheduler() {
-		return new ConcurrentTaskScheduler(null);
+		return new ConcurrentTaskScheduler(Executors.newSingleThreadScheduledExecutor());
 	}
 
 }

@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.bean.OrganizationMember;
 import org.rudi.facet.organization.bean.OrganizationRole;
+import org.rudi.facet.organization.bean.OrganizationStatus;
 import org.rudi.facet.organization.bean.PagedOrganizationList;
 import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
@@ -62,7 +63,7 @@ public class OrganizationHelper {
 		}
 		return members.stream().anyMatch(member ->
 				member.getUserUuid().equals(userUuid)
-				&& member.getRole().equals(OrganizationRole.ADMINISTRATOR)
+						&& member.getRole().equals(OrganizationRole.ADMINISTRATOR)
 		);
 	}
 
@@ -125,9 +126,14 @@ public class OrganizationHelper {
 	}
 
 	@Nonnull
-	public PagedOrganizationList searchOrganizations(Integer offset, Integer limit, String order) throws GetOrganizationException {
+	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid,OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
+						.queryParamIfPresent("uuid", Optional.ofNullable(uuid))
+						.queryParamIfPresent("name", Optional.ofNullable(name))
+						.queryParamIfPresent("active", Optional.ofNullable(active))
+						.queryParamIfPresent("user_uuid", Optional.ofNullable(userUuid))
+						.queryParamIfPresent("organization_status", Optional.ofNullable(organizationStatus))
 						.queryParam("offset", offset)
 						.queryParam("limit", limit)
 						.queryParam("order", order)
@@ -146,7 +152,7 @@ public class OrganizationHelper {
 		int offset = 0;
 		long total;
 		do {
-			PagedOrganizationList organizationsPage = searchOrganizations(offset, 10, "name");
+			PagedOrganizationList organizationsPage = searchOrganizations(null, null, null, null, null, offset, 10, "name");
 			total = organizationsPage.getTotal();
 			if (CollectionUtils.isNotEmpty(organizationsPage.getElements())) {
 				organizations.addAll(organizationsPage.getElements());

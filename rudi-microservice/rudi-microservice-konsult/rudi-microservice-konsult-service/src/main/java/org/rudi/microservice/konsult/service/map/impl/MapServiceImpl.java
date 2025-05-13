@@ -1,31 +1,32 @@
 package org.rudi.microservice.konsult.service.map.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.geotools.referencing.ReferencingFactoryFinder;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.proj.Projection;
+import org.opengis.metadata.extent.Extent;
+import org.opengis.metadata.extent.GeographicBoundingBox;
+import org.opengis.metadata.extent.GeographicExtent;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.BusinessException;
-import org.rudi.common.service.exception.ExternalServiceException;
-import org.rudi.common.service.util.MonoUtils;
 import org.rudi.facet.rva.AddressService;
 import org.rudi.microservice.konsult.core.bean.Bbox;
-import org.rudi.microservice.konsult.core.bean.EpsgIoProjection;
-import org.rudi.microservice.konsult.core.bean.EpsgIoResponse;
 import org.rudi.microservice.konsult.core.bean.LayerInformation;
 import org.rudi.microservice.konsult.core.bean.Proj4Information;
 import org.rudi.microservice.konsult.service.map.MapService;
 import org.rudi.rva.core.bean.Address;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +37,6 @@ public class MapServiceImpl implements MapService {
 
 	private final AddressService addressService;
 	private final JsonResourceReader jsonResourceReader = new JsonResourceReader();
-	private final WebClient epsgIoWebClient;
 
 	@Value("${rudi.konsult.rva.limit:20}")
 	private int rvaLimit;
@@ -76,36 +76,35 @@ public class MapServiceImpl implements MapService {
 
 	@Override
 	public Proj4Information searchProjectionInformation(String epsgCode) throws AppServiceException {
+		CRSFactory factory = new CRSFactory();
+		CoordinateReferenceSystem coordinateReferenceSystem = factory.createFromName(epsgCode.toLowerCase());
+		Projection epsgProjection = coordinateReferenceSystem.getProjection();
 
-		final Mono<EpsgIoResponse> epsgProjectionsMono = epsgIoWebClient.get()
-				.uri(uriBuilder -> uriBuilder.queryParam("q", epsgCode).queryParam("format", "json").build())
-				.accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(EpsgIoResponse.class);
-
-		var response = MonoUtils.blockOrThrow(epsgProjectionsMono, ExternalServiceException.class);
-
-		if (response == null) {
-			throw new AppServiceException("Erreur lors de l'appel de EPSG.io avec : " + epsgCode);
-		}
-
-		if (CollectionUtils.isEmpty(response.getResults())) {
-			return null;
-		}
-
-		if (response.getResults().size() > 1) {
-			String codeNames = response.getResults().stream().map(EpsgIoProjection::getCode)
-					.collect(Collectors.joining(","));
-			throw new AppServiceException(
-					"Erreur plusieurs codes epsg trouvés pour  " + epsgCode + ". Précisement : " + codeNames);
-		}
-
-		EpsgIoProjection epsgProjection = response.getResults().get(0);
 		Bbox bbox = new Bbox();
-		// format de retour [minLat, minLon, maxLat, MaxLon] donc faut réagencer
-		bbox.setSouthLatitude(epsgProjection.getBbox().get(0));
-		bbox.setWestLongitude(epsgProjection.getBbox().get(1));
-		bbox.setNorthLatitude(epsgProjection.getBbox().get(2));
-		bbox.setEastLongitude(epsgProjection.getBbox().get(3));
+		try {
+			org.opengis.referencing.crs.CoordinateReferenceSystem crs = ReferencingFactoryFinder
+					.getCRSAuthorityFactory("EPSG", null).createCoordinateReferenceSystem(epsgCode);
 
-		return new Proj4Information().proj4(epsgProjection.getProj4()).bbox(bbox).code(epsgProjection.getCode());
+			Extent domainOfValidity = crs.getDomainOfValidity();
+			Collection<? extends GeographicExtent> geographicElements = domainOfValidity.getGeographicElements();
+			if (CollectionUtils.isNotEmpty(geographicElements)) {
+				GeographicBoundingBox geographicExtent = (GeographicBoundingBox) geographicElements.iterator().next();
+				bbox.setSouthLatitude(BigDecimal.valueOf(geographicExtent.getSouthBoundLatitude()));
+				bbox.setWestLongitude(BigDecimal.valueOf(geographicExtent.getWestBoundLongitude()));
+				bbox.setNorthLatitude(BigDecimal.valueOf(geographicExtent.getNorthBoundLatitude()));
+				bbox.setEastLongitude(BigDecimal.valueOf(geographicExtent.getEastBoundLongitude()));
+			}
+			log.info(epsgCode + " : " + domainOfValidity.getGeographicElements().toString());
+		} catch (Exception e) {
+			bbox.setSouthLatitude(BigDecimal.valueOf(epsgProjection.getMinLatitude()));
+			bbox.setWestLongitude(BigDecimal.valueOf(epsgProjection.getMinLongitude()));
+			bbox.setNorthLatitude(BigDecimal.valueOf(epsgProjection.getMaxLatitude()));
+			bbox.setEastLongitude(BigDecimal.valueOf(epsgProjection.getMaxLongitude()));
+			log.error("Unable to get CRS for EPSG code {}", epsgCode, e);
+
+		}
+
+		return new Proj4Information().proj4(coordinateReferenceSystem.getParameterString()).bbox(bbox)
+				.code(coordinateReferenceSystem.getName().toUpperCase());
 	}
 }

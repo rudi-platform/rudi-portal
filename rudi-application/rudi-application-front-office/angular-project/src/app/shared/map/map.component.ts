@@ -375,7 +375,7 @@ export class MapComponent implements AfterViewInit, OnInit {
             view: new View({
                 center: this.centeredPoint,
                 projection: usedProjection,
-                extent: usedProjection.getExtent(),
+                extent: usedProjection.getExtent() != undefined ? usedProjection.getExtent() : usedProjection.getWorldExtent(),
                 zoom: 0
             }),
             controls: [
