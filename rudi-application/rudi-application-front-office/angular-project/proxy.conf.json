@@ -22,7 +22,6 @@
         },
         "changeOrigin": true
     },
-
     "/konsult/v1/cms": {
         "target": "http://localhost:8087/konsult/v1/cms",
         "secure": false,
@@ -44,6 +43,22 @@
         "secure": false,
         "pathRewrite": {
             "^/konsult/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/node/v1/linked-producers": {
+        "target": "http://localhost:8082/strukture/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/node/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/node/v1/organizations/request": {
+        "target": "http://localhost:8082/strukture/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/node/v1": ""
         },
         "changeOrigin": true
     },
@@ -88,10 +103,26 @@
         "changeOrigin": true
     },
     "/robots.txt": {
-    	"target": "http://localhost:8082/konsult/v1/robots/robots",
+        "target": "http://localhost:8082/konsult/v1/robots/robots",
         "secure": false,
         "pathRewrite": {
             "^/robots.txt": ""
+        },
+        "changeOrigin": true
+    },
+    "/oauth2": {
+    	"target": "http://localhost:8085/oauth2",
+        "secure": false,
+        "pathRewrite": {
+            "^/oauth2": ""
+        },
+        "changeOrigin": true
+    },
+    "/kalim/v1": {
+        "target": "http://localhost:8086/kalim/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/kalim/v1": ""
         },
         "changeOrigin": true
     }

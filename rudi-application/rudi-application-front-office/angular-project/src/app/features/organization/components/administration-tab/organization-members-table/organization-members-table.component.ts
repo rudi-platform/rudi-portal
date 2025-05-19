@@ -162,7 +162,7 @@ export class OrganizationMembersTableComponent implements OnInit {
         this.isSearchError = true;
         this.logService.error(error);
         this.snackbarService.openSnackBar({
-            message: `${this.translateService.instant('metaData.administrationTab.membersTable.errorPagination')}<a href="${this.linkError}">${this.translateService.instant('metaData.administrationTab.membersTable.here')}</a>`,
+            message: `${this.translateService.instant('metaData.administrationTab.membersTable.errorPagination')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
             level: Level.ERROR,
         }, 3000);
     }

@@ -32,7 +32,7 @@ public abstract class AbstractJsonLdMapper<T>  implements JsonLdMapper<T> {
 	protected JsonObject getMediaAsJsonObject(Media media, String type, DcatJsonLdContext context) {
 		JsonObject rs = new JsonObject();
 
-		rs.addProperty("@id", media.getMediaId().toString());
+		rs.addProperty("@id", rewriteMediaUrl(media, context.getCurentMetadata()));
 		rs.addProperty("@type", type);
 		rs.addProperty("identifier", media.getMediaId().toString());
 

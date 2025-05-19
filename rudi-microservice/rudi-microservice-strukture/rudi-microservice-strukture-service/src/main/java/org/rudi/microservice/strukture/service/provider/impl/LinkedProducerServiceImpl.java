@@ -108,6 +108,7 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		return linkedProducer;
 	}
 
+
 	private LinkedProducer getMyLinkedProducerFromOrganization(UUID organizationUuid)
 			throws AppServiceUnauthorizedException {
 		LinkedProducerSearchCriteria criteria = LinkedProducerSearchCriteria.builder()
@@ -121,6 +122,17 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		}
 
 		return pagedLinkedProducer.getContent().get(0);
+	}
+
+	@Override
+	public boolean isOrganizationAttachedToMyProvider(UUID organizationUuid) throws AppServiceUnauthorizedException {
+		LinkedProducer linkedProducer = getMyLinkedProducerFromOrganization(organizationUuid);
+
+		if(linkedProducer == null) {
+			return false;
+		}
+
+		return org.rudi.microservice.strukture.core.bean.LinkedProducerStatus.VALIDATED.equals(linkedProducer.getLinkedProducerStatus());
 	}
 
 	private OrganizationEntity getOrganizationEntityValidatedFromUuid(UUID uuid) throws AppServiceNotFoundException {

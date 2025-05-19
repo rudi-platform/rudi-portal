@@ -107,7 +107,7 @@ export class ForgotPasswordComponent implements OnInit {
             switchMap(() => forkJoin({
                 messageBeforeLink: this.translateService.get('resetPassword.snackbar.messageBeforeLink'),
                 linkHref: this.propertiesService.get('front.contact'),
-                linkLabel: this.translateService.get('resetPassword.snackbar.linkLabel'),
+                linkLabel: this.translateService.get('common.ici'),
             })),
             map(({messageBeforeLink, linkHref, linkLabel}) =>
                 this.snackBarService.openSnackBar({
@@ -119,9 +119,9 @@ export class ForgotPasswordComponent implements OnInit {
                 this.loading = false;
                 this.propertiesService.get('front.contact').subscribe(contactLink => {
                     this.snackBarService.openSnackBar({
-                        message: `${this.translateService.instant('snackbarTemplate.successInitPassword')}
+                        message: `${this.translateService.instant('snackbarTemplate.successInitPassword')} ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
                                         <a href="${contactLink}">
-                                            ${this.translateService.instant('snackbarTemplate.successIncriptionLinkText')}
+                                           ${this.translateService.instant('common.ici')}
                                         </a>`,
                         keepBeforeSecondRouteChange: true,
                         level: Level.SUCCESS

@@ -82,6 +82,8 @@ export class DataSetInfosComponent implements OnInit {
     baseLayers: LayerInformation[] = [];
     isMapLoading = false;
 
+    maxSourceUrlSize: number = 100;
+
     constructor(private readonly konsultMetierService: KonsultMetierService,
                 readonly snacbackService: SnackBarService,
                 private readonly translateService: TranslateService,
@@ -120,6 +122,14 @@ export class DataSetInfosComponent implements OnInit {
                 this.logService.error(e);
             }
         });
+    }
+
+    get metadataSource(): string {
+        let sourceUrl: string = this.metadata.metadata_info.metadata_source;
+        if (sourceUrl.length > this.maxSourceUrlSize) {
+            return sourceUrl.slice(0, this.maxSourceUrlSize) + '...';
+        }
+        return sourceUrl;
     }
 
     /**

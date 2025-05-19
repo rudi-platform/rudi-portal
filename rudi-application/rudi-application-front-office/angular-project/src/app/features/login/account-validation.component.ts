@@ -40,7 +40,7 @@ export class AccountValidationComponent implements OnInit {
                     // Si l'utilisateur a dépassé le délai de 24 heures ou Si l'utilisateur a déjà cliqué sur le lien d'activation
                     if (err.status === badRequestStatus) {
                         this.snackBarService.openSnackBar({
-                            message: `${this.translateService.instant('snackbarTemplate.errorAccountValidationStart')} <a href="${'/login/sign-up'}">${this.translateService.instant('snackbarTemplate.clickHere')}</a> ${this.translateService.instant('snackbarTemplate.errorAccountValidationEnd')}`,
+                            message: `${this.translateService.instant('snackbarTemplate.errorAccountValidationStart')} <a href="${'/login/sign-up'}">${this.translateService.instant('common.ici')}</a> ${this.translateService.instant('snackbarTemplate.errorAccountValidationEnd')}`,
                             level: Level.ERROR
                         });
                     }

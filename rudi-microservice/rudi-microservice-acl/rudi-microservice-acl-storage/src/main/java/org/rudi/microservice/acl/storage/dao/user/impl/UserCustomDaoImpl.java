@@ -4,20 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
 import org.rudi.microservice.acl.storage.dao.user.UserCustomDao;
-import org.rudi.microservice.acl.storage.entity.address.AbstractAddressEntity;
 import org.rudi.microservice.acl.storage.entity.address.EmailAddressEntity;
 import org.rudi.microservice.acl.storage.entity.role.RoleEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
@@ -29,6 +20,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.SetJoin;
 import lombok.val;
 
 /**
@@ -134,9 +133,8 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 
 			// Email address
 			if (searchCriteria.getUserEmail() != null) {
-				Join<UserEntity, AbstractAddressEntity> joinAddresses = root.join(FIELD_ADDRESSES);
-				Join<UserEntity, EmailAddressEntity> joinEmailAddresses = builder.treat(joinAddresses,
-						EmailAddressEntity.class);
+				SetJoin<Object, EmailAddressEntity> joinAdresses = root.joinSet(FIELD_ADDRESSES);
+				SetJoin<Object, EmailAddressEntity> joinEmailAddresses = builder.treat(joinAdresses, EmailAddressEntity.class);
 				predicateStringCriteriaForJoin(searchCriteria.getUserEmail(), FIELD_EMAIL, predicates, builder,
 						joinEmailAddresses);
 			}

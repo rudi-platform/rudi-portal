@@ -332,7 +332,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                     error: (e) => {
                         console.error(e);
                         this.snackBarService.openSnackBar({
-                            message: `${this.translateService.instant('project.stepper.submission.publish.error-update')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                            message: `${this.translateService.instant('project.stepper.submission.publish.error-update')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                             level: Level.ERROR,
                         });
                         this.isLoading = false;
@@ -352,7 +352,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                     error: (e) => {
                         console.error(e);
                         this.snackBarService.openSnackBar({
-                            message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                            message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                             level: Level.ERROR,
                         });
                         this.isLoading = false;
@@ -482,7 +482,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                 error: (e) => {
                     console.error(e);
                     this.snackBarService.openSnackBar({
-                        message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('project.stepper.submission.publish.here')}</a>`,
+                        message: `${this.translateService.instant('project.stepper.submission.publish.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                         level: Level.ERROR,
                     });
                     this.isLoading = false;

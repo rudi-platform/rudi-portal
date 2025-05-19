@@ -223,7 +223,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingOpenDataset = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -244,7 +244,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingRestrictedDataset = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -286,7 +286,7 @@ export class ProjectTaskDetailComponent
                 console.error(err);
                 this.isLoadingNewDatasetRequest = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }

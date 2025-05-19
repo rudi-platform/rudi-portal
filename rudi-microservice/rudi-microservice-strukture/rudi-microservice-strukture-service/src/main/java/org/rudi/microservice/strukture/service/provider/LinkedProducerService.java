@@ -24,4 +24,6 @@ public interface LinkedProducerService {
 	Page<LinkedProducer> searchLinkedProducers(LinkedProducerSearchCriteria criteria, Pageable pageable);
 
 	LinkedProducer getMyLinkedProducerFromOrganizationUuid(UUID organizationUuid) throws AppServiceUnauthorizedException;
+
+	boolean isOrganizationAttachedToMyProvider(UUID organizationUuid) throws AppServiceUnauthorizedException;
 }

@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.kaccess.bean.Contact;
@@ -31,8 +28,11 @@ import org.rudi.microservice.konsult.service.mapper.jsonld.impl.PaginationJsonLd
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -53,7 +53,10 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 	@Value("#{${harvest.dcat.license:{'apache-2.0':'other-pd', 'cc-by-nd-4.0':'cc-by', 'etalab-1.0':'other-pd', 'etalab-2.0':'lov2', 'gpl-3.0':'other-pd', 'mit':'other-pd', 'odbl-1.0':'odc-odbl','public-domain-cc0':'other-pd'}}}")
 	private Map<String, String> licenseMap;
 
-	public DcatJsonLdMapper(MediaUrlHelper mediaUrlHelper, ContextHelper contextHelper, PaginationJsonLdMapper paginationJsonLdMapper, DatasetJsonLdMapper datasetJsonLdMapper, DistributionJsonLdMapper distributionJsonLdMapper, DataServiceJsonLdMapper dataServiceJsonLdMapper, ContactPointJsonLdMapper contactPointJsonLdMapper, CreatorJsonLdMapper creatorJsonLdMapper) {
+	public DcatJsonLdMapper(MediaUrlHelper mediaUrlHelper, ContextHelper contextHelper,
+			PaginationJsonLdMapper paginationJsonLdMapper, DatasetJsonLdMapper datasetJsonLdMapper,
+			DistributionJsonLdMapper distributionJsonLdMapper, DataServiceJsonLdMapper dataServiceJsonLdMapper,
+			ContactPointJsonLdMapper contactPointJsonLdMapper, CreatorJsonLdMapper creatorJsonLdMapper) {
 		super(mediaUrlHelper);
 		this.contextHelper = contextHelper;
 		this.paginationJsonLdMapper = paginationJsonLdMapper;
@@ -70,51 +73,49 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 		JsonArray graph = new JsonArray();
 
 		graph.add(paginationJsonLdMapper.toJsonLd(context.getDatasetSearchCriteria(), context));
-		context.setKinds(new ArrayList<JsonObject>());
+		context.setKinds(new ArrayList<>());
 		if (metadataList != null && CollectionUtils.isNotEmpty(metadataList.getItems())) {
 
 			metadataList.getItems().forEach(item -> {
-					// initialisation des listes et des tableau pour ce dataset
-					context.setContactPoints(new JsonArray());
-					context.setDistributions(new JsonArray());
-					context.setServices(new JsonArray());
+				// initialisation des listes et des tableau pour ce dataset
+				context.setContactPoints(new JsonArray());
+				context.setDistributions(new JsonArray());
+				context.setServices(new JsonArray());
 
-					try {
-						// Création du JSON de l'objet dataset
-						JsonObject dataset = datasetJsonLdMapper.toJsonLd(item, context);
+				try {
+					// Création du JSON de l'objet dataset
+					JsonObject dataset = datasetJsonLdMapper.toJsonLd(item, context);
 
-						// Récupération et maping de la licence du JDD
-						extractLicense(item, context);
+					// Récupération et maping de la licence du JDD
+					extractLicense(item, context);
 
-						// Récupération des contactPoints
-						extractMetadataContacts(item, context);
-						extractMetadataInfoContacts(item, context);
+					// Récupération des contactPoints
+					extractMetadataContacts(item, context);
+					extractMetadataInfoContacts(item, context);
 
-						// Récupération du producer
-						extractProducer(item, context, dataset);
+					// Récupération du producer
+					extractProducer(item, context, dataset);
 
-						//Gestion des médias de type service (dataservice), et dwnl (distributions)
-						extractMedias(item, context, graph);
+					// Gestion des médias de type service (dataservice), et dwnl (distributions)
+					extractMedias(item, context, graph);
 
-
-
-						if (!context.getContactPoints().isEmpty()) {
-							dataset.add("contactPoint", context.getContactPoints());
-						}
-
-						if (!context.getDistributions().isEmpty()) {
-							dataset.add("distribution", context.getDistributions());
-						}
-
-						if (!context.getServices().isEmpty()) {
-							dataset.add("service", context.getServices());
-						}
-
-						graph.add(dataset);
-					} catch (AppServiceException e) {
-						log.error(e.getMessage());
+					if (!context.getContactPoints().isEmpty()) {
+						dataset.add("contactPoint", context.getContactPoints());
 					}
-				});
+
+					if (!context.getDistributions().isEmpty()) {
+						dataset.add("distribution", context.getDistributions());
+					}
+
+					if (!context.getServices().isEmpty()) {
+						dataset.add("service", context.getServices());
+					}
+
+					graph.add(dataset);
+				} catch (AppServiceException e) {
+					log.error(e.getMessage());
+				}
+			});
 		}
 
 		context.getKinds().forEach(graph::add);
@@ -150,7 +151,8 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 		}
 	}
 
-	private void extractProducer(Metadata metadata, DcatJsonLdContext context, JsonObject dataset) throws AppServiceException {
+	private void extractProducer(Metadata metadata, DcatJsonLdContext context, JsonObject dataset)
+			throws AppServiceException {
 		// Gestion du producer
 		JsonObject creator = creatorJsonLdMapper.toJsonLd(metadata.getProducer(), context);
 		if (creator != null && !creator.isEmpty()) {
@@ -192,15 +194,13 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 		Licence licence = metadata.getAccessCondition().getLicence();
 		JsonObject license = new JsonObject();
 		if (licence != null) {
-			if(Licence.LicenceTypeEnum.STANDARD.equals(licence.getLicenceType())) {
-				String key = ((LicenceStandard)licence).getLicenceLabel().getValue();
+			if (Licence.LicenceTypeEnum.STANDARD.equals(licence.getLicenceType())) {
+				String key = ((LicenceStandard) licence).getLicenceLabel().getValue();
 				license.addProperty("id", licenseMap.getOrDefault(key, UNKNOWN_STANDARD_LICENSE));
-			}
-			else {
+			} else {
 				license.addProperty("id", CUSTOM_LICENSE);
 			}
-		}
-		else {
+		} else {
 			license.addProperty("id", NO_LICENSE);
 		}
 		context.setLicense(license);
@@ -213,21 +213,15 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 	 * @param kind  le dct:Kind que l'on souhaite ajouter
 	 */
 	private void addKind(List<JsonObject> kinds, JsonObject kind) {
-		kinds.stream()
-				.filter(
-						k -> k.asMap().containsValue(kind.asMap().get("@id"))
-				)
-				.findFirst()
-				.ifPresentOrElse(k -> {
-					Map<String, JsonElement> existingMap = k.asMap();
-					Map<String, JsonElement> newMap = kind.asMap();
-					newMap.forEach((key, value) -> {
-						if (!existingMap.containsKey(key)) {
-							existingMap.put(key, value);
-						}
-					});
-				}, () -> kinds.add(kind));
-
+		kinds.stream().filter(k -> k.asMap().containsValue(kind.asMap().get("@id"))).findFirst().ifPresentOrElse(k -> {
+			Map<String, JsonElement> existingMap = k.asMap();
+			Map<String, JsonElement> newMap = kind.asMap();
+			newMap.forEach((key, value) -> {
+				if (!existingMap.containsKey(key)) {
+					existingMap.put(key, value);
+				}
+			});
+		}, () -> kinds.add(kind));
 
 	}
 
@@ -238,10 +232,8 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 	 * @param contactUuid   l'identifiant du contact à ajouter à la liste
 	 */
 	private void addContactPoint(JsonArray contactPoints, UUID contactUuid) {
-		Optional<JsonElement> existingElement = contactPoints.asList().stream().filter(
-				e -> contactUuid.toString()
-						.equals(e.getAsJsonObject().get("@id").getAsString())
-		).findFirst();
+		Optional<JsonElement> existingElement = contactPoints.asList().stream()
+				.filter(e -> contactUuid.toString().equals(e.getAsJsonObject().get("@id").getAsString())).findFirst();
 
 		if (existingElement.isEmpty()) {
 			JsonObject contactPoint = new JsonObject();

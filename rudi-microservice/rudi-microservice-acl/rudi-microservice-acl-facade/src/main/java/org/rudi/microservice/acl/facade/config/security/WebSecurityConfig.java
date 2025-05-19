@@ -34,6 +34,7 @@ import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationPro
 import org.rudi.microservice.acl.facade.config.security.oauth2.RudiAuthorizationService;
 import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClient;
 import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClientRepository;
+import org.rudi.microservice.acl.facade.config.security.oauth2.configurer.ClientSecretBasicAuthenticationConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +60,6 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -141,9 +141,16 @@ public class WebSecurityConfig {
 		log.debug("RudiAcl-filterChain...");
 		if (!disableAuthentification) {
 
-			OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-			RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-			http.securityMatcher(endpointsMatcher).apply(authorizationServerConfigurer);
+			/**
+			 * https://docs.spring.io/spring-authorization-server/reference/configuration-model.html#configuring-client-authentication
+			 */
+			OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer
+					.authorizationServer();
+			http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher()).with(
+					authorizationServerConfigurer,
+					(authorizationServer) -> authorizationServer
+							.clientAuthentication(clientAuthentication -> clientAuthentication
+									.authenticationConverter(new ClientSecretBasicAuthenticationConverter())));
 
 			http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 					.registeredClientRepository(registeredClientRepository).authorizationService(authorizationService())

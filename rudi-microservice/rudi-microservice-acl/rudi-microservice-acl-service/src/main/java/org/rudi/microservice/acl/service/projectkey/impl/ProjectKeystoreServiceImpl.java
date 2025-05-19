@@ -21,6 +21,7 @@ import org.rudi.microservice.acl.service.mapper.projectkey.ProjectKeystoreMapper
 import org.rudi.microservice.acl.service.projectkey.ProjectKeyValidator;
 import org.rudi.microservice.acl.service.projectkey.ProjectKeystoreService;
 import org.rudi.microservice.acl.service.projectkey.ProjectKeystoreValidator;
+import org.rudi.microservice.acl.service.token.TokenService;
 import org.rudi.microservice.acl.storage.dao.projectkey.ProjectKeyDao;
 import org.rudi.microservice.acl.storage.dao.projectkey.ProjectKeystoreCustomDao;
 import org.rudi.microservice.acl.storage.dao.projectkey.ProjectKeystoreDao;
@@ -73,6 +74,8 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 
 	private final PasswordHelper passwordHelper;
 
+	private final TokenService tokenService;
+
 	@Override
 	@Transactional(readOnly = false)
 	public ProjectKeystore createProjectKeystore(ProjectKeystore projectKeystore) throws AppServiceException {
@@ -92,6 +95,8 @@ public class ProjectKeystoreServiceImpl implements ProjectKeystoreService {
 		if (CollectionUtils.isNotEmpty(entity.getProjectKeys())) {
 			entity.getProjectKeys().forEach(projetKey -> {
 				if (projetKey.getClient() != null) {
+					// suppression des tokens éventuels
+					tokenService.removeTokenByUserId(Long.toString(projetKey.getClient().getId()));
 					userDao.delete(projetKey.getClient());
 				}
 			});

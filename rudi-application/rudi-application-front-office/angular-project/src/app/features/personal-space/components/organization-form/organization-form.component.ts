@@ -9,7 +9,7 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
 
 // Taille maximum requise pour les différents champs du formulaire
 const MAX_NAME_LENGTH = 100;
-const MAX_DESCRIPTION_LENGTH = 1024;
+const MAX_DESCRIPTION_LENGTH = 800;
 const MAX_URL_LENGTH = 80;
 const MAX_ADDRESS_LENGTH = 255;
 

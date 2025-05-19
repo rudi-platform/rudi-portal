@@ -3,6 +3,7 @@ package org.rudi.microservice.strukture.facade.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.HistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -15,16 +16,10 @@ import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.service.TaskService;
-import org.rudi.microservice.strukture.core.bean.Organization;
-import org.rudi.microservice.strukture.core.bean.OrganizationMember;
-import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
-import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
-import org.rudi.microservice.strukture.core.bean.OwnerInfo;
-import org.rudi.microservice.strukture.core.bean.PagedOrganizationList;
-import org.rudi.microservice.strukture.core.bean.PagedOrganizationUserMembers;
+import org.rudi.microservice.strukture.core.bean.*;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
+import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +30,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.UUID;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
+import static org.rudi.common.core.security.QuotedRoleCodes.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,27 +39,13 @@ public class OrganizationsController implements OrganizationsApi {
 	private final OrganizationService organizationService;
 	private final UtilPageable utilPageable;
 	private final TaskService<Organization> organizationTaskService;
+	private final NodeOrganizationMapper nodeOrganizationMapper;
+
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ")")
 	public ResponseEntity<OwnerInfo> getOrganizationOwnerInfo(UUID uuid) throws Exception {
 		return ResponseEntity.ok(organizationService.getOrganizationOwnerInfo(uuid));
-	}
-
-	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
-	public ResponseEntity<UUID> requestOrganizationCreation(Organization organization)
-			throws AppServiceBadRequestException, FormDefinitionException, FormConvertException, InvalidDataException {
-		Organization createdOrganization = organizationService.createOrganization(organization);
-
-		Task task = organizationTaskService.createDraft(createdOrganization);
-
-		organizationTaskService.startTask(task);
-
-		val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{uuid}")
-				.buildAndExpand(createdOrganization.getUuid()).toUri();
-
-		return ResponseEntity.created(location).body(createdOrganization.getUuid());
 	}
 
 	@Override
@@ -220,5 +195,48 @@ public class OrganizationsController implements OrganizationsApi {
 				.buildAndExpand(createdOrganization.getUuid()).toUri();
 		//Retourne l'organisation créée
 		return ResponseEntity.created(location).body(createdOrganization);
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
+	public ResponseEntity<UUID> requestOrganizationCreation(NodeOrganization nodeOrganization)
+			throws AppServiceBadRequestException, FormDefinitionException, FormConvertException, InvalidDataException {
+		Organization organization = nodeOrganizationMapper.nodeDtoToDTO(nodeOrganization);
+		//Le champ description est obligatoire dans Rudi :
+		if(StringUtils.isEmpty(organization.getDescription())){
+			organization.setDescription(String.format("Organsiation %s", organization.getName()));
+		}
+		Organization createdOrganization = organizationService.createOrganization(organization);
+
+		Task task = organizationTaskService.createDraft(createdOrganization);
+
+		organizationTaskService.startTask(task);
+
+		val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{uuid}")
+				.buildAndExpand(createdOrganization.getUuid()).toUri();
+
+		return ResponseEntity.created(location).body(createdOrganization.getUuid());
+	}
+
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
+	public ResponseEntity<Void> requestOrganizationDelete(UUID uuid) throws Exception {
+		organizationService.deleteOrganization(uuid);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
+	public ResponseEntity<UUID> requestOrganizationUpdate(NodeOrganization nodeOrganization) throws Exception {
+		Organization organization = nodeOrganizationMapper.nodeDtoToDTO(nodeOrganization);
+		organizationService.updateOrganization(organization);
+		return ResponseEntity.noContent().build();
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
+	public ResponseEntity<NodeOrganization> getNodeOrganization(UUID uuid) throws Exception {
+		return ResponseEntity.ok(nodeOrganizationMapper.dtoToNodeDto(organizationService.getOrganization(uuid)));
 	}
 }

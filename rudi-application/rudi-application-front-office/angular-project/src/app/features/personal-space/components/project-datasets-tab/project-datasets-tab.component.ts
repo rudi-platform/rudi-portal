@@ -277,7 +277,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 console.error(err);
                 this.openedLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -301,7 +301,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 console.error(err);
                 this.restrictedLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }
@@ -325,7 +325,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 console.error(err);
                 this.newLinkedDatasetLoading = false;
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('personalSpace.projectDatasets.delete.here')}</a>`,
+                    message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }

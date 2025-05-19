@@ -40,6 +40,7 @@ public class LinkedProducerController implements LinkedProducersApi {
 		return ResponseEntity.ok(linkedProducerService.getLinkedProducer(linkedProducerUuid));
 	}
 
+
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + PROVIDER + ")")
 	public ResponseEntity<UUID> attachProducer(UUID organizationUuid) throws Exception {
@@ -104,5 +105,10 @@ public class LinkedProducerController implements LinkedProducersApi {
 		linkedProducerTaskService.startTask(task);
 
 		return ResponseEntity.ok(linkedProducer.getUuid());
+	}
+
+	@Override
+	public ResponseEntity<Boolean> isAttachedToProducer(UUID uuid) throws Exception {
+		return ResponseEntity.ok(linkedProducerService.isOrganizationAttachedToMyProvider(uuid));
 	}
 }

@@ -153,7 +153,7 @@ export class HeaderComponent implements OnInit {
             error: (err) => {
                 console.error(err);
                 this.snackBarService.openSnackBar({
-                    message: `${this.translateService.instant('header.logOutError')}<a href="${this.linkHref}">${this.translateService.instant('header.here')}</a>`,
+                    message: `${this.translateService.instant('header.logOutError')}<a href="${this.linkHref}">${this.translateService.instant('common.ici')}</a>`,
                     level: Level.ERROR
                 });
             }

@@ -38,8 +38,7 @@
         "invalidUrlErrorMessage": "L'URL saisie est invalide.",
         "ressourceNotFoundErrorMessage": "La ressource est introuvable.",
         "defaultErrorMessage": "Une erreur interne est survenue.",
-        "contactAdmin": "Merci de contacter un administrateur si le problème persiste ",
-        "clickHere": "en cliquant ici."
+        "contactAdmin": "Merci de contacter un administrateur si le problème persiste "
     },
     "pageTitle": {
         "/": "Catalogue",
@@ -70,11 +69,11 @@
         },
         "dialogEditNewDatasetRequest": {
             "title": "Nouvelle demande de données",
-            "descriptionHint": "Présentez votre besoin en données en essayant d'être le plus précis possible (attributs nécessaires, granularité temporelle / spatiale du jeu de données, période temporelle nécessaire, contexte d'utilisation du jeu de données, spécificités des traitements que vous souhaitez réaliser sur le jeu de données, ce jeu de données sera-t-il croisé avec un jeu de données existant, etc…).",
+            "descriptionHint": "Vous n'avez pas trouvé le jeu de données dont vous avez besoin pour réaliser votre réutilisation ? Expliquer votre besoin en complétant ce formulaire. Votre demande sera ensuite étudiée afin d'y répondre au mieux. Vous serez contacté par l'animateur via votre adresse mail de contact.",
             "titleField": "Titre",
             "titleFieldHint": "Le titre doit vous permettre d'identifier rapidement votre demande. Si vous n'indiquez pas de titre, le titre de votre demande sera de la forme : \"Nouvelle demande (X)\".",
             "descriptionField": "Description",
-            "descriptionFieldHint": "Vous n'avez pas trouvé le jeu de données dont vous avez besoin pour réaliser votre réutilisation ? Expliquer votre besoin en complétant ce formulaire. Votre demande sera ensuite étudiée afin d'y répondre au mieux. Vous serez contacté par l'animateur via votre adresse mail de contact."
+            "descriptionFieldHint": "Présentez votre besoin (nom de la donnée attendue, son format, son emprise spatial, sa temporalité…). Cette description sera transmise à l'équipe {projectName}. 255 signes maximum sont autorisés."
         },
         "buttonSubmitParagraph1": "Vous préparez une réutilisation et vous avez besoin d'accompagnement ou de données spécifiques pour la mettre en œuvre ? \nVotre réutilisation est finalisée et vous avez mobilisé de la donnée provenant de {projectName} ?",
         "buttonSubmitParagraph2": "Cliquez ici pour commencer la soumission de votre réutilisation.",
@@ -182,7 +181,6 @@
                     "submit": "Soumettre",
                     "error-update": "Une erreur est survenue lors de la mise à jour de la  réutilisation. Veuillez contacter un administrateur ",
                     "error": "Une erreur est survenue lors de la création de la réutilisation. Veuillez contacter un administrateur ",
-                    "here": "en cliquant ici.",
                     "ok": {
                         "title": "Votre réutilisation a bien été soumise.",
                         "description1": "Vos demandes seront transmises aux producteurs dès qu'un animateur aura validé votre demande de publication. Vous serez averti par mail des avancées de celle-ci.",
@@ -255,7 +253,6 @@
         "logOut": "Se déconnecter",
         "logOutSuccess": "Vous avez été correctement déconnecté. À bientôt sur {projectName} !",
         "logOutError": "Une erreur est survenue lors de la déconnexion. Si l'erreur persiste, merci de contacter un administrateur ",
-        "here": "en cliquant ici.",
         "accountMenu": {
             "myAccount": "Mon compte",
             "myActivity": "Mon activité",
@@ -295,7 +292,6 @@
         "error-body": "L'identifiant ou le mot de passe que vous avez saisi n’est pas valide. Essayez une nouvelle combinaison ou ",
         "error-footer": "inscrivez-vous dès maintenant.",
         "errorBodyAccountNotActif": "Votre compte n'a pas encore été activé. Veuillez vérifier votre boite mail et activer votre compte en cliquant sur le lien présent dans le mail envoyé par {projectName}. Veuillez consulter vos spams. Si le problème persiste veuillez contacter un administrateur ",
-        "errorFooterAccountNotActif": "en cliquant ici.",
         "errorServerIsNotActive": "Une erreur s'est produite lors de la vérification de votre compte",
         "errorServerAuthent": "Erreur interne du serveur pendant l'authentification. Veuillez contacter un administrateur",
         "errorLoginLocked": "Votre compte a été bloqué pendant 20 minutes suite à 10 essais infructueux d'authentification. Passé ce délai vous pourrez de nouveau vous authentifier. Vous avez oublié votre mot de passe ? Cliquez ",
@@ -308,8 +304,7 @@
         "resetMail": "Saisissez votre adresse e-mail",
         "resetPasswordPageTitle": "Veuillez saisir votre nouveau mot de passe",
         "snackbar": {
-            "messageBeforeLink": "Si l'adresse renseignée est connue de {projectName}, nous vous avons envoyé un e-mail. Vous n'avez pas reçu d'e-mail ? Veuillez consulter vos spams. Si le problème persiste veuillez contacter un administrateur ",
-            "linkLabel": "en cliquant ici."
+            "messageBeforeLink": "Si l'adresse renseignée est connue de {projectName}, nous vous avons envoyé un e-mail. Vous n'avez pas reçu d'e-mail ? Veuillez consulter vos spams. Si le problème persiste veuillez contacter un administrateur "
         }
     },
     "error": {
@@ -339,6 +334,7 @@
         "source": "source",
         "disponible": "disponible",
         "telechargerFichier": "Télécharger le fichier",
+        "telechargement": "téléchargement",
         "fichier": "Fichier",
         "streaming": "Streaming",
         "ms": "ms",
@@ -413,11 +409,9 @@
         "successIncriptionLinkText": "l'équipe technique de {projectName}",
         "successAccountValidation": "Votre compte est bien activé, vous pouvez maintenant vous connecter au portail {projectName}.",
         "errorAccountValidationStart": "Une erreur est survenue. Veuillez renouveler la création de votre compte ",
-        "clickHere": "en cliquant ici.",
         "errorAccountValidationEnd": " Vous pouvez saisir la même adresse mail que précédemment.",
         "successResetPassword": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter au portail {projectName}.",
-        "resetPasswordError": "Le délai de réinitialisation de votre mot de passe est dépassé. Nous vous invitons à renouveler votre demande en cliquant ",
-        "ici": "ici",
+        "resetPasswordError": "Le délai de réinitialisation de votre mot de passe est dépassé. Nous vous invitons à renouveler votre demande ",
         "successInitPassword": "Un mail de réinitialisation de votre mot de passe vous a été envoyé. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter "
     },
     "searchbox": {
@@ -516,7 +510,6 @@
             "noOrganizations": "Vous n'avez pas encore d'organisations.",
             "img": "Pictogramme d'organisation",
             "errorLoading": "Une erreur est survenue lors du chargement de vos organisations. Merci de recharger la page. Si le problème persiste, veuillez contacter un administrateur ",
-            "here": "en cliquant ici.",
             "addOrganization": "Déclarer une organisation"
         }
     },
@@ -546,7 +539,8 @@
         "latitudeS": "Latitude Sud",
         "longitudeE": "Longitude Est",
         "longitudeO": "Longitude Ouest",
-        "sourcesDonnees": "Sources de données",
+        "sourcesDonnees": "Source du jeu de données",
+        "telechargement": "Téléchargements",
         "donnee": "Donnée",
         "type": "Type",
         "taille": "Taille",
@@ -706,7 +700,6 @@
                 "delete": "Détacher de l'organisation",
                 "addMember": "Ajouter un membre",
                 "error": "Une erreur est survenue. Merci de recharger la page. Si le problème persiste veuillez contacter un administrateur ",
-                "here": "en cliquant ici.",
                 "addPopin": {
                     "title": "Ajouter un membre",
                     "subTitle": "Attention : seules les personnes ayant déjà créé un compte sur {projectName} peuvent être ajoutées à une organisation.",
@@ -1245,7 +1238,6 @@
             "status": "Statut de la réutilisation",
             "numberOfDataset": "Jeux de données",
             "noResult": "Vous n'avez pas encore créé de réutilisation sur {projectName}. Les formulaires de création de réutilisation sont accessibles ",
-            "here": "en cliquant ici.",
             "resultTilte": "réutilisation(s)"
         },
         "project": {
@@ -1281,8 +1273,7 @@
                 "archived": "Archiver la réutilisation",
                 "success": "Votre réutilisation a été archivée.",
                 "error": "Une erreur est survenue lors de l'archivage de la réutilisation. Si l'erreur persiste, merci de contacter un administrateur ",
-                "errorTaskInProgress": "L'archivage de votre réutilisation est impossible car celle-ci comporte une ou plusieurs tâches en cours. ",
-                "here": "en cliquant ici."
+                "errorTaskInProgress": "L'archivage de votre réutilisation est impossible car celle-ci comporte une ou plusieurs tâches en cours. "
             },
             "tabs": {
                 "api": {
@@ -1446,7 +1437,6 @@
             "explainationText": "Vous trouverez ici vos données issues de votre demande d'accès. De plus amples informations sont disponibles sur ",
             "delete": {
                 "error": "Une erreur est survenue lors de la suppression du jeu de données. Si l'erreur persiste, merci de contacter un administrateur ",
-                "here": "en cliquant ici.",
                 "alt": "bouton de suppression "
             },
             "show-comment": {

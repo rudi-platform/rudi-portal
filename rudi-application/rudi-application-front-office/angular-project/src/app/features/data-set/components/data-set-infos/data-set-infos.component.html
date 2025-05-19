@@ -243,15 +243,25 @@
     >
         <mat-expansion-panel-header [ngClass]="{'open': panelOpenStateStockage}">
             <mat-panel-title class="rudi-panel-title">
-                {{'metaData.sourcesDonnees'|translate}}
+                {{'metaData.telechargement'|translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <div *ngIf="metadata.resource_languages" class="rudi-panel-data-language mx-4" id="data_language-table-header">
+        <div *ngIf="metadata.metadata_info.metadata_source" class="rudi-panel-data mx-4 mb-2" id="data_source-table-header">
+            <table class="table rudi-panel-table" aria-describedby="data_source-table-header">
+                <tbody class="rudi-panel-tbody-border mat-header-row">
+                <tr>
+                    <th scope="row">{{'metaData.sourcesDonnees' | translate }}</th>
+                    <td><a [href]="metadata.metadata_info.metadata_source">{{metadataSource}}</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="metadata.resource_languages" class="rudi-panel-data mx-4" id="data_language-table-header">
             <table class="table rudi-panel-table" aria-describedby="data_language-table-header">
                 <tbody class="rudi-panel-tbody-border mat-header-row">
                 <tr>
                     <th scope="row">{{'metaData.dataLanguage' | translate}}</th>
-                    <td>{{'languagesCodes.' + metadata.resource_languages | translate}}</td>
+                    <td>{{'languagesCodes.' + metadata.resource_languages | translate }}</td>
                 </tr>
                 </tbody>
             </table>
@@ -259,7 +269,7 @@
         <div *ngIf="metadata.available_formats" class="mt-4 mx-4">
             <p class="rudi-panel-available">
                 {{metadata.available_formats.length}}
-                {{'common.source' | translate}}{{metadata.available_formats.length > 1 ? 's' : ''}}
+                {{'common.telechargement' | translate}}{{metadata.available_formats.length > 1 ? 's' : ''}}
                 {{'common.disponible' | translate}}{{metadata.available_formats.length > 1 ? 's' : ''}} :
             </p>
         </div>

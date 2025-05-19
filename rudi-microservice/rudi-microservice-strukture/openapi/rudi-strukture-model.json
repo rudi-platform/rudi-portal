@@ -851,6 +851,66 @@
 						}
 					}
 				}
+			},
+			"organization_date": {
+				"type": "object",
+				"properties": {
+					"created": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"modified":  {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			},
+			"NodeOrganization": {
+				"description": "Organisation",
+				"type": "object",
+				"required": [
+					"organization_id",
+					"organization_name"
+				],
+				"properties": {
+					"organization_id": {
+						"description": "UUID de l'organisation",
+						"type": "string",
+						"format": "uuid"
+					},
+					"organization_name": {
+						"description": "Nom complet de l'organisation",
+						"type": "string"
+					},
+					"organization_status": {
+						"$ref": "#/components/schemas/OrganizationStatus"
+					},
+					"organization_opening_date": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Date de début d'activité - si non renseigné à la création prend la timestamp de l'instant de création"
+					},
+					"organization_closing_date": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Une date de fin d'activité"
+					},
+					"organization_summary": {
+						"type": "string"
+					},
+					"organization_url": {
+						"type": "string"
+					},
+					"organization_address": {
+						"type": "string"
+					},
+					"organization_dates": {
+						"$ref": "#/components/schemas/organization_date"
+					},
+					"organization_coordinates": {
+						"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"
+					}
+				}
 			}
 		}
 	}

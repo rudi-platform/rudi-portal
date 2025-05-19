@@ -288,7 +288,7 @@ export class MyProjectDetailsComponent implements OnInit {
                         } else {
                             this.snackBarService.openSnackBar({
                                 level: Level.ERROR,
-                                message: `${this.translateService.instant('personalSpace.project.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('personalSpace.project.archive.here')}</a>`,
+                                message: `${this.translateService.instant('personalSpace.project.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('common.ici')}</a>`,
                             }, 3000);
                         }
                     }
