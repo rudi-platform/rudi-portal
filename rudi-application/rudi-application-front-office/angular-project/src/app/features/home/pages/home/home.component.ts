@@ -1,10 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Meta} from '@angular/platform-browser';
 import {Order, ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {CustomizationService} from '@core/services/customization.service';
 import {FiltersService} from '@core/services/filters.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {LogService} from '@core/services/log.service';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
+import {CustomTranslateService} from '@core/services/translate.service';
 import {Theme} from '@features/home/types';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
 import {Metadata, MetadataList} from 'micro_service_modules/api-kaccess';
@@ -41,7 +43,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         private readonly projektMetierService: ProjektMetierService,
         private readonly logger: LogService,
         private readonly themeCacheService: ThemeCacheService,
-        private readonly customizationService: CustomizationService
+        private readonly customizationService: CustomizationService,
+        private readonly meta: Meta,
+        private readonly translateService: CustomTranslateService
     ) {
         this.destroyed$ = new Subject<boolean>();
 
@@ -139,6 +143,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.themeCacheService.init();
+
+        const title: string = this.translateService.instant('home.page.title');
+        this.meta.updateTag({name: 'og:title', content: title});
     }
 
     ngOnDestroy(): void {

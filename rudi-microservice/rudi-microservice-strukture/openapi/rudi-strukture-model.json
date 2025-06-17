@@ -739,11 +739,11 @@
 					"version": {
 						"type": "string"
 					},
-					"organization_id": {
+					"resource_id": {
 						"type": "string",
 						"format": "uuid"
 					},
-					"organization_name": {
+					"resource_title": {
 						"type": "string"
 					},
 					"integration_status": {

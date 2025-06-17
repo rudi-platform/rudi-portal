@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,14 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service utilitaire pour récupérer les infos sur l'utilisateur connecté.
  */
 @Component
+@Slf4j
 public class UtilContextHelper {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(UtilContextHelper.class);
 
 	/**
 	 * Retourne l'utilisateur connecté.
@@ -40,16 +38,16 @@ public class UtilContextHelper {
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		AuthenticatedUser result = null;
 		if (auth == null) {
-			LOGGER.error("Null authentification");
+			log.error("Null authentification");
 		} else {
 			final Object detail = auth.getDetails();
 			if (detail == null) {
-				LOGGER.error("User detail is null");
+				log.error("User detail is null");
 			} else {
-				if (detail instanceof AuthenticatedUser) {
-					result = (AuthenticatedUser) detail;
+				if (detail instanceof AuthenticatedUser authenticatedUser) {
+					result = authenticatedUser;
 				} else {
-					LOGGER.error("Unknown authenticated user {}", auth.getPrincipal());
+					log.error("Unknown authenticated user {}", auth.getPrincipal());
 				}
 			}
 
@@ -62,8 +60,7 @@ public class UtilContextHelper {
 	 */
 	public void setAuthenticatedUser(AuthenticatedUser authenticatedUser) {
 		final var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-				authenticatedUser.getLogin(), null, collectAuthoritiesFromRoles(authenticatedUser.getRoles())
-		);
+				authenticatedUser.getLogin(), null, collectAuthoritiesFromRoles(authenticatedUser.getRoles()));
 		usernamePasswordAuthenticationToken.setDetails(authenticatedUser);
 		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 	}
@@ -92,12 +89,12 @@ public class UtilContextHelper {
 	}
 
 	public boolean hasAnyRoles(List<String> roles) throws AppServiceUnauthorizedException {
-		if(getAuthenticatedUser()==null){
+		if (getAuthenticatedUser() == null) {
 			throw new AppServiceUnauthorizedException("Cannot informations without authentication");
 		}
 
-		for(String role : roles){
-			if(hasRole(role)){
+		for (String role : roles) {
+			if (hasRole(role)) {
 				return true;
 			}
 		}

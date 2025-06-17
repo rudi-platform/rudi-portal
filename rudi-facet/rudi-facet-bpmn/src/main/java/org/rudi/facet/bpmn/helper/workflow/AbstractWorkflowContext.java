@@ -40,8 +40,6 @@ import org.rudi.facet.generator.exception.GenerationException;
 import org.rudi.facet.generator.exception.GenerationModelNotFoundException;
 import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.generator.text.impl.TemplateGeneratorConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,8 +56,6 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, D extends AssetDescriptionDao<E>, A extends AssignmentHelper<E>> {
 
 	public static final String WK_C_FAILED_TO_SEND_MAIL_FOR = "WkC - Failed to send mail for ";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractWorkflowContext.class);
 
 	public static final String COMPUTE_POTENTIAL_OWNERS = "computePotentialOwners";
 
@@ -104,7 +100,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 * @param message
 	 */
 	public void info(String message) {
-		LOGGER.info("WkC - {}", message);
+		log.info("WkC - {}", message);
 	}
 
 	/**
@@ -118,7 +114,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	public void updateStatus(ScriptContext scriptContext, ExecutionEntity executionEntity, String statusValue,
 			String functionalStatusValue) {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
-		LOGGER.debug("WkC - Update {} to status {}", processInstanceBusinessKey, statusValue);
+		log.debug("WkC - Update {} to status {}", processInstanceBusinessKey, statusValue);
 		Status status = Status.valueOf(statusValue);
 		if (processInstanceBusinessKey != null && status != null && functionalStatusValue != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
@@ -128,12 +124,12 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 				assetDescription.setFunctionalStatus(functionalStatusValue);
 				assetDescription.setUpdatedDate(LocalDateTime.now());
 				assetDescriptionDao.save(assetDescription);
-				LOGGER.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
+				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
-				LOGGER.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);
+				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);
 			}
 		} else {
-			LOGGER.debug("WkC - Update {} to status {} skipped.", processInstanceBusinessKey, statusValue);
+			log.debug("WkC - Update {} to status {} skipped.", processInstanceBusinessKey, statusValue);
 		}
 	}
 
@@ -159,14 +155,14 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public void sendEMail(ScriptContext scriptContext, ExecutionEntity executionEntity, EMailData eMailData,
 			List<String> logins) {
-		LOGGER.debug("Send email to dedicated emails {}...", logins);
+		log.debug("Send email to dedicated emails {}...", logins);
 		try {
 			AssetDescriptionEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 			if (assetDescription != null && eMailData != null) {
 				sendEMail(executionEntity, assetDescription, eMailData, lookupEMailAddresses(lookupUsers(logins)));
 			}
 		} catch (Exception e) {
-			LOGGER.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
+			log.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
 		}
 	}
 
@@ -179,7 +175,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public void sendEMailToInitiator(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			EMailData eMailData) {
-		LOGGER.debug("Send email to initiator...");
+		log.debug("Send email to initiator...");
 		try {
 			AssetDescriptionEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 			if (assetDescription != null && eMailData != null) {
@@ -187,7 +183,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 						Arrays.asList(lookupEMailAddress(lookupUser(assetDescription.getInitiator()))));
 			}
 		} catch (Exception e) {
-			LOGGER.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
+			log.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
 		}
 	}
 
@@ -201,7 +197,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public void sendEMailToRole(ScriptContext scriptContext, ExecutionEntity executionEntity, EMailData eMailData,
 			String roleCode) {
-		LOGGER.debug("Send email to role...");
+		log.debug("Send email to role...");
 		try {
 			AssetDescriptionEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 			List<User> users = aclHelper.searchUsers(roleCode);
@@ -209,7 +205,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 				sendEMail(executionEntity, assetDescription, eMailData, lookupEMailAddresses(users));
 			}
 		} catch (Exception e) {
-			LOGGER.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
+			log.warn(WK_C_FAILED_TO_SEND_MAIL_FOR + executionEntity.getProcessDefinitionKey(), e);
 		}
 	}
 
@@ -223,7 +219,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public List<String> computePotentialOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			String roleName, String subject, String body) {
-		LOGGER.debug("computePotentialOwners...");
+		log.debug("computePotentialOwners...");
 		EMailData eMailData = null;
 		// On Calcul les données de EmailData que si un subject et un body ont été
 		// fournis
@@ -243,14 +239,14 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public List<String> computePotentialOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			String roleName, EMailData eMailData) {
-		LOGGER.debug("computePotentialOwners...");
+		log.debug("computePotentialOwners...");
 		List<String> assignees = null;
 		E assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		if (assetDescription != null) {
 			assignees = assignmentHelper.computeAssignees(assetDescription, roleName);
 			try {
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Assignees: {}", StringUtils.join(assignees, ", "));
+				if (log.isInfoEnabled()) {
+					log.info("Assignees: {}", StringUtils.join(assignees, ", "));
 				}
 				// Ici il faut calcule le contenue de recipients
 				// On envoie un mail à tous les potentialOwners si demandé
@@ -259,7 +255,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 							lookupEMailAddresses(lookupUsers(assignees)), roleName);
 				}
 			} catch (Exception e) {
-				LOGGER.warn("Failed to send email to " + assignees + " from " + assetDescription, e);
+				log.warn("Failed to send email to " + assignees + " from " + assetDescription, e);
 			}
 		}
 		return assignees;
@@ -275,18 +271,18 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 */
 	public String computeHumanPerformer(ScriptContext scriptContext, ExecutionEntity executionEntity, String roleName,
 			EMailData eMailData) {
-		LOGGER.debug("computeHumanPerformer...");
+		log.debug("computeHumanPerformer...");
 		String assignee = null;
 		E assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		if (assetDescription != null) {
 			assignee = assignmentHelper.computeAssignee(assetDescription, roleName);
 			try {
-				LOGGER.info("Assignees: {}", assignee);
+				log.info("Assignees: {}", assignee);
 				// Ici il faut calcule le contenue de result
 				sendEMail(executionEntity, assetDescription, eMailData,
 						Arrays.asList(lookupEMailAddress(lookupUser(assignee))));
 			} catch (Exception e) {
-				LOGGER.warn("Failed to send email to " + assignee + " from " + assetDescription, e);
+				log.warn("Failed to send email to " + assignee + " from " + assetDescription, e);
 			}
 		}
 		return assignee;
@@ -294,7 +290,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 
 	public String computeHumanPerformer(ScriptContext scriptContext, ExecutionEntity executionEntity, String roleName,
 			String subject, String body) {
-		LOGGER.debug("computeHumanPerformer...");
+		log.debug("computeHumanPerformer...");
 		EMailData eMailData = new EMailData(subject, body);
 		return computeHumanPerformer(scriptContext, executionEntity, roleName, eMailData);
 	}
@@ -320,7 +316,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 			result = assetDescriptionDao.findByUuid(uuid);
 		}
 		if (result == null) {
-			LOGGER.warn("WkC - No target for {}", processInstanceBusinessKey);
+			log.warn("WkC - No target for {}", processInstanceBusinessKey);
 		}
 		return result;
 	}
@@ -337,7 +333,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 		if (eMailData != null && CollectionUtils.isNotEmpty(emailRecipients)) {
 			for (String emailRecipient : emailRecipients) {
 				if (StringUtils.isNotEmpty(emailRecipient)) {
-					LOGGER.info("Send mail to {}", emailRecipient);
+					log.info("Send mail to {}", emailRecipient);
 					EMailDescription emailDescription = new EMailDescription();
 					emailDescription
 							.setSubject(generateSubject(executionEntity, assetDescription, eMailData, roleName));

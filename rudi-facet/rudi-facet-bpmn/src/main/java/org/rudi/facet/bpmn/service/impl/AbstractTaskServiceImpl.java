@@ -3,6 +3,8 @@
  */
 package org.rudi.facet.bpmn.service.impl;
 
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -11,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import jakarta.annotation.Nullable;
-import jakarta.annotation.PostConstruct;
 import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -22,10 +22,9 @@ import org.activiti.engine.delegate.event.ActivitiEntityEvent;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.history.HistoricActivityInstance;
-import org.activiti.engine.history.HistoricDetail;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,12 +33,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Action;
 import org.rudi.bpmn.core.bean.AssetDescription;
 import org.rudi.bpmn.core.bean.Form;
-import org.rudi.bpmn.core.bean.HistoricInformation;
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.BpmnInitializationException;
@@ -52,7 +50,6 @@ import org.rudi.facet.bpmn.helper.workflow.AssetDescriptionHelper;
 import org.rudi.facet.bpmn.helper.workflow.AssignmentHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.helper.workflow.HistoricHelper;
-import org.rudi.facet.bpmn.mapper.workflow.HistoricInformationMapper;
 import org.rudi.facet.bpmn.service.AssetDescriptionActionListener;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.TaskConstants;
@@ -66,10 +63,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_USER_TASK_ID;
 
 /**
  * @param <E> l'entité
@@ -90,8 +88,6 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTaskServiceImpl.class);
 
 	private static final String INVALID_ASSET_DESCRIPTION_UUID_MESSAGE = "Invalid asset Uuid";
-
-	private static final String ACTION_VARIABLE_NAME = "action";
 
 	private static final Map<String, String> EXECUTION_ENTITIES = new HashMap<>();
 
@@ -134,9 +130,6 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 	@Autowired
 	private HistoricHelper historicHelper;
-
-	@Autowired
-	private HistoricInformationMapper historicInformationMapper;
 
 	protected AbstractTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService, R assetDescriptionDao,
@@ -333,7 +326,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 					LOGGER.debug("DoIt on asset {}", processInstanceBusinessKey);
 					E assetDescriptionEntity = loadAndUpdateAssetDescription(uuid);
 					Map<String, Object> variables = buildProcessVariables(assetDescriptionEntity);
-					variables.put(ACTION_VARIABLE_NAME, actionName);
+					variables.put(HistoricHelper.ACTION_VARIABLE_NAME, actionName);
 					org.activiti.engine.TaskService taskService = processEngine.getTaskService();
 					taskService.complete(taskId, variables);
 					LOGGER.debug("Done on task {}=>{}", taskId, actionName);
@@ -612,6 +605,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 			variables.put(TaskConstants.STATUS, assetDescriptionEntity.getStatus().name());
 			variables.put(TaskConstants.FUNCTIONAL_STATUS, assetDescriptionEntity.getFunctionalStatus());
 			variables.put(TaskConstants.DESCRIPTION, assetDescriptionEntity.getDescription());
+			variables.put(TaskConstants.INITIATOR, assetDescriptionEntity.getInitiator());
 
 			fillProcessVariables(variables, assetDescriptionEntity);
 
@@ -664,23 +658,18 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 	protected void cacheEntiy(ActivitiEvent event) {
 		ActivitiEntityEvent ea = (ActivitiEntityEvent) event;
-		if (ea.getEntity() instanceof ExecutionEntity) {
-			ExecutionEntity executionEntity = (ExecutionEntity) ea.getEntity();
-			if (executionEntity.getBusinessKey() != null) {
-				// stocke ici lors de la création de l'entité d'exécution d'un nouveau workflow,
-				// la business key si elle est pas nulle
-				// dans le workflow simple, on passe ici 2 fois (pour chaque étape)
-				// mais la deuxième fois, il n'y a pas de businessKey
-				EXECUTION_ENTITIES.put(executionEntity.getProcessInstanceId(), executionEntity.getBusinessKey());
-			}
+		if (ea.getEntity() instanceof ExecutionEntity executionEntity && executionEntity.getBusinessKey() != null) {
+			// stocke ici lors de la création de l'entité d'exécution d'un nouveau workflow,
+			// la business key si elle est pas nulle
+			// dans le workflow simple, on passe ici 2 fois (pour chaque étape)
+			// mais la deuxième fois, il n'y a pas de businessKey
+			EXECUTION_ENTITIES.put(executionEntity.getProcessInstanceId(), executionEntity.getBusinessKey());
 		}
 	}
 
 	protected void assign(ActivitiEvent event) {
 		ActivitiEntityEvent ea = (ActivitiEntityEvent) event;
-		if (ea.getEntity() instanceof org.activiti.engine.task.Task) {
-			org.activiti.engine.task.Task originalTask = (org.activiti.engine.task.Task) ea.getEntity();
-
+		if (ea.getEntity() instanceof org.activiti.engine.task.Task originalTask) {
 			String processInstanceBusinessKey = bpmnHelper.lookupProcessInstanceBusinessKey(originalTask);
 			if (processInstanceBusinessKey == null) {
 				// si on a pas trouvé la business key, c'est sans doute que tout ça n'a pas été
@@ -839,7 +828,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	}
 
 	@Override
-	public List<HistoricInformation> getTaskHistoryByTaskId(String taskId, Boolean asAdmin)
+	public ProcessHistoricInformation getTaskHistoryByTaskId(String taskId, Boolean asAdmin)
 			throws InvalidDataException {
 		org.activiti.engine.task.Task task = bpmnHelper.queryTaskById(taskId, asAdmin);
 
@@ -853,127 +842,64 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 			throw new IllegalArgumentException("Asset does not exists");
 		}
 
-		// collecte des historiques de workflow
-		Page<HistoricActivityInstance> historicActivityInstances = historicHelper
-				.collectHistoricActivitiByProcessInstanceId(task.getProcessInstanceId(), Pageable.unpaged());
-		List<HistoricActivityInstance> filteredHistoricActivityInstances = historicHelper
-				.filterHistoricActivityInstances(historicActivityInstances.getContent());
+		List<HistoricProcessInstance> historicProcessInstances = historicHelper
+				.collectHistoricProcess(List.of(task.getProcessInstanceId()));
+		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
+				.convertHistoricProcessInstance(historicProcessInstances);
 
-		List<HistoricInformation> result = historicInformationMapper.entitiesToDto(filteredHistoricActivityInstances);
-		convertAssignees(result, assetDescription.getInitiator());
-		convertActions(filteredHistoricActivityInstances, result);
-		return result;
+		// On associe les ProcessHistoricInformation aux HistoricTaskInstance
+		if (CollectionUtils.isNotEmpty(processHistoricInformations)) {
+			for (int i = 0; i < processHistoricInformations.size(); i++) {
+				ProcessHistoricInformation processHistoricInformation = processHistoricInformations.get(i);
+				historicHelper.enhancedProcessHistoricInformation(processHistoricInformation);
+			}
+
+			return processHistoricInformations.stream().findFirst().orElse(null);
+		}
+
+		return null;
 	}
 
 	@Override
-	public List<HistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException {
-		// collecte des historiques de workflow
-		Page<HistoricActivityInstance> historicActivityInstances = historicHelper
-				.collectHistoricActivitiByAssetUuid(assetUuid, Pageable.unpaged());
-		List<HistoricActivityInstance> filteredHistoricActivityInstances = historicHelper
-				.filterHistoricActivityInstances(historicActivityInstances.getContent());
-		List<HistoricInformation> result = historicInformationMapper.entitiesToDto(filteredHistoricActivityInstances);
-
+	public List<ProcessHistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException {
 		E assetDescription = assetDescriptionDao.findByUuid(assetUuid);
 		if (assetDescription == null) {
 			throw new IllegalArgumentException("Asset does not exists");
 		}
 
-		convertAssignees(result, assetDescription.getInitiator());
-		convertActions(filteredHistoricActivityInstances, result);
-		return result;
-	}
+		// collecte des historiques de workflow pour l'asset pas son UUID
+		Page<HistoricActivityInstance> historicActivityInstances = historicHelper
+				.collectHistoricActivitiByAssetUuid(assetUuid, Pageable.unpaged());
+		// collectete des processInstanceId associées de manière à avoir toutes les instances
+		List<String> processInstanceIds = historicActivityInstances.stream()
+				.map(HistoricActivityInstance::getProcessInstanceId).distinct().toList();
 
-	protected void convertActions(List<HistoricActivityInstance> historicActivitiInstances,
-			List<HistoricInformation> result) {
-		if (CollectionUtils.isNotEmpty(historicActivitiInstances) && CollectionUtils.isNotEmpty(result)
-				&& result.size() == historicActivitiInstances.size()) {
-			for (int i = 0; i < result.size(); i++) {
-				HistoricActivityInstance historicActivityInstance = historicActivitiInstances.get(i);
-				HistoricInformation historicInformation = result.get(i);
-				historicInformation.setAction(convertAction(historicActivityInstance));
+		// Conversion des processInstanceIds en ProcessHistoricInformation
+		List<HistoricProcessInstance> historicProcessInstances = historicHelper
+				.collectHistoricProcess(processInstanceIds);
+		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
+				.convertHistoricProcessInstance(historicProcessInstances);
+
+		// On associe les ProcessHistoricInformation aux HistoricTaskInstance
+		if (CollectionUtils.isNotEmpty(processHistoricInformations)) {
+			for (int i = 0; i < processHistoricInformations.size(); i++) {
+				ProcessHistoricInformation processHistoricInformation = processHistoricInformations.get(i);
+				historicHelper.enhancedProcessHistoricInformation(processHistoricInformation);
 			}
 		}
+
+		return processHistoricInformations;
 	}
 
-	protected String convertAction(HistoricActivityInstance historicActivityInstance) {
-		String result = null;
-		Page<HistoricDetail> historicVariables = historicHelper
-				.collectHistoricDetailByActivitiInstanceId(historicActivityInstance.getId(), Pageable.unpaged());
-		for (HistoricDetail historicVariable : historicVariables) {
-			if (historicVariable instanceof HistoricDetailVariableInstanceUpdateEntity) {
-				HistoricDetailVariableInstanceUpdateEntity item = (HistoricDetailVariableInstanceUpdateEntity) historicVariable;
-				if (item.getName().equalsIgnoreCase(ACTION_VARIABLE_NAME)) {
-					result = translateAction(historicActivityInstance, item);
-					break;
-				}
-			}
-		}
-		return result;
+	@Override
+	public void stopTaskByTaskId(String taskId) throws InvalidDataException {
+		bpmnHelper.stopTaskByTaskId(taskId);
 	}
 
-	protected String translateAction(HistoricActivityInstance historicActivityInstance,
-			HistoricDetailVariableInstanceUpdateEntity item) {
-		String value = null;
-		List<Action> actions = bpmnHelper.extractActions(getProcessDefinitionKey(),
-				historicActivityInstance.getProcessDefinitionId(), historicActivityInstance.getActivityId());
-		if (CollectionUtils.isNotEmpty(actions)) {
-			value = actions.stream().filter(action -> action.getName().equalsIgnoreCase(item.getTextValue()))
-					.findFirst().map(Action::getLabel).orElse(null);
-		}
-		if (value == null) {
-			value = item.getValue().toString();
-		}
-		return value;
-	}
-
-	protected void convertAssignees(List<HistoricInformation> result, String initiator) {
-		if (CollectionUtils.isNotEmpty(result)) {
-			Map<String, String> userNames = new HashMap<>();
-			for (HistoricInformation historicInformation : result) {
-				if (HistoricHelper.START_EVENT_TYPE.equalsIgnoreCase(historicInformation.getActivityType())) {
-					prepareConvertAssignee(userNames, initiator);
-					historicInformation.setAssignee(userNames.get(initiator));
-				} else if (StringUtils.isNotEmpty(historicInformation.getAssignee())) {
-					prepareConvertAssignee(userNames, historicInformation);
-					historicInformation.setAssignee(userNames.get(historicInformation.getAssignee()));
-				}
-			}
-		}
-	}
-
-	protected void prepareConvertAssignee(Map<String, String> userNames, String assignee) {
-		if (!userNames.containsKey(assignee)) {
-			try {
-				User user = getAssignmentHelper().getUserByLogin(assignee);
-				if (user != null && (StringUtils.isNotEmpty(user.getFirstname())
-						|| StringUtils.isNotEmpty(user.getLastname()))) {
-					userNames.put(assignee, convertAssignee(user));
-				} else {
-					userNames.put(assignee, assignee);
-				}
-			} catch (Exception e) {
-				userNames.put(assignee, assignee);
-			}
-		}
-	}
-
-	protected void prepareConvertAssignee(Map<String, String> userNames, HistoricInformation historicInformation) {
-		prepareConvertAssignee(userNames, historicInformation.getAssignee());
-	}
-
-	protected String convertAssignee(User user) {
-		StringBuilder userName = new StringBuilder();
-		if (StringUtils.isNotEmpty(user.getFirstname())) {
-			userName.append(user.getFirstname());
-		}
-		if (StringUtils.isNotEmpty(user.getLastname())) {
-			if (userName.length() > 0) {
-				userName.append(' ');
-			}
-			userName.append(user.getLastname());
-		}
-		return userName.toString();
+	@Override
+	public void stopTaskByByAssetUuid(UUID assetUuid) throws InvalidDataException {
+		String taskId = getAssociatedTaskId(assetUuid);
+		bpmnHelper.stopTaskByTaskId(taskId);
 	}
 
 }

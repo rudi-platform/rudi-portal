@@ -12,8 +12,6 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import lombok.Builder;
@@ -22,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DocumentContent {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentContent.class);
 
 	private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 	private static final String TEMP_FILE_EXTENSION = ".file";
@@ -177,7 +174,7 @@ public class DocumentContent {
 				fileStream.close();
 				fileStream = null;
 			} catch (Exception e) {
-				LOGGER.debug("Impossible de clore le flux:{}", this, e);
+				log.debug("Impossible de clore le flux:{}", this, e);
 			}
 		}
 	}

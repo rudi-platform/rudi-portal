@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import org.hibernate.exception.DataException;
 import org.rudi.bpmn.core.bean.AssetDescription;
 import org.rudi.bpmn.core.bean.Form;
-import org.rudi.bpmn.core.bean.HistoricInformation;
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
@@ -123,7 +123,7 @@ public interface TaskService<D extends AssetDescription> {
 	 * @return
 	 * @throws InvalidDataException
 	 */
-	List<HistoricInformation> getTaskHistoryByTaskId(String taskId, Boolean asAdmin) throws InvalidDataException;
+	ProcessHistoricInformation getTaskHistoryByTaskId(String taskId, Boolean asAdmin) throws InvalidDataException;
 
 	/**
 	 * Retourne l'historique des workflows associés à l'asset
@@ -132,5 +132,9 @@ public interface TaskService<D extends AssetDescription> {
 	 * @return
 	 * @throws InvalidDataException
 	 */
-	List<HistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException;
+	List<ProcessHistoricInformation> getTaskHistoryByAssetUuid(UUID assetUuid) throws InvalidDataException;
+
+	void stopTaskByTaskId(String taskId) throws InvalidDataException;
+
+	void stopTaskByByAssetUuid(UUID assetUuid) throws InvalidDataException;
 }

@@ -2025,7 +2025,7 @@
 						"description": "Type de média",
 						"required": true,
 						"schema": {
-							"$ref": "KindOfData"
+							"$ref": "./../../../rudi-facet/rudi-facet-kmedia/src/main/resources/openapi/rudi-kmedia-model.yml#/components/schemas/KindOfData"
 						}
 					}
 				],
@@ -2078,7 +2078,7 @@
 						"description": "Type de média",
 						"required": true,
 						"schema": {
-							"$ref": "KindOfData"
+							"$ref": "./../../../rudi-facet/rudi-facet-kmedia/src/main/resources/openapi/rudi-kmedia-model.yml#/components/schemas/KindOfData"
 						},
 						"example": "LOGO"
 					}
@@ -2135,7 +2135,7 @@
 						"description": "Type de média",
 						"required": true,
 						"schema": {
-							"$ref": "KindOfData"
+							"$ref": "./../../../rudi-facet/rudi-facet-kmedia/src/main/resources/openapi/rudi-kmedia-model.yml#/components/schemas/KindOfData"
 						},
 						"example": "LOGO"
 					}
@@ -3529,6 +3529,56 @@
 				}
 			}
 		},
+		"/tasks/my-historics": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique des tâches d'un utilisateur connecté",
+				"description": "Récupération de l'historique des tâches d'un utilisateur connecté",
+				"operationId": "getMyHistoricInformations",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
 		"/projects/tasks/draft-form": {
 			"get": {
 				"tags": [
@@ -3582,6 +3632,32 @@
 					},
 					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/projects/tasks/{task-id}": {
+			"delete": {
+				"tags": [
+					"task"
+				],
+				"summary": "Suppression d'une tâche",
+				"description": "Suppression d'une tâche",
+				"operationId": "deleteProjectTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Tâche supprimée avec succès"
 					}
 				}
 			}
@@ -3958,10 +4034,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
-									}
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
 								}
 							}
 						}
@@ -4176,6 +4249,32 @@
 					},
 					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/linked-dataset/tasks/{task-id}": {
+			"delete": {
+				"tags": [
+					"task"
+				],
+				"summary": "Suppression d'une tâche",
+				"description": "Suppression d'une tâche",
+				"operationId": "deleteLinkedDatasetTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Tâche supprimée avec succès"
 					}
 				}
 			}
@@ -4586,10 +4685,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
-									}
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
 								}
 							}
 						}
@@ -4643,6 +4739,32 @@
 					},
 					"503": {
 						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/new-dataset-request/tasks/{task-id}": {
+			"delete": {
+				"tags": [
+					"task"
+				],
+				"summary": "Suppression d'une tâche",
+				"description": "Suppression d'une tâche",
+				"operationId": "deleteNewDatasetRequestTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Tâche supprimée avec succès"
 					}
 				}
 			}
@@ -5019,10 +5141,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/HistoricInformation"
-									}
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
 								}
 							}
 						}

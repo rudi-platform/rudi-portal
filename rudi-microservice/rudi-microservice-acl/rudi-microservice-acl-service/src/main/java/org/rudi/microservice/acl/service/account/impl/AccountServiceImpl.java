@@ -44,18 +44,18 @@ import org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegis
 import org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity;
 import org.rudi.microservice.acl.storage.entity.role.RoleEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 	private static final int HEURE_EN_SECONDE = 60 * 60;
 	/**
 	 * Validity duration for an account registration
@@ -132,8 +132,9 @@ public class AccountServiceImpl implements AccountService {
 			throw new LoginAlreadyExistsException(account.getLogin());
 		}
 
-		AccountRegistrationEntity duplicatedAccountRegistration = accountRegistrationDao.findByLogin(account.getLogin());
-		if(duplicatedAccountRegistration != null) {
+		AccountRegistrationEntity duplicatedAccountRegistration = accountRegistrationDao
+				.findByLogin(account.getLogin());
+		if (duplicatedAccountRegistration != null) {
 			// Si la demande a déjà été faite précédemment, on la supprime pour éviter les doublons en base
 			accountRegistrationDao.delete(duplicatedAccountRegistration);
 		}
@@ -185,7 +186,7 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			emailHelper.sendAccountCreationConfirmation(user, Locale.FRENCH);
 		} catch (Exception e) {
-			LOGGER.error("L'envoi du mail d'activation du compte a échoué", e);
+			log.error("L'envoi du mail d'activation du compte a échoué", e);
 		}
 
 		accountRegistrationDao.delete(accountRegistration);

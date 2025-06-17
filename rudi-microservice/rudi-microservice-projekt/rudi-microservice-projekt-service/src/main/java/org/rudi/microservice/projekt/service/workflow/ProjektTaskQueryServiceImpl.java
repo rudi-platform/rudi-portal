@@ -8,14 +8,15 @@ import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
+import org.rudi.facet.bpmn.helper.workflow.HistoricHelper;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskQueryServiceImpl;
 import org.rudi.microservice.projekt.core.bean.workflow.ProjektTaskSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +25,16 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class ProjektTaskQueryServiceImpl extends AbstractTaskQueryServiceImpl<ProjektTaskSearchCriteria> {
+public class ProjektTaskQueryServiceImpl
+		extends AbstractTaskQueryServiceImpl<ProjektTaskSearchCriteria, HistoricSearchCriteria> {
 
-	@Autowired
-	private ProjektFormEnhancerHelper projektFormEnhancerHelper;
+	private final ProjektFormEnhancerHelper projektFormEnhancerHelper;
 
 	public ProjektTaskQueryServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
-			UtilContextHelper utilContextHelper, ApplicationContext applicationContext) {
-		super(processEngine, formHelper, bpmnHelper, utilContextHelper, applicationContext);
+			HistoricHelper historicHelper, UtilContextHelper utilContextHelper,
+			ProjektFormEnhancerHelper projektFormEnhancerHelper, ApplicationContext applicationContext) {
+		super(processEngine, formHelper, bpmnHelper, historicHelper, utilContextHelper, applicationContext);
+		this.projektFormEnhancerHelper = projektFormEnhancerHelper;
 	}
 
 	@Override

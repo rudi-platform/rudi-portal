@@ -21,22 +21,21 @@ import org.rudi.microservice.selfdata.service.exception.MissingProviderException
 import org.rudi.microservice.selfdata.service.helper.selfdatamatchingdata.SelfdataMatchingDataHelper;
 import org.rudi.microservice.selfdata.storage.dao.selfdatatokentuple.SelfdataTokenTupleDao;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataTokenTupleEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SelfdataPairingUtils {
 	private final SelfdataTokenTupleDao selfdataTokenDao;
 	private final ProviderHelper providerHelper;
 	private final SelfdataMatchingDataHelper selfdataMatchingDataHelper;
 	private final DocumentContentHelper documentContentHelper;
 	private final EverythingAllowedAuthorizationPolicy authorizationPolicy;
-	private static final Logger LOGGER = LoggerFactory.getLogger(SelfdataPairingUtils.class);
 
 	public SelfdataTokenTupleEntity savePairingTokenForUser(UUID token, UUID userUuid, UUID datasetUuid,
 			UUID nodeProviderUuid) {
@@ -101,7 +100,7 @@ public class SelfdataPairingUtils {
 	 */
 	private MatchingField createFieldForMatchingData(Map<String, Object> informationRequestMap, String matchingDataCode,
 			Boolean isRequired) throws AppServiceException {
-		LOGGER.info("Donnée pivot en cours de traitement: {}", matchingDataCode);
+		log.info("Donnée pivot en cours de traitement: {}", matchingDataCode);
 		val matchingDataValue = informationRequestMap.get(matchingDataCode);
 		if (Boolean.TRUE.equals(isRequired) && matchingDataValue == null) { // Donnée pivot requise non renseignée => incohérence
 			throw new AppServiceException("Une donnée pivot obligatoire n'a pas été retrouvée");
@@ -153,7 +152,7 @@ public class SelfdataPairingUtils {
 			documentContentHelper.deleteAttachment(attachmentUuid, authorizationPolicy);
 		} catch (AppServiceNotFoundException | AppServiceForbiddenException
 				| AppServiceUnauthorizedException exception) {
-			LOGGER.error("Une erreur est survenue lors de la suppression d'une pièce jointe.", exception);
+			log.error("Une erreur est survenue lors de la suppression d'une pièce jointe.", exception);
 		}
 	}
 }

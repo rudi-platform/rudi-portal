@@ -30,8 +30,6 @@ import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserPageResult;
 import org.rudi.facet.acl.bean.UserType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +49,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -60,13 +59,12 @@ import reactor.core.publisher.Mono;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ACLHelper {
 
 	private static final String ORDER_PARAMETER = "order";
 
 	private static final String OFFSET_PARAMETER = "offset";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ACLHelper.class);
 
 	private static final String LIMIT_PARAMETER = "limit";
 	private static final String ACTIVE_PARAMETER = "active";
@@ -147,7 +145,7 @@ public class ACLHelper {
 		ClientResponse response = loadBalancedWebClient.delete().uri(buildUsersGetDeleteURL(userUuid))
 				.exchangeToMono(Mono::just).block();
 		if (response != null && response.statusCode() != HttpStatus.OK) {
-			LOGGER.warn("Failed to delete user :{}", userUuid);
+			log.warn("Failed to delete user :{}", userUuid);
 		}
 	}
 

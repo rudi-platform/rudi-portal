@@ -5,8 +5,6 @@ package org.rudi.microservice.acl.facade.config.security.anonymous;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,14 +21,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  *
  */
+@Slf4j
 public class AnonymousAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AnonymousAuthenticationProcessingFilter.class);
 
 	private String loginAnonymous;
 
@@ -55,15 +53,15 @@ public class AnonymousAuthenticationProcessingFilter extends AbstractAuthenticat
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		if (!HttpMethod.POST.name().equals(request.getMethod())) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Authentication method not supported. Request method: {}", request.getMethod());
+			if (log.isDebugEnabled()) {
+				log.debug("Authentication method not supported. Request method: {}", request.getMethod());
 			}
 			throw new AuthenticationCredentialsNotFoundException("Authentication method not supported");
 		}
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginAnonymous,
 				loginAnonymous, null);
-		LOGGER.debug("login {} founded : try to authenticate", token);
+		log.debug("login {} founded : try to authenticate", token);
 		return getAuthenticationManager().authenticate(token);
 	}
 

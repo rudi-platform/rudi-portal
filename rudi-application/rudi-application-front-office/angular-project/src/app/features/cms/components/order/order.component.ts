@@ -23,9 +23,13 @@ export class CmsOrderComponent {
     ) {
     }
 
+
     private _selectedItem: OrderItem;
 
     get selectedItem(): OrderItem {
+        if (!this._selectedItem) {
+            return this.items[0];
+        }
         return this._selectedItem;
     }
 

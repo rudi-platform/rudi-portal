@@ -450,6 +450,52 @@
 						"type": "string"
 					}
 				}
+			},
+			"ProcessHistoricInformation": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"functionnalStatus"	: {
+						"type": "string"
+					},
+					"businessKey": {
+						"type": "string"
+					},
+					"processDefinitionVersion": {
+						"type": "string"
+					},
+					"processDefinitionName": {
+						"type": "string"
+					},
+					"processDefinitionKey": {
+						"type": "string"
+					},
+					"startTime": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endTime": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"startUser": {
+						"type": "string"
+					},
+					"deleteReason": {
+						"type": "string"
+					},
+					"historicInformations": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/HistoricInformation"
+						}
+					}
+				}
 			}
 		}
 	}

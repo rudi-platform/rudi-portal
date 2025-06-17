@@ -2,9 +2,13 @@ package org.rudi.microservice.strukture.service.helper;
 
 import java.util.UUID;
 
+import javax.net.ssl.SSLException;
+
 import org.rudi.common.core.webclient.HttpClientHelper;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Report;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,18 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReportHelper {
 
-	private static final String REPORT_PATH_PREFIX = "api/v1/";
+	private static final String REPORT_PATH_PREFIX = "catalog/v1/";
 	private static final String REPORT_PATH = "organizations/%s/report";
 	private final HttpClientHelper httpClientHelper;
 
+	@Autowired
+	@Qualifier("rudi_strukture_oauth2")
+	private WebClient webClient;
 
-	public void sendReport(Report report, String url) {
-		WebClient client = WebClient
-				.builder()
-				.baseUrl(url)
-				.build();
+
+	public void sendReport(Report report, String url) throws SSLException {
+
+
 		log.info("Sending report {}\n to {}", report, url);
-		client.put()
+		webClient.put()
+				.uri(url)
+				//.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.body(Mono.just(report), new ParameterizedTypeReference<Report>() {
 				})
 				.retrieve().bodyToMono(Void.class).block();
@@ -43,10 +51,6 @@ public class ReportHelper {
 
 		if (!nodeUrl.endsWith("/")) {
 			builder.append("/");
-		}
-
-		if (!nodeUrl.contains(REPORT_PATH_PREFIX)) {
-			builder.append(REPORT_PATH_PREFIX);
 		}
 
 		builder.append(REPORT_PATH);

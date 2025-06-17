@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-strukture</artifactId>
-		<version>3.2.3</version>
+		<version>3.2.4</version>
 	</parent>
 
 	<artifactId>rudi-microservice-strukture-facade</artifactId>
@@ -188,7 +188,8 @@
 						Form=org.rudi.bpmn.core.bean.Form,
 						AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,
 						Task=org.rudi.bpmn.core.bean.Task,
-						HistoricInformation=org.rudi.bpmn.core.bean.HistoricInformation
+						HistoricInformation=org.rudi.bpmn.core.bean.HistoricInformation,
+						ProcessHistoricInformation=org.rudi.bpmn.core.bean.ProcessHistoricInformation
 					</schemaMappings>
 					<generatorName>spring</generatorName>
 					<library>spring-boot</library>

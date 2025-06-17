@@ -58,7 +58,7 @@ public class OAuth2EndpointUtils {
 		return parameters;
 	}
 
-	static public Map<String, Object> getParametersIfMatchesAuthorizationCodeGrantRequest(HttpServletRequest request,
+	public static Map<String, Object> getParametersIfMatchesAuthorizationCodeGrantRequest(HttpServletRequest request,
 			String... exclusions) {
 		if (!matchesAuthorizationCodeGrantRequest(request)) {
 			return Collections.emptyMap();

@@ -28,4 +28,6 @@ public final class TaskConstants {
 
 	public static final String UPDATED_DATE = "updatedDate";
 
+	public static final String INITIATOR = "initiator";
+
 }

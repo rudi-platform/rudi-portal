@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.apigateway.exceptions.ApiGatewayApiException;
@@ -84,7 +86,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandler {
 	 * @return un booleen indiquant la présence du lien (vrai si existence d'un lien)
 	 */
 	public boolean isLinkedToOrganization(Metadata metadata, Provider provider) {
-		Optional<LinkedProducer> optLinkedProducer = provider.getLinkedProducers().stream()
+		Optional<LinkedProducer> optLinkedProducer = CollectionUtils.emptyIfNull(provider.getLinkedProducers()).stream()
 				.filter(lp -> lp.getOrganization().getUuid().equals(metadata.getProducer().getOrganizationId()))
 				.findFirst();
 

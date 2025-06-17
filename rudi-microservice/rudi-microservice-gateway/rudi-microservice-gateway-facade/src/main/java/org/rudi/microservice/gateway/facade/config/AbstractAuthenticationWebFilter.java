@@ -11,8 +11,6 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -31,14 +29,14 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
  * @author FNI18300
  */
+@Slf4j
 public abstract class AbstractAuthenticationWebFilter implements WebFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAuthenticationWebFilter.class);
 
 	private ServerSecurityContextRepository securityContextRepository = NoOpServerSecurityContextRepository
 			.getInstance();
@@ -84,13 +82,13 @@ public abstract class AbstractAuthenticationWebFilter implements WebFilter {
 		String requestAuthentTokenHeader = exchange.getRequest().getHeaders()
 				.getFirst(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY);
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Header: {}", requestAuthentTokenHeader);
+		if (log.isDebugEnabled()) {
+			log.debug("Header: {}", requestAuthentTokenHeader);
 		}
 		if (requestAuthentTokenHeader == null) {
 			return Mono.empty();
 		} else if (!requestAuthentTokenHeader.startsWith(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX)) {
-			LOGGER.error("Le token ne commence pas avec la chaine Bearer");
+			log.error("Le token ne commence pas avec la chaine Bearer");
 			return Mono.empty();
 		} else {
 			final String token = requestAuthentTokenHeader

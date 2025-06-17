@@ -37,7 +37,6 @@ import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.service.TaskConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -59,16 +58,12 @@ public class BpmnHelper {
 	@Value("${rudi.bpmn.role.name}")
 	private String adminRoleName;
 
-	@Autowired
-	private ProcessEngine processEngine;
+	private final ProcessEngine processEngine;
 
-	@Autowired
-	private UtilContextHelper utilContextHelper;
+	private final UtilContextHelper utilContextHelper;
 
-	@Autowired
-	private FormHelper formHelper;
+	private final FormHelper formHelper;
 
-	@Autowired
 	private final ApplicationContext applicationContext;
 
 	/**
@@ -550,6 +545,26 @@ public class BpmnHelper {
 		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
 		return taskService.getIdentityLinksForTask(taskId).stream().filter(element -> element.getType().equals("USER"))
 				.map(IdentityLink::getUserId).collect(Collectors.toList()).contains(login);
+	}
+
+	public void stopTaskByTaskId(String taskId) {
+		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
+		TaskQuery taskQuery = taskService.createTaskQuery();
+		applyTaskIdCriteria(taskQuery, taskId);
+		applySortCriteria(taskQuery);
+
+		List<org.activiti.engine.task.Task> tasks = taskQuery.list();
+		if (CollectionUtils.isNotEmpty(tasks)) {
+			ProcessInstance processInstance = lookupProcessInstance(tasks.get(0));
+			stopProcessInstance(processInstance.getId());
+		} else {
+			log.warn("No task found with id {}", taskId);
+		}
+	}
+
+	public void stopProcessInstance(String processInstanceId) {
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(processInstanceId, "Process stopped by user");
 	}
 
 	/**

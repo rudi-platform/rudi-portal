@@ -2,8 +2,10 @@ package org.rudi.microservice.selfdata.facade.controller;
 
 import java.util.List;
 
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
+import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.service.TaskQueryService;
 import org.rudi.microservice.selfdata.facade.controller.api.TasksApi;
 import org.springframework.data.domain.Page;
@@ -18,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TasksController implements TasksApi {
 
-	private final TaskQueryService<SelfdataTaskSearchCriteria> taskQueryService;
+	private final TaskQueryService<SelfdataTaskSearchCriteria, HistoricSearchCriteria> taskQueryService;
 
 	@Override
 	public ResponseEntity<List<Task>> searchTasks(String title, String description, List<String> processDefinitionKeys,
@@ -33,5 +35,10 @@ public class TasksController implements TasksApi {
 	@Override
 	public ResponseEntity<Task> getTask(String taskId) throws Exception {
 		return ResponseEntity.ok(taskQueryService.getTask(taskId));
+	}
+
+	@Override
+	public ResponseEntity<List<ProcessHistoricInformation>> getMyHistoricInformations() throws Exception {
+		return ResponseEntity.ok(taskQueryService.getMyHistoricInformations());
 	}
 }

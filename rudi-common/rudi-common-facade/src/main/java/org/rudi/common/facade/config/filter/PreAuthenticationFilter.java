@@ -11,8 +11,6 @@ import java.util.Set;
 
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -22,15 +20,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author FNI18300
  *
  */
+@Slf4j
 public class PreAuthenticationFilter implements Filter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PreAuthenticationFilter.class);
 
 	public static final String SEC_LOGIN = "sec-login";
 	public static final String SEC_LASTNAME = "sec-lastname";
@@ -60,13 +58,13 @@ public class PreAuthenticationFilter implements Filter {
 			if (login != null) {
 				SecurityContextHolder.getContext().setAuthentication(createAuthentication(httpServletRequest));
 
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("Populated SecurityContextHolder with pre-auth token: '{}'",
+				if (log.isInfoEnabled()) {
+					log.info("Populated SecurityContextHolder with pre-auth token: '{}'",
 							SecurityContextHolder.getContext().getAuthentication());
 				}
 			} else {
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info("SecurityContextHolder not populated with pre-auth token");
+				if (log.isInfoEnabled()) {
+					log.info("SecurityContextHolder not populated with pre-auth token");
 				}
 			}
 		}

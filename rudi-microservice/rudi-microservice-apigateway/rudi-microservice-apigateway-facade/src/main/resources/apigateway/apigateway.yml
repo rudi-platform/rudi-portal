@@ -2,7 +2,7 @@ spring:
   application:
     name: rudi-apigateway
   cloud:
-    gateway:
+    gateway.server.webflux:
       routes:
         - id: test
           uri: https://www.google.fr

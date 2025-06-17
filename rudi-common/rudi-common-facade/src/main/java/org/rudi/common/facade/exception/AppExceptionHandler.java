@@ -1,14 +1,10 @@
 package org.rudi.common.facade.exception;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import jakarta.validation.ValidationException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceExceptionsStatus;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.BusinessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +22,20 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+
+import jakarta.validation.ValidationException;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
+@Slf4j
 public class AppExceptionHandler {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AppExceptionHandler.class);
 
 	@ExceptionHandler(org.rudi.common.service.exception.AppServiceException.class)
 	protected ResponseEntity<Object> handleExceptionService(final AppServiceException ex) {
 
-		LOGGER.error(ex.getMessage(), ex);
+		log.error(ex.getMessage(), ex);
 
 		final AppServiceExceptionsStatus appExceptionStatusCode = ex.getAppExceptionStatusCode();
 		if (appExceptionStatusCode != null) {
@@ -61,7 +60,7 @@ public class AppExceptionHandler {
 
 	@ExceptionHandler(BusinessException.class)
 	protected ResponseEntity<Object> handleBusinessException(final BusinessException ex) {
-		LOGGER.error(ex.getMessage(), ex);
+		log.error(ex.getMessage(), ex);
 		ApiError apiError = new ApiError(ex.getTranslateKey(), ex.getMessage());
 		return ResponseEntity.status(ex.getAppExceptionStatusCode().getCustomHttpStatusCode()).body(apiError);
 	}
@@ -79,16 +78,16 @@ public class AppExceptionHandler {
 
 	@ExceptionHandler({ IllegalAccessException.class })
 	protected ResponseEntity<Object> handleIllegalAccessException(final Exception ex, final WebRequest request) {
-		LOGGER.error("Ressource not authorized");
+		log.error("Ressource not authorized");
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
 	@ExceptionHandler({ ValidationException.class, JsonParseException.class, HttpMessageNotReadableException.class,
 			MethodArgumentNotValidException.class, IllegalArgumentException.class, HttpMediaTypeException.class,
-			FileSizeLimitExceededException.class, MaxUploadSizeExceededException.class, MethodArgumentTypeMismatchException.class,
-			MissingRequestHeaderException.class, })
+			FileSizeLimitExceededException.class, MaxUploadSizeExceededException.class,
+			MethodArgumentTypeMismatchException.class, MissingRequestHeaderException.class, })
 	protected ResponseEntity<Object> handleValidationException(final Exception ex, final WebRequest request) {
-		LOGGER.error("Ressource not valid");
+		log.error("Ressource not valid");
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildBody(ex, HttpStatus.BAD_REQUEST));
 	}
 
@@ -99,7 +98,7 @@ public class AppExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<Object> handleException(final Exception ex, final WebRequest request) {
-		LOGGER.error("Unknown error", ex);
+		log.error("Unknown error", ex);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	}
 

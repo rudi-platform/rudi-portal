@@ -31,20 +31,19 @@ import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.buckets3.DocumentStorageService;
 import org.rudi.facet.buckets3.config.DocumentStorageConfiguration;
 import org.rudi.facet.buckets3.exception.DocumentStorageException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  *
  */
 @Service
+@Slf4j
 public class DocumentStorageServiceImpl implements DocumentStorageService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentStorageServiceImpl.class);
 
 	private static final String FILE_NAME = "filename";
 
@@ -106,7 +105,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
 			Blob blob = blobBuilder.build();
 			// Upload a file
 			String eTag = blobStore.putBlob(getBucketName(), blob, PutOptions.Builder.multipart(false));
-			LOGGER.debug(eTag);
+			log.debug(eTag);
 		} catch (Exception e) {
 			throw new DocumentStorageException("Failed to store document:" + key + " with matedata:" + userMetaDatas,
 					e);
@@ -237,7 +236,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
 				provider = Providers.withId(documentStorageConfiguration.getProviderId());
 				literalProvider = false;
 			} catch (NoSuchElementException exception) {
-				LOGGER.debug("provider {} not in supported list: {}", documentStorageConfiguration.getProviderId(),
+				log.debug("provider {} not in supported list: {}", documentStorageConfiguration.getProviderId(),
 						Providers.all());
 				literalProvider = true;
 			}

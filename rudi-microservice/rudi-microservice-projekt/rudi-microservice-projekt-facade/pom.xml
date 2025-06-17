@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-projekt</artifactId>
-		<version>3.2.3</version>
+		<version>3.2.4</version>
 	</parent>
 
 	<artifactId>rudi-microservice-projekt-facade</artifactId>
@@ -186,6 +186,7 @@
 					</typeMappings>
 					<schemaMappings>
 						KindOfData=org.rudi.facet.kmedia.bean.KindOfData,
+						ProcessHistoricInformation=org.rudi.bpmn.core.bean.ProcessHistoricInformation,
 						ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,
 						Status=org.rudi.bpmn.core.bean.Status,
 						Form=org.rudi.bpmn.core.bean.Form,

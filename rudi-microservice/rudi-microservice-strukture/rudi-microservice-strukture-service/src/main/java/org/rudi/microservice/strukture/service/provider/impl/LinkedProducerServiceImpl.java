@@ -88,7 +88,7 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 			return reinitializeLinkedProducer(linkedProducer.getUuid());
 		}
 
-		return linkedProducerHelper.createLinkedProducer(organization, provider);
+		return linkedProducerHelper.createLinkedProducer(organization, provider, providerHelper.getMyNodeProvider());
 	}
 
 	@Override

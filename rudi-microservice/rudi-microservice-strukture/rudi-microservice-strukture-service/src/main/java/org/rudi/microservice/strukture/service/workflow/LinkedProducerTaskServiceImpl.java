@@ -3,9 +3,12 @@ package org.rudi.microservice.strukture.service.workflow;
 import java.io.IOException;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Status;
+import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
@@ -20,7 +23,6 @@ import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -95,6 +97,18 @@ public class LinkedProducerTaskServiceImpl extends
 			log.error("Invalid status for linkedProducer {} : status : {}", assetDescriptionEntity.getUuid(),
 					assetDescriptionEntity.getStatus());
 			throw new IllegalArgumentException("Invalid status on project " + assetDescriptionEntity.getUuid());
+		}
+	}
+
+
+	@Override
+	protected void updateAssetCreation(LinkedProducerEntity assetDescriptionEntity) {
+		String presetInitiator = assetDescriptionEntity.getInitiator();
+
+		super.updateAssetCreation(assetDescriptionEntity);
+
+		if(StringUtils.isNotEmpty(presetInitiator) && getUtilContextHelper().hasRole(RoleCodes.MODERATOR)){
+			assetDescriptionEntity.setInitiator(presetInitiator);
 		}
 	}
 }

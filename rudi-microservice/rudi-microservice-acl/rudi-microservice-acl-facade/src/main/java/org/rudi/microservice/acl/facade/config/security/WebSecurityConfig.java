@@ -148,7 +148,7 @@ public class WebSecurityConfig {
 					.authorizationServer();
 			http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher()).with(
 					authorizationServerConfigurer,
-					(authorizationServer) -> authorizationServer
+					authorizationServer -> authorizationServer
 							.clientAuthentication(clientAuthentication -> clientAuthentication
 									.authenticationConverter(new ClientSecretBasicAuthenticationConverter())));
 

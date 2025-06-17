@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Title} from '@angular/platform-browser';
+import {Meta, Title} from '@angular/platform-browser';
 import {LogService} from '@core/services/log.service';
 import {TranslateService} from '@ngx-translate/core';
 import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
@@ -18,7 +18,8 @@ export class PageTitleService {
         private readonly angularTitleService: Title,
         private readonly translateService: TranslateService,
         private readonly getBackendProperty: GetBackendPropertyPipe,
-        private readonly logger: LogService
+        private readonly logger: LogService,
+        private readonly meta: Meta,
     ) {
     }
 
@@ -31,7 +32,11 @@ export class PageTitleService {
                 this.projectName = projectName;
                 for (const title of titles) {
                     if (title) {
-                        this.angularTitleService.setTitle(title + ' - ' + this.projectName);
+                        const actualTitle = title + ' - ' + this.projectName;
+                        this.meta.updateTag({name: 'title', content: actualTitle});
+                        this.angularTitleService.setTitle(actualTitle);
+
+                        this.meta.updateTag({name: 'og:site_name', content: this.projectName});
                         return;
                     }
                 }

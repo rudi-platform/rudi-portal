@@ -10,15 +10,19 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Action;
 import org.rudi.bpmn.core.bean.AssetDescription;
 import org.rudi.bpmn.core.bean.Form;
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.bean.workflow.TaskSearchCriteria;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
@@ -27,6 +31,7 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AssetDescriptionHelper;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
+import org.rudi.facet.bpmn.helper.workflow.HistoricHelper;
 import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.TaskQueryService;
 import org.slf4j.Logger;
@@ -52,7 +57,8 @@ import lombok.Getter;
  * @param <W> le workflowcontext d'exécution
  * @param <S> le critère de recherche
  */
-public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria> implements TaskQueryService<S> {
+public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria, H extends HistoricSearchCriteria>
+		implements TaskQueryService<S, H> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTaskQueryServiceImpl.class);
 
@@ -73,18 +79,21 @@ public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria>
 
 	private final UtilContextHelper utilContextHelper;
 
+	private final HistoricHelper historicHelper;
+
 	private Map<Class<? extends AssetDescriptionEntity>, AssetDescriptionDao<AssetDescriptionEntity>> daos = new HashMap<>();
 
 	private Map<Class<? extends AssetDescriptionEntity>, AssetDescriptionHelper<AssetDescriptionEntity, AssetDescription>> helpers = new HashMap<>();
 
-	public AbstractTaskQueryServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
-			UtilContextHelper utilContextHelper, ApplicationContext applicationContext) {
+	protected AbstractTaskQueryServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
+			HistoricHelper historicHelper, UtilContextHelper utilContextHelper, ApplicationContext applicationContext) {
 		super();
 		this.processEngine = processEngine;
 		this.formHelper = formHelper;
 		this.bpmnHelper = bpmnHelper;
 		this.utilContextHelper = utilContextHelper;
 		this.applicationContext = applicationContext;
+		this.historicHelper = historicHelper;
 	}
 
 	@Override
@@ -266,6 +275,45 @@ public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria>
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public List<ProcessHistoricInformation> searchHistoricInformations(H historicSearchCriteria) {
+		// Collecte des tâches associées au assignees
+		List<HistoricTaskInstance> historicTaskInstances = historicHelper.collectHistoricActiviti(
+				historicSearchCriteria.getProcessDefinitionKeys(), null, historicSearchCriteria.getAssignees(),
+				historicSearchCriteria.isFinished(), historicSearchCriteria.getMinCompletionDate(),
+				historicSearchCriteria.getMaxCompletionDate());
+		List<String> processInstanceIds = historicTaskInstances.stream().map(HistoricTaskInstance::getProcessInstanceId)
+				.distinct().toList();
+		// Conversion des tâches en ProcessHistoricInformation
+		List<HistoricProcessInstance> historicProcessInstances = historicHelper
+				.collectHistoricProcess(processInstanceIds);
+		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
+				.convertHistoricProcessInstance(historicProcessInstances);
+
+		// On associe les ProcessHistoricInformation aux HistoricTaskInstance
+		if (CollectionUtils.isNotEmpty(processHistoricInformations)) {
+			for (int i = 0; i < processHistoricInformations.size(); i++) {
+				ProcessHistoricInformation processHistoricInformation = processHistoricInformations.get(i);
+				historicHelper.enhancedProcessHistoricInformation(processHistoricInformation);
+			}
+		}
+
+		return processHistoricInformations;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected H createHistoricSearchCriteria() {
+		return (H) new HistoricSearchCriteria();
+	}
+
+	@Override
+	public List<ProcessHistoricInformation> getMyHistoricInformations() {
+		H historicSearchCriteria = createHistoricSearchCriteria();
+		historicSearchCriteria.setAssignees(List.of(getCurrentLogin()));
+		historicSearchCriteria.setFinished(true);
+		return searchHistoricInformations(historicSearchCriteria);
 	}
 
 }

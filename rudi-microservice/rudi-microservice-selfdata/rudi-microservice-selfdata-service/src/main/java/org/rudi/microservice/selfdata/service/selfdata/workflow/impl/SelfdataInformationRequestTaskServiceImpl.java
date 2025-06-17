@@ -16,6 +16,7 @@ import org.rudi.bpmn.core.bean.Section;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
+import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
@@ -60,7 +61,7 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 
 	private final FormService formService;
 	private final FormHelper formHelper;
-	private final TaskQueryService<SelfdataTaskSearchCriteria> taskQueryService;
+	private final TaskQueryService<SelfdataTaskSearchCriteria, HistoricSearchCriteria> taskQueryService;
 	private final SelfdataMatchingDataHelper selfdataMatchingDataHelper;
 
 	protected SelfdataInformationRequestTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper,
@@ -70,7 +71,7 @@ public class SelfdataInformationRequestTaskServiceImpl extends
 			SelfdataInformationRequestAssigmentHelper assignmentHelper,
 			SelfdataInformationRequestWorkflowContext workflowContext,
 			ProcessEngineConfiguration processEngineConfiguration, FormService formService, FormHelper formHelper1,
-			TaskQueryService<SelfdataTaskSearchCriteria> taskQueryService,
+			TaskQueryService<SelfdataTaskSearchCriteria, HistoricSearchCriteria> taskQueryService,
 			SelfdataMatchingDataHelper selfdataMatchingDataHelper) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
 				assetDescriptionHelper, assignmentHelper, workflowContext, processEngineConfiguration);

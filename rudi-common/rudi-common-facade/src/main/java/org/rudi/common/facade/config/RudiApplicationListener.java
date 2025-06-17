@@ -1,15 +1,14 @@
 package org.rudi.common.facade.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-@Component
-public class RudiApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
+import lombok.extern.slf4j.Slf4j;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RudiApplicationListener.class);
+@Component
+@Slf4j
+public class RudiApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
 
 	/**
 	 * Methode appelée à l'initilisation de l'application SpringBoot
@@ -18,8 +17,8 @@ public class RudiApplicationListener implements ApplicationListener<ApplicationR
 	 */
 	@Override
 	public void onApplicationEvent(final ApplicationReadyEvent event) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Args: {} {}", event.getArgs(), event.getSpringApplication().getWebApplicationType());
+		if (log.isDebugEnabled()) {
+			log.debug("Args: {} {}", event.getArgs(), event.getSpringApplication().getWebApplicationType());
 		}
 	}
 

@@ -562,7 +562,12 @@ public class FormServiceImpl implements FormService {
 			criteria.setProcessDefinitionId(processForm.getProcessDefinitionId());
 			criteria.setUserTaskId(processForm.getUserTaskId());
 			criteria.setActionName(processForm.getActionName());
-//			criteria.setRevision(processForm.getRevision()); // FIXME criteria.revision INT alors que processForm.revision STRING
+			try {
+				Integer i = processForm.getRevision() != null ? Integer.parseInt(processForm.getRevision()) : null;
+				criteria.setRevision(i);
+			} catch (Exception e) {
+				log.warn("Invalid revision format for process form definition: {}", processForm.getRevision(), e);
+			}
 			return criteria;
 		}
 

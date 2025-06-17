@@ -50,15 +50,19 @@ public class ClientSecretBasicAuthenticationConverter implements AuthenticationC
 		}
 
 		String credentialsString = new String(decodedCredentials, StandardCharsets.UTF_8);
-		String[] credentials = credentialsString.split(":", 2);
-		if (credentials.length != 2 || !StringUtils.hasText(credentials[0]) || !StringUtils.hasText(credentials[1])) {
+		int index = credentialsString.indexOf(':');
+		if (index == -1) {
 			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
 		}
 
 		// on ne fait plus d'URL decoding
 		// ça ne respecte pas vraiment la rfc mais c'est ce que tout le monde fait
-		String clientID = credentials[0];
-		String clientSecret = credentials[1];
+		String clientID = credentialsString.substring(0, index);
+		String clientSecret = credentialsString.substring(index + 1);
+
+		if (!StringUtils.hasText(clientID) || !StringUtils.hasText(clientSecret)) {
+			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_REQUEST);
+		}
 
 		return new OAuth2ClientAuthenticationToken(clientID, ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
 				clientSecret, OAuth2EndpointUtils.getParametersIfMatchesAuthorizationCodeGrantRequest(request));

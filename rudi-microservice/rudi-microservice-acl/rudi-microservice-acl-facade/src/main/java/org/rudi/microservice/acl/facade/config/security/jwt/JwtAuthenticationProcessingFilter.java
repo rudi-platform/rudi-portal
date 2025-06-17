@@ -6,8 +6,6 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -26,14 +24,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  *
  */
+@Slf4j
 public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationProcessingFilter.class);
 
 	private String loginParameter;
 
@@ -82,8 +80,8 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		if (!HttpMethod.POST.name().equals(request.getMethod())) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Authentication method not supported. Request method: {}", request.getMethod());
+			if (log.isDebugEnabled()) {
+				log.debug("Authentication method not supported. Request method: {}", request.getMethod());
 			}
 			throw new AuthenticationCredentialsNotFoundException("Authentication method not supported");
 		}
@@ -95,10 +93,10 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login, password, null);
 
 			if (requiresCheckCredentials(request)) {
-				LOGGER.debug("login {} founded : try to check credential", token);
+				log.debug("login {} founded : try to check credential", token);
 				return authenticationProvider.checkCredential(token);
 			} else {
-				LOGGER.debug("login {} founded : try to authenticate", token);
+				log.debug("login {} founded : try to authenticate", token);
 				return getAuthenticationManager().authenticate(token);
 			}
 		} else {

@@ -12,8 +12,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
 import org.rudi.microservice.gateway.facade.config.AbstractAuthenticationWebFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +24,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -34,9 +33,8 @@ import reactor.core.publisher.Mono;
  * @author FNI18300
  *
  */
+@Slf4j
 public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2WebFilter.class);
 
 	private RestTemplate restTemplate = null;
 
@@ -56,16 +54,16 @@ public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 				return authenticationSuccess(checkToken);
 			} else {
 				// On considère que le token est invalide
-				LOGGER.warn("Le token OAuth2 est invalide {}", checkToken.getStatusCode());
+				log.warn("Le token OAuth2 est invalide {}", checkToken.getStatusCode());
 				return Mono.empty();
 			}
 		} catch (HttpClientErrorException.BadRequest e) {
 			// c'est la cas d'un token jwt reçu
-			LOGGER.warn(
+			log.warn(
 					"OAuth2 token check by Gateway failed. JWT token check should be done afterward by another filter. See ACL logs for details.");
 			return Mono.empty();
 		} catch (Exception e) {
-			LOGGER.warn("OAuth2 authentication failed", e);
+			log.warn("OAuth2 authentication failed", e);
 			return Mono.empty();
 		}
 	}
@@ -84,9 +82,9 @@ public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 		} else {
 			// On considère que le token est invalide
 			if (tokenData != null) {
-				LOGGER.warn("Le token OAuth2 pour {} est inactif", tokenData.getClientId());
+				log.warn("Le token OAuth2 pour {} est inactif", tokenData.getClientId());
 			} else {
-				LOGGER.warn("Aucune donnée trouvée dans le token");
+				log.warn("Aucune donnée trouvée dans le token");
 			}
 			return Mono.empty();
 		}

@@ -130,6 +130,7 @@ public class LinkedProducerWorkflowContext
 
 	private void contactInitiator(ExecutionEntity executionEntity, EMailData eMailData, Report report) {
 		LinkedProducerEntity assetDescriptionEntity = lookupAssetDescriptionEntity(executionEntity);
+
 		User initiator = lookupUser(assetDescriptionEntity.getInitiator());
 
 		String email = lookupEMailAddress(initiator);
@@ -146,8 +147,9 @@ public class LinkedProducerWorkflowContext
 				email = providerContactEmail;
 			}
 
+			// L'identifiant utilisé ccôté noeud est celui de l'organisation
 			Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts,
-					assetDescriptionEntity.getUuid()));
+					assetDescriptionEntity.getOrganization().getUuid()));
 			thread.start();
 		}
 		try {
@@ -175,10 +177,11 @@ public class LinkedProducerWorkflowContext
 			integrationErrors.add(IntegrationError.ERR_101);
 		}
 
+		// Le resourceId est l'UUID de l'organisation concernée par l'action
 		return new Report().reportId(UUID.randomUUID()).submissionDate(assetDescription.getCreationDate())
 				.treatmentDate(LocalDateTime.now()).method(Method.ATTACH).version(version)
-				.organizationId(assetDescription.getUuid())
-				.organizationName(assetDescription.getOrganization().getName()).integrationStatus(status)
+				.resourceId(assetDescription.getOrganization().getUuid())
+				.resourceTitle(assetDescription.getOrganization().getName()).integrationStatus(status)
 				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment);
 
 	}
@@ -200,10 +203,11 @@ public class LinkedProducerWorkflowContext
 			integrationErrors.add(IntegrationError.ERR_101);
 		}
 
+		// Le resourceId est l'UUID de l'organisation concernée par l'action
 		return new Report().reportId(UUID.randomUUID()).submissionDate(assetDescription.getCreationDate())
 				.treatmentDate(LocalDateTime.now()).method(Method.DETACH).version(version)
-				.organizationId(assetDescription.getUuid())
-				.organizationName(assetDescription.getOrganization().getName()).integrationStatus(status)
+				.resourceId(assetDescription.getOrganization().getUuid())
+				.resourceTitle(assetDescription.getOrganization().getName()).integrationStatus(status)
 				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment);
 	}
 

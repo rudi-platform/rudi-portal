@@ -7,31 +7,31 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JOSEException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Filtre pour les tokens JWT
  *
  * @author FNI18300
  */
+@Slf4j
 public class JwtRequestFilter extends BearerTokenFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 
 	/**
 	 * Le code d'erreur à renvoyer au front quand un token d'authent a expiré
@@ -39,9 +39,8 @@ public class JwtRequestFilter extends BearerTokenFilter {
 	private static final int HTTP_CODE_TOKEN_EXPIRED = 498;
 
 	/**
-	 * L'URL de demande de refresh d'un token JWT Le contrôleur n'existe pas, mais si un user fait une requête vers
-	 * cette URL là dans ACL alors avant de faire 404 on rentre dans le filter JWT comme on définit pas cette URL comme
-	 * étant non sécurisée, et on est capable de faire des actions
+	 * L'URL de demande de refresh d'un token JWT Le contrôleur n'existe pas, mais si un user fait une requête vers cette URL là dans ACL alors avant de
+	 * faire 404 on rentre dans le filter JWT comme on définit pas cette URL comme étant non sécurisée, et on est capable de faire des actions
 	 */
 	private static final String REFRESH_TOKEN_URL = "/refresh_token";
 
@@ -58,8 +57,8 @@ public class JwtRequestFilter extends BearerTokenFilter {
 
 	private String logoutUrl;
 
-	public JwtRequestFilter(final String[] excludeUrlPatterns,
-			final UtilContextHelper utilContextHelper, final RestTemplate oAuth2RestTemplate) {
+	public JwtRequestFilter(final String[] excludeUrlPatterns, final UtilContextHelper utilContextHelper,
+			final RestTemplate oAuth2RestTemplate) {
 		super(utilContextHelper, oAuth2RestTemplate);
 		this.excludeUrlPatterns = Arrays.asList(excludeUrlPatterns);
 		pathMatcher = new AntPathMatcher();
@@ -90,8 +89,8 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			// Récupération du refresh token au cas où le token du dessus expire
 			String requestXTokenHeader = request.getHeader(AbstractJwtTokenUtil.HEADER_X_TOKEN_KEY);
 
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Header: {}", requestAuthentTokenHeader);
+			if (log.isDebugEnabled()) {
+				log.debug("Header: {}", requestAuthentTokenHeader);
 			}
 
 			// Si tout contexte d'authent a disparu on est pas authentifié
@@ -105,7 +104,8 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			}
 			// Sinon on gère le token 'Authorization' simplement
 			else {
-				if (StringUtils.isNotEmpty(logoutUrl) && request.getRequestURI().contains(logoutUrl) && StringUtils.isNotEmpty(request.getHeader("token"))) {
+				if (StringUtils.isNotEmpty(logoutUrl) && request.getRequestURI().contains(logoutUrl)
+						&& StringUtils.isNotEmpty(request.getHeader("token"))) {
 					jwtTokenUtil.deleteRefreshToken(request.getHeader("token"));
 				}
 				handleToken(requestAuthentTokenHeader, response);
@@ -131,7 +131,7 @@ public class JwtRequestFilter extends BearerTokenFilter {
 
 			// Si le token est expiré on veut arrêter la chaîne car l'auteur de la requête n'est plus authentifié
 			if (!authentJtd.isHasError() && authentJtd.isExpired()) {
-				LOGGER.warn("Le token JWT d'authentification à expiré");
+				log.warn("Le token JWT d'authentification à expiré");
 				response.setStatus(HTTP_CODE_TOKEN_EXPIRED);
 
 			} else if (!authentJtd.isHasError() && authentJtd.getSubject() != null && authentJtd.getAccount() != null
@@ -143,7 +143,7 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			}
 			// Pour tout autre cas on considère que le token est invalide donc que l'auteur est unauthorized
 			else {
-				LOGGER.warn(
+				log.warn(
 						"Le token n'est pas un token JWT valide. Veuillez consulter les logs DEBUG précédents de AbstractJwtTokenUtil pour plus d'informations sur la cause de l'erreur.");
 				setTokenIsInvalid(response);
 			}
@@ -151,7 +151,7 @@ public class JwtRequestFilter extends BearerTokenFilter {
 		// Problème lors du parsing du token JWT : on renvoie 401 unauthorized car celà arrive si le token est malformé
 		// donc trafiqué par l'auteur de la requête
 		catch (Exception e) {
-			LOGGER.warn("JWT authentication failed", e);
+			log.warn("JWT authentication failed", e);
 			setTokenIsInvalid(response);
 		}
 	}
@@ -173,7 +173,7 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			return true;
 		} catch (RefreshTokenExpiredException | JsonProcessingException | JOSEException e) {
 			// En cas d'erreur c'est que même le refresh token a expiré
-			LOGGER.warn("Failed to refresh", e);
+			log.warn("Failed to refresh", e);
 			setTokenIsInvalid(response);
 			return false;
 		}

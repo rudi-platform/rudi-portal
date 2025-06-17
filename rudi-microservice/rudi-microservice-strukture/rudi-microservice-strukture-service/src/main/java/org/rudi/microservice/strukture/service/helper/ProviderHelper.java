@@ -36,6 +36,10 @@ public class ProviderHelper {
 		return getProviderFromUser(aclHelper.getAuthenticatedUser());
 	}
 
+	public NodeProvider getMyNodeProvider() throws AppServiceUnauthorizedException {
+		return nodeProviderUserHelper.getNodeProviderFromUser(aclHelper.getAuthenticatedUser());
+	}
+
 	public ProviderEntity getProviderFromUser(User user) throws AppServiceUnauthorizedException {
 		// Vérifie que l'utilsiteur connecté à les bons rôles
 		if (!(user.getType().equals(UserType.ROBOT)

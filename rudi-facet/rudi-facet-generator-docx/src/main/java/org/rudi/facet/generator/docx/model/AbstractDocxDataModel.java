@@ -11,14 +11,13 @@ import java.util.Map;
 
 import org.rudi.facet.generator.model.GenerationFormat;
 import org.rudi.facet.generator.model.impl.AbstractDataModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.opensagres.xdocreport.document.images.ByteArrayImageProvider;
 import fr.opensagres.xdocreport.document.images.FileImageProvider;
 import fr.opensagres.xdocreport.document.images.IImageProvider;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Data model pour les données injectées dans les modèles de documents
@@ -26,9 +25,8 @@ import lombok.Setter;
  * @author FNI18300
  *
  */
+@Slf4j
 public abstract class AbstractDocxDataModel extends AbstractDataModel implements DocxDataModel {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDocxDataModel.class);
 
 	@Getter
 	@Setter
@@ -62,7 +60,7 @@ public abstract class AbstractDocxDataModel extends AbstractDataModel implements
 			IImageProvider mainMap = new ByteArrayImageProvider(decodedBytes, useImageSize);
 			datas.put(key, mainMap);
 		} catch (Exception e) {
-			LOGGER.warn("Failed to inject image byte array {}", key);
+			log.warn("Failed to inject image byte array {}", key);
 		}
 	}
 

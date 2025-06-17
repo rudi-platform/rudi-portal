@@ -7,14 +7,13 @@ import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
 import org.rudi.common.facade.config.filter.JwtTokenData;
 import org.rudi.microservice.gateway.facade.config.AbstractAuthenticationWebFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -22,9 +21,8 @@ import reactor.core.publisher.Mono;
  *
  * @author FNI18300
  */
+@Slf4j
 public class JwtWebFilter extends AbstractAuthenticationWebFilter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtWebFilter.class);
 
 	private final AbstractJwtTokenUtil jwtTokenUtil;
 	private final ObjectMapper mapper = new ObjectMapper();
@@ -54,7 +52,7 @@ public class JwtWebFilter extends AbstractAuthenticationWebFilter {
 			return Mono.just(usernamePasswordAuthenticationToken);
 		} else {
 			// On considère que le token est invalide
-			LOGGER.warn("Le token reçu par Gateway n'est pas un token JWT valide");
+			log.warn("Le token reçu par Gateway n'est pas un token JWT valide");
 			return Mono.empty();
 		}
 	}

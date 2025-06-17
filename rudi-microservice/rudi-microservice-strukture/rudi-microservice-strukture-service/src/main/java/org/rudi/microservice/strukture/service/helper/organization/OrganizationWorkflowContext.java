@@ -174,7 +174,8 @@ public class OrganizationWorkflowContext
 				throw new InvalidParameterException("Provider introuvable");
 			}
 
-			LinkedProducer lp = linkedProducerHelper.createLinkedProducer(assetDescription, providerEntity);
+			LinkedProducer lp = linkedProducerHelper.createLinkedProducer(assetDescription, providerEntity, nodeProvider);
+			lp.setInitiator(assetDescription.getInitiator());
 			Task t = linkedProducerTaskService.createDraft(lp);
 			linkedProducerTaskService.startTask(t);
 		}
@@ -229,7 +230,7 @@ public class OrganizationWorkflowContext
 
 		return new Report().reportId(UUID.randomUUID()).submissionDate(assetDescription.getCreationDate())
 				.treatmentDate(LocalDateTime.now()).method(Method.POST).version(version)
-				.organizationId(assetDescription.getUuid()).organizationName(assetDescription.getName())
+				.resourceId(assetDescription.getUuid()).resourceTitle(assetDescription.getName())
 				.integrationStatus(status).integrationErrors(getErrorsFromIntegrationError(integrationErrors))
 				.comment(comment);
 

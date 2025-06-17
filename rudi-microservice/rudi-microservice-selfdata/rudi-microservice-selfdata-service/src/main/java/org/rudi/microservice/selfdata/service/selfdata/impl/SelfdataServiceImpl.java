@@ -46,8 +46,6 @@ import org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest.Sel
 import org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest.SelfdataInformationRequestDao;
 import org.rudi.microservice.selfdata.storage.entity.selfdatadataset.SelfdataDatasetEntity;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataInformationRequestEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -71,7 +69,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SelfdataServiceImpl implements SelfdataService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SelfdataServiceImpl.class);
 	private final ApplicationContext applicationContext;
 	private final SelfdataInformationRequestDao selfdataInformationRequestDao;
 	private final SelfdataInformationRequestCustomDao selfdataInformationRequestCustomDao;
@@ -278,7 +275,7 @@ public class SelfdataServiceImpl implements SelfdataService {
 
 		// Si on ne trouve pas de JDDs correspondants on ne cherche que les JDDs selfdata
 		if (CollectionUtils.isEmpty(correspondingMetadatas)) {
-			LOGGER.warn("Aucun jeu de données ne correspond aux demandes de l'utilisateur connecte");
+			log.warn("Aucun jeu de données ne correspond aux demandes de l'utilisateur connecte");
 			return searchSelfdataDatasetsFromDatasets(criteria);
 		}
 
@@ -291,7 +288,7 @@ public class SelfdataServiceImpl implements SelfdataService {
 			Metadata dataset = correspondingMetadatasByUuid.get(request.getDatasetUuid());
 
 			// Si on trouve pas le JDD correspondant la demande ne sera pas restituée
-			LOGGER.warn("Le jeu de données {}, de la demande d'id {} n'existe pas/plus", request.getDatasetUuid(),
+			log.warn("Le jeu de données {}, de la demande d'id {} n'existe pas/plus", request.getDatasetUuid(),
 					request.getId());
 			if (dataset != null) {
 				SelfdataDataset selfdataDataset = selfdataDatasetHelper.buildSelfdataDataset(dataset, request);

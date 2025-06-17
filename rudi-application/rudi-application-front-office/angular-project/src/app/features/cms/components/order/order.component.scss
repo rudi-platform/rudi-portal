@@ -1,1 +1,13 @@
 //
+.selected-in-button {
+    font-weight: bold;
+}
+
+.selected {
+    --mat-menu-item-label-text-weight: bold;
+    font-weight: bold !important;
+}
+
+.aligned {
+    vertical-align: baseline;
+}

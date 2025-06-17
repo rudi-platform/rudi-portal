@@ -1,6 +1,9 @@
 {
     "headerAppTitle": "App blanche",
     "home": {
+        "page": {
+            "title": "Portail de partage et d'accès aux données territoriales de Rennes Métropole"
+        },
         "heroSection": {
             "title1": "Portail de partage et d'accès aux données territoriales",
             "title2": "de {projectName}",

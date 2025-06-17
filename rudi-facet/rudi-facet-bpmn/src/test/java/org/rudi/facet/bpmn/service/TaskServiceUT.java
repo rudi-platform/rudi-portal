@@ -30,6 +30,7 @@ import org.rudi.bpmn.core.bean.FormDefinition;
 import org.rudi.bpmn.core.bean.FormSectionDefinition;
 import org.rudi.bpmn.core.bean.ProcessDefinition;
 import org.rudi.bpmn.core.bean.ProcessFormDefinition;
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.SectionDefinition;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
@@ -47,6 +48,7 @@ import org.rudi.facet.bpmn.bean.AssetDescription2TestData;
 import org.rudi.facet.bpmn.bean.form.FormDefinitionSearchCriteria;
 import org.rudi.facet.bpmn.bean.form.ProcessFormDefinitionSearchCriteria;
 import org.rudi.facet.bpmn.bean.form.SectionDefinitionSearchCriteria;
+import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.bean.workflow.TaskSearchCriteria1TestBean;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescription2TestDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescription2TestEntity;
@@ -61,14 +63,15 @@ import org.rudi.facet.bpmn.service.impl.TaskService1TestImpl;
 import org.rudi.facet.bpmn.service.impl.TaskService2TestImpl;
 import org.rudi.facet.generator.model.GenerationFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
@@ -80,6 +83,7 @@ import jakarta.mail.internet.MimeMessage;
 //		"classpath:org.activiti.db.drop/activiti.h2.drop.history.sql",
 //}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @Rollback(true)
+@Slf4j
 class TaskServiceUT {
 
 	@Autowired
@@ -104,7 +108,7 @@ class TaskServiceUT {
 	private TaskService1TestImpl test1TaskService;
 
 	@Autowired
-	private TaskQueryService<TaskSearchCriteria1TestBean> taskQueryService;
+	private TaskQueryService<TaskSearchCriteria1TestBean, HistoricSearchCriteria> taskQueryService;
 
 	@Autowired
 	private FormService formService;
@@ -339,6 +343,161 @@ class TaskServiceUT {
 				Pageable.unpaged());
 		assertNotNull(ts);
 		assertEquals(ts.getTotalElements(), tsCount + 1);
+
+	}
+
+	@Test
+	void start_historic_workflow() throws BpmnInitializationException, InvalidDataException, FormConvertException,
+			FormDefinitionException, IOException {
+		Mockito.when(utilContextHelper.getAuthenticatedUser()).thenReturn(createAuthenticatedUser());
+		Mockito.when(aclHelper.getUserByLogin(any())).thenReturn(createUser());
+
+		// création des formulaires
+		SectionDefinition sectionDefinition1 = createSection("Comment", "Comment", "form/section-comment.json");
+		FormDefinition formDefinition1 = createFormDefinition("Form1", sectionDefinition1);
+		ProcessFormDefinition processFormDefinition1 = buildProcessFormDefinition("test1", "UserTask_1",
+				formDefinition1);
+		formService.createProcessFormDefinition(processFormDefinition1);
+
+		SectionDefinition sectionDefinition2 = createSection("Test", "Test", "form/section-test.json");
+		FormDefinition formDefinition2 = createFormDefinition("Form2", sectionDefinition2);
+		ProcessFormDefinition processFormDefinition2 = buildProcessFormDefinition("test2", "draft", formDefinition2);
+		formService.createProcessFormDefinition(processFormDefinition2);
+
+		// chargement de la carte de workflow
+		List<ProcessDefinition> definitions1 = initializationService.searchProcessDefinitions();
+
+		assertNotNull(definitions1);
+		int size = definitions1.size();
+
+		initializeWorkflow();
+
+		List<ProcessDefinition> definitions2 = initializationService.searchProcessDefinitions();
+		assertNotNull(definitions2);
+		assertEquals(definitions2.size(), size + 2);
+
+		// création d'un tâche
+		AssetDescription1TestData draft = new AssetDescription1TestData();
+		draft.setDescription("Test workflow");
+		draft.setA("toto");
+		draft.setProcessDefinitionKey("test");
+		draft.setFunctionalStatus("mon statut fonctionnel");
+		Task t1 = test1TaskService.createDraft(draft);
+		assertNotNull(t1);
+		assertNotNull(t1.getAsset());
+
+		doNothing().when(javaMailSender).send((MimeMessage) any());
+
+		// execution démarrage
+		Task t2 = test1TaskService.startTask(t1);
+		assertNotNull(t2);
+
+		Page<Task> ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(),
+				Pageable.unpaged());
+		long tsCount = ts.getTotalElements();
+		assertEquals(1, tsCount);
+		Task t = ts.getContent().get(0);
+
+		ProcessHistoricInformation historics1 = test1TaskService.getTaskHistoryByTaskId(t.getId(), true);
+		assertNotNull(historics1);
+
+		Action a = t.getActions().get(0);
+		test1TaskService.claimTask(t.getId());
+		test1TaskService.doIt(t.getId(), a.getName());
+
+		ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(), Pageable.unpaged());
+		tsCount = ts.getTotalElements();
+		assertEquals(0, tsCount);
+
+		List<ProcessHistoricInformation> historics2 = test1TaskService
+				.getTaskHistoryByAssetUuid(t.getAsset().getUuid());
+		assertNotNull(historics2);
+
+		log.info("Historics2: " + historics2);
+
+		HistoricSearchCriteria historicSearchCriteria = HistoricSearchCriteria.builder().build();
+		List<ProcessHistoricInformation> historics3 = taskQueryService
+				.searchHistoricInformations(historicSearchCriteria);
+		assertNotNull(historics3);
+
+		log.info("Historics3: " + historics3);
+
+	}
+
+	@Test
+	void start_delete_workflow() throws BpmnInitializationException, InvalidDataException, FormConvertException,
+			FormDefinitionException, IOException {
+		Mockito.when(utilContextHelper.getAuthenticatedUser()).thenReturn(createAuthenticatedUser());
+		Mockito.when(aclHelper.getUserByLogin(any())).thenReturn(createUser());
+
+		// création des formulaires
+		SectionDefinition sectionDefinition1 = createSection("Comment", "Comment", "form/section-comment.json");
+		FormDefinition formDefinition1 = createFormDefinition("Form1", sectionDefinition1);
+		ProcessFormDefinition processFormDefinition1 = buildProcessFormDefinition("test1", "UserTask_1",
+				formDefinition1);
+		formService.createProcessFormDefinition(processFormDefinition1);
+
+		SectionDefinition sectionDefinition2 = createSection("Test", "Test", "form/section-test.json");
+		FormDefinition formDefinition2 = createFormDefinition("Form2", sectionDefinition2);
+		ProcessFormDefinition processFormDefinition2 = buildProcessFormDefinition("test2", "draft", formDefinition2);
+		formService.createProcessFormDefinition(processFormDefinition2);
+
+		// chargement de la carte de workflow
+		List<ProcessDefinition> definitions1 = initializationService.searchProcessDefinitions();
+
+		assertNotNull(definitions1);
+		int size = definitions1.size();
+
+		initializeWorkflow();
+
+		List<ProcessDefinition> definitions2 = initializationService.searchProcessDefinitions();
+		assertNotNull(definitions2);
+		assertEquals(definitions2.size(), size + 2);
+
+		// création d'un tâche
+		AssetDescription1TestData draft = new AssetDescription1TestData();
+		draft.setDescription("Test workflow");
+		draft.setA("toto");
+		draft.setProcessDefinitionKey("test");
+		draft.setFunctionalStatus("mon statut fonctionnel");
+		Task t1 = test1TaskService.createDraft(draft);
+		assertNotNull(t1);
+		assertNotNull(t1.getAsset());
+
+		doNothing().when(javaMailSender).send((MimeMessage) any());
+
+		// execution démarrage
+		Task t2 = test1TaskService.startTask(t1);
+		assertNotNull(t2);
+
+		Page<Task> ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(),
+				Pageable.unpaged());
+		long tsCount = ts.getTotalElements();
+		assertEquals(1, tsCount);
+		Task t = ts.getContent().get(0);
+
+		ProcessHistoricInformation historics1 = test1TaskService.getTaskHistoryByTaskId(t.getId(), true);
+		assertNotNull(historics1);
+
+		test1TaskService.stopTaskByTaskId(t.getId());
+
+		ts = taskQueryService.searchTasks(TaskSearchCriteria1TestBean.builder().a("toto").build(), Pageable.unpaged());
+		tsCount = ts.getTotalElements();
+		assertEquals(0, tsCount);
+
+		List<ProcessHistoricInformation> historics2 = test1TaskService
+				.getTaskHistoryByAssetUuid(t.getAsset().getUuid());
+		assertNotNull(historics2);
+		assertEquals(1, historics2.size());// le start et l'arrêt de la tâche
+
+		log.info("Historics2: " + historics2);
+
+		HistoricSearchCriteria historicSearchCriteria = HistoricSearchCriteria.builder().build();
+		List<ProcessHistoricInformation> historics3 = taskQueryService
+				.searchHistoricInformations(historicSearchCriteria);
+		assertNotNull(historics3);
+
+		log.info("Historics3: " + historics3);
 
 	}
 

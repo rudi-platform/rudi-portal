@@ -3,12 +3,13 @@
  */
 package org.rudi.microservice.projekt.facade.controller;
 
-import java.util.List;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+
 import java.util.UUID;
 
-import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
-import org.rudi.bpmn.core.bean.HistoricInformation;
+import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
@@ -17,8 +18,10 @@ import org.rudi.microservice.projekt.facade.controller.api.NewDatasetRequestApi;
 import org.rudi.microservice.projekt.service.project.NewDatasetRequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -75,9 +78,15 @@ public class NewDatasetRequestController implements NewDatasetRequestApi {
 	}
 
 	@Override
-	public ResponseEntity<List<HistoricInformation>> getNewDatasetRequestTaskHistoryByTaskId(String taskId,
+	public ResponseEntity<ProcessHistoricInformation> getNewDatasetRequestTaskHistoryByTaskId(String taskId,
 			@Valid Boolean asAdmin) throws Exception {
 		return ResponseEntity.ok(newDatasetRequestTaskService.getTaskHistoryByTaskId(taskId, asAdmin));
 	}
 
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KALIM + ")")
+	public ResponseEntity<Void> deleteNewDatasetRequestTask(String taskId) throws Exception {
+		newDatasetRequestTaskService.stopTaskByTaskId(taskId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

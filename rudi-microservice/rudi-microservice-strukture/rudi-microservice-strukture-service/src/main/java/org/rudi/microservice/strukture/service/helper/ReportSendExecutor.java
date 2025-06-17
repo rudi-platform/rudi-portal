@@ -5,8 +5,9 @@ import java.util.UUID;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Report;
 
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 public class ReportSendExecutor implements Runnable {
 
 	private final ReportHelper reportHelper;
@@ -15,7 +16,8 @@ public class ReportSendExecutor implements Runnable {
 	private final int numberOfAttempts;
 	private final UUID organizationUuid;
 
-	public ReportSendExecutor(ReportHelper reportHelper, Report report, NodeProvider nodeProvider, int numberOfAttempts, UUID organizationUuid) {
+	public ReportSendExecutor(ReportHelper reportHelper, Report report, NodeProvider nodeProvider, int numberOfAttempts,
+			UUID organizationUuid) {
 		this.reportHelper = reportHelper;
 		this.report = report;
 		this.nodeProvider = nodeProvider;
@@ -34,11 +36,9 @@ public class ReportSendExecutor implements Runnable {
 			try {
 				reportHelper.sendReport(report, url);
 				isOK = true;
-			}catch (Exception e) {
+			} catch (Exception e) {
 				isOK = false;
-				if(i == numberOfAttempts) {
-					throw e;
-				}
+				log.info("ReportSendExecutor skip {} - {}", organizationUuid, e.getMessage());
 			}
 		}
 	}

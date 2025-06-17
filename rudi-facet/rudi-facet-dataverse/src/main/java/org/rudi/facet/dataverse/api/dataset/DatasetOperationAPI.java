@@ -30,8 +30,6 @@ import org.rudi.facet.dataverse.helper.RestTemplateHelper;
 import org.rudi.facet.dataverse.model.DataverseResponse;
 import org.rudi.facet.dataverse.model.search.SearchElements;
 import org.rudi.facet.dataverse.model.search.SearchParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -49,12 +47,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 /**
  * Ensemble des opérations sur les datasets, avec l'API du dataverse
  */
 @Component
+@Slf4j
 public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatasetInfo> {
 
 	static final String API_DATASETS_PARAM = "datasets";
@@ -65,8 +65,6 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 	private static final String API_DATASETS_DESTROY_PARAM = "destroy";
 	private static final String API_DATAVERSES_PARAM = "dataverses";
 	static final String PERSISTENT_ID = "persistentId";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DatasetOperationAPI.class);
 
 	@Value("${temporary.directory:${java.io.tmpdir}}")
 	private String temporaryDirectory;
@@ -107,7 +105,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 		// Ex d'URI : http://dv.open-dev.com:8095/api/access/datafile/581
 		String url = createUrl("access", "datafile", fileId);
 
-		LOGGER.debug("Téléchargement du fichier - url : {}", url);
+		log.debug("Téléchargement du fichier - url : {}", url);
 		try {
 			ResponseEntity<Flux<DataBuffer>> dataBufferFlux = getWebClient().get().uri(url).retrieve()
 					.toEntityFlux(DataBuffer.class).doOnError(t -> handleError("Failed to search dataset", t)).block();
@@ -198,7 +196,7 @@ public class DatasetOperationAPI extends AbstractSearchOperationAPI<SearchDatase
 	}
 
 	protected URI buildGetDataset(UriBuilder uriBuilder, String url, String persistentId) {
-		LOGGER.debug("url : {} {}", url, persistentId);
+		log.debug("url : {} {}", url, persistentId);
 		return uriBuilder.path(url).queryParam(PERSISTENT_ID, persistentId).build();
 	}
 
