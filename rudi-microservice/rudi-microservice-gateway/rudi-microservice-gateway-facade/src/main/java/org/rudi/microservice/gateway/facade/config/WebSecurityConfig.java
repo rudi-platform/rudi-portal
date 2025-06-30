@@ -42,7 +42,7 @@ public class WebSecurityConfig {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
 			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token", "/oauth2/**", "/acl/v1/kaptcha",
 			"/*/v1/healthCheck", "/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
-			"/konsult/v1/robots/{resource}",
+			"/konsult/v1/robots/{resource}", "/apigateway/v1/encryption-key",
 			// Url pour le harvester
 			"/konsult/v1/datasets/metadatas/dcat" };
 

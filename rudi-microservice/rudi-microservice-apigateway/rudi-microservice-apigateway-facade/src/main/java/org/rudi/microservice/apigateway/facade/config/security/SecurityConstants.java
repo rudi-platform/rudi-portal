@@ -19,7 +19,7 @@ public class SecurityConstants {
 
 	protected static final String[] SB_PERMIT_ALL_URL = {
 			// URL public
-			"/apigateway/v1/application-information", "/apigateway/v1/healthCheck",
+			"/apigateway/v1/application-information", "/apigateway/v1/healthCheck", "/apigateway/v1/encryption-key",
 			// OAuth2
 			"/oauth/**",
 			// swagger ui / openapi

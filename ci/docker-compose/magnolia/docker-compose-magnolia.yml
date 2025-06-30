@@ -1,0 +1,37 @@
+---
+volumes:
+  postgresql_data:
+  magnolia_data:
+
+services:
+  magnolia-database:
+    image: magnolia-postgres
+    environment:
+      - "POSTGRES_DB=magnolia"
+      - "POSTGRES_USER=magnolia-user"
+      - "POSTGRES_PASSWORD=magnolia-password"
+      - "POSTGRES_PORT=5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      #- ./postgresql_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  magnolia:
+    image: magnolia
+    security_opt:
+      - seccomp=unconfined
+    depends_on:
+      - magnolia-database
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/usr/local/tomcat/webapps/ROOT/WEB-INF/config
+      - "./modules:/opt/magnolia/modules"
+      - "./data:/opt/magnolia/data"
+    environment:
+      - "MAGNOLIA_BDD_HOST=magnolia-database"
+      - "MAGNOLIA_BDD_USER=magnolia-user"
+      - "MAGNOLIA_BDD_PASSWORD=magnolia-password"
+      - "MAGNOLIA_REPOSITORY_ROOT=/opt/magnolia/data"
+      - "CATALINA_OPTS=-DMAGNOLIA_REPOSITORY_ROOT=\"/opt/magnolia/data\"  -DMAGNOLIA_BDD_HOST=magnolia-database -DMAGNOLIA_BDD_USER=magnolia-user -DMAGNOLIA_BDD_PASSWORD=magnolia-password -Xmx2048m -Dmagnolia.update.auto=true"

@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.2.4</version>
+	<version>3.2.5</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -55,7 +55,7 @@
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok.version>1.18.26</lombok.version>
 		<swagger.codegen.version>3.0.21</swagger.codegen.version>
-		<swagger.version>2.2.33</swagger.version>
+		<swagger.version>2.2.34</swagger.version>
 		<flyway.version>9.19.4</flyway.version>
 		<freemarker.version>2.3.34</freemarker.version>
 		<jetbrains.annotations.version>26.0.2</jetbrains.annotations.version>
@@ -66,7 +66,7 @@
 		<activiti.version>7.1.0.M6</activiti.version>
 		<graalvm.version>23.0.8</graalvm.version>
 		<nashorn.version>15.6</nashorn.version>
-		<log4j.version>2.24.3</log4j.version>
+		<log4j.version>2.25.0</log4j.version>
 		<jaxb-impl.version>2.3.1</jaxb-impl.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>

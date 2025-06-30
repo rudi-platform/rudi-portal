@@ -7,13 +7,13 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - --providers.docker.network=traefik
+      - "--providers.docker.network=traefik"
       - "--entrypoints.web.address=:81"
     ports:
       # The HTTP port
       - "81:81"
       # The HTTPS port
-      #- "443:443"
+      # - "443:443"
       # The Web UI (enabled by --api.insecure=true)
       - "8189:8080"
     volumes:
@@ -30,7 +30,7 @@ services:
     container_name: postgres
     ports:
       - "5433:5432"
-    image: rudi/dataverse-postgres
+    image: postgres:15.12-bookworm
     restart: unless-stopped
 
     environment:
@@ -38,11 +38,13 @@ services:
       - "POSTGRES_DB={{dataverse_db_name}}"
       - "POSTGRES_USER={{dataverse_db_user}}"
       - "POSTGRES_PASSWORD={{dataverse_db_password}}"
+      - "POSTGRES_DB_HOST={{ dataverse_db_host }}"
       - "POSTGRES_PORT=5432"
     env_file:
       - .env
     volumes:
-      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - ./database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - ./triggers:/triggers
 
   ns:
     networks:
@@ -67,19 +69,10 @@ services:
       - "traefik.http.routers.nde.rule=Host(`nde.${traefikhost}`)"
       - "traefik.http.services.nde.loadbalancer.server.port=8080"
 
-  whoami:
-    networks:
-      - traefik
-    image: "containous/whoami"
-    container_name: "whoami"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.${traefikhost}`)"
-
   solr:
     networks:
       - traefik
-    image: rudi/dataverse-solr
+    image: rudi/dataverse-solr-65
     container_name: solr
     privileged: true
     ports:
@@ -89,37 +82,73 @@ services:
       - "SOLR_HOST=solr"
       - "SOLR_PORT=8983"
       - "SOLR_JAVA_MEM=-Xms1g -Xmx1g"
+      - "SOLR_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dsolr.jetty.request.header.size=65535"
     env_file:
       - .env
     volumes:
-      - solr-data:/opt/solr/server/solr/collection1/data
       - ./solr-tmp:/var/tmp
       - ./solr-data:/var/solr/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.solr.rule=Host(`solr.${traefikhost}`)"
-      - "traefik.http.services.solr.loadbalancer.server.port=8383"
+      - "traefik.http.services.solr.loadbalancer.server.port=8983"
+      - "traefik.http.routers.solr.tls=true"
+      - "traefik.http.routers.solr.tls.certresolver=myresolver"
+
+  whoami:
+    networks:
+      - traefik
+    image: "containous/whoami"
+    container_name: "whoami"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.${traefikhost}`)"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
 
   dataverse:
     networks:
       - traefik
-    image: rudi/dataverse
+    image: rudi/dataverse-65
     container_name: dataverse
     privileged: true
     user:
       "root"
     ports:
       - "4848:4848"
-      - "{{dataverse_instance1_port}}:8080"
+      - "8095:8080"
       - "8009:8009"
       - "8181:8181"
     environment:
       - "CVM_SERVER_NAME=CESSDA" #Optional
       - "CVM_SERVER_URL=https://ns.${traefikhost}:83"
-      - "CVM_TSV_SOURCE=https://github.com/IQSS/dataverse-docker/releases/download/5.3-cv/cvocdemo.tsv"
-      - "LANG=en"
       - "cvManager=http://"
+      - "WEBHOOK=/opt/payara/triggers/external-services.py"
+      - "CESSDA"
+      - "CLARIN"
+      - "aws_bucket_name"
+      - "aws_s3_profile"
+      - "aws_endpoint_url"
+      - "system_email"
+      - "mailhost"
+      - "mailuser"
+      - "no_reply_email"
+      - "smtp_password"
+      - "smtp_port"
+      - "socket_port"
+      - "federated_json_file"
+      - "bucketname_1"
+      - "minio_label_1"
+      - "minio_bucket_1"
+      - "bucketname_2"
+      - "minio_profile_1"
+      - "minio_label_2"
+      - "minio_bucket_2"
+      - "minio_profile_2"
+      - "LANG=en"
+      - "MAINLANG=fr"
       - "BUNDLEPROPERTIES=Bundle.properties"
+      - "ADMIN_USER=dataverseAdmin"
       - "ADMIN_EMAIL=admin@localhost"
       - "MAIL_SERVER=mailrelay"
       - "SOLR_LOCATION=solr:8983"
@@ -132,11 +161,40 @@ services:
       - "DATAVERSE_DB_USER={{dataverse_db_user}}"
       - "DATAVERSE_DB_PASSWORD={{dataverse_db_password}}"
       - "DATAVERSE_DB_NAME={{dataverse_db_name}}"
-      - "DATAVERSE_SERVICE_HOST"
-      - "DATAVERSE_URL"
+      - "POSTGRES_SERVER=postgres"
+      - "POSTGRES_PORT=5432"
+      - "POSTGRES_DATABASE={{dataverse_db_name}}"
+      - "POSTGRES_USER={{dataverse_db_user}}"
+      - "POSTGRES_PASSWORD={{dataverse_db_password}}"
+      - "PGPASSWORD"
+      - "DATAVERSE_SERVICE_HOST=dataverse"
+      - "DATAVERSE_URL=dataverse:8080"
       - "SOLR_SERVICE_HOST=solr"
       - "SOLR_SERVICE_PORT=8983"
       - "GLASSFISH_DOMAIN=domain1"
+      - "SOLR_LOCATION=solr:8983"
+      - "INIT_SCRIPTS_FOLDER=/opt/payara/init.d"
+      - "hostname=dv.open-dev.com:8380"
+      - "TWORAVENS_LOCATION=NOT INSTALLED"
+      - "RSERVE_HOST=localhost"
+      - "RSERVE_PORT=6311"
+      - "RSERVE_USER=rserve"
+      - "RSERVE_PASSWORD=rserve"
+      - "dataverse_pid_providers=fake"
+      - "dataverse_pid_fake_type=FAKE"
+      - "dataverse_pid_fake_label=Fake DOI Provider"
+      - "dataverse_pid_fake_authority=10.5072"
+      - "dataverse_pid_fake_shoulder=FK2/"
+      - "dataverse_pid_default-provider=fake"
+      - "dataverse_files_storage-driver-id=file"
+      - "dataverse_files_file_type=file"
+      - "dataverse_files_file_directory=/data"
+      - "doi_authority"
+      - "doi_provider"
+      - "doi_username"
+      - "doi_password"
+      - "dataciterestapiurlstring"
+      - "baseurlstring"
     env_file:
       - .env
     depends_on:
@@ -154,6 +212,7 @@ services:
 volumes:
   database-data:
   solr-data:
+  dataverse-data:
 
 networks:
   traefik:

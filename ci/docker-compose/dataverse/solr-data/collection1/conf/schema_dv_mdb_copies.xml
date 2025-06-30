@@ -15,51 +15,6 @@
     <copyField source="characteristicOfSources" dest="_text_" maxChars="3000"/>
     <copyField source="city" dest="_text_" maxChars="3000"/>
     <copyField source="cleaningOperations" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-actionsToMinimizeLoss" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-city" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-cleaningOperations" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-collectionMode-cv" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-collectionMode-term" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-collectionMode-url" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-collectionMode-vocabulary" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-controlOperations" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-country" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-dataCollectionSituation" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-dataCollector" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-deviationsFromSampleDesign" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-eastLongitude" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-frequencyOfDataCollection" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-geographicBoundingBox" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-geographicCoverage" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-geographicUnit" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-northLongitude" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-otherGeographicCoverage" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-researchInstrument-cv" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-researchInstrument-term" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-researchInstrument-url" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-researchInstrument-vocabulary" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-responseRate" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-samplingProcedure-cv" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-samplingProcedure-term" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-samplingProcedure-url" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-samplingProcedure-vocabulary" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-samplingProcedureFreeText" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-southLongitude" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-state" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-targetSampleActualSize" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-targetSampleSize" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-targetSampleSizeFormula" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-timeMethod-cv" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-timeMethod-term" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-timeMethod-url" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-timeMethod-vocabulary" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-unitOfAnalysis-cv" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-unitOfAnalysis-term" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-unitOfAnalysis-url" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-unitOfAnalysis-vocabulary" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-universe" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-weighting" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-westLongitude" dest="_text_" maxChars="3000"/>
     <copyField source="collectionMode" dest="_text_" maxChars="3000"/>
     <copyField source="collectorTraining" dest="_text_" maxChars="3000"/>
     <copyField source="contributor" dest="_text_" maxChars="3000"/>
@@ -158,6 +113,53 @@
     <copyField source="resolution.Spectral" dest="_text_" maxChars="3000"/>
     <copyField source="resolution.Temporal" dest="_text_" maxChars="3000"/>
     <copyField source="responseRate" dest="_text_" maxChars="3000"/>
+    
+    <copyField source="cmm-actionsToMinimizeLoss" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-city" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-cleaningOperations" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-collectionMode-cv" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-collectionMode-term" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-collectionMode-url" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-collectionMode-vocabulary" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-controlOperations" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-country" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-dataCollectionSituation" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-dataCollector" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-deviationsFromSampleDesign" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-eastLongitude" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-frequencyOfDataCollection" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-geographicBoundingBox" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-geographicCoverage" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-geographicUnit" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-northLongitude" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-otherGeographicCoverage" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-researchInstrument-cv" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-researchInstrument-term" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-researchInstrument-url" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-researchInstrument-vocabulary" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-responseRate" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-samplingProcedure-cv" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-samplingProcedure-term" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-samplingProcedure-url" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-samplingProcedure-vocabulary" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-samplingProcedureFreeText" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-southLongitude" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-state" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-targetSampleActualSize" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-targetSampleSize" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-targetSampleSizeFormula" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-timeMethod-cv" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-timeMethod-term" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-timeMethod-url" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-timeMethod-vocabulary" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-unitOfAnalysis-cv" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-unitOfAnalysis-term" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-unitOfAnalysis-url" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-unitOfAnalysis-vocabulary" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-universe" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-weighting" dest="_text_" maxChars="3000"/>
+    <copyField source="cmm-westLongitude" dest="_text_" maxChars="3000"/>    
+    
     <copyField source="rudi_abstract" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_abstract_language" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_abstract_text" dest="_text_" maxChars="3000"/>
