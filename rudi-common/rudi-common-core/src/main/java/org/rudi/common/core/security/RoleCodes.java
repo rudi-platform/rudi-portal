@@ -14,6 +14,7 @@ public final class RoleCodes {
 	public static final String ANONYMOUS = "ANONYMOUS";
 	public static final String MODERATOR = "MODERATOR";
 	public static final String MODULE = "MODULE";
+	public static final String MODULE_ACL = "MODULE_ACL";
 	public static final String MODULE_ACL_ADMINISTRATOR = "MODULE_ACL_ADMINISTRATOR";
 	public static final String MODULE_KALIM = "MODULE_KALIM";
 	public static final String MODULE_KALIM_ADMINISTRATOR = "MODULE_KALIM_ADMINISTRATOR";
@@ -22,11 +23,11 @@ public final class RoleCodes {
 	public static final String MODULE_KOS_ADMINISTRATOR = "MODULE_KOS_ADMINISTRATOR";
 	public static final String MODULE_PROJEKT = "MODULE_PROJEKT";
 	public static final String MODULE_PROJEKT_ADMINISTRATOR = "MODULE_PROJEKT_ADMINISTRATOR";
-	public static final String MODULE_SELFDATA_ADMINISTRATOR = "MODULE_SELFDATA_ADMINISTRATOR";
-	public static final String MODULE_STRUKTURE = "MODULE_STRUKTURE";
 	public static final String MODULE_SELFDATA = "MODULE_SELFDATA";
+	public static final String MODULE_SELFDATA_ADMINISTRATOR = "MODULE_SELFDATA_ADMINISTRATOR";
 	public static final String MODULE_KONSENT = "MODULE_KONSENT";
 	public static final String MODULE_KONSENT_ADMINISTRATOR = "MODULE_KONSENT_ADMINISTRATOR";
+	public static final String MODULE_STRUKTURE = "MODULE_STRUKTURE";
 	public static final String MODULE_STRUKTURE_ADMINISTRATOR = "MODULE_STRUKTURE_ADMINISTRATOR";
 	public static final String MODULE_APIGATEWAY = "MODULE_APIGATEWAY";
 	public static final String MODULE_APIGATEWAY_ADMINISTRATOR = "MODULE_APIGATEWAY_ADMINISTRATOR";

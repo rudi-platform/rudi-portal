@@ -2,7 +2,6 @@ package org.rudi.microservice.selfdata.facade.controller;
 
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_APIGATEWAY_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_SELFDATA_ADMINISTRATOR;
@@ -24,14 +23,14 @@ public class MatchingController implements MatchingApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_SELFDATA_ADMINISTRATOR + "," + MODULE_APIGATEWAY + ","
-			+ MODULE_APIGATEWAY_ADMINISTRATOR + ")")
+			+ ")")
 	public ResponseEntity<UUID> getMatchingToken(UUID datasetUuid, String login) throws Exception {
 		return ResponseEntity.ok(matchingService.getMatchingToken(datasetUuid, login));
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KONSULT_ADMINISTRATOR + ", " + MODULE_KONSULT + ","
-			+ MODULE_APIGATEWAY + "," + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
+			+ MODULE_APIGATEWAY + ")")
 	public ResponseEntity<Boolean> hasMatchingToDataset(UUID userUuid, UUID datasetUuid) throws Exception {
 		return ResponseEntity.ok(matchingService.hasMatchingToDataset(userUuid, datasetUuid));
 	}

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
@@ -76,9 +75,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -154,8 +154,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Project getProject(UUID uuid) throws AppServiceException {
 		final var projectEntity = getRequiredProjectEntity(uuid);
-		if (projectEntity.getConfidentiality().isPrivateAccess() ||
-				ProjectStatus.DISENGAGED.equals(projectEntity.getProjectStatus())) {
+		if (projectEntity.getConfidentiality().isPrivateAccess()
+				|| ProjectStatus.DISENGAGED.equals(projectEntity.getProjectStatus())) {
 			projektAuthorisationHelper.checkRightsAdministerProject(projectEntity);
 		}
 		return projectMapper.entityToDto(projectEntity);
@@ -168,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
 			searchCriteria.setIsPrivate(false);
 		} else if (!projektAuthorisationHelper.hasAnyRole(user,
-				List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR))) {
+				List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR, RoleCodes.MODULE_APIGATEWAY))) {
 			List<UUID> ownersUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
 			List<UUID> datasetUuids = myLinkedDatasetHelper
 					.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
@@ -481,10 +481,12 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException {
+	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria)
+			throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(criteria);
-		enhancedProjectSearchCriteria.setStatus(List.of(org. rudi. microservice. projekt. core. bean. ProjectStatus.VALIDATED));
+		enhancedProjectSearchCriteria
+				.setStatus(List.of(org.rudi.microservice.projekt.core.bean.ProjectStatus.VALIDATED));
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
 			enhancedProjectSearchCriteria.setIsPrivate(false);
 		} else if (!projektAuthorisationHelper.hasAnyRole(user,
