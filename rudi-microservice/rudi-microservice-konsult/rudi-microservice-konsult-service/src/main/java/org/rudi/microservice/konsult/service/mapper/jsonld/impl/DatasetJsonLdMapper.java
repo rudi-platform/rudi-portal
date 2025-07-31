@@ -65,6 +65,9 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 		themes.add(metadata.getTheme());
 		result.add("dcat:theme", themes);
 
+		JsonObject currentDatasetId = new JsonObject();
+		currentDatasetId.addProperty("@id", result.get("@id").getAsString());
+		context.setCurrentDatasetReference(currentDatasetId);
 
 		return result;
 	}

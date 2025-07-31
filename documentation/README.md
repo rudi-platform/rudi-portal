@@ -26,8 +26,12 @@ Pour démarrer rapidement, une **instance prête à démarrer** de RUDI est disp
 1. Procédures spécifiques
 
    - [Comment mettre à jour les diagrammes de classe ?](./cookbook/maj-diagrammes-classe.md)
-   - [Comment modifier le mot de passe d'un utilisateur RUDI en BDD ?](./cookbook/modifier-mot-de-passe-base.md)
    - [Commandes utiles pour l'administration de RUDI](https://blog.rudi.bzh/yeswiki/?DocumentationSurLAdministrationDuPortailR)
+   - [Comment modifier le mot de passe d'un utilisateur RUDI en BDD ?](./cookbook/modifier-mot-de-passe-base.md)
+   - [Comment modifier les mots de passe des utilisateurs postgres de Rudi ?](./cookbook/modifier-mot-de-passe-postgres.md)
+   - [Comment modifier les mots de passe et token de Dataverse ?](./cookbook/modifier-mot-de-passe-dataverse.md)
+   - [Comment modifier les mots de passe et token de Magnolia ?](./cookbook/modifier-mot-de-passe-magnolia.md)
+   - [(Hors production) Comment modifier le mot de passe de mailhog ?](./cookbook/modifier-mot-de-passe-mailhog.md)
 
 ## Conventions de documentation
 

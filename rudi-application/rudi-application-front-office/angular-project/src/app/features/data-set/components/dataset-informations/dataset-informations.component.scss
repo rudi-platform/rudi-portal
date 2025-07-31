@@ -519,6 +519,12 @@
 
 }
 
+// Classe pour le contenu scrollable de la description
+.scrollable-content {
+    overflow: auto; // Affiche les ascenseurs seulement si nécessaire
+    max-height: 1000px;
+}
+
 @mixin cards-margin-horizontal {
     margin-left: calc(var(--bootstrap-gutter) * -1);
     margin-right: calc(var(--bootstrap-gutter) * -1);

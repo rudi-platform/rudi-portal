@@ -1,11 +1,14 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_108;
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_110;
+import static org.rudi.microservice.kalim.service.IntegrationError.ERR_112;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
@@ -21,35 +24,33 @@ import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.exception.IntegrationException;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
+import org.rudi.microservice.kalim.service.integration.impl.transformer.metadata.AbstractMetadataTransformer;
 import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
-import org.springframework.beans.factory.annotation.Value;
 
-import lombok.Getter;
-import static org.rudi.microservice.kalim.service.IntegrationError.ERR_108;
-import static org.rudi.microservice.kalim.service.IntegrationError.ERR_110;
-import static org.rudi.microservice.kalim.service.IntegrationError.ERR_112;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 		extends AbstractIntegrationRequestTreatmentHandler {
 
 	protected final List<AbstractMetadataValidator<?>> metadataValidators;
+	protected final List<AbstractMetadataTransformer<?>> metadataTransformers;
 	protected final MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator;
 	protected final OrganizationHelper organizationHelper;
 
-	@Getter
-	@Value("${default.organization.password:12345678Mm$}")
-	private String defaultOrganizationPassword;
-
 	protected AbstractIntegrationRequestTreatmentHandlerWithValidation(DatasetService datasetService,
 			ApiManagerHelper apiGatewayManagerHelper, ObjectMapper objectMapper,
-			List<AbstractMetadataValidator<?>> metadataValidators, Error500Builder error500Builder,
+			List<AbstractMetadataValidator<?>> metadataValidators,
+			List<AbstractMetadataTransformer<?>> metadataTransformers, Error500Builder error500Builder,
 			MetadataInfoProviderIsAuthenticatedValidator metadataInfoProviderIsAuthenticatedValidator,
-			OrganizationHelper organizationHelper, ProviderHelper providerHelper, ACLHelper aclHelper, RolesHelper roleHelper) {
-		super(datasetService, apiGatewayManagerHelper, error500Builder, providerHelper, objectMapper, aclHelper, roleHelper);
+			OrganizationHelper organizationHelper, ProviderHelper providerHelper, ACLHelper aclHelper,
+			RolesHelper roleHelper) {
+		super(datasetService, apiGatewayManagerHelper, error500Builder, providerHelper, objectMapper, aclHelper,
+				roleHelper);
 		this.metadataValidators = metadataValidators;
+		this.metadataTransformers = metadataTransformers;
 		this.metadataInfoProviderIsAuthenticatedValidator = metadataInfoProviderIsAuthenticatedValidator;
 		this.organizationHelper = organizationHelper;
 	}
@@ -58,7 +59,8 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 			throws IntegrationException, DataverseAPIException, ApiGatewayApiException {
 		final var metadata = hydrateMetadata(integrationRequest.getFile());
 		if (validateAndSetErrors(metadata, integrationRequest)) {
-			final Provider provider = providerHelper.getProviderByNodeProviderUUID(integrationRequest.getNodeProviderId());
+			final Provider provider = providerHelper
+					.getProviderByNodeProviderUUID(integrationRequest.getNodeProviderId());
 
 			if (provider != null) {
 				Organization orgProvider = new Organization();
@@ -66,7 +68,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 				orgProvider.setOrganizationName(provider.getLabel());
 				metadata.getMetadataInfo().setMetadataProvider(orgProvider);
 			}
-
+			transform(metadata);
 			treat(integrationRequest, metadata);
 			integrationRequest.setIntegrationStatus(IntegrationStatus.OK);
 		} else {
@@ -83,7 +85,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 
 		UUID nodeProviderId = integrationRequest.getNodeProviderId();
 
-		//vérifie que l'utilisateur est du bon type
+		// vérifie que l'utilisateur est du bon type
 		User user = aclHelper.getUserByLogin(nodeProviderId.toString());
 		if (user == null || !isUserNodeProvider(nodeProviderId)) {
 			errors.add(new IntegrationRequestErrorEntity(ERR_108.getCode(), ERR_108.getMessage()));
@@ -100,13 +102,13 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 			return errors.isEmpty();
 		}
 
-		//vérifie que le provider du nodeProvider est liée à l'organization
+		// vérifie que le provider du nodeProvider est liée à l'organization
 		if (!isLinkedToOrganization(metadata, provider)) {
 			// le provider n'est pas associé à l'organisation producer du JDD
 			errors.add(new IntegrationRequestErrorEntity(ERR_112.getCode(), ERR_112.getMessage()));
 		}
 
-		//ajout des erreurs dans le rapport d'integration
+		// ajout des erreurs dans le rapport d'integration
 		errors.addAll(validateSpecificForOperation(integrationRequest));
 
 		// Sauvegarde des erreurs
@@ -115,7 +117,8 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 		return errors.isEmpty();
 	}
 
-	abstract Set<IntegrationRequestErrorEntity> validateSpecificForOperation(IntegrationRequestEntity integrationRequest);
+	abstract Set<IntegrationRequestErrorEntity> validateSpecificForOperation(
+			IntegrationRequestEntity integrationRequest);
 
 	protected Set<IntegrationRequestErrorEntity> validate(Metadata metadata) {
 		Set<IntegrationRequestErrorEntity> integrationRequestsErrors = new HashSet<>();
@@ -130,4 +133,14 @@ public abstract class AbstractIntegrationRequestTreatmentHandlerWithValidation
 
 	protected abstract void treat(IntegrationRequestEntity integrationRequest, Metadata metadata)
 			throws DataverseAPIException, ApiGatewayApiException;
+
+	protected void transform(Metadata metadata) {
+
+		metadataTransformers.forEach(metadataTransformer -> {
+			if (metadataTransformer.canBeUsedBy(this)) {
+				// met à jour la donnée dans metadata
+				metadataTransformer.transformMetadata(metadata);
+			}
+		});
+	}
 }

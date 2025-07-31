@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
+import {Component, Input, SecurityContext} from '@angular/core';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {LanguageService} from '@core/i18n/language.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -11,7 +11,6 @@ import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
 import {DetailFunctions} from '../../pages/detail/detail-functions';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import MediaTypeEnum = Media.MediaTypeEnum;
-
 
 @Component({
     selector: 'app-dataset-informations',
@@ -68,8 +67,8 @@ export class DatasetInformationsComponent {
      * Permet de récupérer le résumé long d'un metadata
      * @param item
      */
-    getSummaryDescription(item: Metadata): string {
-        return this.languageService.getTextForCurrentLanguage(item.summary);
+    getSummaryDescription(item: Metadata): SafeHtml {
+        return this.sanitize(this.languageService.getTextForCurrentLanguage(item.summary));
     }
 
 
@@ -94,5 +93,11 @@ export class DatasetInformationsComponent {
 
     public hasManyOtherDatasets(): boolean {
         return this.totalOtherDatasets > this.maxDatasetDiplayed;
+    }
+    
+
+    sanitize(html: string): SafeHtml {
+
+        return this.domSanitizer.sanitize(SecurityContext.HTML, html);
     }
 }

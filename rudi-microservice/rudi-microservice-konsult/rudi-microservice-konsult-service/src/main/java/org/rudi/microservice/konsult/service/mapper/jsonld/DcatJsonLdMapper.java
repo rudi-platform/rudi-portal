@@ -80,7 +80,6 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 				// initialisation des listes et des tableau pour ce dataset
 				context.setContactPoints(new JsonArray());
 				context.setDistributions(new JsonArray());
-				context.setServices(new JsonArray());
 
 				try {
 					// Création du JSON de l'objet dataset
@@ -105,10 +104,6 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 
 					if (!context.getDistributions().isEmpty()) {
 						dataset.add("distribution", context.getDistributions());
-					}
-
-					if (!context.getServices().isEmpty()) {
-						dataset.add("service", context.getServices());
 					}
 
 					graph.add(dataset);
@@ -173,21 +168,23 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 					graph.add(distribution);
 
 					// Liste des fichiers du JDD en cours de transcription
-					context.getDistributions().add(media.getMediaId().toString());
+					context.getDistributions().add(distribution.get("@id"));
 				} else if (Media.MediaTypeEnum.SERVICE.equals(media.getMediaType())) {
 					JsonObject dataService = dataServiceJsonLdMapper.toJsonLd((MediaService) media, context);
+
+					// rattachement au dataset
+					dataService.add("servesDataset", context.getCurrentDatasetReference());
 
 					// Rajout du service au @graph
 					graph.add(dataService);
 
-					// Liste des services du JDD en cours de transcription
-					context.getServices().add(media.getMediaId().toString());
 				}
 				// On ne traite pas les MediaType SERIES
 			} catch (AppServiceException e) {
 				log.error(e.getMessage());
 			}
 		});
+
 	}
 
 	private void extractLicense(Metadata metadata, DcatJsonLdContext context) {

@@ -2,11 +2,12 @@ package org.rudi.microservice.konsult.core.harvest;
 
 import java.util.List;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,5 +27,5 @@ public class DcatJsonLdContext {
 
 	private List<JsonObject> kinds;
 	private JsonArray distributions;
-	private JsonArray services;
+	private JsonObject currentDatasetReference;
 }

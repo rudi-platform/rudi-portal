@@ -39,6 +39,7 @@ import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.KalimSpringBootTest;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
+import org.rudi.microservice.kalim.service.integration.impl.transformer.metadata.AbstractMetadataTransformer;
 import org.rudi.microservice.kalim.service.integration.impl.validator.authenticated.MetadataInfoProviderIsAuthenticatedValidator;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
@@ -72,6 +73,8 @@ class PutIntegrationRequestTreatmentHandlerUT {
 	@Mock
 	private AbstractMetadataValidator<?> validator;
 	@Mock
+	private AbstractMetadataTransformer<?> metadataTransformer;
+	@Mock
 	private DatasetService datasetService;
 	@Mock
 	private ApiManagerHelper apiGatewayManagerHelper;
@@ -91,8 +94,9 @@ class PutIntegrationRequestTreatmentHandlerUT {
 	@BeforeEach
 	void setUp() {
 		handler = new PutIntegrationRequestTreatmentHandler(datasetService, apiGatewayManagerHelper, objectMapper,
-				Collections.singletonList(validator), error500Builder, metadataInfoProviderIsAuthenticatedValidator,
-				organizationHelper, providerHelper, aclHelper, roleHelper);
+				Collections.singletonList(validator), Collections.singletonList(metadataTransformer), error500Builder,
+				metadataInfoProviderIsAuthenticatedValidator, organizationHelper, providerHelper, aclHelper,
+				roleHelper);
 
 		when(validator.canBeUsedBy(handler)).thenReturn(true);
 	}

@@ -7,8 +7,8 @@
             <mat-card class="metadata-card">
                 <mat-card-title
                     class="card-label-title px-3 pt-3">{{'metaData.description'|translate}}</mat-card-title>
-                <mat-card-content class="mb-3 mt-3">
-                    <span *ngIf="metadata.summary">{{getSummaryDescription(metadata)}}</span>
+                <mat-card-content class="mb-3 mt-3 scrollable-content">
+                    <span *ngIf="metadata.summary" [innerHTML]="getSummaryDescription(metadata)"></span>
                 </mat-card-content>
             </mat-card>
         </div>

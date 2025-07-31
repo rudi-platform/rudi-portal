@@ -1,4 +1,4 @@
-# Comment modifier le mot de passe d'un utilisateur en BDD ?
+# Comment modifier le mot de passe d'un utilisateur ?
 
 ## Obtenir la valeur chiffré d'un mot de passe
 
@@ -7,10 +7,10 @@ Les mots de passe des utilisateurs sont stockés chiffrés en base de données. 
 Le mot de passe chiffré peut être remplacé dans la colonne ``acl_data.user_.password`` pour le user souhaité.
 
 ```sql
-UPDATE acl_data.user_ SET user_.password='<valeur chiffrée>' where user_.login = '<login du user concerné>';
+UPDATE acl_data.user_ SET password='<valeur chiffrée>' where login = '<login du user concerné>';
 ```
 
-## Modifier le mot de passe d'un microservice
+## Modifier le mot de passe d'un utilisateur de type MICROSERVICE
 
 En cas de mise à jour du mot de passe d'un microservice en base (cf ci-dessus), le fichier de configuration du microservice doit également être mis à jour.
 
