@@ -7,9 +7,9 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 const FIRST_PAGE = 1;
 
 @Component({
-  selector: 'cms-news-list',
-  templateUrl: './news-list.component.html',
-  styleUrl: './news-list.component.scss'
+    selector: 'cms-news-list',
+    templateUrl: './news-list.component.html',
+    styleUrl: './news-list.component.scss'
 })
 export class NewsListComponent implements OnInit {
 
@@ -30,12 +30,13 @@ export class NewsListComponent implements OnInit {
 
     @Input() currentPage = FIRST_PAGE;
     public isLoading = false;
+
     constructor(private readonly breakpointObserver: BreakpointObserverService) {
     }
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
-        this.page = FIRST_PAGE;
+        this.page = this.currentPage;
     }
 
     get page(): number {

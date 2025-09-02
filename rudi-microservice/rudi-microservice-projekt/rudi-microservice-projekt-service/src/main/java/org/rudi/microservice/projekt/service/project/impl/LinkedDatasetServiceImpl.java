@@ -185,13 +185,10 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 
 	@Override
 	@Transactional // readOnly = false
-	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid) throws AppServiceException {
+	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force) throws AppServiceException {
 		val project = getRequiredProjectEntity(projectUuid);
 
-		projektAuthorisationHelper.checkRightsAdministerProjectDataset(project);
-
-		// Vérification du statut du projet avant de supprimer le lien sur le dataset
-		projektAuthorisationHelper.checkStatusForProjectModification(project);
+		projektAuthorisationHelper.checkRightRemoveLinkedDatasetOnProject(project, force);
 
 		if (CollectionUtils.isNotEmpty(project.getLinkedDatasets())) {
 			Iterator<LinkedDatasetEntity> it = project.getLinkedDatasets().iterator();
@@ -199,7 +196,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 				LinkedDatasetEntity linkedDataset = it.next();
 				if (linkedDataset.getUuid().equals(linkedDatasetUuid)) {
 					for (final DeleteLinkedDatasetFieldProcessor processor : deleteLinkedDatasetProcessors) {
-						processor.process(null, linkedDataset);
+						processor.process(linkedDataset, force);
 					}
 					it.remove();
 				}

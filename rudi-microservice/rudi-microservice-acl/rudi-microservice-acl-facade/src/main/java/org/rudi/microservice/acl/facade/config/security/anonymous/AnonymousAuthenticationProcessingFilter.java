@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,7 +42,7 @@ public class AnonymousAuthenticationProcessingFilter extends AbstractAuthenticat
 	public AnonymousAuthenticationProcessingFilter(String loginAnonymous,
 			final AuthenticationSuccessHandler successHandler, final AuthenticationFailureHandler failureHandler,
 			AuthenticationManager manager) {
-		super(new AntPathRequestMatcher("/anonymous", "POST"));
+		super(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/anonymous"));
 		setAuthenticationSuccessHandler(successHandler);
 		setAuthenticationFailureHandler(failureHandler);
 		setAuthenticationManager(manager);

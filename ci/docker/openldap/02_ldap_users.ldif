@@ -1,0 +1,36 @@
+
+dn: uid=test1,cn=users,ou=internes,dc=rudi,dc=fr
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Test 1
+sn: Test
+givenName: 1
+mail: test1@rudi.fr
+userPassword: rudi@123
+uid: test1
+
+dn: uid=test2,cn=users,ou=internes,dc=rudi,dc=fr
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Test 2
+sn: Test
+givenName: 2
+mail: test2@rudi.fr
+userPassword: rudi@123
+uid: test2
+
+dn: uid=test3,cn=users,ou=internes,dc=rudi,dc=fr
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Test 3
+sn: Test
+givenName: 3
+mail: test3@rudi.fr
+userPassword: rudi@123
+uid: test3

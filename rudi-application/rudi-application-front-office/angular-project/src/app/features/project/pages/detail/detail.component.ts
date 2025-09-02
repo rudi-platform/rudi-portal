@@ -155,7 +155,7 @@ export class DetailComponent implements OnInit {
     getHeaderStatus(): string {
         // Cas spécifique, on ne souhaite pas afficher le réutilisation status
         // On souhaite précisé de manière visible que la réutilisation est "Archivée"
-        if (this.project.project_status === ProjectStatus.Disengaged) {
+        if (this.project.project_status === ProjectStatus.Disengaged || this.project.project_status === ProjectStatus.Archived) {
             return this.project.functional_status;
         }
         return this.project.reutilisation_status.label;

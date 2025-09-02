@@ -6,7 +6,7 @@ package org.rudi.facet.generator.model;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
@@ -36,8 +36,8 @@ public final class DataModelUtils {
 	 */
 	public static String encodeOdt(String chaine) {
 		String result = chaine;
-		result = StringUtils.replace(result, "&", "&amp;");
-		result = StringUtils.replace(result, "<", "&lt;");
+		result = Strings.CS.replace(result, "&", "&amp;");
+		result = Strings.CS.replace(result, "<", "&lt;");
 
 		return result;
 	}
@@ -50,10 +50,10 @@ public final class DataModelUtils {
 	 */
 	public static String encodeHtmlWhiteSpace(String chaine) {
 		String result = chaine;
-		result = StringUtils.replace(result, "\n\r", BR);
-		result = StringUtils.replace(result, "\r", BR);
-		result = StringUtils.replace(result, NEW_LINE, BR);
-		result = StringUtils.replace(result, "\t", "&nbsp;&nbsp;");
+		result = Strings.CS.replace(result, "\n\r", BR);
+		result = Strings.CS.replace(result, "\r", BR);
+		result = Strings.CS.replace(result, NEW_LINE, BR);
+		result = Strings.CS.replace(result, "\t", "&nbsp;&nbsp;");
 
 		return result;
 	}
@@ -109,8 +109,7 @@ public final class DataModelUtils {
 	 * @param input      la chaine
 	 * @param maxLines   le nombre de lignes max
 	 * @param lineLength la longueur d'une ligne
-	 * @param suspens    le texte mis au bout de la chaine (la longueur est prise en
-	 *                   compte pour le résultat total
+	 * @param suspens    le texte mis au bout de la chaine (la longueur est prise en compte pour le résultat total
 	 * @return la chaine tronquées en nombre de lignes
 	 */
 	public static String truncateLines(String input, int maxLines, int lineLength, String suspens) {

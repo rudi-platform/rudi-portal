@@ -13,7 +13,7 @@ import java.util.Map;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.Nullable;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
@@ -164,7 +164,7 @@ public class ProjectTaskServiceImpl extends
 		}
 
 		String draftType = projectWorkflowHelper.getDraftType(assetDescriptionEntity);
-		boolean isArchive = !StringUtils.equals(DRAFT_TYPE_FORM_ARCHIVE_VALUE, draftType);
+		boolean isArchive = !Strings.CS.equals(DRAFT_TYPE_FORM_ARCHIVE_VALUE, draftType);
 
 		if (isArchive) {
 			checkStatusLinkedDataset(assetDescriptionEntity);

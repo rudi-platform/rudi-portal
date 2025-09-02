@@ -2,9 +2,7 @@ package org.rudi.microservice.konsult.facade.controller;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.Nonnull;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.facade.helper.ControllerHelper;
 import org.rudi.common.service.exception.AppServiceException;
@@ -17,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -47,7 +48,7 @@ public class PropertiesController implements PropertiesApi {
 
 		FrontOfficeProperties frontOfficeProperties = getFrontOfficeProperties().getBody();
 		if (frontOfficeProperties != null && frontOfficeProperties.getScripts().stream()
-				.filter(a -> StringUtils.equals(a, "/konsult/v1/properties/scripts/" + scriptName)).count() > 0) {
+				.filter(a -> Strings.CS.equals(a, "/konsult/v1/properties/scripts/" + scriptName)).count() > 0) {
 			DocumentContent documentContent = resourceHelper.convertToDocumentContent(getResource(scriptName));
 			return controllerHelper.downloadableResponseEntity(documentContent);
 		} else {

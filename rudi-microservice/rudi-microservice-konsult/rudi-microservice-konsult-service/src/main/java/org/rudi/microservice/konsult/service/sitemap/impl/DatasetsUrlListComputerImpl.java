@@ -1,10 +1,13 @@
 package org.rudi.microservice.konsult.service.sitemap.impl;
 
+import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.assertj.core.util.Arrays;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -22,7 +25,6 @@ import org.springframework.stereotype.Component;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.normalize;
 
 @Component
 @RequiredArgsConstructor
@@ -69,7 +71,7 @@ public class DatasetsUrlListComputerImpl extends AbstractUrlListComputer {
 
 	private String buildLocation(UUID uuid, String title) {
 		return StringUtils.join(
-				Arrays.array(StringUtils.removeEnd(urlServer, "/"), catalogueUrlPrefixe, uuid, "/", normalize(title)));
+				Arrays.array(Strings.CS.removeEnd(urlServer, "/"), catalogueUrlPrefixe, uuid, "/", normalize(title)));
 	}
 
 }

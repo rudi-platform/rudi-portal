@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.3.0</version>
+		<version>3.3.1</version>
 	</parent>
 
 	<artifactId>rudi-facet-cms</artifactId>
@@ -72,8 +72,7 @@
 							<generateModels>true</generateModels>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<generateAliasAsModel>true</generateAliasAsModel>
-							<templateDirectory>
-								${resource-generation-directory}/openapi/generation/</templateDirectory>
+							<templateDirectory>${resource-generation-directory}/openapi/generation/</templateDirectory>
 							<verbose>false</verbose>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>

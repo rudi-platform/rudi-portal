@@ -1,5 +1,15 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,16 +47,6 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationR
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationMembersHelperTestUT {
@@ -118,7 +118,6 @@ class OrganizationMembersHelperTestUT {
 		organizationMember.setUserUuid(user.getUuid());
 		organizationMember.setRole(OrganizationRole.EDITOR);
 		organizationMember.setAddedDate(now);
-
 
 		OrganizationEntity organization = new OrganizationEntity();
 		organization.setUuid(UUID.randomUUID());
@@ -223,13 +222,13 @@ class OrganizationMembersHelperTestUT {
 					&& memberEnriched.getUserUuid().equals(userMerged.getUuid());
 			assertTrue(uuidOk);
 
-			boolean loginOk = StringUtils.equals(memberEnriched.getLogin(), userMerged.getLogin());
+			boolean loginOk = Strings.CS.equals(memberEnriched.getLogin(), userMerged.getLogin());
 			assertTrue(loginOk);
 
-			boolean lastNameOk = StringUtils.equals(memberEnriched.getLastname(), userMerged.getLastname());
+			boolean lastNameOk = Strings.CS.equals(memberEnriched.getLastname(), userMerged.getLastname());
 			assertTrue(lastNameOk);
 
-			boolean firstNameOk = StringUtils.equals(memberEnriched.getFirstname(), userMerged.getFirstname());
+			boolean firstNameOk = Strings.CS.equals(memberEnriched.getFirstname(), userMerged.getFirstname());
 			assertTrue(firstNameOk);
 
 			boolean addedDateOk = memberEnriched.getAddedDate() != null
@@ -273,9 +272,9 @@ class OrganizationMembersHelperTestUT {
 		OrganizationMemberEntity member2 = new OrganizationMemberEntity();
 		member2.setUserUuid(robot.getUuid());
 
-		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(), eq(""),any()))
+		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(), eq(""), any()))
 				.thenReturn(List.of(person, robot));
-		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(), eq(null),any()))
+		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(), eq(null), any()))
 				.thenReturn(List.of(person, robot));
 		List<User> users = organizationMembersHelper.searchCorrespondingUsers(List.of(member1, member2), criteria);
 		assertFalse(CollectionUtils.isEmpty(users));
@@ -297,7 +296,7 @@ class OrganizationMembersHelperTestUT {
 		member2.setUserUuid(robot.getUuid());
 
 		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(),
-				eq(UserType.PERSON.getValue()),any())).thenReturn(List.of(person));
+				eq(UserType.PERSON.getValue()), any())).thenReturn(List.of(person));
 		List<User> users = organizationMembersHelper.searchCorrespondingUsers(List.of(member1, member2), criteria);
 		assertFalse(CollectionUtils.isEmpty(users));
 		assertEquals(1, users.size());
@@ -320,7 +319,7 @@ class OrganizationMembersHelperTestUT {
 		member2.setUserUuid(robot.getUuid());
 
 		when(aclHelper.searchUsersWithCriteria(eq(List.of(person.getUuid(), robot.getUuid())), any(),
-				eq(UserType.ROBOT.getValue()),any())).thenReturn(List.of(robot));
+				eq(UserType.ROBOT.getValue()), any())).thenReturn(List.of(robot));
 		List<User> users = organizationMembersHelper.searchCorrespondingUsers(List.of(member1, member2), criteria);
 		assertFalse(CollectionUtils.isEmpty(users));
 		assertEquals(1, users.size());

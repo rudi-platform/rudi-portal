@@ -44,19 +44,23 @@ public class ProvidersController implements ProvidersApi {
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODULE_STRUKTURE_ADMINISTRATOR + "," + MODULE + ")")
 	public ResponseEntity<ProviderPageResult> searchProviders(String code, String libelle, LocalDateTime dateDebut,
-			java.time.LocalDateTime dateFin, UUID nodeProviderUuid, Boolean full, Integer offset, Integer limit,
+			java.time.LocalDateTime dateFin, List<UUID> nodeProviderUuids, List<UUID> organizationUuids, Boolean full, Integer offset, Integer limit,
 			String order) {
-		ProviderSearchCriteria searchCriteria = new ProviderSearchCriteria();
-		searchCriteria.setCode(code);
-		searchCriteria.setLabel(libelle);
-		searchCriteria.setFull(full);
-		searchCriteria.setNodeProviderUuid(nodeProviderUuid);
-		searchCriteria.setDateDebut(dateDebut);
-		searchCriteria.setDateFin(dateFin);
+
+		ProviderSearchCriteria criteria = ProviderSearchCriteria
+				.builder()
+				.code(code)
+				.label(libelle)
+				.full(full)
+				.nodeProviderUuid(nodeProviderUuids)
+				.dateDebut(dateDebut)
+				.dateFin(dateFin)
+				.organisationUuid(organizationUuids)
+				.build();
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 
-		Page<Provider> page = providerService.searchProviders(searchCriteria, pageable);
+		Page<Provider> page = providerService.searchProviders(criteria, pageable);
 		ProviderPageResult result = new ProviderPageResult();
 		result.setTotal(page.getTotalElements());
 		result.setElements(page.getContent());

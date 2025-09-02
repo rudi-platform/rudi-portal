@@ -62,6 +62,19 @@ public class ProjektAuthorisationHelper {
 		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT_ADMINISTRATOR, Boolean.TRUE);
 		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT, Boolean.TRUE);
 	}
+	/**
+	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au profil technique du module ainsi qu'à Kalim
+	 */
+	@Getter
+	private static final Map<String, Boolean> DATASET_DELETION_ACCESS = new HashMap<>();
+
+	static {
+		DATASET_DELETION_ACCESS.put(RoleCodes.ADMINISTRATOR, Boolean.TRUE);
+		DATASET_DELETION_ACCESS.put(RoleCodes.MODULE_PROJEKT_ADMINISTRATOR, Boolean.TRUE);
+		DATASET_DELETION_ACCESS.put(RoleCodes.MODULE_PROJEKT, Boolean.TRUE);
+		DATASET_DELETION_ACCESS.put(RoleCodes.MODULE_KALIM_ADMINISTRATOR, Boolean.TRUE);
+		DATASET_DELETION_ACCESS.put(RoleCodes.MODULE_KALIM, Boolean.TRUE);
+	}
 
 	/**
 	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur, au modérateur et au profil technique du module
@@ -330,6 +343,21 @@ public class ProjektAuthorisationHelper {
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
 		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedAsProjectAdministrator(projectEntity))) {
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
+		}
+	}
+
+	public void checkRightRemoveLinkedDatasetOnProject(ProjectEntity projectEntity, Boolean force) throws AppServiceException {
+		Map<String, Boolean> accessRightsByRole = ProjektAuthorisationHelper.getDATASET_DELETION_ACCESS();
+		// Vérification des droits d'accès
+		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
+		if ((isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity))) {
+			if(!BooleanUtils.isTrue(force)){
+				// Vérification du statut du projet avant de supprimer le lien sur le dataset
+				checkStatusForProjectModification(projectEntity);
+			}
+		}
+		else {
 			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}

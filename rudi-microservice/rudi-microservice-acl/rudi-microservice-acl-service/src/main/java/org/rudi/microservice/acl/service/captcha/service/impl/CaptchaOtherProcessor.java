@@ -2,7 +2,7 @@ package org.rudi.microservice.acl.service.captcha.service.impl;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.ExternalServiceException;
 import org.rudi.common.service.util.MonoUtils;
@@ -11,22 +11,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import reactor.core.publisher.Mono;
 
 @Component
 public class CaptchaOtherProcessor extends AbstractCaptchaProcessor {
 
-	public CaptchaOtherProcessor(@Qualifier("captcha_webclient") WebClient captchaWebClient, CaptchaProperties captchaProperties) {
+	public CaptchaOtherProcessor(@Qualifier("captcha_webclient") WebClient captchaWebClient,
+			CaptchaProperties captchaProperties) {
 		super(captchaWebClient, captchaProperties);
 	}
 
 	@Override
 	protected boolean hasToBeUsed(String typeCaptcha) {
-		return !(StringUtils.equals(typeCaptcha, CAPTCHA_TYPE_IMAGE) || StringUtils.equals(typeCaptcha, CAPTCHA_TYPE_SOUND));
+		return !(Strings.CS.equals(typeCaptcha, CAPTCHA_TYPE_IMAGE)
+				|| Strings.CS.equals(typeCaptcha, CAPTCHA_TYPE_SOUND));
 	}
 
 	@Override
-	protected DocumentContent generateCaptcha(String get, String c, String t, String cs, String d) throws ExternalServiceException {
+	protected DocumentContent generateCaptcha(String get, String c, String t, String cs, String d)
+			throws ExternalServiceException {
 		ClientResponse clientResponse = getClientResponse(get, c, t, cs, d);
 		if (clientResponse != null) {
 			Mono<String> captchaMono = clientResponse.bodyToMono(String.class);
@@ -42,6 +46,6 @@ public class CaptchaOtherProcessor extends AbstractCaptchaProcessor {
 	 * @return reponse procéssée Faire pointer les urls de la reponse vers notre back
 	 */
 	private String processResponse(String captchaText) {
-		return StringUtils.replace(captchaText, CaptchaProperties.PISTE_ENDPOINT, CaptchaProperties.RUDI_ENDPOINT);
+		return Strings.CS.replace(captchaText, CaptchaProperties.PISTE_ENDPOINT, CaptchaProperties.RUDI_ENDPOINT);
 	}
 }

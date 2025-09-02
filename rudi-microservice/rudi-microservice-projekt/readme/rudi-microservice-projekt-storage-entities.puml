@@ -313,6 +313,7 @@ class org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEn
 enum org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetStatus {
 	{field} +ARCHIVED
 	{field} +CANCELLED
+	{field} +DISENGAGED
 	{field} +DRAFT
 	{field} +IN_PROGRESS
 	{field} +VALIDATED
@@ -368,6 +369,7 @@ class org.rudi.microservice.projekt.storage.entity.project.ProjectEntity <<Entit
 
 
 enum org.rudi.microservice.projekt.storage.entity.project.ProjectStatus {
+	{field} +ARCHIVED
 	{field} +CANCELLED
 	{field} +DISENGAGED
 	{field} +DRAFT

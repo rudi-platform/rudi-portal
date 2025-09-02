@@ -56,4 +56,5 @@ public class ReportHelper {
 		builder.append(REPORT_PATH);
 		return String.format(builder.toString(), organizationUuid.toString());
 	}
+	
 }

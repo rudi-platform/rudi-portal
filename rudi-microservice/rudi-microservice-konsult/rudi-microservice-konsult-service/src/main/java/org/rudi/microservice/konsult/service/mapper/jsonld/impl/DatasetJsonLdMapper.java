@@ -49,7 +49,7 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 		result.addProperty("description", getDescription(metadata.getSummary()));
 		result.addProperty("issued", metadata.getDatasetDates().getCreated().toString());
 		result.addProperty("modified", metadata.getDatasetDates().getUpdated().toString());
-		result.addProperty("accrualPeriodicity", "unknown");
+		result.addProperty("accrualPeriodicity", "irregular");
 		result.addProperty("landingPage", getDatasetUrl(metadata));
 
 		if(!keywords.isEmpty()){

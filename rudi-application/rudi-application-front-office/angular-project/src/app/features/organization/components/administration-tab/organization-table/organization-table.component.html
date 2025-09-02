@@ -1,5 +1,5 @@
 <!-- Robot table-->
-<div class="table-robot">
+<div class="table-robot" xmlns:button="http://www.w3.org/1999/html">
 
     <div class="table-title-container">
         <span class="table-title-style" [translate]="'metaData.administrationTab.organizationTitle'"> </span>
@@ -26,6 +26,21 @@
                 {{'metaData.administrationTab.robotTable.id'|translate}}
             </th>
             <td mat-cell class="center" *matCellDef="let element"> {{organization?.uuid}} </td>
+        </ng-container>
+
+        <!-- dash -->
+        <ng-container matColumnDef="dash">
+            <th mat-header-cell *matHeaderCellDef class="table-header">
+                {{'metaData.administrationTab.robotTable.dash'|translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+                <button type="button" class="button-menu" mat-stroked-button [matMenuTriggerFor]="menu">
+                    <mat-icon class="little-icon-size" aria-hidden="true" [svgIcon]="'dashes'"></mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" role="menu" xPosition="before">
+                    <button mat-menu-item (click)="openPopinArchive()">{{'metaData.administrationTab.robotTable.archive'|translate}}</button>
+                </mat-menu>
+            </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -1,0 +1,25 @@
+#### OU 
+dn: dc=rudi,dc=fr
+objectClass: dcObject
+objectClass: organization
+dc: rudi
+o: rudi
+
+dn: ou=internes,dc=rudi,dc=fr
+objectClass: organizationalUnit
+ou: internes
+description: users container
+
+dn: ou=groups,ou=internes,dc=rudi,dc=fr
+objectClass: organizationalUnit
+ou: groups
+description: Groupes de comptes
+
+# SG
+dn: cn=users,ou=internes,dc=rudi,dc=fr
+objectClass: groupOfNames
+objectClass: top
+cn: users
+member: 
+description: users container
+

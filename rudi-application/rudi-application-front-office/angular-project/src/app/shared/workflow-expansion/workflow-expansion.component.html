@@ -1,7 +1,7 @@
 <mat-accordion>
     <mat-expansion-panel [expanded]="true" class="project-modified-expansion" (opened)="panelTaskOpenState.set(true)" (closed)="panelTaskOpenState.set(false)">
         <mat-expansion-panel-header>
-            <mat-panel-title class="expansion-title"> {{ section.label ?? section.fields[0].definition.label }} </mat-panel-title>
+            <mat-panel-title class="expansion-title"> {{ title ?? (section.label ?? section.fields[0].definition.label) }} </mat-panel-title>
         </mat-expansion-panel-header>
         <hr>
         <ng-container *ngFor="let field of section.fields">

@@ -1,14 +1,15 @@
 package org.rudi.microservice.konsult.service.mapper.jsonld;
 
-import com.google.gson.JsonObject;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.microservice.konsult.core.harvest.DcatJsonLdContext;
 import org.rudi.microservice.konsult.service.helper.media.MediaUrlHelper;
 import org.springframework.beans.factory.annotation.Value;
 
-public abstract class AbstractJsonLdMapper<T>  implements JsonLdMapper<T> {
+import com.google.gson.JsonObject;
+
+public abstract class AbstractJsonLdMapper<T> implements JsonLdMapper<T> {
 
 	@Value("${front.urlServer}")
 	private String urlServer;
@@ -19,8 +20,8 @@ public abstract class AbstractJsonLdMapper<T>  implements JsonLdMapper<T> {
 		this.mediaUrlHelper = mediaUrlHelper;
 	}
 
-	protected String getBaseUrl(){
-		return StringUtils.removeEnd(urlServer, "/");
+	protected String getBaseUrl() {
+		return Strings.CS.removeEnd(urlServer, "/");
 	}
 
 	protected String rewriteMediaUrl(Media media, Metadata metadata) {
@@ -36,25 +37,23 @@ public abstract class AbstractJsonLdMapper<T>  implements JsonLdMapper<T> {
 		rs.addProperty("@type", type);
 		rs.addProperty("identifier", media.getMediaId().toString());
 
-		if(io.micrometer.common.util.StringUtils.isNotEmpty(media.getMediaName())){
+		if (io.micrometer.common.util.StringUtils.isNotEmpty(media.getMediaName())) {
 			rs.addProperty("title", media.getMediaName());
-		}
-		else {
+		} else {
 			rs.addProperty("title", context.getCurentMetadata().getResourceTitle());
 		}
-		if(io.micrometer.common.util.StringUtils.isNotEmpty(media.getMediaCaption())){
+		if (io.micrometer.common.util.StringUtils.isNotEmpty(media.getMediaCaption())) {
 			rs.addProperty("description", media.getMediaCaption());
 		}
 
-		if(media.getMediaDates() != null){
+		if (media.getMediaDates() != null) {
 			rs.addProperty("issued", media.getMediaDates().getCreated().toString());
 			rs.addProperty("modified", media.getMediaDates().getUpdated().toString());
 		}
 
-		if(context.getLicense() != null){
+		if (context.getLicense() != null) {
 			rs.add("license", context.getLicense());
 		}
-
 
 		return rs;
 	}

@@ -1,8 +1,13 @@
 package org.rudi.microservice.strukture.service.organization.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -20,7 +25,6 @@ import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSea
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.exception.UserIsNotOrganizationAdministratorException;
 import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
-import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
@@ -35,6 +39,7 @@ import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,13 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Service
 @Transactional(readOnly = true)
@@ -74,7 +75,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private final OrganizationMembersHelper organizationMembersHelper;
 	private final OrganizationMembersPartitionerHelper organizationMembersPartitionerHelper;
 	private final OrganizationHelper organizationHelper;
-	private final ProviderHelper providerHelper;
 	private final OwnerInfoHelper ownerInfoHelper;
 
 	@Value("${default.organization.roles:USER,ORGANIZATION}")
@@ -90,8 +90,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	public Organization getOrganization(UUID uuid) throws AppServiceNotFoundException {
+	public Organization getOrganization(UUID uuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException {
 		OrganizationEntity entity = organizationHelper.getOrganizationEntity(uuid);
+		if(OrganizationStatus.DISENGAGED.equals(entity.getOrganizationStatus())) {
+			struktureAuthorisationHelper.checkRightsAdminsterOrganization(entity);
+		}
 		return organizationMapper.entityToDto(entity);
 	}
 

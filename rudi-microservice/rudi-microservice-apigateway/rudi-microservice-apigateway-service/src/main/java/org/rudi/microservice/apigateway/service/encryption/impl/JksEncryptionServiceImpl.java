@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.Strings;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.service.exception.AppServiceException;
@@ -138,7 +138,7 @@ public class JksEncryptionServiceImpl implements EncryptionService {
 		List<String> matchingAliases = new ArrayList<>();
 		while (aliases.hasMoreElements()) {
 			String alias = aliases.nextElement();
-			if (org.apache.commons.lang3.StringUtils.startsWith(alias, uuidInAlias)) {
+			if (Strings.CS.startsWith(alias, uuidInAlias)) {
 				matchingAliases.add(alias);
 			}
 		}
@@ -148,7 +148,7 @@ public class JksEncryptionServiceImpl implements EncryptionService {
 		}
 		Collections.sort(matchingAliases);
 		for (String alias : matchingAliases) {
-			String dateInAlias = StringUtils.removeStart(alias, uuidInAlias);
+			String dateInAlias = Strings.CS.removeStart(alias, uuidInAlias);
 			LocalDateTime aliasCreationDate = LocalDateTime.parse(dateInAlias, DATE_TIME_FORMATTER);
 			if (date.isAfter(aliasCreationDate)
 					&& date.isBefore(aliasCreationDate.plus(keyDuration, ChronoUnit.SECONDS))) {
@@ -185,7 +185,7 @@ public class JksEncryptionServiceImpl implements EncryptionService {
 	}
 
 	private String getSimplifiedUuid(UUID mediaUuid) {
-		return mediaUuid.toString().replace("-", Strings.EMPTY);
+		return mediaUuid.toString().replace("-", StringUtils.EMPTY);
 	}
 
 	private PrivateKey getPrivateKey(final KeyStore keystore, final String alias, final String keyPassword)

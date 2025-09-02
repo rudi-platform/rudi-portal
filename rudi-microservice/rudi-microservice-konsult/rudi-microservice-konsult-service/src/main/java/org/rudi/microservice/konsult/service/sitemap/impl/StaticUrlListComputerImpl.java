@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.assertj.core.util.Arrays;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.konsult.core.sitemap.SitemapDescriptionData;
@@ -48,7 +49,7 @@ public class StaticUrlListComputerImpl extends AbstractUrlListComputer {
 
 		for (StaticSitemapEntry entry : data.getUrlList()) {
 			TUrl url = new TUrl();
-			if (entry.getIsRelative()) {
+			if (Boolean.TRUE.equals(entry.getIsRelative())) {
 				url.setLoc(buildLocation(entry.getLocation()));
 			} else {
 				url.setLoc(entry.getLocation());
@@ -60,6 +61,6 @@ public class StaticUrlListComputerImpl extends AbstractUrlListComputer {
 
 	private String buildLocation(String location) {
 		return StringUtils
-				.join(Arrays.array(StringUtils.removeEnd(urlServer, "/"), StringUtils.removeStart(location, "/")), "/");
+				.join(Arrays.array(Strings.CS.removeEnd(urlServer, "/"), Strings.CS.removeStart(location, "/")), "/");
 	}
 }

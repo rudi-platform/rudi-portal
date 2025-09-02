@@ -152,8 +152,8 @@ export class ProjectTaskDetailComponent
                     this.dependencies = dependencies;
                     this.isLoading = false;
                     this.projektService.isAuthenticatedUserProjectOwner(dependencies.project.uuid).subscribe(isOwner => {
-                        this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProject(dependencies.project);
-                        this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProject(dependencies.project);
+                        this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromTask(dependencies.project);
+                        this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProjectFromTask(dependencies.project);
                     });
                 },
                 error: (error) => {

@@ -3,21 +3,35 @@
 
 .organization-details-container {
 
-  display: flex;
-  @extend .row;
+    display: flex;
+    @extend .row;
 
 
-  .organization-information-container {
-    padding-bottom: 24px;
-    @extend .col-sm-12;
-    @extend .col-md-12;
-    @extend .col-lg-8;
-  }
+    .organization-information-container {
+        padding-bottom: 24px;
+        @extend .col-sm-12;
+        @extend .col-md-12;
+        @extend .col-lg-8;
+    }
 
-  .owner-information-container {
-    @extend .col-sm-12;
-    @extend .col-md-12;
-    @extend .col-lg-4;
+    .owner-information-container {
+        @extend .col-sm-12;
+        @extend .col-md-12;
+        @extend .col-lg-4;
 
-  }
+    }
+
+    .organization-modified-expansion {
+        margin-top: 15px;
+    }
+}
+
+.expansion-title {
+    color: var(--secondary-text);
+    font-size: 18px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.72;
+    margin-bottom: 8px;
 }

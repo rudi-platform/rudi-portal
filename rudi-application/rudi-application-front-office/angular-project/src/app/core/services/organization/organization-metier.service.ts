@@ -7,6 +7,7 @@ import {
     OrganizationMember,
     OrganizationMemberType,
     OrganizationSearchCriteria,
+    OrganizationStatus,
     PagedOrganizationList,
     PagedOrganizationUserMembers
 } from 'micro_service_modules/strukture/strukture-model';
@@ -59,6 +60,7 @@ export abstract class OrganizationMetierService {
             this.searchOrganizations({
                 offset,
                 user_uuid: userUuid,
+                organization_status: OrganizationStatus.Validated
             }));
     }
 

@@ -7,4 +7,8 @@ import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component
     styleUrls: ['./workflow-field-text.component.scss']
 })
 export class WorkflowFieldTextComponent extends WorkflowFieldComponent {
+
+    get fullLabel() {
+        return this.label ? this.label + ' : ' : '';
+    }
 }

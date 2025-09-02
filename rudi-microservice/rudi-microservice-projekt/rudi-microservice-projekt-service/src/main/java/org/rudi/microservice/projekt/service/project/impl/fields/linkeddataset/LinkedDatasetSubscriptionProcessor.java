@@ -17,8 +17,7 @@ public class LinkedDatasetSubscriptionProcessor implements DeleteLinkedDatasetFi
 	private final LinkedDatasetSubscriptionHelper linkedDatasetSubscriptionHelper;
 
 	@Override
-	public void process(@Nullable LinkedDatasetEntity linkedDataset,
-			@Nullable LinkedDatasetEntity existingLinkedDataset) throws AppServiceException {
+	public void process(@Nullable LinkedDatasetEntity existingLinkedDataset, @Nullable Boolean force) throws AppServiceException {
 		// Tentative de suppression de la souscription accordée par ce linked dataset
 		linkedDatasetSubscriptionHelper.handleUnlinkLinkedDataset(existingLinkedDataset);
 	}

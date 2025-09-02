@@ -18,6 +18,7 @@ import {WorkflowExpansionLabelComponent} from '@shared/workflow-expansion/workfl
 import {WorkflowExpansionComponent} from '@shared/workflow-expansion/workflow-expansion.component';
 import {WorkflowFieldDateComponent} from '@shared/workflow-field-date/workflow-field-date.component';
 import {WorkflowFieldHiddenComponent} from '@shared/workflow-field-hidden/workflow-field-hidden.component';
+import {WorkflowFieldListComponent} from '@shared/workflow-field-list/workflow-field-list.component';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {IsSectionDisplayedPipe} from '@shared/workflow-form/pipes/is-section-displayed.pipe';
 import {IsSectionOnlyHelpPipe} from '@shared/workflow-form/pipes/is-section-only-help.pipe';
@@ -137,6 +138,7 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             WorkflowFormComponent,
             WorkflowFieldTemplateComponent,
             WorkflowFieldComponent,
+            WorkflowFieldListComponent,
             WorkflowFieldTextComponent,
             WorkflowFieldDateComponent,
             WorkflowFieldHiddenComponent,

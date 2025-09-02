@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.util.Assert;
 
 import jakarta.servlet.FilterChain;
@@ -37,7 +37,7 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 
 	private String passwordParameter;
 
-	private AntPathRequestMatcher checkCredentialMatcher;
+	private PathPatternRequestMatcher checkCredentialMatcher;
 
 	private JwtAuthenticationProvider authenticationProvider;
 
@@ -57,7 +57,7 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 			String checkCredentialUrl, JwtAuthenticationProvider authenticationProvider,
 			final AuthenticationSuccessHandler successHandler, final AuthenticationFailureHandler failureHandler,
 			AuthenticationManager manager) {
-		super(new AntPathRequestMatcher(authenticateUrl, "POST"));
+		super(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, authenticateUrl));
 		setCheckCredential(checkCredentialUrl);
 		setAuthentificationProvider(authenticationProvider);
 		setAuthenticationSuccessHandler(successHandler);
@@ -74,7 +74,8 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 
 	private void setCheckCredential(String checkCredentialUrl) {
 		Assert.notNull(checkCredentialUrl, "checkCredentialUrl cannot be null");
-		this.checkCredentialMatcher = new AntPathRequestMatcher(checkCredentialUrl, "POST");
+		this.checkCredentialMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,
+				checkCredentialUrl);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractControl, FormGroup} from '@angular/forms';
-import {Field} from 'micro_service_modules/api-bpmn';
 import {WorkflowProperties} from '@shared/workflow-form/workflow-properties';
+import {Field} from 'micro_service_modules/api-bpmn';
 
 /**
  * Champ généré dynamiquement à partir d'un {@link Field} du WorkFlow.

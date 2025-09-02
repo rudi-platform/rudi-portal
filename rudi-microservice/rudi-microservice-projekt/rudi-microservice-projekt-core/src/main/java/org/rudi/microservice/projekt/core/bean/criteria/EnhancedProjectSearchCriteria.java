@@ -28,7 +28,7 @@ public class EnhancedProjectSearchCriteria extends ProjectSearchCriteria {
 		this.setLinkedDatasetUuids(projectSearchCriteria.getLinkedDatasetUuids());
 		this.setOwnerUuids(projectSearchCriteria.getOwnerUuids());
 		this.setProjectUuids(projectSearchCriteria.getProjectUuids());
-		this.setStatus(projectSearchCriteria.getStatus());
+		this.setProjectStatus(projectSearchCriteria.getProjectStatus());
 		this.setIsPrivate(projectSearchCriteria.getIsPrivate());
 	}
 
@@ -42,7 +42,7 @@ public class EnhancedProjectSearchCriteria extends ProjectSearchCriteria {
 				.linkedDatasetUuids(this.getLinkedDatasetUuids())
 				.ownerUuids(this.getOwnerUuids())
 				.projectUuids(this.getProjectUuids())
-				.status(this.getStatus())
+				.projectStatus(this.getProjectStatus())
 				.isPrivate(this.getIsPrivate())
 				.build();
 	}

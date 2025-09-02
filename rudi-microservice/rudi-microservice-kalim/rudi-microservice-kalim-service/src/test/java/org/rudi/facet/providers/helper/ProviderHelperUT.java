@@ -104,7 +104,7 @@ class ProviderHelperUT {
 		assertThat(providerByNodeProviderUUID).isEqualTo(searchedProvider);
 
 		final RecordedRequest providersRequest = mockWebServer.takeRequest();
-		assertThat(providersRequest).hasFieldOrPropertyWithValue("path", "/search?full=true&limit=1&nodeProviderUuid=" + searchedNode.getUuid());
+		assertThat(providersRequest).hasFieldOrPropertyWithValue("path", "/search?full=true&limit=1&nodeProviderUuids=" + searchedNode.getUuid());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class ProviderHelperUT {
 		assertThat(nodeProviderByUUID).isEqualTo(searchedNode);
 
 		final RecordedRequest providersRequest = mockWebServer.takeRequest();
-		assertThat(providersRequest).hasFieldOrPropertyWithValue("path", "/search?full=true&limit=1&nodeProviderUuid=" + searchedNode.getUuid());
+		assertThat(providersRequest).hasFieldOrPropertyWithValue("path", "/search?full=true&limit=1&nodeProviderUuids=" + searchedNode.getUuid());
 	}
 
 	@Test

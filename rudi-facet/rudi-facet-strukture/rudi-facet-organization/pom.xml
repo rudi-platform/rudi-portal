@@ -5,10 +5,15 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet-strukture</artifactId>
-		<version>3.3.0</version>
+		<version>3.3.1</version>
 	</parent>
 
 	<artifactId>rudi-facet-organization</artifactId>
+	
+	<properties>
+		<resource-directory>${project.basedir}</resource-directory>
+		<resource-generation-directory>${project.basedir}</resource-generation-directory>
+	</properties>
 
 	<dependencies>
 		<dependency>

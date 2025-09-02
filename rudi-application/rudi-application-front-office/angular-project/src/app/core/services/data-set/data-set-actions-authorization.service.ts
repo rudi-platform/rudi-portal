@@ -7,19 +7,27 @@ import {Project} from 'micro_service_modules/projekt/projekt-model';
 })
 export class DataSetActionsAuthorizationService {
 
-    canAddDatasetFromProject(project: Project): boolean {
-        return this.handleActionAuthorization(project);
+    canAddDatasetFromProjectFromDetail(project: Project): boolean {
+        return this.handleActionAuthorization(project, false);
     }
 
-    canDeleteDatasetFromProject(project: Project): boolean {
-        return this.handleActionAuthorization(project);
+    canDeleteDatasetFromProjectFromDetail(project: Project): boolean {
+        return this.handleActionAuthorization(project, false);
     }
 
-    private handleActionAuthorization(project: Project): boolean {
+    canAddDatasetFromProjectFromTask(project: Project): boolean {
+        return this.handleActionAuthorization(project, true);
+    }
+
+    canDeleteDatasetFromProjectFromTask(project: Project): boolean {
+        return this.handleActionAuthorization(project, true);
+    }
+
+    private handleActionAuthorization(project: Project, fromTask: boolean): boolean {
         switch (project.project_status) {
             case 'DRAFT':
             case 'REJECTED':
-                return true;
+                return fromTask; // modification des jdd ou new dataset requests autorisée uniquement depuis une tâche sur une réutilisation pas encore finalisée
             case 'VALIDATED' :
                 return project.reutilisation_status.dataset_set_modification_allowed && project.status === Status.Completed;
             case 'IN_PROGRESS':

@@ -697,8 +697,15 @@ export class ProjectSubmissionService {
 
         // Lier les demandes (la seule en l'occurence) au projet
         return this.projektMetierService.linkProjectToDatasets(createdProject.uuid, [linkToCreate.datasetUuid], mapDataset).pipe(
-            // Quand ça se termine on démarre les taches
-            switchMap((linksCreated: LinkedDataset[]) => this.createAndStartLinkedDatasetsAndFallback(linksCreated, createdProject)),
+            switchMap((linksCreated: LinkedDataset[]) => {
+                if (createdProject.status == 'COMPLETED') {
+                    // le workflow n'est démarré que si le workflow de reuse est COMPLETED (terminé et validé)
+                    // dans les autres cas, c'est la suite du workflow de reuse qui doit démarrer les sous-workflow si nécessaire (projectWorkflowContext.startSubProcess(execution); )
+                    return this.createAndStartLinkedDatasetsAndFallback(linksCreated, createdProject);
+                } else {
+                    return of([]);
+                }
+            }),
 
             // Observable mappé sur void
             map(() => null)
@@ -836,14 +843,21 @@ export class ProjectSubmissionService {
     addNewDatasetRequest(projectUuid: string, requestToAdd: NewDatasetRequest, createdProject: Project): Observable<Task> {
         return this.projektMetierService.addNewDatasetRequest(projectUuid, requestToAdd).pipe(
             switchMap((requestAdded: NewDatasetRequest) => {
-                const manageNewDatasetRequestWorkflowAction = new ActionFallbackUtils<Task>({
-                    action: this.manageNewDatasetRequestWorkflow(requestAdded, createdProject),
-                    fallback: this.projektMetierService.deleteNewDatasetRequest(projectUuid, requestAdded.uuid),
-                    fallbackSuccessMessage: 'Une erreur a eu lieu lors du démarrage du workflow de la demande de nouveaux JDDs',
-                    fallbackErrorMessage: 'Erreur lors de la suppression de la demande de nouveaux JDDs après avoir eu une erreur dans le workflow, ' +
-                        'une incohérence a été créée'
-                });
-                return manageNewDatasetRequestWorkflowAction.doActionFallbackOnfailure();
+                if (createdProject.status === 'COMPLETED') {
+                    // le workflow n'est démarré que si le workflow de reuse est COMPLETED (terminé et validé)
+                    // dans les autres cas, c'est la suite du workflow de reuse qui doit démarrer les sous-workflow si nécessaire (projectWorkflowContext.startSubProcess(execution); )
+                    const manageNewDatasetRequestWorkflowAction = new ActionFallbackUtils<Task>({
+                        action: this.manageNewDatasetRequestWorkflow(requestAdded, createdProject),
+                        fallback: this.projektMetierService.deleteNewDatasetRequest(projectUuid, requestAdded.uuid),
+                        fallbackSuccessMessage: 'Une erreur a eu lieu lors du démarrage du workflow de la demande de nouveaux JDDs',
+                        fallbackErrorMessage: 'Erreur lors de la suppression de la demande de nouveaux JDDs après avoir eu une erreur dans le workflow, ' +
+                            'une incohérence a été créée'
+                    });
+                    return manageNewDatasetRequestWorkflowAction.doActionFallbackOnfailure();
+                } else {
+                    // Handle the case where the project is not completed
+                    return of(null);
+                }
             })
         );
     }

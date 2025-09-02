@@ -11,14 +11,31 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = { "org.rudi.common.facade", "org.rudi.common.service",
-		"org.rudi.common.storage", "org.rudi.common.core", "org.rudi.facet.dataverse", "org.rudi.facet.kaccess",
-		"org.rudi.facet.kos", "org.rudi.facet.acl", "org.rudi.facet.strukture", "org.rudi.facet.providers",
-		"org.rudi.facet.organization", "org.rudi.facet.apigateway", "org.rudi.microservice.kalim.facade",
-		"org.rudi.microservice.kalim.service", "org.rudi.microservice.kalim.storage", })
+@SpringBootApplication(scanBasePackages = {
+		"org.rudi.common.core",
+		"org.rudi.common.facade",
+		"org.rudi.common.service",
+		"org.rudi.common.storage",
+		"org.rudi.facet.acl",
+		"org.rudi.facet.apigateway",
+		"org.rudi.facet.dataverse",
+		"org.rudi.facet.email",
+		"org.rudi.facet.generator",
+		"org.rudi.facet.generator.text",
+		"org.rudi.facet.kaccess",
+		"org.rudi.facet.kos",
+		"org.rudi.facet.organization",
+		"org.rudi.facet.projekt",
+		"org.rudi.facet.providers",
+		"org.rudi.facet.strukture",
+		"org.rudi.microservice.kalim.facade",
+		"org.rudi.microservice.kalim.service",
+		"org.rudi.microservice.kalim.storage",
+})
 @EnableScheduling
 @EnableDiscoveryClient(autoRegister = true)
 @PropertySource(value = { "classpath:kalim/kalim-common.properties" })
+@PropertySource(value = { "classpath:kalim/kalim-email.properties" })
 public class AppFacadeApplication extends SpringBootServletInitializer {
 
 	public static void main(final String[] args) {

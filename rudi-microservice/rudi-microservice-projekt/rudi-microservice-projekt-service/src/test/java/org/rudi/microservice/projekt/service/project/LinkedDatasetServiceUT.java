@@ -291,11 +291,11 @@ class LinkedDatasetServiceUT {
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_restrictedUuid)).isNotNull();
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_selfUuid)).isNotNull();
 
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid);
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null);
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_restrictedUuid);
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_restrictedUuid, null);
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_restrictedUuid)).isNull();
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_selfUuid);
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_selfUuid, null);
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_selfUuid)).isNull();
 	}
 
@@ -363,7 +363,7 @@ class LinkedDatasetServiceUT {
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null));
 
 		// Check que le JDD n'a pas été supprimé
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
@@ -441,7 +441,7 @@ class LinkedDatasetServiceUT {
 		createdProject = projectService.updateProject(createdProject);
 		assertEquals(ProjectStatus.REJECTED, createdProject.getProjectStatus());
 
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid);
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null);
 
 		// le JDD a bien été supprimé
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
@@ -520,7 +520,47 @@ class LinkedDatasetServiceUT {
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null));
+	}
+
+	@Test
+	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'en cours'. Le jdd est supprimé, donc la suppression du linkedDataset doit avoir lieu")
+	void unlinkOpenDatasetToProject_VALIDATED_INPROGRES_Forced()
+			throws IOException, AppServiceException, DataverseAPIException {
+
+		// Création projet
+		Project createdProject = createProject(PROJET_LAMPADAIRES);
+		assertEquals(ProjectStatus.DRAFT, createdProject.getProjectStatus());
+
+		final var projectUuid = createdProject.getUuid();
+
+		// C'est bien vide
+		for (LinkedDatasetStatus status : LinkedDatasetStatus.values()) {
+			assertThat(linkedDatasetService.getLinkedDatasets(projectUuid, List.of(status)))
+					.as("À sa création, le projet n'utilise aucun JDD de statut " + status).isEmpty();
+		}
+
+		// Créations des JDDs de test
+		final var ld_open = createLinkedDataset(null, "link opened", DatasetConfidentiality.OPENED);
+
+		// Ajout du JDD lié ouvert
+		Metadata associated_open = createMetadataAssociated(ld_open);
+		when(datasetService.getDataset(any(UUID.class))).thenReturn(associated_open);
+		var ld_openUuid = linkedDatasetService.linkProjectToDataset(projectUuid, ld_open).getUuid();
+
+		// Check que les JDD ont bien été ajoutés
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
+
+		// changement de statut du projet
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		createdProject.setReutilisationStatus(createReutilisationStatus(REUSE));
+		createdProject = projectService.updateProject(createdProject);
+		assertEquals(ProjectStatus.VALIDATED, createdProject.getProjectStatus());
+		assertEquals(Boolean.FALSE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
+
+		//Suppression forcée du JDD
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, true);
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
 	}
 
 	@Test
@@ -592,10 +632,47 @@ class LinkedDatasetServiceUT {
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null));
 
 		// Check que le JDD n'a pas été supprimé
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
+	}
+
+	@Test
+	@DisplayName("Je crée un projet avec un JDD ouvert, le valide à 'fini' et supprime le JDD. Le jdd est supprimé, donc la suppression du linkedDataset doit avoir lieu")
+	void unlinkOpenDatasetToProject_VALIDATED_FINISHED_Forced()
+			throws IOException, AppServiceException, DataverseAPIException {
+
+		// Création projet
+		Project createdProject = createProject(PROJET_LAMPADAIRES);
+		final var projectUuid = createdProject.getUuid();
+
+		// C'est bien vide
+		for (LinkedDatasetStatus status : LinkedDatasetStatus.values()) {
+			assertThat(linkedDatasetService.getLinkedDatasets(projectUuid, List.of(status)))
+					.as("À sa création, le projet n'utilise aucun JDD de statut " + status).isEmpty();
+		}
+
+		// Créations des JDDs de test
+		final var ld1Uuid = UUID.randomUUID();
+		final var ld1 = createLinkedDataset(ld1Uuid, "link opened", DatasetConfidentiality.OPENED);
+
+		// Ajout du JDD lié ouvert
+		Metadata associated1 = createMetadataAssociated(ld1);
+		when(datasetService.getDataset(any(UUID.class))).thenReturn(associated1);
+		var ld_openUuid = linkedDatasetService.linkProjectToDataset(projectUuid, ld1).getUuid();
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
+
+		// changement d'état du projet
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		createdProject.setReutilisationStatus(createReutilisationStatus(REUSE));
+		createdProject = projectService.updateProject(createdProject);
+		assertEquals(ProjectStatus.VALIDATED, createdProject.getProjectStatus());
+		assertEquals(Boolean.FALSE, createdProject.getReutilisationStatus().getDatasetSetModificationAllowed());
+
+		//Suppression forcée du JDD
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, true);
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
 	}
 
 	@Test
@@ -662,10 +739,44 @@ class LinkedDatasetServiceUT {
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null));
 
 		// Check que le JDD n'a pas été supprimé
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
+	}
+
+	@Test
+	@DisplayName("Je crée un projet avec un JDD ouvert, le passe en validation et supprime le JDD. Le jdd est supprimé, donc la suppression du linkedDataset doit avoir lieu")
+	void unlinkOpenDatasetToProject_INPROGRESS_Forced() throws IOException, AppServiceException, DataverseAPIException {
+
+		// Création projet
+		Project createdProject = createProject(PROJET_LAMPADAIRES);
+		final var projectUuid = createdProject.getUuid();
+
+		// C'est bien vide
+		for (LinkedDatasetStatus status : LinkedDatasetStatus.values()) {
+			assertThat(linkedDatasetService.getLinkedDatasets(projectUuid, List.of(status)))
+					.as("À sa création, le projet n'utilise aucun JDD de statut " + status).isEmpty();
+		}
+
+		// Créations des JDDs de test
+		final var ld1Uuid = UUID.randomUUID();
+		final var ld1 = createLinkedDataset(ld1Uuid, "link opened", DatasetConfidentiality.OPENED);
+
+		// Ajout du JDD lié ouvert
+		Metadata associated1 = createMetadataAssociated(ld1);
+		when(datasetService.getDataset(any(UUID.class))).thenReturn(associated1);
+		var ld_openUuid = linkedDatasetService.linkProjectToDataset(projectUuid, ld1).getUuid();
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
+
+		// changement d'état du projet
+		createdProject.setProjectStatus(ProjectStatus.IN_PROGRESS);
+		createdProject = projectService.updateProject(createdProject);
+		assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getProjectStatus());
+
+		//Suppression forcée du JDD
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, true);
+		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNull();
 	}
 
 	@Test
@@ -731,7 +842,7 @@ class LinkedDatasetServiceUT {
 
 		// tentative de suppression du JDD
 		assertThrows(AppServiceForbiddenException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, ld_openUuid, null));
 
 		// Check que le JDD n'a pas été supprimé
 		assertThat(linkedDatasetService.getLinkedDataset(projectUuid, ld_openUuid)).isNotNull();
@@ -863,7 +974,7 @@ class LinkedDatasetServiceUT {
 		mockAuthenticatedUserOtherUser(UUID.randomUUID(), List.of(RoleCodes.USER));
 
 		assertThrows(AppServiceUnauthorizedException.class,
-				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, linkedDatasetUuid));
+				() -> linkedDatasetService.unlinkProjectToDataset(projectUuid, linkedDatasetUuid, null));
 	}
 
 	@Test

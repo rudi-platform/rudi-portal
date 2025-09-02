@@ -1,6 +1,6 @@
 <ng-container [formGroup]="formGroup">
     <div class="d-flex">
-        <mat-label>{{label}}<span *ngIf="required" class="required-symbol">*</span></mat-label>
+        <mat-label>{{fullLabel}}<span *ngIf="required" class="required-symbol">*</span></mat-label>
     </div>
     <mat-hint class="title-hint">{{help}}</mat-hint>
     <mat-form-field appearance="outline">

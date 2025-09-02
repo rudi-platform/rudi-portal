@@ -15,20 +15,24 @@ import lombok.RequiredArgsConstructor;
 @Component
 @Order(1)
 @RequiredArgsConstructor
-class LinkedDatasetTaskProcessor implements DeleteLinkedDatasetFieldProcessor {
+class LinkedDatasetTaskProcessor implements DeleteLinkedDatasetFieldProcessor, ArchiveLinkedDatasetProcessor {
 
 	private final TaskService<LinkedDataset> linkedDatasetTaskService;
 
 	@Override
-	public void process(@Nullable LinkedDatasetEntity project, LinkedDatasetEntity existingProject)
-			throws AppServiceException {
-		if (existingProject == null) {
+	public void process(@Nullable LinkedDatasetEntity existingLinkedDataset, @org.jetbrains.annotations.Nullable Boolean force) throws AppServiceException {
+		if (existingLinkedDataset == null) {
 			return;
 		}
-		if (linkedDatasetTaskService.hasTask(existingProject.getUuid())) {
+		if (linkedDatasetTaskService.hasTask(existingLinkedDataset.getUuid()) && !Boolean.TRUE.equals(force)) {
 			throw new AppServiceForbiddenException(
-					String.format("LinkedDataset %s has a running task", existingProject.getUuid()));
+					String.format("LinkedDataset %s has a running task", existingLinkedDataset.getUuid()));
 		}
 	}
 
+
+	@Override
+	public void process(@org.jetbrains.annotations.Nullable LinkedDatasetEntity existingLinkedDataset) throws AppServiceException {
+		process(existingLinkedDataset, null);
+	}
 }

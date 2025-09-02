@@ -1,16 +1,9 @@
 package org.rudi.microservice.strukture.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
@@ -19,6 +12,7 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
+import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
@@ -26,6 +20,7 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.microservice.strukture.core.bean.NodeOrganization;
 import org.rudi.microservice.strukture.core.bean.Organization;
+import org.rudi.microservice.strukture.core.bean.OrganizationFormType;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
 import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
@@ -37,15 +32,22 @@ import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSea
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
 import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,14 +65,7 @@ public class OrganizationsController implements OrganizationsApi {
 	}
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ")")
-	public ResponseEntity<Void> deleteOrganization(UUID uuid) throws AppServiceNotFoundException {
-		organizationService.deleteOrganization(uuid);
-		return ResponseEntity.noContent().build();
-	}
-
-	@Override
-	public ResponseEntity<Organization> getOrganization(UUID uuid) throws AppServiceNotFoundException {
+	public ResponseEntity<Organization> getOrganization(UUID uuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException {
 		return ResponseEntity.ok(organizationService.getOrganization(uuid));
 	}
 
@@ -108,7 +103,7 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", "
-			+ MODULE_PROJEKT + ", " + USER + ")")
+			+ MODULE_PROJEKT + ", " + USER + ", " + MODULE_KALIM  + ")")
 	public ResponseEntity<List<OrganizationMember>> getOrganizationMembers(UUID organizationUuid)
 			throws AppServiceException {
 		return ResponseEntity.ok(organizationService.getOrganizationMembers(organizationUuid));
@@ -125,8 +120,8 @@ public class OrganizationsController implements OrganizationsApi {
 	@PreAuthorize("hasAnyRole(" + USER + ", " + ADMINISTRATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ")")
 	public ResponseEntity<PagedOrganizationUserMembers> searchOrganizationUserMembers(UUID uuid, String searchText,
 			OrganizationMemberType memberType, Integer offset, Integer limit, String order) throws Exception {
-		val pageable = utilPageable.getPageable(offset, limit, order);
-		val criteria = OrganizationMembersSearchCriteria.builder().organizationUuid(uuid).searchText(searchText)
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		OrganizationMembersSearchCriteria criteria = OrganizationMembersSearchCriteria.builder().organizationUuid(uuid).searchText(searchText)
 				.type(memberType)
 				// Rajout de la limit pour que les deux listes à mapper soient de la même taille
 				.limit(limit).build();
@@ -178,8 +173,8 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + USER + ")")
-	public ResponseEntity<Form> lookupOrganizationDraftForm() throws Exception {
-		return ResponseEntity.ok(organizationTaskService.lookupDraftForm(null));
+	public ResponseEntity<Form> lookupOrganizationDraftForm(OrganizationFormType formType) throws Exception {
+		return ResponseEntity.ok(organizationTaskService.lookupDraftForm(formType != null ? formType.name() : null));
 	}
 
 	@Override

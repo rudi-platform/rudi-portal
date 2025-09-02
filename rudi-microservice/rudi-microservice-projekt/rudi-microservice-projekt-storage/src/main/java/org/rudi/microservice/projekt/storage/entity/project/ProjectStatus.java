@@ -31,9 +31,16 @@ public enum ProjectStatus implements PositionedStatus {
 	CANCELLED(StatusPosition.FINAL),
 
 	/**
-	 * Abandonné
+	 * Abandonné - visible
+	 */
+	ARCHIVED(StatusPosition.FINAL),
+
+	/**
+	 * Abandonné - invisible
 	 */
 	DISENGAGED(StatusPosition.FINAL);
+
+
 
 	private final StatusPosition position;
 

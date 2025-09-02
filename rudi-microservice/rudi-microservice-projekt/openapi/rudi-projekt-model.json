@@ -103,6 +103,7 @@
 					"REJECTED",
 					"VALIDATED",
 					"CANCELLED",
+					"ARCHIVED",
 					"DISENGAGED"
 				]
 			},
@@ -372,7 +373,8 @@
 					"IN_PROGRESS",
 					"VALIDATED",
 					"CANCELLED",
-					"ARCHIVED"
+					"ARCHIVED",
+					"DISENGAGED"
 				]
 			},
 			"DatasetConfidentiality": {
@@ -1062,6 +1064,14 @@
 				"items": {
 					"$ref": "#/components/schemas/ProjectByOwner"
 				}
+			},
+			"ProjektArchiveMode": {
+				"description": "Type d'archivage à effectuer",
+				"type": "string",
+				"enum": [
+					"ARCHIVED",
+					"DISENGAGED"
+				]
 			}
 		}
 	}

@@ -148,8 +148,8 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 }
             });
             this.projektService.isAuthenticatedUserProjectOwner(this._project.uuid).subscribe(isOwner => {
-                this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProject(this._project);
-                this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProject(this._project);
+                this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromDetail(this._project);
+                this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProjectFromDetail(this._project);
             });
         }
     }

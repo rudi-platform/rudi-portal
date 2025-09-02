@@ -19,6 +19,7 @@ import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
+import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -193,4 +194,8 @@ public interface ProjectService {
 	 * @throws AppServiceException
 	 */
 	List<ProjectKey> searchProjectKeys(ProjectKeySearchCriteria searchCriteria) throws AppServiceException;
+
+	void archiveOwnerProjects(ProjectSearchCriteria criteria, ProjektArchiveMode action) throws AppServiceException;
+
+	boolean hasProjectOwnerRunningTask(UUID organizationUuid);
 }

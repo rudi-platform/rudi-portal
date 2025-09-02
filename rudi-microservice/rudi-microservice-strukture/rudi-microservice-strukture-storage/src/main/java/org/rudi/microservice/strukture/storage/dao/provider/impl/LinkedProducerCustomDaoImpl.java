@@ -58,8 +58,10 @@ public class LinkedProducerCustomDaoImpl extends AbstractCustomDaoImpl<LinkedPro
 		searchQuery.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
 
 		TypedQuery<LinkedProducerEntity> typedQuery = entityManager.createQuery(searchQuery);
-		List<LinkedProducerEntity> providerEntities = typedQuery.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if(pageable.isPaged()){
+			typedQuery.setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize());
+		}
+		List<LinkedProducerEntity> providerEntities = typedQuery.getResultList();
 		return new PageImpl<>(providerEntities, pageable, totalCount.intValue());
 	}
 

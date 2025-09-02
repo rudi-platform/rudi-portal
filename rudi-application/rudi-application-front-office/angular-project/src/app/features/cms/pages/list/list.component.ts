@@ -27,7 +27,7 @@ interface OrderItem extends Item {
     styleUrl: './list.component.scss'
 })
 export class ListComponent {
-    isLoading: boolean;
+    isLoading: boolean = false;
     mediaSize: MediaSize;
     order = DEFAULT_NEWS_ORDER;
     orderItems: OrderItem[] = [];
@@ -76,8 +76,8 @@ export class ListComponent {
     ) {
         this.destroy$ = new Subject<boolean>();
         this.mediaSize = this.breakpointObserver.getMediaSize();
-        this.isLoading = true;
-        this.page = FIRST_PAGE;
+
+        this.currentPage = FIRST_PAGE;
         this.displayComponent = false;
         this.newsList = [];
     }
@@ -85,7 +85,7 @@ export class ListComponent {
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
-        this.isLoading = true;
+
         this.initCustomizationDescription();
         this.loadingLeftPicto = false;
         this.loadingRightPicto = false;
@@ -155,6 +155,7 @@ export class ListComponent {
     }
 
     private initCmsAssets(): void {
+        this.isLoading = true;
         const date: Date = new Date();
         const formattedDate: string = date.toISOString().slice(0, 10);
         const publishDateFilter: string = 'publishdate[lte]=' + formattedDate;
@@ -175,6 +176,8 @@ export class ListComponent {
                 error: (err) => {
                     this.logService.error(err);
                     this.displayComponent = false;
+                }, complete: () => {
+                    this.isLoading = false;
                 }
             });
     }
@@ -195,6 +198,8 @@ export class ListComponent {
         }
         this.currentPage = value;
         this.offset = (this.currentPage - 1) * this.maxResultsPerPage;
+
+        this.initCmsAssets();
     }
 
     get paginationControlsNgClass(): NgClassObject {
@@ -206,8 +211,6 @@ export class ListComponent {
      */
     handlePageChange(page: number): void {
         this.page = page;
-        this.offset = (page - 1) * this.limit;
-        this.initCmsAssets();
         if (!this.disableScrollOnPageChange) {
             window.scroll(0, 0);
         }

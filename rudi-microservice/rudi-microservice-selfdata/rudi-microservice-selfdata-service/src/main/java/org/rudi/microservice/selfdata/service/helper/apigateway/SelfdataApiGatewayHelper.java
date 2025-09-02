@@ -1,5 +1,6 @@
 package org.rudi.microservice.selfdata.service.helper.apigateway;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.microservice.apigateway.core.bean.Api;
@@ -28,7 +29,7 @@ public class SelfdataApiGatewayHelper {
 
 	public ClientResponse datasets(Api api, String token, MultiValueMap<String, String> queryParams)
 			throws AppServiceNotFoundException {
-		String apiHttpMethod = api.getMethods().get(0).getValue();
+		String apiHttpMethod = CollectionUtils.isNotEmpty(api.getMethods()) ? api.getMethods().get(0).getValue() : null;
 		HttpMethod httpMethod = HttpMethod.valueOf(apiHttpMethod); // un HttpMethod est toujours retourné, même si la méthode n'est pas une méthode connue
 		if (!ArrayUtils.contains(HttpMethod.values(), httpMethod)) {
 			throw new IllegalArgumentException(

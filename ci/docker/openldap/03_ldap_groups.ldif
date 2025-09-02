@@ -1,0 +1,15 @@
+#### GROUPES
+# Administrateur 
+dn: cn=administrator,ou=groups,ou=internes,dc=rudi,dc=fr
+objectClass: groupOfNames
+objectClass: top
+cn: administrator
+member: uid=test1,cn=users,ou=internes,dc=rudi,dc=fr
+
+dn: cn=users,ou=groups,ou=internes,dc=rudi,dc=fr
+objectClass: groupOfNames
+objectClass: top
+cn: users
+member: uid=test2,cn=users,ou=internes,dc=rudi,dc=fr
+member: uid=test3,cn=users,ou=internes,dc=rudi,dc=fr
+

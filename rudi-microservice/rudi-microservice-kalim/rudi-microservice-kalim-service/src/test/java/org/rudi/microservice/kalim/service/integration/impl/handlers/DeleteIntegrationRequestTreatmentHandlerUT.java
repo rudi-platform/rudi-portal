@@ -1,11 +1,15 @@
 package org.rudi.microservice.kalim.service.integration.impl.handlers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rudi.common.core.json.JsonResourceReader;
+import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
@@ -23,6 +28,7 @@ import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.helper.dataset.metadatadetails.MetadataDetailsHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
+import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.facet.providers.bean.LinkedProducer;
 import org.rudi.facet.providers.bean.NodeProvider;
 import org.rudi.facet.providers.bean.Organization;
@@ -34,16 +40,16 @@ import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.service.KalimSpringBootTest;
 import org.rudi.microservice.kalim.service.helper.ApiManagerHelper;
+import org.rudi.microservice.kalim.service.helper.EmailHelper;
 import org.rudi.microservice.kalim.service.helper.Error500Builder;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -54,6 +60,7 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 	private final Error500Builder error500Builder = new Error500Builder();
 	private final JsonResourceReader jsonResourceReader = new JsonResourceReader();
 	private AbstractIntegrationRequestTreatmentHandler handler;
+
 	@Mock
 	private DatasetService datasetService;
 	@Mock
@@ -62,17 +69,25 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 	private MetadataDetailsHelper metadataDetailsHelper;
 	@Mock
 	ObjectMapper objectMapper;
+
 	@MockitoBean
 	ProviderHelper providerHelper;
 	@MockitoBean
 	ACLHelper aclHelper;
 	@MockitoBean
 	RolesHelper roleHelper;
+	@MockitoBean
+	ProjektHelper projektHelper;
+	@MockitoBean
+	EmailHelper emailHelper;
+
+	@Autowired
+	UtilPageable utilPageable;
 
 	@BeforeEach
 	void setUp() {
 		handler = new DeleteIntegrationRequestTreatmentHandler(datasetService, apigatewayManagerHelper, error500Builder,
-				metadataDetailsHelper, aclHelper, providerHelper, objectMapper, roleHelper);
+				metadataDetailsHelper, aclHelper, providerHelper, objectMapper, roleHelper, projektHelper, utilPageable, emailHelper);
 	}
 
 	private UUID init() {
@@ -151,6 +166,7 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
 
 		when(datasetService.getDataset(metadataToDelete.getGlobalId())).thenReturn(metadataToDelete);
+		when(projektHelper.searchProjects(any(), any())).thenReturn(Page.empty());
 
 		handler.handle(integrationRequest);
 
@@ -177,6 +193,7 @@ class DeleteIntegrationRequestTreatmentHandlerUT {
 				.file(metadataJson).errors(new HashSet<>()).nodeProviderId(nodeProviderUuid).build();
 
 		when(datasetService.getDataset(metadataToDelete.getGlobalId())).thenReturn(metadataToDelete);
+		when(projektHelper.searchProjects(any(), any())).thenReturn(Page.empty());
 
 		handler.handle(integrationRequest);
 

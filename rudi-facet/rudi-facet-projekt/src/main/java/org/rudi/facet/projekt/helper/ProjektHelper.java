@@ -15,6 +15,7 @@ import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
 import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -84,7 +85,7 @@ public class ProjektHelper {
 	 */
 	public UUID getLinkedDatasetOwner(UUID linkedDatasetUuid) {
 		return projektWebClient.get().uri(
-				uriBuilder -> uriBuilder.path(projektProperties.getLinkedDatasetOwnerPath()).build(linkedDatasetUuid))
+						uriBuilder -> uriBuilder.path(projektProperties.getLinkedDatasetOwnerPath()).build(linkedDatasetUuid))
 				.retrieve().bodyToMono(UUID.class).block();
 	}
 
@@ -130,21 +131,21 @@ public class ProjektHelper {
 	}
 
 	/**
-	 * 
 	 * @param searchCriteria
 	 * @param page
 	 * @return
 	 */
 	public Mono<Page<Project>> searchMonoProjects(ProjectSearchCriteria searchCriteria, Pageable page) {
 		return projektWebClient.get().uri(uriBuilder -> uriBuilder.path(projektProperties.getSearchProjectsPath())
-				.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
-				.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
-				.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
-				.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
-				.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
-				.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
-				.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
-				.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build()).retrieve()
+						.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
+						.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
+						.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
+						.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
+						.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
+						.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
+						.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
+						.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build())
+				.retrieve()
 				.bodyToMono(PagedProjectList.class).map(projects -> {
 					if (projects != null) {
 						return new PageImpl<>(projects.getElements(), page, projects.getTotal());
@@ -155,7 +156,6 @@ public class ProjektHelper {
 	}
 
 	/**
-	 * 
 	 * @param searchCriteria
 	 * @param page
 	 * @return
@@ -164,13 +164,40 @@ public class ProjektHelper {
 		return searchMonoProjects(searchCriteria, page).block();
 	}
 
+	/**
+	 *
+	 * @param projectUuid
+	 * @param linkedDatasetUuid
+	 * @param force (nullable) to force deletion
+	 */
+	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force) {
+		projektWebClient.delete().uri(uriBuilder ->
+				uriBuilder
+						.path(projektProperties.getUnlinkProjectToDatasetPath())
+						.queryParamIfPresent("force", Optional.ofNullable(force))
+						.build(projectUuid, linkedDatasetUuid)
+		).retrieve().bodyToMono(Void.class).block();
+	}
+
+	public void archiveOwnerProjects(UUID ownerUuid, ProjektArchiveMode archiveMode) {
+		projektWebClient.delete().uri(uriBuilder -> uriBuilder
+				.path(projektProperties.getArchiveOwnerProjects()).build(ownerUuid, archiveMode))
+				.retrieve().bodyToMono(Void.class).block();
+	}
+
+	public boolean hasProjectOwnerRunningTask(UUID ownerUuid) {
+		return Boolean.TRUE.equals(projektWebClient.get().uri(
+				uriBuilder -> uriBuilder.path(projektProperties.getHasProjectOwnerRunningTask()).build(ownerUuid))
+				.retrieve().bodyToMono(Boolean.class).block());
+	}
+
 	protected String convertSort(Sort sort) {
 		if (sort == null || sort.isUnsorted()) {
 			return null;
 		}
 		StringBuilder sortBuilder = new StringBuilder();
 		sort.forEach(order -> {
-			if (sortBuilder.length() > 0) {
+			if (!sortBuilder.isEmpty()) {
 				sortBuilder.append(',');
 			}
 			if (order.isDescending()) {

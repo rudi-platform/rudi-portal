@@ -1,6 +1,5 @@
 <mat-sidenav-container>
     <mat-sidenav-content>
-
         <div class="home-container">
             <div class="hero-section-container">
                 <div class="hero-left-picto-container">
@@ -16,7 +15,7 @@
                     <div
                         [ngClass]="{'news-list-container-sm': mediaSize.isSm  || mediaSize.isMd,
                 'news-list-container-lg':  mediaSize.isLg, 'news-list-container-xl': mediaSize.isXl, 'news-list-container-xxl': mediaSize.isXxl}"
-                        class="news-list-container container-fluid ps-0 pe-0"
+                        class="news-list-container container-fluid ps-0 pe-0" *ngIf="!isLoading else loaderTemplate"
                     >
 
 
@@ -51,7 +50,6 @@
                                 [title1]="title1"
                                 [title2]="title2"
                             >
-                                >
                             </cms-news-list>
 
                             <pagination-controls
@@ -80,3 +78,7 @@
         </div>
     </mat-sidenav-content>
 </mat-sidenav-container>
+
+<ng-template #loaderTemplate>
+    <app-loader [isTransparent]="true" [allPage]="true" [active]="true"></app-loader>
+</ng-template>

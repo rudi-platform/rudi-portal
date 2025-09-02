@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-class ProjectTaskProcessor implements DeleteProjectFieldProcessor {
+class ProjectTaskProcessor implements DeleteProjectFieldProcessor, ArchiveProjectProcessor {
 
 	private final TaskService<Project> projectTaskService;
 

@@ -1,7 +1,5 @@
 package org.rudi.facet.providers.helper;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -22,10 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Mono;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 /**
  * L'utilisation de ce helper requiert l'ajout de 2 propriétés dans le fichier de configuration associé
@@ -36,7 +35,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ProviderHelper {
 
-	private static final String NODE_PROVIDER_UUID_PARAMETER = "nodeProviderUuid";
+	private static final String NODE_PROVIDER_UUID_PARAMETER = "nodeProviderUuids";
 	private static final String FULL_PARAMETER = "full";
 	private static final String LIMIT_PARAMETER = "limit";
 
@@ -93,7 +92,7 @@ public class ProviderHelper {
 
 		ProviderPageResult pageResult = loadBalancedWebClient.get()
 				.uri(uriBuilder -> searchUriBuilder(uriBuilder).queryParam(LIMIT_PARAMETER, 1)
-						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId).build())
+						.queryParam(NODE_PROVIDER_UUID_PARAMETER, List.of(nodeProviderUUId)).build())
 				.retrieve().bodyToMono(ProviderPageResult.class).block();
 		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
 			result = pageResult.getElements().get(0);
@@ -116,7 +115,7 @@ public class ProviderHelper {
 
 		ProviderPageResult pageResult = loadBalancedWebClient.get()
 				.uri(uriBuilder -> searchUriBuilder(uriBuilder).queryParam(LIMIT_PARAMETER, 1)
-						.queryParam(NODE_PROVIDER_UUID_PARAMETER, nodeProviderUUId).queryParam(FULL_PARAMETER, true)
+						.queryParam(NODE_PROVIDER_UUID_PARAMETER,  List.of(nodeProviderUUId)).queryParam(FULL_PARAMETER, true)
 						.build())
 				.retrieve().bodyToMono(ProviderPageResult.class).block();
 		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {

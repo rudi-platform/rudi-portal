@@ -1,6 +1,9 @@
 package org.rudi.microservice.strukture.service.helper;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.facade.util.UtilPageable;
@@ -10,9 +13,11 @@ import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
+import org.rudi.microservice.strukture.service.mapper.NodeProviderMapper;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
 import org.rudi.microservice.strukture.storage.entity.address.AddressType;
 import org.rudi.microservice.strukture.storage.entity.address.EmailAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -31,6 +36,7 @@ public class ProviderHelper {
 	private final NodeProviderUserHelper nodeProviderUserHelper;
 	private final ACLHelper aclHelper;
 	private final UtilPageable utilPageable;
+	private final NodeProviderMapper nodeProviderMapper;
 
 	public ProviderEntity getMyProvider() throws AppServiceUnauthorizedException {
 		return getProviderFromUser(aclHelper.getAuthenticatedUser());
@@ -58,7 +64,7 @@ public class ProviderHelper {
 
 	public ProviderEntity getProviderFromNodeProvider(NodeProvider nodeProvider) {
 		ProviderSearchCriteria criteria = new ProviderSearchCriteria();
-		criteria.setNodeProviderUuid(nodeProvider.getUuid());
+		criteria.setNodeProviderUuid(List.of(nodeProvider.getUuid()));
 		criteria.setFull(true);
 		Pageable pageable = utilPageable.getPageable(0, 1, null);
 
@@ -81,5 +87,27 @@ public class ProviderHelper {
 		}
 		return addressEntity.getEmail();
 	}
+
+	private Page<ProviderEntity> searchOrganizationsProviders(UUID organizationUuid, Pageable pageable, boolean full) {
+		ProviderSearchCriteria criteria = ProviderSearchCriteria.builder().organisationUuid(List.of(organizationUuid)).full(full).build();
+
+		return providerCustomDao.searchProviders(criteria, pageable);
+	}
+
+	public List<NodeProvider> getOrganizationsNodeProviders(UUID organizationUuid){
+		Page<ProviderEntity> providers = searchOrganizationsProviders(organizationUuid, Pageable.unpaged(), true);
+		List<NodeProviderEntity> nodeProviders = new ArrayList<>();
+
+		for (ProviderEntity providerEntity : providers) {
+			for (NodeProviderEntity nodeProviderEntity : providerEntity.getNodeProviders()) {
+				if(!nodeProviders.contains(nodeProviderEntity)){
+					nodeProviders.add(nodeProviderEntity);
+				}
+			}
+		}
+
+		return nodeProviderMapper.entitiesToDto(nodeProviders);
+	}
+
 
 }

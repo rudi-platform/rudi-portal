@@ -299,7 +299,8 @@
         "errorServerAuthent": "Erreur interne du serveur pendant l'authentification. Veuillez contacter un administrateur",
         "errorLoginLocked": "Votre compte a été bloqué pendant 20 minutes suite à 10 essais infructueux d'authentification. Passé ce délai vous pourrez de nouveau vous authentifier. Vous avez oublié votre mot de passe ? Cliquez ",
         "errorLoginLockedFooter": "ici",
-        "error-captcha": "Le Captcha saisi n'est pas valide. Veuillez essayer de nouveau."
+        "error-captcha": "Le Captcha saisi n'est pas valide. Veuillez essayer de nouveau.",
+        "authenticators": "Authentifications externes"
     },
     "resetPassword": {
         "reset": "Page de réinitialisation du mot de passe",
@@ -352,6 +353,9 @@
             "required": "Cette information est obligatoire.",
             "requiredTrue": "Cette case obligatoire doit être cochée.",
             "checkRvaAddressValidator": "Veuillez sélectionner une adresse dans la liste proposée."
+        },
+        "select": {
+            "oneOptionPlaceHolder": "Sélectionner une option"
         }
     },
     "strengthPassword": {
@@ -677,13 +681,14 @@
             "error": "Les données ne sont pas visibles au format carte."
         },
         "administrationTab": {
-            "title": "Administration des membres",
+            "title": "Gestion de l'organisation",
             "organizationTitle": "Mon organisation",
             "robotTable": {
                 "name": "Nom",
                 "id": "Identifiant",
                 "dash": "",
-                "changePassword": "Modifier le mot de passe"
+                "changePassword": "Modifier le mot de passe",
+                "archive": "Archiver votre organisation"
             },
             "membersTable": {
                 "lastName": "Nom",
@@ -1148,14 +1153,21 @@
             "nodeProvider": "Noeud fournisseur",
             "identifiant": "Identifiant de l'organisation",
             "nom": "Nom de l'organisation",
-            "supplier": "Demandeur"
+            "supplier": "Demandeur",
+            "organizationInformations": "Informations de l'organisation",
+            "archive": {
+                "task": {
+                    "title": "Demande d'archivage d'organisation",
+                    "accordionTitle": "Demande d'archivage d'organisation"
+                }
+            }
         },
         "organization": {
             "success": "La création de votre organisation a été soumise.",
             "error": "Une erreur est survenue lors de la création de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
             "dialog": {
                 "title": "Déclarer une nouvelle organisation",
-                "description": "Vous vous apprêtez à déclarer une nouvelle organisation sur {projectName}. Suite à son approbation par les équipes Rudi, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
+                "description": "Vous vous apprêtez à déclarer une nouvelle organisation sur {projectName}. Suite à son approbation par les équipes {projectName}, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
             },
             "form": {
                 "errorRequired": "Ce champ est requis",
@@ -1170,6 +1182,14 @@
                 "urlHint": "Cette url est le chemin d'accès à la page officielle de votre organisation.",
                 "address": "Adresse postale",
                 "addressHint": "Il s’agit de l’adresse postale de votre organisation."
+            },
+            "archive": {
+                "dialog": {
+                    "title": "Archiver mon organisation"
+                },
+                "success": "L'archivage de votre organisation a été soumise",
+                "error": "Une erreur est survenue lors de l'archivage de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
+                "errorTaskInProgress": "Votre organisation ne peut pas être archivée car des actions qui lui sont associées sont en cours. Assurez-vous de clôturer l'ensemble des actions sous-jacentes qui peuvent être liées aux : réutilisations, aux demandes d'accès à des jeux de données à accès restreint, à des demandes de nouvelles données."
             }
         },
         "linkedProducerDetails": {
@@ -1266,7 +1286,7 @@
             "updateMyReuse": "Modifier la réutilisation",
             "myReuseRecap": "Récapitulatif de votre utilisation : ",
             "msgToModeratorLabel": "Message à l'attention de l'équipe {projectName} : ",
-            "updateMyReuseHint": "Vous vous apprêtez à soumettre des modifications sur votre réutilisation. Celle-ci va\n                           être soumise à la modération auprès de l'équipe {projectName} afin d'être publiée sur le catalogue des réutilisations.",
+            "updateMyReuseHint": "Vous vous apprêtez à soumettre des modifications sur votre réutilisation. Celles-ci vont\n                           être soumises à la modération auprès de l'équipe {projectName} afin d'être publiées sur le catalogue des réutilisations.",
             "basicInfos": {
                 "projectType": "Type de réutilisation",
                 "creationDate": "Date de création",
@@ -1332,7 +1352,7 @@
                         "validate": "Confirmer"
                     },
                     "success": "Vos modifications ont été soumises à l’équipe {projectName} avant publication.",
-                    "successUpdate": "Les modifications ont été appliquées. Veuillez soumettre votre réutilisation afin que celle-ci soit transmises à l'équipe {projectName}.",
+                    "successUpdate": "Les modifications ont été appliquées. Veuillez soumettre votre réutilisation afin que celle-ci soit transmise à l'équipe {projectName}.",
                     "error": "Modification echouée."
                 },
                 "deletion": {

@@ -108,6 +108,7 @@
 					"REJECTED",
 					"VALIDATED",
 					"CANCELLED",
+					"ARCHIVED",
 					"DISENGAGED"
 				]
 			},
@@ -667,6 +668,14 @@
 				"items": {
 					"$ref": "#/components/schemas/ProjectByOwner"
 				}
+			},
+			"ProjektArchiveMode": {
+				"description": "Type d'archivage à effectuer",
+				"type": "string",
+				"enum": [
+					"ARCHIVED",
+					"DISENGAGED"
+				]
 			}
 		}
 	}

@@ -38,7 +38,7 @@ export class ProjectListService {
         const criteria: ProjectSearchCriteria = {
             dataset_uuids: linkedDatasetsGlobalIds,
             owner_uuids: [producerUuid],
-            status: [ProjectStatus.Validated],
+            status: [ProjectStatus.Validated, ProjectStatus.Archived],
             offset,
             limit
         };
@@ -47,7 +47,7 @@ export class ProjectListService {
             // Une fois qu'on a la page on récupère les éléments et on prépare les infos de la page
             map((pageResult: PagedProjectList) => {
                 page.total = pageResult.total;
-                return pageResult.elements;
+                return pageResult.elements ?? [];
             }),
             // On crée un ProjectWithDependencies pour chaque projet
             mapEach((project: Project) => new ProjectWithDependencies(project, {})),

@@ -104,7 +104,7 @@ export class SelectProjectDialogComponent implements OnInit {
         // On charge pour récupérer les projets de l'user connected
         this.isLoading = true;
         this.projektMetierService.getMyAndOrganizationsProjectsWithoutPagination().pipe(
-            filterEach((myProject: Project) => this.dataSetActionsAuthorizationService.canAddDatasetFromProject(myProject)),
+            filterEach((myProject: Project) => this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromDetail(myProject)),
         )
             .subscribe({
                 next: (myProjects) => {

@@ -3,7 +3,7 @@
         [headingLoading]="isLoading"
         [icon]="'organization_definition_key'"
         [pageSubTitle]="dependencies?.organization?.name"
-        [pageTitle]="'personalSpace.organizationDetails.declaration' | translate"
+        [pageTitle]=headerLibelle
         [status]="dependencies?.organization?.functional_status"
     ></app-task-detail-header>
     <div *ngIf="!isLoading">
@@ -12,8 +12,27 @@
                 <ng-template>
                     <div class="organization-details-container">
                         <div class="organization-information-container">
-                            <app-organization-information
-                                [organization]="dependencies?.organization"></app-organization-information>
+
+                            <ng-container *ngIf="hasSections">
+                                <ng-container *ngFor="let section of currentTask?.asset?.form?.sections">
+                                    <app-workflow-expansion [section]="section" [title]="headerLibelle"></app-workflow-expansion>
+                                </ng-container>
+                            </ng-container>
+
+                            <mat-accordion>
+                                <mat-expansion-panel [expanded]="!hasSections" class="organization-modified-expansion" (opened)="panelInitialTaskOpenState.set(true)" (closed)="panelInitialTaskOpenState.set(false)">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title class="expansion-title">
+                                        {{ 'personalSpace.organizationDetails.organizationInformations' | translate }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                    <hr>
+                                    <app-organization-information
+                                        [organization]="dependencies?.organization"></app-organization-information>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+
+
                         </div>
                         <div class="owner-information-container" *ngIf="ownerInfo | async as ownerInformation">
                             <app-owner-information [email]="ownerInformation?.contact"

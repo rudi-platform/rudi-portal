@@ -3,10 +3,6 @@
  */
 package org.rudi.facet.bpmn.helper.form;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +12,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,7 +51,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FormHelper {
 
-	public static final String DRAFT_USER_TASK_ID = "draft";
+	public static final String DRAFT_USER_TASK_ID = "DRAFT";
+	public static final String DRAFT_ARCHIVE_USER_TASK_ID = "DRAFT_ARCHIVE";
 
 	@Autowired
 	private FormMapper formMapper;

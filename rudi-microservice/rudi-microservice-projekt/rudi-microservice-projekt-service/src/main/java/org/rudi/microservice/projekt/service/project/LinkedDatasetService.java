@@ -55,7 +55,7 @@ public interface LinkedDatasetService {
 	 * @param projectUuid       UUID du projet
 	 * @param linkedDatasetUuid UUID du jeu de données
 	 */
-	void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid) throws AppServiceException;
+	void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force) throws AppServiceException;
 
 	Page<LinkedDataset> searchMyLinkedDatasets(LinkedDatasetSearchCriteria criteria, Pageable pageable)
 			throws AppServiceException;

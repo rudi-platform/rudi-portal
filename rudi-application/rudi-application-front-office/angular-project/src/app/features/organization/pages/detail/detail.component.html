@@ -11,7 +11,8 @@
             <ng-template>
                 <app-organization-informations *ngIf="organization"
                                                [isLoading]="isLoading"
-                                               [organization]="organization"></app-organization-informations>
+                                               [organization]="organization"
+                ></app-organization-informations>
             </ng-template>
         </app-tab>
         <app-tab *ngIf="displayAdministrationTab" [label]="'metaData.administrationTab.title'|translate"
@@ -19,7 +20,8 @@
             <ng-template>
                 <app-administration-tab *ngIf="organization"
                                         [isLoading]="isLoading"
-                                        [organization]="organization"></app-administration-tab>
+                                        [organization]="organization"
+                ></app-administration-tab>
             </ng-template>
         </app-tab>
     </app-tabs>

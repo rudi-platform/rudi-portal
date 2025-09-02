@@ -3,11 +3,12 @@ package org.rudi.microservice.projekt.core.bean.criteria;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.bean.criteria.SearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class ProjectSearchCriteria implements SearchCriteria {
 	private List<UUID> linkedDatasetUuids;
 	private List<UUID> ownerUuids;
 	private List<UUID> projectUuids;
-	private List<ProjectStatus> status;
+	private List<ProjectStatus> projectStatus;
+	private List<Status> status;
 	private Boolean isPrivate;
 }

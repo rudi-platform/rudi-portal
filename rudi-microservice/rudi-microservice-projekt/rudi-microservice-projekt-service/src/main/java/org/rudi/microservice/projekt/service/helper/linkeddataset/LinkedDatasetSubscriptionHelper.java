@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Component
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class LinkedDatasetSubscriptionHelper {
 	 * @param existingLinkedDataset link à archiver
 	 */
 	protected void archivedLinkedDataset(LinkedDatasetEntity existingLinkedDataset) {
-		existingLinkedDataset.setLinkedDatasetStatus(LinkedDatasetStatus.ARCHIVED);
+		existingLinkedDataset.setLinkedDatasetStatus(LinkedDatasetStatus.DISENGAGED);
 		linkedDatasetDao.save(existingLinkedDataset);
 	}
 

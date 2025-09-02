@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-class NewDatasetRequestTaskProcessor implements DeleteNewDatasetRequestFieldProcessor {
+class NewDatasetRequestTaskProcessor implements DeleteNewDatasetRequestFieldProcessor, ArchiveNewDatasetRequestProcessor {
 
 	private final TaskService<NewDatasetRequest> newDatasetRequestTaskService;
 

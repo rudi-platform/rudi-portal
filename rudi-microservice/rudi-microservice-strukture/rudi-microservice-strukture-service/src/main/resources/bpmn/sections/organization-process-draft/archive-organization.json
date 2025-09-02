@@ -1,0 +1,32 @@
+{
+	"name": "archive-organization",
+	"help": "Vous vous apprêtez à archiver votre organisation du catalogue ${projectName}. Celle-ci ne sera plus visible depuis le catalogue et l’ensemble des membres seront retirés automatiquement.",
+	"readonly": false,
+	"fieldDefinitions": [
+		{
+			"name": "organizationArchiveMode",
+			"label": "Votre organisation a publié des réutilisations ? Que souhaitez-vous en faire ?",
+			"help": "Veuillez préciser si nous pouvons laisser visibles vos réutilisations ou bien les archiver définitivement.",
+			"type": "LIST",
+			"extendedType": "[{\"code\":\"ARCHIVED\", \"label\": \"Mes réutilisations et l’ensemble des informations qui lui sont rattachées peuvent rester visibles depuis le catalogue ${projectName}.\"},{\"code\":\"DISENGAGED\", \"label\": \"Mes réutilisations doivent être archivées. L’ensemble des informations ne seront plus accessibles au grand public, seules les équipes ${projectName} les conserverons à des fins archivistiques.\"}]",
+			"readonly": false,
+			"multiple": false,
+			"required": true
+		},
+		{
+			"name": "messageToModerator",
+			"label": "Message à l'attention des équipes ${projectName}",
+			"type": "TEXT",
+			"readonly": false,
+			"required": true
+		},
+		{
+			"name": "draftType",
+			"label": "draftType",
+			"extendedType": "archive",
+			"type": "HIDDEN",
+			"readonly": true,
+			"required": false
+		}
+	]
+}

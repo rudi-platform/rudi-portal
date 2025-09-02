@@ -143,11 +143,26 @@
 					},
 					{
 						"in": "query",
-						"name": "nodeProviderUuid",
+						"name": "nodeProviderUuids",
 						"description": "UUID d'un nom fournisseur",
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "organizationUuids",
+						"description": "UUID d'une organisation liée",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
 						}
 					},
 					{
@@ -1660,54 +1675,6 @@
 						"$ref": "#/components/responses/InternalServerError"
 					}
 				}
-			},
-			"delete": {
-				"tags": [
-					"organization"
-				],
-				"summary": "Supprime une organisation",
-				"description": "Supprime une organisation via son UUID",
-				"operationId": "deleteOrganization",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "uuid",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"format": "uuid"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "Organisation supprimée avec succès"
-					},
-					"400": {
-						"$ref": "#/components/responses/BadRequestError"
-					},
-					"401": {
-						"$ref": "#/components/responses/Unauthorized"
-					},
-					"403": {
-						"$ref": "#/components/responses/Forbidden"
-					},
-					"406": {
-						"$ref": "#/components/responses/NotAcceptable"
-					},
-					"408": {
-						"$ref": "#/components/responses/RequestTimeout"
-					},
-					"429": {
-						"$ref": "#/components/responses/TooManyRequests"
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					},
-					"503": {
-						"$ref": "#/components/responses/ServiceUnavailable"
-					}
-				}
 			}
 		},
 		"/organizations/{uuid}/owner-info": {
@@ -2361,7 +2328,17 @@
 				"summary": "Chargement de formulaire draft s'il existe",
 				"description": "Chargement de formulaire draft s'il existe",
 				"operationId": "lookupOrganizationDraftForm",
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "form-type",
+						"description": "Le type du formulaire draft",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationFormType"
+						}
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "OK",

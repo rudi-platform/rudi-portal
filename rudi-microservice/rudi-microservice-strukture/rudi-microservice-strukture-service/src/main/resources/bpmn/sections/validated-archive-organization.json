@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à accepter la demande d'archivage de l'organisation. Après approbation, celle-ci sera retirée du catalogue des organisations",
+	"fieldDefinitions": [
+		{
+			"name": "messageToOrganizationArchiver",
+			"label": "Message à l’attention du demandeur",
+			"type": "TEXT",
+			"required": false
+		}
+	]
+}

@@ -1,5 +1,18 @@
-<app-organization-table [organization]="organization" [isLoading]="isLoading" [enableCaptchaOnPage]="enableCaptchaOnPage">
+<app-organization-table *ngIf="!isLoadingDatasets; else organizationTableLoader"
+                        [organization]="organization"
+                        [isLoading]="isLoading"
+                        [enableCaptchaOnPage]="enableCaptchaOnPage"
+                        [enableArchive]="enableArchive">
 </app-organization-table>
 
 <!-- Members table-->
 <app-organization-members-table [organization]="organization"></app-organization-members-table>
+
+<ng-template #organizationTableLoader>
+    <app-loader
+        [active]="isLoadingDatasets"
+        [allPage]="false"
+        [isLight]="true"
+        [noText]="true">
+    </app-loader>
+</ng-template>

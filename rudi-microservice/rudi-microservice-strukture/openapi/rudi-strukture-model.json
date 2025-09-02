@@ -911,6 +911,14 @@
 						"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"
 					}
 				}
+			},
+			"OrganizationFormType": {
+				"description": "Le type de formulaire",
+				"type": "string",
+				"enum": [
+					"DRAFT",
+					"DRAFT_ARCHIVE"
+				]
 			}
 		}
 	}

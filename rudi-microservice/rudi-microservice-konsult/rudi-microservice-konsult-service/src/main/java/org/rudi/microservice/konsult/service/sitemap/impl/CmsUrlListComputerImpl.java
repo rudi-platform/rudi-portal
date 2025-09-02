@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.cms.CmsService;
 import org.rudi.facet.cms.bean.CmsAssetType;
@@ -126,10 +127,10 @@ public class CmsUrlListComputerImpl extends AbstractUrlListComputer {
 	 *         http://localhost:4200/cms/detail/terms/c108b7f6-d895-4d45-a6f4-251f7f70f62d/rudi-terms@one-term-detailed/politique-de-confidentialite-de-la-plateforme-rudi)
 	 */
 	private String buildLocation(String link) {
-		link = StringUtils.removeStart(link, "/"); // retrait du 1er /, qui sera rajouté systématiquement à la reconstruction de l'URL
+		link = Strings.CS.removeStart(link, "/"); // retrait du 1er /, qui sera rajouté systématiquement à la reconstruction de l'URL
 
 		List<String> urlParts = new ArrayList<>();
-		urlParts.add(StringUtils.removeEnd(urlServer, "/")); // retrait du "/" éventuellement présent dans la config
+		urlParts.add(Strings.CS.removeEnd(urlServer, "/")); // retrait du "/" éventuellement présent dans la config
 		urlParts.addAll(Arrays.asList(StringUtils.split(link, '/'))); // extraction des différentes parties de l'URL et ajout dans la liste qui permet de reconstruire l'URL
 
 		String lastPart = urlParts.remove(urlParts.size() - 1); // extraction de la partie d'URL à normaliser

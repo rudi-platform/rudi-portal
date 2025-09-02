@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>rudi-facet</artifactId>
 		<groupId>org.rudi</groupId>
-		<version>3.3.0</version>
+		<version>3.3.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -104,8 +104,7 @@
 							<generateApis>false</generateApis>
 							<generateModels>true</generateModels>
 							<generateSupportingFiles>false</generateSupportingFiles>
-							<templateDirectory>
-								${resource-generation-directory}/openapi/generation/</templateDirectory>
+							<templateDirectory>${resource-generation-directory}/openapi/generation/</templateDirectory>
 							<verbose>false</verbose>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>

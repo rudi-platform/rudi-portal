@@ -133,9 +133,9 @@ public class OrganizationHelper {
 						.queryParamIfPresent("active", Optional.ofNullable(active))
 						.queryParamIfPresent("user_uuid", Optional.ofNullable(userUuid))
 						.queryParamIfPresent("organization_status", Optional.ofNullable(organizationStatus))
-						.queryParam("offset", offset)
-						.queryParam("limit", limit)
-						.queryParam("order", order)
+						.queryParamIfPresent("offset", Optional.ofNullable(offset))
+						.queryParamIfPresent("limit", Optional.ofNullable(limit))
+						.queryParamIfPresent("order", Optional.ofNullable(order))
 						.build())
 				.retrieve().bodyToMono(PagedOrganizationList.class);
 		final var pagedOrganizationList = MonoUtils.blockOrThrow(mono, GetOrganizationException.class);
@@ -162,11 +162,35 @@ public class OrganizationHelper {
 	}
 
 	public List<UUID> getMyOrganizationsUuids(UUID userUuid) throws GetOrganizationException {
-		final var mono = organizationWebClient.get()
-				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
-						.queryParam("user_uuid", userUuid).build())
-				.retrieve().bodyToMono(PagedOrganizationList.class);
-		return extractUuidFromPageList(MonoUtils.blockOrThrow(mono, GetOrganizationException.class));
+		int limit = 50;
+		int offset = 0;
+
+		PagedOrganizationList page = getMyOrganizations(userUuid, offset, limit, null);
+
+		// S'il n'y a aucune organisation, on retourne une liste vide
+		if (page == null || page.getTotal() <= 0) {
+			return new ArrayList<>();
+		}
+
+		// Récupération des UUIDs des organisations
+		List<UUID> uuids = new ArrayList<>();
+		uuids.addAll(extractUuidFromPageList(page));
+
+		// S'il y a plus de limit organization lié au user, on itère sur la requête pour récupérer toutes les organizations
+		if(page.getTotal() > limit) {
+			offset += limit;
+			while(page.getTotal() > offset) {
+				page = getMyOrganizations(userUuid, offset, limit, null);
+				uuids.addAll(extractUuidFromPageList(page));
+				offset += limit;
+			}
+		}
+
+		return uuids;
+	}
+
+	public PagedOrganizationList getMyOrganizations(UUID userUuid, int offset, int limit, String order) throws GetOrganizationException {
+		return searchOrganizations(null, null, null, userUuid, null, offset, limit, order);
 	}
 
 	private List<UUID> extractUuidFromPageList(PagedOrganizationList page) {

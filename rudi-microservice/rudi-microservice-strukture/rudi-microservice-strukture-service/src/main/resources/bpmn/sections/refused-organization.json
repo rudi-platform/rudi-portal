@@ -1,5 +1,5 @@
 {
-	"help": "Vous vous apprêtez à refuser  la demande de rattachement de l'organisation au noeud producteur. Merci d’indiquer ci-dessous la raison du refus. Le demandeur recevra un mail qui l'informera de la raison du refus.",
+	"help": "Vous vous apprêtez à refuser la demande de création d'une organisation. Merci d’indiquer ci-dessous la raison du refus. Le demandeur recevra un mail qui l'informera de la raison du refus.",
 	"fieldDefinitions": [
 		{
 			"name": "messageToOrganizationCreator",

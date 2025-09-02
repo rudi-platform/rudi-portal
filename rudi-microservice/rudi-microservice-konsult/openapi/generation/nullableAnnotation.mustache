@@ -1,0 +1,12 @@
+{{^required}}
+	{{^defaultValue}}
+		{{^useOptional}}
+		{{^openApiNullable}}@Nullable {{/openApiNullable}}
+		{{/useOptional}}
+	{{/defaultValue}}
+	{{#defaultValue}}
+		{{^openApiNullable}}
+		{{#isNullable}}@Nullable {{/isNullable}}
+		{{/openApiNullable}}
+	{{/defaultValue}}
+{{/required}}

@@ -16,6 +16,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.data.domain.Page;
@@ -40,6 +42,7 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 	public static final String FIELD_OPENING_DATE = "openingDate";
 	public static final String FIELD_CLOSING_DATE = "closingDate";
 	public static final String FIELD_NODE_PROVIDERS = "nodeProviders";
+	public static final String FIELD_LINKED_PRODUCER = "linkedProducers";
 	public static final String FIELD_NODE_PROVIDERS_UUID = "uuid";
 
 	public ProviderCustomDaoImpl(EntityManager entityManager) {
@@ -92,11 +95,10 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 			predicateStringCriteria(searchProviderCriteria.getLabel(), FIELD_LABEL, predicates, builder, root);
 
 			// nodeProviders.uuid
-			if (searchProviderCriteria.getNodeProviderUuid() != null) {
+			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getNodeProviderUuid())) {
 				Join<ProviderEntity, NodeProviderEntity> nodeProviderJoin = root.join(FIELD_NODE_PROVIDERS,
 						JoinType.LEFT);
-				predicates
-						.add(builder.equal(nodeProviderJoin.get("uuid"), searchProviderCriteria.getNodeProviderUuid()));
+				predicates.add(nodeProviderJoin.get(FIELD_NODE_PROVIDERS_UUID).in(searchProviderCriteria.getNodeProviderUuid()));
 			}
 
 			// inactif
@@ -126,11 +128,18 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 						builder.greaterThanOrEqualTo(root.get(FIELD_CLOSING_DATE), dateDebut)));
 
 			} else
-			// cas critères dateFin uniquement :
-			if (searchProviderCriteria.getDateFin() != null) {
-				final LocalDateTime dateFin = searchProviderCriteria.getDateFin();
-				predicates.add(builder.lessThanOrEqualTo(root.get(FIELD_OPENING_DATE), dateFin));
+				// cas critères dateFin uniquement :
+				if (searchProviderCriteria.getDateFin() != null) {
+					final LocalDateTime dateFin = searchProviderCriteria.getDateFin();
+					predicates.add(builder.lessThanOrEqualTo(root.get(FIELD_OPENING_DATE), dateFin));
+				}
+
+			// Ajout du filtre sur l'organisation
+			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getOrganisationUuid())) {
+				Join<ProviderEntity, LinkedProducerEntity> linkedProducerJoin = root.join(FIELD_LINKED_PRODUCER, JoinType.LEFT);
+				predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_ORGANIZATION).get(OrganizationEntity.FIELD_UUID).in(searchProviderCriteria.getOrganisationUuid()));
 			}
+
 
 			// Définition de la clause Where
 			if (CollectionUtils.isNotEmpty(predicates)) {

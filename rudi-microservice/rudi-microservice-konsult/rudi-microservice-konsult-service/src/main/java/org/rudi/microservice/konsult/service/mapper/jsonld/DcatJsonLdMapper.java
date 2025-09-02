@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.kaccess.bean.Contact;
@@ -28,10 +31,6 @@ import org.rudi.microservice.konsult.service.mapper.jsonld.impl.PaginationJsonLd
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,8 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 
 	private static final String NO_LICENSE = "notspecified";
-	private static final String CUSTOM_LICENSE = "other-at";
-	private static final String UNKNOWN_STANDARD_LICENSE = "other-pd";
 
 	private final ContextHelper contextHelper;
 	private final PaginationJsonLdMapper paginationJsonLdMapper;
@@ -50,7 +47,7 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 	private final ContactPointJsonLdMapper contactPointJsonLdMapper;
 	private final CreatorJsonLdMapper creatorJsonLdMapper;
 
-	@Value("#{${harvest.dcat.license:{'apache-2.0':'other-pd', 'cc-by-nd-4.0':'cc-by', 'etalab-1.0':'other-pd', 'etalab-2.0':'lov2', 'gpl-3.0':'other-pd', 'mit':'other-pd', 'odbl-1.0':'odc-odbl','public-domain-cc0':'other-pd'}}}")
+	@Value("#{${harvest.dcat.license:{'cc-by-nd-4.0':'cc-by', 'etalab-2.0':'lov2', 'mit':'other-pd', 'odbl-1.0':'odc-odbl','public-domain-cc0':'other-pd'}}}")
 	private Map<String, String> licenseMap;
 
 	public DcatJsonLdMapper(MediaUrlHelper mediaUrlHelper, ContextHelper contextHelper,
@@ -190,13 +187,9 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 	private void extractLicense(Metadata metadata, DcatJsonLdContext context) {
 		Licence licence = metadata.getAccessCondition().getLicence();
 		JsonObject license = new JsonObject();
-		if (licence != null) {
-			if (Licence.LicenceTypeEnum.STANDARD.equals(licence.getLicenceType())) {
-				String key = ((LicenceStandard) licence).getLicenceLabel().getValue();
-				license.addProperty("id", licenseMap.getOrDefault(key, UNKNOWN_STANDARD_LICENSE));
-			} else {
-				license.addProperty("id", CUSTOM_LICENSE);
-			}
+		if (licence != null && Licence.LicenceTypeEnum.STANDARD.equals(licence.getLicenceType())) {
+			String key = ((LicenceStandard) licence).getLicenceLabel().getValue();
+				license.addProperty("id", licenseMap.getOrDefault(key, NO_LICENSE));
 		} else {
 			license.addProperty("id", NO_LICENSE);
 		}

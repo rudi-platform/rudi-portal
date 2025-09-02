@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.facet.dataverse.api.exceptions.CannotReplaceUnpublishedFileException;
 import org.rudi.facet.dataverse.api.exceptions.DatasetNotFoundException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -50,10 +50,10 @@ public class DataverseResponseHandler extends DefaultResponseErrorHandler {
 			final String exceptionMessage = String.format("Error  code returned %d with message [%s]",
 					statusCode.value(), responseMessage);
 
-			if (StringUtils.contains(responseMessage, "You cannot replace an unpublished file")) {
+			if (Strings.CS.contains(responseMessage, "You cannot replace an unpublished file")) {
 				throw new CannotReplaceUnpublishedFileException(exceptionMessage, apiResponseInfo);
 			}
-			if (StringUtils.contains(responseMessage,
+			if (Strings.CS.contains(responseMessage,
 					"You may not replace a file with a file that has duplicate content.")) {
 				throw new DuplicateFileContentException(exceptionMessage, apiResponseInfo);
 			}

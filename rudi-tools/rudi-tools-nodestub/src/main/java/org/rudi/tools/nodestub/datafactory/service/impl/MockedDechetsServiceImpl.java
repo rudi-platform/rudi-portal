@@ -3,7 +3,7 @@ package org.rudi.tools.nodestub.datafactory.service.impl;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -45,7 +45,7 @@ class MockedDechetsServiceImpl implements DechetsService {
 
 	private <T> T readMockedResponse(String baseName, Class<T> valueType)
 			throws IOException, AppServiceBadRequestException {
-		if (StringUtils.contains(baseName, "/") || StringUtils.contains(baseName, "\\")) {
+		if (Strings.CS.contains(baseName, "/") || Strings.CS.contains(baseName, "\\")) {
 			throw new AppServiceBadRequestException("Unexpected baseName " + baseName);
 		}
 		final var path = nodeStubConfiguration.getWasteApiMockedResponseDirectory().resolve(baseName + ".json");

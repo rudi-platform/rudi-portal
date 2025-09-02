@@ -41,6 +41,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 		implements ProjectCustomDao {
 
 	private static final String FIELD_PROJECT_STATUS = "projectStatus";
+	private static final String FIELD_STATUS = "status";
 	private static final String FIELD_OWNER_UUID = ProjectEntity.FIELD_OWNER_UUID;
 	private static final String FIELD_KEYWORDS = "keywords";
 	private static final String FIELD_TARGET_AUDIENCES = "targetAudiences";
@@ -80,11 +81,12 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 						(project, ownerUuids) -> project.get(FIELD_OWNER_UUID).in(ownerUuids))
 				.add(searchCriteria.getProjectUuids(),
 						(project, projectUuids) -> project.get(FIELD_UUID).in(projectUuids))
-				.add(searchCriteria.getStatus(), ProjectStatus::valueOf,
+				.add(searchCriteria.getProjectStatus(), ProjectStatus::valueOf,
 						(project, status) -> project.get(FIELD_PROJECT_STATUS).in(status))
 				.add(searchCriteria.getIsPrivate(),
 						(project, confidentialities) -> project.join(FIELD_PROJECT_CONFIDENTIALITY)
-								.get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE).in(confidentialities));
+								.get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE).in(confidentialities))
+				.add(searchCriteria.getStatus(),(project, status) -> project.get(FIELD_STATUS).in(status));
 	}
 
 	@Override

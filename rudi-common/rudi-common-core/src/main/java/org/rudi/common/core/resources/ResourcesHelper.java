@@ -7,6 +7,7 @@ import java.net.URLConnection;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ehcache.Cache;
 import org.rudi.common.core.DocumentContent;
 
@@ -69,8 +70,8 @@ public abstract class ResourcesHelper {
 	}
 
 	protected String computeResourcePath(String resourceName) {
-		return StringUtils.join(StringUtils.removeEnd(getBasePackage(), PATH_DELIMITER), PATH_DELIMITER,
-				StringUtils.removeStart(resourceName, PATH_DELIMITER));
+		return StringUtils.join(Strings.CS.removeEnd(getBasePackage(), PATH_DELIMITER), PATH_DELIMITER,
+				Strings.CS.removeStart(resourceName, PATH_DELIMITER));
 	}
 
 	public String fillResourceMapping(String value, String key) {

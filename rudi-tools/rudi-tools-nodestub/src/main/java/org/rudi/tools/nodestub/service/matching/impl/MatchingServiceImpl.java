@@ -9,7 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
@@ -52,7 +52,7 @@ class MatchingServiceImpl implements MatchingService {
 		}
 
 		// cas de tests pour rejet immédiat
-		if (StringUtils.equals(login, nodeStubConfiguration.getBlacklistedUserLogin())) {
+		if (Strings.CS.equals(login, nodeStubConfiguration.getBlacklistedUserLogin())) {
 			throw new AppServiceNotFoundException(new EmptyResultDataAccessException(
 					String.format("Erreur 404 : Utilisateur non présent dans le JDD %s", datasetUuid),
 					MINIMUM_NUMBER_EXPECTED));

@@ -85,6 +85,4 @@ public class NodeProviderUserHelper {
 		return nodeProviderMapper.entityToDto(entity);
 	}
 
-
-
 }

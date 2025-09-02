@@ -1,17 +1,9 @@
 package org.rudi.microservice.projekt.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -53,9 +45,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -106,7 +105,7 @@ public class ProjectController implements ProjectsApi {
 			@Valid List<@Valid TargetAudience> targetAudiennces, @Valid Integer offset, @Valid Integer limit,
 			@Valid String order) throws Exception {
 		val searchCriteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids)
-				.linkedDatasetUuids(linkedDatasetUuids).ownerUuids(ownerUuids).projectUuids(projectUuids).status(status)
+				.linkedDatasetUuids(linkedDatasetUuids).ownerUuids(ownerUuids).projectUuids(projectUuids).projectStatus(status)
 				.themes(themes).keywords(keywords).targetAudiences(targetAudiennces).build();
 
 		val pageable = utilPageable.getPageable(offset, limit, order);
@@ -179,10 +178,9 @@ public class ProjectController implements ProjectsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_PROJEKT + ", "
-			+ PROJECT_MANAGER + ", " + USER + ")")
-	public ResponseEntity<Void> unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUUID)
-			throws AppServiceException {
-		linkedDatasetService.unlinkProjectToDataset(projectUuid, linkedDatasetUUID);
+			+ PROJECT_MANAGER + ", " + USER + ", " + MODULE_KALIM + ", " + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	public ResponseEntity<Void> unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force) throws Exception {
+		linkedDatasetService.unlinkProjectToDataset(projectUuid, linkedDatasetUuid, force);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -365,7 +363,7 @@ public class ProjectController implements ProjectsApi {
 			@Valid List<@Valid TargetAudience> targetAudiennces, @Valid Integer offset, @Valid Integer limit,
 			@Valid String order) throws Exception {
 		val criteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids).linkedDatasetUuids(linkedDatasetUuids)
-				.ownerUuids(ownerUuids).projectUuids(projectUuids).status(status).themes(themes).keywords(keywords)
+				.ownerUuids(ownerUuids).projectUuids(projectUuids).projectStatus(status).themes(themes).keywords(keywords)
 				.targetAudiences(targetAudiennces).build();
 
 		return ResponseEntity.ok(projectService.getNumberOfProjectsPerOwners(criteria));

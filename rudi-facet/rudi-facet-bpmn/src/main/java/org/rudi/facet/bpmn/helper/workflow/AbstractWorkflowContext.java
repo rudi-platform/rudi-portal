@@ -472,7 +472,6 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 * @param userKey                    le nom technique de l'étape dans le workflow, pour retrouver le form
 	 * @param actionName                 le nom de la branche de sortie de l'étape, pour retrouver le form
 	 * @param sectionName                le nom de la section à supprimer
-	 * @param processInstanceBusinessKey l'id du workflow en cours
 	 * @param assetDescriptionEntity     l'entité à corriger
 	 */
 	private void cleanDataBySection(String userKey, String actionName, String sectionName,

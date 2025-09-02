@@ -1,6 +1,6 @@
 package org.rudi.microservice.acl.service.captcha.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.service.helper.ResourceHelper;
 import org.rudi.microservice.acl.service.captcha.config.CaptchaProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +17,6 @@ public class CaptchaSoundProcessor extends AbstractCaptchaMultimediaProcessor {
 
 	@Override
 	protected boolean hasToBeUsed(String typeCaptcha) {
-		return StringUtils.equals(typeCaptcha, CAPTCHA_TYPE_SOUND);
+		return Strings.CS.equals(typeCaptcha, CAPTCHA_TYPE_SOUND);
 	}
 }

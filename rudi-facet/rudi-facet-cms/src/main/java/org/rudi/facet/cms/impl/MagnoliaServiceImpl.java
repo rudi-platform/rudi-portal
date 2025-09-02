@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.tika.Tika;
 import org.ehcache.Cache;
 import org.jsoup.Jsoup;
@@ -404,7 +405,7 @@ public class MagnoliaServiceImpl implements CmsService {
 	protected Element replaceSelfLinks(Element element) {
 		// recherche de tous les liens de la forme @self/{type}/{id}/{template}/{titre} et remplacement de leur attributs
 		element.select(MagnoliaServiceImpl.SELF_CSS_QUERY).replaceAll(a -> a.attr("href",
-				StringUtils.replace(a.attr("href"), "@self", cmsMagnoliaConfiguration.getFrontOfficeRoute())));
+				Strings.CS.replace(a.attr("href"), "@self", cmsMagnoliaConfiguration.getFrontOfficeRoute())));
 		return element;
 	}
 

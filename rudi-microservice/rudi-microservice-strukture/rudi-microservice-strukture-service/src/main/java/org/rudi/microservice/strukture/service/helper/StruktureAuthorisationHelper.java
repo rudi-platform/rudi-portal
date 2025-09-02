@@ -85,6 +85,8 @@ public class StruktureAuthorisationHelper {
 		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_STRUKTURE, Boolean.TRUE);
 		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_PROJEKT, Boolean.TRUE);
 		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODERATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_KALIM_ADMINISTRATOR, Boolean.TRUE);
+		ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS.put(RoleCodes.MODULE_KALIM, Boolean.TRUE);
 	}
 
 	private static final Map<String, Boolean> INIT_ACCES = new HashMap<>();
@@ -112,7 +114,6 @@ public class StruktureAuthorisationHelper {
 	 */
 	private static final List<String> TRANSVERSAL_ROLES = Arrays.asList(RoleCodes.ADMINISTRATOR, RoleCodes.ANONYMOUS,
 			RoleCodes.MODERATOR, NOT_USER);
-
 
 	public boolean hasAnyRole(User user, List<String> acceptedRoles) throws AppServiceUnauthorizedException {
 		if (user == null) { // NOSONAR il faut pouvoir traiter le cas où le user n'est pas positionné (pour les TU par exemple)
@@ -169,8 +170,10 @@ public class StruktureAuthorisationHelper {
 		}
 	}
 
-	private boolean isAuthenticatedUserOrganizationsInitiator(OrganizationEntity organizationEntity) throws AppServiceUnauthorizedException {
-		return organizationEntity.getInitiator() != null && organizationEntity.getInitiator().equals(aclHelper.getAuthenticatedUser().getLogin());
+	private boolean isAuthenticatedUserOrganizationsInitiator(OrganizationEntity organizationEntity)
+			throws AppServiceUnauthorizedException {
+		return organizationEntity.getInitiator() != null
+				&& organizationEntity.getInitiator().equals(aclHelper.getAuthenticatedUser().getLogin());
 	}
 
 	public boolean isAccessGrantedForUserOnOrganizationAsAdministrator(UUID organizationUuid)
@@ -179,8 +182,21 @@ public class StruktureAuthorisationHelper {
 				&& organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
 	}
 
-	public void checkRightsOnInitOrganization(OrganizationEntity assetDescriptionEntity) throws AppServiceUnauthorizedException {
-		if(!(isAccessGrantedByRole(INIT_ACCES)) && !isAuthenticatedUserOrganizationsInitiator(assetDescriptionEntity) && ! isAccessGrantedForUserOnOrganization(assetDescriptionEntity.getUuid())) {
+	public void checkRightsOnInitOrganization(OrganizationEntity assetDescriptionEntity)
+			throws AppServiceUnauthorizedException {
+		if (!(isAccessGrantedByRole(INIT_ACCES)) && !isAuthenticatedUserOrganizationsInitiator(assetDescriptionEntity)
+				&& !isAccessGrantedForUserOnOrganization(assetDescriptionEntity.getUuid())) {
+			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
+		}
+	}
+
+	/**
+	 * 
+	 * @param entity l'entité organization concernée
+	 * @throws AppServiceUnauthorizedException
+	 */
+	public void checkRightsAdminsterOrganization(OrganizationEntity entity) throws AppServiceUnauthorizedException {
+		if (!isAccessGrantedByRole(ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS)) {
 			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}

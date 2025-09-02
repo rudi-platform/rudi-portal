@@ -1,0 +1,20 @@
+<ng-container [formGroup]="formGroup">
+    <div class="d-flex">
+        <mat-label>{{ label }}<span *ngIf="required" class="required-symbol">*</span></mat-label>
+    </div>
+    <mat-hint class="title-hint">{{ help }}</mat-hint>
+    <mat-form-field appearance="outline" *ngIf="options">
+        <mat-select
+            [formControlName]="formControlName"
+            [placeholder]="'common.select.oneOptionPlaceHolder'|translate"
+            [multiple]="field.definition.multiple">
+            <mat-option *ngFor="let option of options"
+                        [value]="option.code">
+                {{ option.label }}
+            </mat-option>
+        </mat-select>
+        <mat-error>
+            <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'common.requiredInformationError'|translate }}
+        </mat-error>
+    </mat-form-field>
+</ng-container>

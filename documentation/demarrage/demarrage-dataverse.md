@@ -17,6 +17,8 @@ La suite de cette documentation indique comment construire les images.
 
 Le fichier Dockerfile de Dataverse Engine est fourni dans ``ci/docker/dataverse-engine``.
 
+Copier dans ce répertoire le répertoire ``maven`` provenant de **https://github.com/rudi-platform/rudi-out-of-the-box/tree/main/image/dataverse**
+
 ```bash
 cd ci/docker/dataverse-engine/
 ./build-image.sh

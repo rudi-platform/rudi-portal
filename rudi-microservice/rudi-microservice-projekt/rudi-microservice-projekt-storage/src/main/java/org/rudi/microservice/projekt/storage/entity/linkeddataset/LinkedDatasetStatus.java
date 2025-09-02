@@ -1,8 +1,9 @@
 package org.rudi.microservice.projekt.storage.entity.linkeddataset;
 
-import lombok.RequiredArgsConstructor;
 import org.rudi.common.storage.entity.PositionedStatus;
 import org.rudi.common.storage.entity.StatusPosition;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum LinkedDatasetStatus implements PositionedStatus {
@@ -27,9 +28,14 @@ public enum LinkedDatasetStatus implements PositionedStatus {
 	CANCELLED(StatusPosition.FINAL),
 
 	/**
-	 * Archivé
+	 * Archivé visible dans un projet archivé
 	 */
-	ARCHIVED(StatusPosition.FINAL);
+	ARCHIVED(StatusPosition.FINAL),
+
+	/**
+	 * Archivé invisible
+	 */
+	DISENGAGED(StatusPosition.FINAL);
 
 	private final StatusPosition position;
 

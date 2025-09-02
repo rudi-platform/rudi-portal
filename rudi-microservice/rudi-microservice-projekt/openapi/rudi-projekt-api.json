@@ -1178,7 +1178,7 @@
 					{
 						"in": "query",
 						"name": "status",
-						"description": "Statut de la demande, optionnel. Si vide : récupération de tous les JDDs",
+						"description": "Statut de la demande, optionnel. Si vide : récupération de tous les jeux de données",
 						"schema": {
 							"type": "array",
 							"items": {
@@ -1323,7 +1323,7 @@
 				},
 				"responses": {
 					"204": {
-						"description": "JDD lié modifié avec succès",
+						"description": "Jeu de données lié modifié avec succès",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1458,6 +1458,15 @@
 							"format": "uuid"
 						},
 						"example": "53ac7c69-acd9-49c5-a74d-22647cf3e2e3"
+					},
+					{
+						"in": "query",
+						"name": "force",
+						"description": "permet de forcer la suppression du linked-dataset",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
 					}
 				],
 				"responses": {
@@ -1639,8 +1648,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Crée une demande de nouveau JDD",
-				"description": "Crée une demande de nouveau JDD",
+				"summary": "Crée une demande de nouveau jeu de données",
+				"description": "Crée une demande de nouveau jeu de données",
 				"operationId": "createNewDatasetRequest",
 				"parameters": [
 					{
@@ -1665,7 +1674,7 @@
 				},
 				"responses": {
 					"201": {
-						"description": "Demande de nouveau JDD créée avec succès",
+						"description": "Demande de nouveau jeu de données créée avec succès",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1704,8 +1713,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Demandes de nouveau JDD",
-				"description": "Liste toutes les demandes de nouveau JDD d'un projet.",
+				"summary": "Demandes de nouveaux jeux de données",
+				"description": "Liste toutes les demandes de nouveaux jeux de données d'un projet.",
 				"operationId": "getNewDatasetRequests",
 				"parameters": [
 					{
@@ -1764,8 +1773,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Modifie une demande de nouveau JDD",
-				"description": "Modifie une demande de nouveau JDD",
+				"summary": "Modifie une demande de nouveau jeu de données",
+				"description": "Modifie une demande de nouveau jeu de données",
 				"operationId": "updateNewDatasetRequest",
 				"parameters": [
 					{
@@ -1825,8 +1834,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Récupère une demande de nouveau JDD donnée",
-				"description": "Récupère une demande de nouveau JDD donnée via son UUID",
+				"summary": "Récupère une demande de nouveau jeu de données ciblée",
+				"description": "Récupère une demande de nouveau jeu de données ciblée via son UUID",
 				"operationId": "getNewDatasetRequestByUuid",
 				"parameters": [
 					{
@@ -1842,7 +1851,7 @@
 					{
 						"in": "path",
 						"name": "requestUuid",
-						"description": "UUID de la demande de nouveau JDD",
+						"description": "UUID de la demande de nouveau jeu de données",
 						"required": true,
 						"schema": {
 							"type": "string",
@@ -1870,8 +1879,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Supprime une demande de nouveau JDD",
-				"description": "Supprime une demande de nouveau JDD via son UUID",
+				"summary": "Supprime une demande de nouveau jeu de données",
+				"description": "Supprime une demande de nouveau jeu de données via son UUID",
 				"operationId": "deleteNewDatasetRequest",
 				"parameters": [
 					{
@@ -1887,7 +1896,7 @@
 					{
 						"in": "path",
 						"name": "requestUuid",
-						"description": "UUID de la demande de nouveau JDD",
+						"description": "UUID de la demande de nouveau jeu de données",
 						"required": true,
 						"schema": {
 							"type": "string",
@@ -1897,7 +1906,7 @@
 				],
 				"responses": {
 					"204": {
-						"description": "Demande de nouveau JDD supprimée avec succès"
+						"description": "Demande de nouveau jeu de données supprimée avec succès"
 					},
 					"400": {
 						"$ref": "#/components/responses/BadRequestError"
@@ -2227,6 +2236,103 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/project-owners/has-task/{owner-uuid}": {
+			"get": {
+				"tags": [
+					"projekt"
+				],
+				"summary": "Détermine si une organisation a des projets en cours",
+				"description": "Retourne true si l'organisation a des projets en cours, false sinon",
+				"operationId": "hasProjectOwnerRunningTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "owner-uuid",
+						"description": "UUID de l'organisation",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "True si l'organsiation possède des projets en cours",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/project-owners/{owner-uuid}/archive/{archive-mode}": {
+			"delete": {
+				"tags": [
+					"projekt"
+				],
+				"summary": "Permet l'archivage de l'ensemble des projects d'une organisation",
+				"description": "Archive les projets d'une organisations ainsi que les linked datasets",
+				"operationId": "archiveOwnerProjects",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "owner-uuid",
+						"description": "UUID du owner du projet",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					},
+					{
+						"in": "path",
+						"name": "archive-mode",
+						"description": "archivage mode, gère le niveau d'archivage",
+						"required": true,
+						"schema": {
+							"$ref":"./rudi-projekt-model.json#/components/schemas/ProjektArchiveMode"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Projets archivés avec succès."
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequestError"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/Forbidden"
+					},
+					"406": {
+						"$ref": "#/components/responses/NotAcceptable"
+					},
+					"408": {
+						"$ref": "#/components/responses/RequestTimeout"
+					},
+					"429": {
+						"$ref": "#/components/responses/TooManyRequests"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					},
+					"503": {
+						"$ref": "#/components/responses/ServiceUnavailable"
 					}
 				}
 			}
@@ -3009,7 +3115,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "True si l'uuid to check a accès au JDD",
+						"description": "True si l'uuid to check a accès au jeu de données",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -3413,7 +3519,7 @@
 					{
 						"in": "query",
 						"name": "dataset-producer-uuid",
-						"description": "UUID du producteur de données du JDD concerné par la demande d'accès",
+						"description": "UUID du producteur de données du jeu de données concerné par la demande d'accès",
 						"required": false,
 						"schema": {
 							"type": "string",
@@ -5544,8 +5650,8 @@
 				"tags": [
 					"projekt"
 				],
-				"summary": "Supprime/revoke une clé",
-				"description": "Supprime/revoke une clé",
+				"summary": "Supprime/révoque une clé",
+				"description": "Supprime/révoque une clé",
 				"operationId": "deleteProjectKey",
 				"parameters": [
 					{

@@ -542,7 +542,7 @@ class ProviderServiceUT {
 		// ------------------------------------------------
 		// chargement light
 		ProviderSearchCriteria criteria = new ProviderSearchCriteria();
-		criteria.setNodeProviderUuid(updatedNode.getUuid());
+		criteria.setNodeProviderUuid(List.of(updatedNode.getUuid()));
 		criteria.setFull(false);
 		Page<Provider> pageResult = providerService.searchProviders(criteria, PageRequest.of(0, 100));
 		assertEquals(1, pageResult.getNumberOfElements());

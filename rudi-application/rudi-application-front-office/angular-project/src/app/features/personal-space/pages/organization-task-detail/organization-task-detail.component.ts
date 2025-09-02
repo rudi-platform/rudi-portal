@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LogService} from '@core/services/log.service';
@@ -19,7 +19,7 @@ import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Task} from 'micro_service_modules/projekt/projekt-api';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
-import {Organization, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
+import {Organization, OrganizationStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
@@ -38,7 +38,9 @@ export class OrganizationTaskDetailComponent
     currentTask: Task;
     hasSections: boolean = false;
     ownerInfo: Observable<OwnerInfo>;
+    headerLibelle: string;
     protected readonly ProjectStatus = ProjectStatus;
+    readonly panelInitialTaskOpenState = signal(false);
 
     constructor(
         readonly dialog: MatDialog,
@@ -56,6 +58,7 @@ export class OrganizationTaskDetailComponent
     ) {
         super(dialog, translateService, snackBarService, taskWithDependenciesService, organizationTaskMetierService, logger);
         this.processDefinitionsKeyIconRegistryService.addAllSvgIcons(PROCESS_DEFINITION_KEY_TYPES);
+        this.headerLibelle = this.translateService.instant('personalSpace.organizationDetails.declaration');
     }
 
     set taskId(idTask: string) {
@@ -72,6 +75,14 @@ export class OrganizationTaskDetailComponent
             });
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
+
+                    const isArchive = taskWithDependencies.task?.asset?.form?.sections.some(section => section?.fields.some(field => field?.definition.name === 'archivageType'));
+                    const taskValidated = taskWithDependencies.asset.organizationStatus === OrganizationStatus.Validated;
+
+                    if (taskValidated && isArchive) {
+                        this.headerLibelle = this.translateService.instant('personalSpace.organizationDetails.archive.task.title');
+                    }
+
                     this.taskWithDependencies = taskWithDependencies;
                 }),
                 injectDependencies({
@@ -91,6 +102,7 @@ export class OrganizationTaskDetailComponent
                     this.pageTitleService.setPageTitle(this.dependencies.organization.name);
                     // On récupère les informations du Owner
                     this.getOwnerInfo(this.dependencies.organization.uuid);
+
                     this.isLoading = false;
                 },
                 error: (error) => {
