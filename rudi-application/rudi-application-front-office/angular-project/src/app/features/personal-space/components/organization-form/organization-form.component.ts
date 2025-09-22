@@ -16,7 +16,8 @@ const MAX_ADDRESS_LENGTH = 255;
 @Component({
     selector: 'app-organization-form',
     templateUrl: './organization-form.component.html',
-    styleUrls: ['./organization-form.component.scss']
+    styleUrls: ['./organization-form.component.scss'],
+    standalone: false
 })
 export class OrganizationFormComponent implements OnInit {
     @Input() draftForm: Form;

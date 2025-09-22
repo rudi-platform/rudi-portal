@@ -12,8 +12,7 @@ import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
-import org.rudi.common.service.exception.AppServiceBadRequestException;
-import org.rudi.common.service.exception.AppServiceNotFoundException;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.Role;
@@ -34,8 +33,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,7 +131,7 @@ public class LinkedProducerServiceImplUT {
 
 	@Test
 	@DisplayName("Création d'un linkedProducer et lancement du workflow")
-	void createNewLinkedProducerAndInitializeWorkflow() throws AppServiceNotFoundException, AppServiceUnauthorizedException, AppServiceBadRequestException, FormDefinitionException, FormConvertException, InvalidDataException {
+	void createNewLinkedProducerAndInitializeWorkflow() throws AppServiceException, FormDefinitionException, FormConvertException, InvalidDataException {
 		UUID nodeProviderUuid = UUID.randomUUID();
 		UUID organizationUuid = UUID.randomUUID();
 
@@ -187,7 +186,7 @@ public class LinkedProducerServiceImplUT {
 
 	@Test
 	@DisplayName("Lancement du workflow de détachement d'une organziation")
-	void detachLinkedProducerAndInitializeWorkflow() throws AppServiceUnauthorizedException, FormDefinitionException, FormConvertException, InvalidDataException {
+	void detachLinkedProducerAndInitializeWorkflow() throws AppServiceException, FormDefinitionException, FormConvertException, InvalidDataException {
 		UUID nodeProviderUuid = UUID.randomUUID();
 
 		mockAuthenticatedUserAsProvider(nodeProviderUuid);

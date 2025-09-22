@@ -1,4 +1,5 @@
 import {DataSize} from '@shared/models/data-size';
+import {HelpLink} from 'micro_service_modules/konsult/konsult-model';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
@@ -48,12 +49,26 @@ export abstract class PropertiesAdapter<P> {
             ),
         );
     }
-    
+
     getNumber(key: string): Observable<number> {
         return this.getProperties().pipe(
             map(properties =>
                 get<P, number, number>(key, properties, value => value)
             ),
+        );
+    }
+
+    getHelpLinks(key: string): Observable<HelpLink[]> {
+        return this.getProperties().pipe(
+            map(properties =>
+                get<P, HelpLink[], HelpLink[]>(key, properties, value => value)
+            ),
+        );
+    }
+
+    getHelpLink(key: string, propertyKey: string): Observable<HelpLink> {
+        return this.getHelpLinks(key).pipe(
+            map((value: HelpLink[]) => value.find((helpLink: HelpLink) => helpLink.key === propertyKey))
         );
     }
 
@@ -69,7 +84,7 @@ export abstract class PropertiesAdapter<P> {
         );
     }
 
-    private getProperties(): Observable<P> {
+    getProperties(): Observable<P> {
         if (!this.propertie$) {
             this.propertie$ = this.fetchBackendProperties().pipe(
                 shareReplay(1)

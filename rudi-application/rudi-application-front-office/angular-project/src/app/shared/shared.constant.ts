@@ -1,5 +1,4 @@
 import {LayoutModule} from '@angular/cdk/layout';
-import {HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatBadgeModule} from '@angular/material/badge';
@@ -44,7 +43,6 @@ export const MaterialModules = [
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    HttpClientModule,
     MatBadgeModule,
     MatNativeDateModule,
     MatDatepickerModule,

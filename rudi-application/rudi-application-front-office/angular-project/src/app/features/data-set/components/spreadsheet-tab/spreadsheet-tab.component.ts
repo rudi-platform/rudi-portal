@@ -15,7 +15,8 @@ const EMPTY_SEARCH = '';
 @Component({
     selector: 'app-spreadsheet-tab',
     templateUrl: './spreadsheet-tab.component.html',
-    styleUrls: ['./spreadsheet-tab.component.scss']
+    styleUrls: ['./spreadsheet-tab.component.scss'],
+    standalone: false
 })
 export class SpreadsheetTabComponent implements OnInit {
 

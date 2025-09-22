@@ -6,7 +6,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 @Component({
     selector: 'app-error-box',
     templateUrl: './error-box.component.html',
-    styleUrls: ['./error-box.component.scss']
+    styleUrls: ['./error-box.component.scss'],
+    standalone: false
 })
 export class ErrorBoxComponent {
 

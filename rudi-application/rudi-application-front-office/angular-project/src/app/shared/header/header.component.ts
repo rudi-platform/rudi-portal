@@ -23,7 +23,8 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss']
+    styleUrls: ['./header.component.scss'],
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
 

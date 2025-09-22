@@ -16,7 +16,8 @@ const ITEMS_PER_PAGE = 10;
 @Component({
     selector: 'app-selfdata-datasets-table',
     templateUrl: './selfdata-datasets-table.component.html',
-    styleUrls: ['./selfdata-datasets-table.component.scss']
+    styleUrls: ['./selfdata-datasets-table.component.scss'],
+    standalone: false
 })
 export class SelfdataDatasetsTableComponent implements OnInit {
     displayedColumns: string[] = ['title', 'processDefinitionKey', 'updatedDate', 'functionalStatus'];

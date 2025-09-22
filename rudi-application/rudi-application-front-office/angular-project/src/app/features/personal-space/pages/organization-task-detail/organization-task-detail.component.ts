@@ -26,7 +26,8 @@ import {map, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-organization-task-detail',
     templateUrl: './organization-task-detail.component.html',
-    styleUrls: ['./organization-task-detail.component.scss']
+    styleUrls: ['./organization-task-detail.component.scss'],
+    standalone: false
 })
 export class OrganizationTaskDetailComponent
     extends TaskDetailComponent<Organization, OrganizationDependencies, OrganizationTask, OrganizationTaskSearchCriteria>
@@ -76,9 +77,9 @@ export class OrganizationTaskDetailComponent
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
 
-                    const isArchive = taskWithDependencies.task?.asset?.form?.sections.some(section => section?.fields.some(field => field?.definition.name === 'archivageType'));
+                    const isArchive = taskWithDependencies.task?.asset?.form?.sections.some(section => section?.fields.some(field => field?.definition.name === 'organizationArchiveMode'));
                     const taskValidated = taskWithDependencies.asset.organizationStatus === OrganizationStatus.Validated;
-
+                    
                     if (taskValidated && isArchive) {
                         this.headerLibelle = this.translateService.instant('personalSpace.organizationDetails.archive.task.title');
                     }

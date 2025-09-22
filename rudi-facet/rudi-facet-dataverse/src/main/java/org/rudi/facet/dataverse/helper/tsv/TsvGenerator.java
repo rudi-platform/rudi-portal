@@ -94,7 +94,8 @@ public abstract class TsvGenerator {
 		if (spec.getLocalName().endsWith("uri")) {
 			return FieldType.URL;
 		}
-		if (spec.getLocalName().endsWith("text") || spec.getLocalName().endsWith("address")) {
+
+		if (spec.getLocalName().endsWith("text") || spec.getLocalName().endsWith("address") || spec.getLocalName().endsWith("html")) {
 			return FieldType.TEXTBOX;
 		}
 		return FieldType.TEXT;

@@ -6,7 +6,8 @@ import {ArrayFilterFormComponent, Item} from '../array-filter-form.component';
 @Component({
     selector: 'app-producer-names-filter-form',
     templateUrl: './producer-names-filter-form.component.html',
-    styleUrls: ['./producer-names-filter-form.component.scss']
+    styleUrls: ['./producer-names-filter-form.component.scss'],
+    standalone: false
 })
 export class ProducerNamesFilterFormComponent extends ArrayFilterFormComponent<string> {
 

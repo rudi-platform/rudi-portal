@@ -3,18 +3,17 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {ActivatedRoute} from '@angular/router';
+import {ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
+import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {GenerateKeysDialogComponent} from '@features/personal-space/components/generate-keys-dialog/generate-keys-dialog.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {ProjectKey} from 'micro_service_modules/acl/acl-model';
-import { ProjectKeyPageResult, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import * as moment from 'moment/moment';
+import {ProjectKeyPageResult, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
+import moment from 'moment';
 import {switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
-import {PropertiesMetierService} from '@core/services/properties-metier.service';
-import {ApiKeys} from 'micro_service_modules/konsult/konsult-api';
-import {OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
 
 export interface ProjectKeyTableData {
     uuid: string;
@@ -27,14 +26,14 @@ export interface ProjectKeyTableData {
 @Component({
     selector: 'app-project-api-tab',
     templateUrl: './project-api-tab.component.html',
-    styleUrls: ['./project-api-tab.component.scss']
+    styleUrls: ['./project-api-tab.component.scss'],
+    standalone: false
 })
 export class ProjectApiTabComponent implements OnInit {
 
     @ViewChild(MatSort) sort: MatSort;
 
     private project: Project;
-    public keys: ApiKeys;
     public loading: boolean;
     public hidePassword = true;
     public isOwnerTypeUser = false;
@@ -104,7 +103,7 @@ export class ProjectApiTabComponent implements OnInit {
     /**
      * Méthode de formalisation de la donnée retourner lors de la recherche
      */
-    transformData(keys: ProjectKeyPageResult): void{
+    transformData(keys: ProjectKeyPageResult): void {
         this.projectKeysTotal = keys.total;
         if (keys && keys.elements?.length > 0) {
             this.projectKeys = keys.elements.map((projectKey: ProjectKey) => {
@@ -140,7 +139,7 @@ export class ProjectApiTabComponent implements OnInit {
     /**
      * Suppression d'une clé
      */
-    deleteKey(uuid: string): void{
+    deleteKey(uuid: string): void {
         this.isKeysLoading = true;
         this.projektService.deleteProjectKey(this.project.uuid, uuid).pipe(
             switchMap(() => this.projektService.searchProjectKeys(this.project.uuid))
@@ -170,7 +169,7 @@ export class ProjectApiTabComponent implements OnInit {
             .afterClosed()
             .subscribe({
                 next: data => {
-                    if (data.closeEvent === CloseEvent.VALIDATION){
+                    if (data.closeEvent === CloseEvent.VALIDATION) {
                         this.deleteKey(uuid);
                     }
                 }

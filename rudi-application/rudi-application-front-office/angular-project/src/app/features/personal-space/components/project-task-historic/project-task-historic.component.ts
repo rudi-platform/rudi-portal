@@ -6,7 +6,8 @@ import {Observable} from 'rxjs';
 @Component({
     selector: 'app-project-task-historic',
     templateUrl: './project-task-historic.component.html',
-    styleUrls: ['./project-task-historic.component.scss']
+    styleUrls: ['./project-task-historic.component.scss'],
+    standalone: false
 })
 export class ProjectTaskHistoricComponent implements OnInit {
 

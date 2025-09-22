@@ -22,7 +22,8 @@ export const FIELD_NAME_IMAGE_ORGANIZATION = 'organizationImage';
 @Component({
     selector: 'app-organization-tab',
     templateUrl: './organization-tab.component.html',
-    styleUrls: ['./organization-tab.component.scss']
+    styleUrls: ['./organization-tab.component.scss'],
+    standalone: false
 })
 export class OrganizationTabComponent implements OnInit, OnDestroy {
     isLoading: boolean;

@@ -19,7 +19,8 @@ export interface NewDataSetDialogData {
 @Component({
     selector: 'app-edit-new-data-set-dialog',
     templateUrl: './edit-new-data-set-dialog.component.html',
-    styleUrls: ['./edit-new-data-set-dialog.component.scss']
+    styleUrls: ['./edit-new-data-set-dialog.component.scss'],
+    standalone: false
 })
 export class EditNewDataSetDialogComponent implements OnInit {
 

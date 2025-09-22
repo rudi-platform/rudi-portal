@@ -1,1308 +1,1220 @@
 {
-	"openapi": "3.0.0",
-	"info": {
-		"description": "API Public Konsult Rudi",
-		"version": "0.0.1",
-		"title": "rudi-konsult-api",
-		"termsOfService": "http://swagger.io/terms/",
-		"contact": {
-			"email": "contact@rudi.fr"
-		},
-		"license": {
-			"name": "Apache 2.0",
-			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-		}
-	},
-	"servers": [
-		{
-			"url": "/{basePath}",
-			"description": "Rudi Konsult API",
-			"variables": {
-				"basePath": {
-					"default": "konsult/v1"
-				}
-			}
-		}
-	],
-	"tags": [
-		{
-			"name": "administration",
-			"description": "Services d'administration"
-		},
-		{
-			"name": "konsult",
-			"description": "Services Konsult"
-		},
-		{
-			"name": "miscellaneous",
-			"description": "Services divers"
-		}
-	],
-	"paths": {
-		"/application-information": {
-			"get": {
-				"tags": [
-					"miscellaneous"
-				],
-				"summary": "Récupération de la version applicative",
-				"description": "Récupération d'information sur la version de l'application",
-				"operationId": "getApplicationInformation",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/AppInfo"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/healthCheck": {
-			"get": {
-				"tags": [
-					"miscellaneous"
-				],
-				"summary": "Test de vie de l'application'",
-				"description": "Test de vie de l'application",
-				"operationId": "checkHealth",
-				"responses": {
-					"200": {
-						"description": "OK"
-					}
-				}
-			}
-		},
-		"/properties/front-office": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Propriétés de configuration du Front Office",
-				"description": "Toutes les propriétés sous forme de clé/valeur pour configurer l'application Front Office",
-				"operationId": "getFrontOfficeProperties",
-				"responses": {
-					"200": {
-						"description": "Propriétés au format JSON.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/FrontOfficeProperties"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/properties/scripts/{scriptName}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement d'un script autorisé",
-				"description": "Téléchargement d'un script autorisée",
-				"operationId": "downloadScript",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "scriptName",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "La ressource demandée est introuvable",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/metadatas": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Recherche dans les métadonnées des jeux de données",
-				"description": "Retourne la liste des jeux de données correspondant aux données de recherche",
-				"operationId": "searchMetadatas",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/FreeTextParam"
-					},
-					{
-						"$ref": "#/components/parameters/ThemesParam"
-					},
-					{
-						"$ref": "#/components/parameters/KeywordsParam"
-					},
-					{
-						"$ref": "#/components/parameters/ProducerNamesParam"
-					},
-					{
-						"$ref": "#/components/parameters/DateDebutParam"
-					},
-					{
-						"$ref": "#/components/parameters/DateFinParam"
-					},
-					{
-						"$ref": "#/components/parameters/RestrictedAccessParam"
-					},
-					{
-						"$ref": "#/components/parameters/GdprSensitiveParam"
-					},
-					{
-						"$ref": "#/components/parameters/GlobalIdParam"
-					},
-					{
-						"$ref": "#/components/parameters/ProducerUuidsParam"
-					},
-					{
-						"$ref": "#/components/parameters/OffsetParam"
-					},
-					{
-						"$ref": "#/components/parameters/LimitParam"
-					},
-					{
-						"$ref": "#/components/parameters/OrderParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Note : pour des raisons de performance, seuls certains champs de l'objet Metadata sont renvoyés dans la recherche : global_id, resource_title, synopsis, summary.text, theme, keywords, producer.organization_id, storage_status, access_condition.confidentiality.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "MetadataList"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/metadatas/dcat": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Recherche retournant les jeux de données au format JSON-LD sous le standard DCAT-AP",
-				"description": "Retourne un JSONLD paginé des jeux de données",
-				"operationId": "generateDcatJsonLd",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/FreeTextParam"
-					},
-					{
-						"$ref": "#/components/parameters/ThemesParam"
-					},
-					{
-						"$ref": "#/components/parameters/KeywordsParam"
-					},
-					{
-						"$ref": "#/components/parameters/ProducerNamesParam"
-					},
-					{
-						"$ref": "#/components/parameters/ProducerUuidsParam"
-					},
-					{
-						"$ref": "#/components/parameters/DateDebutParam"
-					},
-					{
-						"$ref": "#/components/parameters/DateFinParam"
-					},
-					{
-						"$ref": "#/components/parameters/RestrictedAccessParam"
-					},
-					{
-						"$ref": "#/components/parameters/GdprSensitiveParam"
-					},
-					{
-						"$ref": "#/components/parameters/PageSizeParam"
-					},
-					{
-						"$ref": "#/components/parameters/PageParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/ld+json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/metadatas/facets": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Recherche des facets liées aux métadonnées",
-				"description": "Retourne la liste des facets correspondants à l'ensemble des métadonnées enregistrées",
-				"operationId": "searchMetadataFacets",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/FacetsParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "MetadataFacets"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/metadatas": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération des métadonnées d'un jeu de données.",
-				"description": "Retourne les métadonnées du jeu de données dont l'identifiant est spécifié.",
-				"operationId": "getMetadataById",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "Metadata"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/metadatas-with-same-theme": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération des métadonnées sur le même thème qu'un jeu de données.",
-				"description": "Retourne les métadonnées sur le même thème, si possible de producteur différent et avec le plus de mots-clés en commun que le JDD spécifié.",
-				"operationId": "getMetadatasWithSameTheme",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					},
-					{
-						"in": "query",
-						"name": "limit",
-						"description": "Le nombre de résultats souhaité",
-						"schema": {
-							"type": "integer",
-							"format": "int32"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"type": "Metadata"
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/datasets/{globalId}/number-metadatas-with-same-theme": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération du nombre de jdd sur le même thème qu'un jeu de données.",
-				"description": "Retourne le nombre total de jdd sur le même thème.",
-				"operationId": "getNumberOfDatasetsOnTheSameTheme",
-				"parameters": [
-					{
-						"$ref": "#/components/parameters/GlobalIdPathParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "integer"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/map/search-addresses": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Fait une recherche d'adresse RVA en renvoyant des points d'intérêts et des infos géométriques",
-				"description": "Fait une recherche d'adresse RVA en renvoyant des points d'intérêts et des infos géométriques",
-				"operationId": "searchAddresses",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "query",
-						"description": "Debut de l'adresse",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "./../../../rudi-facet/rudi-facet-rva/openapi/rudi-rva-model.json#/components/schemas/Address"
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/map/dataset/base-layers": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération des fonds de plan disponible pour un affichage cartographique",
-				"description": "Récupération des fonds de plan disponible pour un affichage cartographique",
-				"operationId": "getDatasetBaseLayers",
-				"responses": {
-					"200": {
-						"description": "Retourne des layers qui seront les fonds de plan disponibles de nos cartes RUDI",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"type": "LayerInformation"
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/map/localisation/base-layers": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération des fonds de plan disponible pour la mini carte de localisation des données d'un JDD",
-				"description": "Récupération des fonds de plan disponible pour la mini carte de localisation des données d'un JDD",
-				"operationId": "getLocalisationBaseLayers",
-				"responses": {
-					"200": {
-						"description": "Retourne des layers qui seront les fonds de plan disponibles de la mini carte RUDI",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "./rudi-konsult-model.json#/components/schemas/LayerInformation"
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/map/proj4-information": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération des informations sur un code EPSG",
-				"description": "Les informations récupérées exploitent l'API EPSG.io pour alimenter proj4 dans le front",
-				"operationId": "getProj4Information",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "code",
-						"description": "le code EPSG souhaité au format : EPSG:XXXX",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Informations pour Proj4 extraites de EPSG.io",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "./rudi-konsult-model.json#/components/schemas/Proj4Information"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/cms/categories": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Accès aux catégories.",
-				"description": "Accès aux catégories.",
-				"operationId": "getCategories",
-				"parameters": [],
-				"responses": {
-					"200": {
-						"description": "Retourne les categories",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"$ref": "CmsCategory"
-									}
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/cms/{assetType}/renders/{assetTemplate}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement d'un ensemble d'asset du cms.",
-				"description": "Téléchargement d'un ensemble d'asset du cms.",
-				"operationId": "renderAssets",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "assetType",
-						"description": "Identifiant du type d'asset",
-						"required": true,
-						"schema": {
-							"$ref": "CmsAssetType"
-						},
-						"example": "news ou terms ou projectvalues"
-					},
-					{
-						"in": "path",
-						"name": "assetTemplate",
-						"description": "Identifiant d'un template de génération",
-						"required": true,
-						"schema": {
-							"type": "string"
-						},
-						"example": "termDetail"
-					},
-					{
-						"in": "query",
-						"name": "categories",
-						"description": "Liste des catégories",
-						"required": "false",
-						"schema": {
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						}
-					},
-					{
-						"in": "query",
-						"name": "filters",
-						"description": "filtre complémentaire de la forme param=value",
-						"required": "false",
-						"schema": {
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						}
-					},
-					{
-						"$ref": "#/components/parameters/LocaleParam"
-					},
-					{
-						"$ref": "#/components/parameters/OffsetParam"
-					},
-					{
-						"$ref": "#/components/parameters/LimitParam"
-					},
-					{
-						"$ref": "#/components/parameters/OrderParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne les données d'un média",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "PagedCmsAssets"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/cms/{assetType}/{assetId}/{assetTemplate}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement d'un asset du cms.",
-				"description": "Téléchargement d'un asset du cms.",
-				"operationId": "renderAsset",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "assetType",
-						"description": "Identifiant du type d'asset",
-						"required": true,
-						"schema": {
-							"$ref": "CmsAssetType"
-						},
-						"example": "news ou terms ou projectvalues"
-					},
-					{
-						"in": "path",
-						"name": "assetId",
-						"description": "Identifiant d'un asset",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "assetTemplate",
-						"description": "Identifiant d'un template de génération",
-						"required": true,
-						"schema": {
-							"type": "string"
-						},
-						"example": "termDetail"
-					},
-					{
-						"$ref": "#/components/parameters/LocaleParam"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne les données d'un média",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "CmsAsset"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/cms/resources": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement d'une resource du CMS",
-				"description": "Téléchargement d'une resource du CMS",
-				"operationId": "downloadCmsResource",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "resourcePath",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/customizations": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Description des éléménts paramétrables",
-				"description": "Description des éléménts paramétrables",
-				"operationId": "getCustomizationDescription",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "lang",
-						"description": "langue d'affichage",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne les données de paramétrage",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "./rudi-konsult-model.json#/components/schemas/CustomizationDescription"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/customizations/resources/{resource-name}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Téléchargement des resources de customisation",
-				"description": "Téléchargement des resources de customisation",
-				"operationId": "downloadCustomizationResource",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "resource-name",
-						"description": "Nom de la resource",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne la ressource demandée",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/sitemap/{resource-name}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération de la resource demandée",
-				"description": "Récupération de la resource démandée par le paramètre",
-				"operationId": "getRessourceByName",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "resource-name",
-						"description": "Nom de la resource",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne la ressource demandée",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "La ressource demandée est introuvable",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/sitemap": {
-			"post": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Mise à jour du sitemap",
-				"description": "Mise à jour du sitemap",
-				"operationId": "generateSitemap",
-				"parameters": [],
-				"responses": {
-					"204": {
-						"description": "Sitemap généré avec succès"
-					},
-					"401": {
-						"description": "Opération réservée aux administrateurs",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		},
-		"/robots/{resource-name}": {
-			"get": {
-				"tags": [
-					"konsult"
-				],
-				"summary": "Récupération de la resource demandée",
-				"description": "Récupération de la resource démandée par le paramètre",
-				"operationId": "getRobotsRessourceByName",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "resource-name",
-						"description": "Nom de la resource",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Retourne la ressource demandée",
-						"content": {
-							"application/octet-stream": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "La ressource demandée est introuvable",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiError"
-								}
-							}
-						}
-					},
-					"500": {
-						"$ref": "#/components/responses/InternalServerError"
-					}
-				}
-			}
-		}
-	},
-	"components": {
-		"parameters": {
-			"LimitParam": {
-				"in": "query",
-				"name": "limit",
-				"description": "Le nombre de résultats à retourner par page",
-				"schema": {
-					"type": "integer",
-					"format": "int32"
-				}
-			},
-			"OffsetParam": {
-				"in": "query",
-				"name": "offset",
-				"description": "Index de début (positionne le curseur pour parcourir les résultats de la recherche)",
-				"schema": {
-					"type": "integer",
-					"format": "int32"
-				}
-			},
-			"FreeTextParam": {
-				"in": "query",
-				"name": "freeText",
-				"description": "Texte libre présent dans le titre ou dans le synopsis du jeu de données",
-				"schema": {
-					"type": "string"
-				}
-			},
-			"ThemesParam": {
-				"in": "query",
-				"name": "themes",
-				"description": "Liste de thèmes (le thème du jeu de données doit correspondre à l'un de ces thèmes)",
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				}
-			},
-			"KeywordsParam": {
-				"in": "query",
-				"name": "keywords",
-				"description": "Liste de mots clés du jeu de données",
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				}
-			},
-			"ProducerNamesParam": {
-				"in": "query",
-				"name": "producerNames",
-				"description": "Liste de noms de producteurs (le nom du producteur du jeu de données doit correspondre à l'un de ces noms)",
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				}
-			},
-			"ProducerUuidsParam": {
-				"in": "query",
-				"name": "producerUuids",
-				"description": "UUID du producteur (l'UUID du producteur du jeu de données doit correspondre à cet UUID)",
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string",
-						"format": "uuid"
-					}
-				}
-			},
-			"DateDebutParam": {
-				"in": "query",
-				"name": "dateDebut",
-				"description": "Date de début du jeu de données",
-				"schema": {
-					"type": "string",
-					"format": "date-time"
-				}
-			},
-			"DateFinParam": {
-				"in": "query",
-				"name": "dateFin",
-				"description": "Date de fin du jeu de données",
-				"schema": {
-					"type": "string",
-					"format": "date-time"
-				}
-			},
-			"OrderParam": {
-				"in": "query",
-				"name": "order",
-				"description": "Liste des tris à réaliser. Valeurs possibles :  name, date, title, producername, updatedate. Mettre un signe - devant pour tri descendant (ex -name)",
-				"required": false,
-				"schema": {
-					"type": "string"
-				}
-			},
-			"RestrictedAccessParam": {
-				"in": "query",
-				"name": "restrictedAccess",
-				"description": "Données ouvertes (false) ou restreintes (true)",
-				"required": false,
-				"schema": {
-					"type": "boolean"
-				}
-			},
-			"GdprSensitiveParam": {
-				"in": "query",
-				"name": "gdprSensitive",
-				"description": "self data (true)",
-				"required": false,
-				"schema": {
-					"type": "boolean"
-				}
-			},
-			"FacetsParam": {
-				"in": "query",
-				"name": "facets",
-				"description": "Liste des propriétés pour lesquelles on récupère la liste des valeurs possibles",
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				}
-			},
-			"GlobalIdPathParam": {
-				"in": "path",
-				"name": "globalId",
-				"description": "Identifiant du jeu de données",
-				"required": true,
-				"schema": {
-					"type": "string",
-					"format": "uuid"
-				}
-			},
-			"LinkedDatasetUuidPathParam": {
-				"in": "path",
-				"name": "linkedDatasetUuid",
-				"description": "Identifiant de la demande d'accès au JDD restreint",
-				"required": true,
-				"schema": {
-					"type": "string",
-					"format": "uuid"
-				}
-			},
-			"OwnerUuidPathParam": {
-				"in": "path",
-				"name": "ownerUuid",
-				"description": "UUID du user ayanat souscrit",
-				"required": true,
-				"schema": {
-					"type": "string",
-					"format": "uuid"
-				}
-			},
-			"GlobalIdParam": {
-				"in": "query",
-				"name": "globalId",
-				"description": "Global ID du ou des jeux de données",
-				"required": false,
-				"schema": {
-					"type": "array",
-					"items": {
-						"type": "string",
-						"format": "uuid"
-					}
-				}
-			},
-			"SubscriptionOwnerUuidPathParam": {
-				"in": "query",
-				"name": "souscriptionOwnerUuid",
-				"description": "UUID du souscripteur",
-				"required": false,
-				"schema": {
-					"type": "string",
-					"format": "uuid"
-				}
-			},
-			"LocaleParam": {
-				"in": "query",
-				"name": "locale",
-				"description": "Locale demandée",
-				"required": false,
-				"schema": {
-					"type": "string"
-				}
-			},
-			"PageSizeParam": {
-				"in": "query",
-				"name": "pageSize",
-				"description": "Nombre d'éléments par page",
-				"schema": {
-					"type": "integer"
-				}
-			},
-			"PageParam": {
-				"in": "query",
-				"name": "page",
-				"description": "Page souhaitée. Commence à 1",
-				"schema": {
-					"type": "integer"
-				}
-			}
-		},
-		"responses": {
-			"InternalServerError": {
-				"description": "Internal server error",
-				"content": {
-					"application/json": {
-						"schema": {
-							"$ref": "#/components/schemas/ApiError"
-						}
-					}
-				}
-			},
-			"UnknownClientKeyError": {
-				"description": "Erreur lorsque les clés de l'utilisateur sont inconnues",
-				"content": {
-					"application/json": {
-						"schema": {
-							"$ref": "#/components/schemas/ApiError"
-						}
-					}
-				}
-			}
-		},
-		"schemas": {
-			"ApiError": {
-				"type": "object",
-				"properties": {
-					"code": {
-						"type": "string"
-					},
-					"label": {
-						"type": "string"
-					}
-				}
-			},
-			"ApiForbiddenError": {
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/ApiError"
-					},
-					{
-						"properties": {
-							"code": {
-								"type": "string"
-							},
-							"label": {
-								"type": "string"
-							}
-						}
-					}
-				],
-				"example": {
-					"code": "403 FORBIDDEN",
-					"label": "Cannot subscribe because user robert.palmer has not been granted access to restricted dataset b9887e0f-db4e-47f0-87cd-e2f7f8d80689"
-				}
-			},
-			"AppInfo": {
-				"type": "object",
-				"properties": {
-					"version": {
-						"type": "string",
-						"description": "Numéro de version de l'application"
-					},
-					"comment": {
-						"type": "string",
-						"description": "Description de la version de l'application"
-					}
-				}
-			},
-			"FrontOfficeProperties": {
-				"type": "object",
-				"properties": {
-					"front": {
-						"type": "object",
-						"properties": {
-							"contact": {
-								"type": "string"
-							},
-							"apiDocumentation": {
-								"type": "string"
-							},
-							"apiDocumentationService": {
-								"type": "string"
-							},
-							"docRudi": {
-								"type": "string"
-							},
-							"tableDisplayMaxFileSize": {
-								"type": "number"
-							},
-							"teamName": {
-								"type": "string"
-							},
-							"projectName": {
-								"type": "string"
-							}
-						}
-					},
-					"mapInfo": {
-						"type": "object",
-						"properties": {
-							"defaultCenter": {
-								"type": "array",
-								"items": {
-									"type": "number"
-								}
-							},
-							"defaultTopLeft": {
-								"type": "array",
-								"items": {
-									"type": "number"
-								}
-							},
-							"defaultBottomRight": {
-								"type": "array",
-								"items": {
-									"type": "number"
-								}
-							},
-							"paddingExtent": {
-								"type": "number"
-							},
-							"maxZoomExtent": {
-								"type": "number"
-							},
-							"defaultZoom": {
-								"type": "number"
-							}
-						}
-					},
-					"scripts": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					}
-				}
-			},
-			"ApiKeysType": {
-				"description": "Type de clés APIs à récupérer",
-				"type": "string",
-				"enum": [
-					"SANDBOX",
-					"PRODUCTION"
-				]
-			},
-			"ApiKeys": {
-				"type": "object",
-				"properties": {
-					"consumerKey": {
-						"type": "string"
-					},
-					"consumerSecret": {
-						"type": "string"
-					}
-				}
-			}
-		}
-	}
+    "openapi": "3.0.0",
+    "info": {
+        "description": "API Public Konsult Rudi",
+        "version": "0.0.1",
+        "title": "rudi-konsult-api",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "email": "contact@rudi.fr"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "servers": [
+        {
+            "url": "/{basePath}",
+            "description": "Rudi Konsult API",
+            "variables": {
+                "basePath": {
+                    "default": "konsult/v1"
+                }
+            }
+        }
+    ],
+    "tags": [
+        {
+            "name": "administration",
+            "description": "Services d'administration"
+        },
+        {
+            "name": "konsult",
+            "description": "Services Konsult"
+        },
+        {
+            "name": "miscellaneous",
+            "description": "Services divers"
+        }
+    ],
+    "paths": {
+        "/application-information": {
+            "get": {
+                "tags": [
+                    "miscellaneous"
+                ],
+                "summary": "Récupération de la version applicative",
+                "description": "Récupération d'information sur la version de l'application",
+                "operationId": "getApplicationInformation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppInfo"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/healthCheck": {
+            "get": {
+                "tags": [
+                    "miscellaneous"
+                ],
+                "summary": "Test de vie de l'application'",
+                "description": "Test de vie de l'application",
+                "operationId": "checkHealth",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/properties/front-office": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Propriétés de configuration du Front Office",
+                "description": "Toutes les propriétés sous forme de clé/valeur pour configurer l'application Front Office",
+                "operationId": "getFrontOfficeProperties",
+                "responses": {
+                    "200": {
+                        "description": "Propriétés au format JSON.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./rudi-konsult-model.json#/components/schemas/FrontOfficeProperties"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/properties/scripts/{scriptName}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Téléchargement d'un script autorisé",
+                "description": "Téléchargement d'un script autorisée",
+                "operationId": "downloadScript",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "scriptName",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La ressource demandée est introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/metadatas": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Recherche dans les métadonnées des jeux de données",
+                "description": "Retourne la liste des jeux de données correspondant aux données de recherche",
+                "operationId": "searchMetadatas",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FreeTextParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ThemesParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/KeywordsParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProducerNamesParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/DateDebutParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/DateFinParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/RestrictedAccessParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/GdprSensitiveParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/GlobalIdParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProducerUuidsParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/OffsetParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/LimitParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/OrderParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Note : pour des raisons de performance, seuls certains champs de l'objet Metadata sont renvoyés dans la recherche : global_id, resource_title, synopsis, summary.text, theme, keywords, producer.organization_id, storage_status, access_condition.confidentiality.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "MetadataList"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/metadatas/dcat": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Recherche retournant les jeux de données au format JSON-LD sous le standard DCAT-AP",
+                "description": "Retourne un JSONLD paginé des jeux de données",
+                "operationId": "generateDcatJsonLd",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FreeTextParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ThemesParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/KeywordsParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProducerNamesParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProducerUuidsParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/DateDebutParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/DateFinParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/RestrictedAccessParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/GdprSensitiveParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSizeParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/ld+json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/metadatas/facets": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Recherche des facets liées aux métadonnées",
+                "description": "Retourne la liste des facets correspondants à l'ensemble des métadonnées enregistrées",
+                "operationId": "searchMetadataFacets",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/FacetsParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "MetadataFacets"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/{globalId}/metadatas": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération des métadonnées d'un jeu de données.",
+                "description": "Retourne les métadonnées du jeu de données dont l'identifiant est spécifié.",
+                "operationId": "getMetadataById",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/GlobalIdPathParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "Metadata"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/{globalId}/metadatas-with-same-theme": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération des métadonnées sur le même thème qu'un jeu de données.",
+                "description": "Retourne les métadonnées sur le même thème, si possible de producteur différent et avec le plus de mots-clés en commun que le JDD spécifié.",
+                "operationId": "getMetadatasWithSameTheme",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/GlobalIdPathParam"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Le nombre de résultats souhaité",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "Metadata"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/datasets/{globalId}/number-metadatas-with-same-theme": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération du nombre de jdd sur le même thème qu'un jeu de données.",
+                "description": "Retourne le nombre total de jdd sur le même thème.",
+                "operationId": "getNumberOfDatasetsOnTheSameTheme",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/GlobalIdPathParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/map/search-addresses": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Fait une recherche d'adresse RVA en renvoyant des points d'intérêts et des infos géométriques",
+                "description": "Fait une recherche d'adresse RVA en renvoyant des points d'intérêts et des infos géométriques",
+                "operationId": "searchAddresses",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Debut de l'adresse",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "./../../../rudi-facet/rudi-facet-rva/openapi/rudi-rva-model.json#/components/schemas/Address"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/map/dataset/base-layers": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération des fonds de plan disponible pour un affichage cartographique",
+                "description": "Récupération des fonds de plan disponible pour un affichage cartographique",
+                "operationId": "getDatasetBaseLayers",
+                "responses": {
+                    "200": {
+                        "description": "Retourne des layers qui seront les fonds de plan disponibles de nos cartes RUDI",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "LayerInformation"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/map/localisation/base-layers": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération des fonds de plan disponible pour la mini carte de localisation des données d'un JDD",
+                "description": "Récupération des fonds de plan disponible pour la mini carte de localisation des données d'un JDD",
+                "operationId": "getLocalisationBaseLayers",
+                "responses": {
+                    "200": {
+                        "description": "Retourne des layers qui seront les fonds de plan disponibles de la mini carte RUDI",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "./rudi-konsult-model.json#/components/schemas/LayerInformation"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/map/proj4-information": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération des informations sur un code EPSG",
+                "description": "Les informations récupérées exploitent l'API EPSG.io pour alimenter proj4 dans le front",
+                "operationId": "getProj4Information",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "code",
+                        "description": "le code EPSG souhaité au format : EPSG:XXXX",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Informations pour Proj4 extraites de EPSG.io",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./rudi-konsult-model.json#/components/schemas/Proj4Information"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/cms/categories": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Accès aux catégories.",
+                "description": "Accès aux catégories.",
+                "operationId": "getCategories",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Retourne les categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "CmsCategory"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/cms/{assetType}/renders/{assetTemplate}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Téléchargement d'un ensemble d'asset du cms.",
+                "description": "Téléchargement d'un ensemble d'asset du cms.",
+                "operationId": "renderAssets",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "assetType",
+                        "description": "Identifiant du type d'asset",
+                        "required": true,
+                        "schema": {
+                            "$ref": "CmsAssetType"
+                        },
+                        "example": "news ou terms ou projectvalues"
+                    },
+                    {
+                        "in": "path",
+                        "name": "assetTemplate",
+                        "description": "Identifiant d'un template de génération",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "termDetail"
+                    },
+                    {
+                        "in": "query",
+                        "name": "categories",
+                        "description": "Liste des catégories",
+                        "required": "false",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "filters",
+                        "description": "filtre complémentaire de la forme param=value",
+                        "required": "false",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/LocaleParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/OffsetParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/LimitParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/OrderParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne les données d'un média",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "PagedCmsAssets"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/cms/{assetType}/{assetId}/{assetTemplate}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Téléchargement d'un asset du cms.",
+                "description": "Téléchargement d'un asset du cms.",
+                "operationId": "renderAsset",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "assetType",
+                        "description": "Identifiant du type d'asset",
+                        "required": true,
+                        "schema": {
+                            "$ref": "CmsAssetType"
+                        },
+                        "example": "news ou terms ou projectvalues"
+                    },
+                    {
+                        "in": "path",
+                        "name": "assetId",
+                        "description": "Identifiant d'un asset",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "assetTemplate",
+                        "description": "Identifiant d'un template de génération",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "termDetail"
+                    },
+                    {
+                        "$ref": "#/components/parameters/LocaleParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne les données d'un média",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "CmsAsset"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/cms/resources": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Téléchargement d'une resource du CMS",
+                "description": "Téléchargement d'une resource du CMS",
+                "operationId": "downloadCmsResource",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "resourcePath",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/customizations": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Description des éléménts paramétrables",
+                "description": "Description des éléménts paramétrables",
+                "operationId": "getCustomizationDescription",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "lang",
+                        "description": "langue d'affichage",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne les données de paramétrage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./rudi-konsult-model.json#/components/schemas/CustomizationDescription"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/customizations/resources/{resource-name}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Téléchargement des resources de customisation",
+                "description": "Téléchargement des resources de customisation",
+                "operationId": "downloadCustomizationResource",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "resource-name",
+                        "description": "Nom de la resource",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne la ressource demandée",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/sitemap/{resource-name}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération de la resource demandée",
+                "description": "Récupération de la resource démandée par le paramètre",
+                "operationId": "getRessourceByName",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "resource-name",
+                        "description": "Nom de la resource",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne la ressource demandée",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La ressource demandée est introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/sitemap": {
+            "post": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Mise à jour du sitemap",
+                "description": "Mise à jour du sitemap",
+                "operationId": "generateSitemap",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "Sitemap généré avec succès"
+                    },
+                    "401": {
+                        "description": "Opération réservée aux administrateurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/robots/{resource-name}": {
+            "get": {
+                "tags": [
+                    "konsult"
+                ],
+                "summary": "Récupération de la resource demandée",
+                "description": "Récupération de la resource démandée par le paramètre",
+                "operationId": "getRobotsRessourceByName",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "resource-name",
+                        "description": "Nom de la resource",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retourne la ressource demandée",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La ressource demandée est introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "LimitParam": {
+                "in": "query",
+                "name": "limit",
+                "description": "Le nombre de résultats à retourner par page",
+                "schema": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            },
+            "OffsetParam": {
+                "in": "query",
+                "name": "offset",
+                "description": "Index de début (positionne le curseur pour parcourir les résultats de la recherche)",
+                "schema": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            },
+            "FreeTextParam": {
+                "in": "query",
+                "name": "freeText",
+                "description": "Texte libre présent dans le titre ou dans le synopsis du jeu de données",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "ThemesParam": {
+                "in": "query",
+                "name": "themes",
+                "description": "Liste de thèmes (le thème du jeu de données doit correspondre à l'un de ces thèmes)",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KeywordsParam": {
+                "in": "query",
+                "name": "keywords",
+                "description": "Liste de mots clés du jeu de données",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ProducerNamesParam": {
+                "in": "query",
+                "name": "producerNames",
+                "description": "Liste de noms de producteurs (le nom du producteur du jeu de données doit correspondre à l'un de ces noms)",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ProducerUuidsParam": {
+                "in": "query",
+                "name": "producerUuids",
+                "description": "UUID du producteur (l'UUID du producteur du jeu de données doit correspondre à cet UUID)",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "DateDebutParam": {
+                "in": "query",
+                "name": "dateDebut",
+                "description": "Date de début du jeu de données",
+                "schema": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "DateFinParam": {
+                "in": "query",
+                "name": "dateFin",
+                "description": "Date de fin du jeu de données",
+                "schema": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "OrderParam": {
+                "in": "query",
+                "name": "order",
+                "description": "Liste des tris à réaliser. Valeurs possibles :  name, date, title, producername, updatedate. Mettre un signe - devant pour tri descendant (ex -name)",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "RestrictedAccessParam": {
+                "in": "query",
+                "name": "restrictedAccess",
+                "description": "Données ouvertes (false) ou restreintes (true)",
+                "required": false,
+                "schema": {
+                    "type": "boolean"
+                }
+            },
+            "GdprSensitiveParam": {
+                "in": "query",
+                "name": "gdprSensitive",
+                "description": "self data (true)",
+                "required": false,
+                "schema": {
+                    "type": "boolean"
+                }
+            },
+            "FacetsParam": {
+                "in": "query",
+                "name": "facets",
+                "description": "Liste des propriétés pour lesquelles on récupère la liste des valeurs possibles",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "GlobalIdPathParam": {
+                "in": "path",
+                "name": "globalId",
+                "description": "Identifiant du jeu de données",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "LinkedDatasetUuidPathParam": {
+                "in": "path",
+                "name": "linkedDatasetUuid",
+                "description": "Identifiant de la demande d'accès au JDD restreint",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "OwnerUuidPathParam": {
+                "in": "path",
+                "name": "ownerUuid",
+                "description": "UUID du user ayanat souscrit",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "GlobalIdParam": {
+                "in": "query",
+                "name": "globalId",
+                "description": "Global ID du ou des jeux de données",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "SubscriptionOwnerUuidPathParam": {
+                "in": "query",
+                "name": "souscriptionOwnerUuid",
+                "description": "UUID du souscripteur",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "LocaleParam": {
+                "in": "query",
+                "name": "locale",
+                "description": "Locale demandée",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "PageSizeParam": {
+                "in": "query",
+                "name": "pageSize",
+                "description": "Nombre d'éléments par page",
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "PageParam": {
+                "in": "query",
+                "name": "page",
+                "description": "Page souhaitée. Commence à 1",
+                "schema": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses": {
+            "InternalServerError": {
+                "description": "Internal server error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            },
+            "UnknownClientKeyError": {
+                "description": "Erreur lorsque les clés de l'utilisateur sont inconnues",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "ApiError": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ApiForbiddenError": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ApiError"
+                    },
+                    {
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "example": {
+                    "code": "403 FORBIDDEN",
+                    "label": "Cannot subscribe because user robert.palmer has not been granted access to restricted dataset b9887e0f-db4e-47f0-87cd-e2f7f8d80689"
+                }
+            },
+            "AppInfo": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "description": "Numéro de version de l'application"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "description": "Description de la version de l'application"
+                    }
+                }
+            }
+        }
+    }
 }

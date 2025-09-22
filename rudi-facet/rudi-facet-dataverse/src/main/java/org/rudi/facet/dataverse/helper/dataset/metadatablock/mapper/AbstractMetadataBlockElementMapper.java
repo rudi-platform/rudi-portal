@@ -1,7 +1,14 @@
 package org.rudi.facet.dataverse.helper.dataset.metadatablock.mapper;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.facet.dataverse.bean.DatasetMetadataBlockElementField;
@@ -9,13 +16,8 @@ import org.rudi.facet.dataverse.fields.FieldSpec;
 import org.rudi.facet.dataverse.fields.generators.FieldGenerator;
 import org.rudi.facet.dataverse.utils.MessageUtils;
 
-import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor
 public abstract class AbstractMetadataBlockElementMapper<T> implements MetadataBlockElementMapper<T> {
@@ -78,6 +80,10 @@ public abstract class AbstractMetadataBlockElementMapper<T> implements MetadataB
 
 	protected String getPrimitiveFieldValue(DatasetMetadataBlockElementField field) {
 		return field != null && field.getValue() != null ? field.getValue().toString() : "";
+	}
+
+	protected String getNullablePrimitiveFieldValue(DatasetMetadataBlockElementField field) {
+		return field != null && field.getValue() != null ? field.getValue().toString() : null;
 	}
 
 	protected OffsetDateTime getOffsetDateTimeFieldValue(DatasetMetadataBlockElementField dateTimeField) {

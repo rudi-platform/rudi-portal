@@ -20,7 +20,8 @@ const ERROR_DURATION = 10000;
 @Component({
     selector: 'app-selfdata-information-request-creation',
     templateUrl: './selfdata-information-request-creation.component.html',
-    styleUrls: ['./selfdata-information-request-creation.component.scss']
+    styleUrls: ['./selfdata-information-request-creation.component.scss'],
+    standalone: false
 })
 export class SelfdataInformationRequestCreationComponent implements OnInit {
 

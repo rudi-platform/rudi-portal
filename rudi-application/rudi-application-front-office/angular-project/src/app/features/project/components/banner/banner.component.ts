@@ -6,7 +6,8 @@ import {MediaSize} from '@core/services/breakpoint-observer.service';
 @Component({
     selector: 'app-banner',
     templateUrl: './banner.component.html',
-    styleUrls: ['./banner.component.scss']
+    styleUrls: ['./banner.component.scss'],
+    standalone: false
 })
 export class BannerComponent {
     @Input() mediaSize: MediaSize;

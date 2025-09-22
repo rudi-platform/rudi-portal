@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 @Component({
     selector: 'app-selfdata-request-section',
     templateUrl: './selfdata-request-section.component.html',
-    styleUrls: ['./selfdata-request-section.component.scss']
+    styleUrls: ['./selfdata-request-section.component.scss'],
+    standalone: false
 })
 export class SelfdataRequestSectionComponent {
     @Input() title: string;

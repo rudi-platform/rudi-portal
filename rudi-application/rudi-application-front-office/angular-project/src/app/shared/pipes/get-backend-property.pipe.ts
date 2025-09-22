@@ -4,7 +4,8 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Pipe({
-    name: 'getBackendProperty'
+    name: 'getBackendProperty',
+    standalone: false
 })
 export class GetBackendPropertyPipe implements PipeTransform {
 

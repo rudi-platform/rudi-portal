@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {Section} from 'micro_service_modules/projekt/projekt-api';
 
 @Pipe({
-    name: 'isSectionOnlyHelp'
+    name: 'isSectionOnlyHelp',
+    standalone: false
 })
 export class IsSectionOnlyHelpPipe implements PipeTransform {
     transform(section: Section): boolean {

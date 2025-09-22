@@ -21,7 +21,8 @@ const ALL_KEY = 'filterBox.restrictedAccess.all';
 @Component({
     selector: 'app-access-status-filter-form',
     templateUrl: './access-status-filter-form.component.html',
-    styleUrls: ['./access-status-filter-form.component.scss']
+    styleUrls: ['./access-status-filter-form.component.scss'],
+    standalone: false
 })
 export class AccessStatusFilterFormComponent extends FilterFormComponent<AccessStatusFiltersType, AccessStatusFilter, AccessStatusFilterItem> implements OnInit {
     items: AccessStatusFilterItem[];

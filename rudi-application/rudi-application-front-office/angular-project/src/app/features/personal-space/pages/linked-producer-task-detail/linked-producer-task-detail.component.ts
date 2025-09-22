@@ -28,7 +28,8 @@ import {map, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-producer-link-task-detail',
     templateUrl: './linked-producer-task-detail.component.html',
-    styleUrls: ['./linked-producer-task-detail.component.scss']
+    styleUrls: ['./linked-producer-task-detail.component.scss'],
+    standalone: false
 })
 export class LinkedProducerTaskDetailComponent
     extends TaskDetailComponent<LinkedProducer, LinkedProducerDependencies, LinkedProducerTask, LinkedProducerTaskSearchCriteria>

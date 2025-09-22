@@ -44,7 +44,8 @@ function eventUrlComparator(e1: Event, e2: Event): boolean {
 @Component({
     selector: 'app-notification-template',
     templateUrl: './notification-template.component.html',
-    styleUrls: ['./notification-template.component.scss']
+    styleUrls: ['./notification-template.component.scss'],
+    standalone: false
 })
 export class NotificationTemplateComponent implements OnInit {
     /**

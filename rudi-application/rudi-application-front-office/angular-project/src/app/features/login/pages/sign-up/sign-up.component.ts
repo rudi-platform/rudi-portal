@@ -26,7 +26,8 @@ const ICON_INFO: string = '../assets/icons/icon_info.svg';
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
-    styleUrls: ['./sign-up.component.scss']
+    styleUrls: ['./sign-up.component.scss'],
+    standalone: false
 })
 export class SignUpComponent implements OnInit {
 

@@ -12,7 +12,8 @@ import { Address } from 'micro_service_modules/api-rva';
 @Component({
     selector: 'app-workflow-field-address',
     templateUrl: './workflow-field-address.component.html',
-    styleUrls: ['./workflow-field-address.component.scss']
+    styleUrls: ['./workflow-field-address.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implements OnInit {
     private selectedAddress: Address = null;

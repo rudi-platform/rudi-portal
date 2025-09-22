@@ -56,16 +56,16 @@ rudi-facet-{nom}
 
 ## Utilisation des facettes
 
-| Microservice | Facettes utilisées |
-|--------------|-------------------|
-| ACL | 	generator-text, email |
-| APIGateway | 	kaccess, acl, projekt, selfdata, crypto |
-| Kalim | 	kaccess, organization, providers, kos, acl, apigateway |
-| Konsent | 	organization, acl, generator-docx, crypto, generator-pdf, bucket-s3, projekt, strukture-common |
-| Konsult | 	kaccess, rva, cms, kos, acl, projekt, selfdata, organization |
-| Projekt | 	kmedia, bpmn,  strukture-common, organization, generator-text, email, kaccess |
-| Selfdata | 	bpmn, kaccess, rva, doks, oauth2, providers, email, generator-text, organization, dataset, apigateway |
-| Strukture | 	kmedia, bpmn, doks, acl, projekt, email, generator-text, kaccess |
+| Microservice | Facettes utilisées                                                                                                               |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------|
+| ACL | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-acl/README.md#dépendances-vers-les-facets) |
+| APIGateway | [Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-apigateway/README.md#dépendances-vers-les-facets)                 |
+| Kalim | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-kalim/README.md#dépendances-vers-les-facets)                          |
+| Konsent | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-konsent/README.md#dépendances-vers-les-facets)                      |
+| Konsult | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-konsult/README.md#dépendances-vers-les-facets)                      |
+| Projekt | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-projekt/README.md#dépendances-vers-les-facets)                      |
+| Selfdata | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-selfdata/README.md#dépendances-vers-les-facets)                    |
+| Strukture | 	[Voir la documentation du microservice](../../../rudi-microservice/rudi-microservice-strukture/README.md#dépendances-vers-les-facets)                  |
 
 D'autres facettes peuvent être utilisées par transitivité.
 

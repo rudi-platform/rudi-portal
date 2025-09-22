@@ -7,7 +7,8 @@ import {OrganizationItem} from '../../model/organization-item';
 @Component({
     selector: 'app-step2-project',
     templateUrl: './step2-project.component.html',
-    styleUrls: ['./step2-project.component.scss']
+    styleUrls: ['./step2-project.component.scss'],
+    standalone: false
 })
 export class Step2ProjectComponent implements OnInit {
 

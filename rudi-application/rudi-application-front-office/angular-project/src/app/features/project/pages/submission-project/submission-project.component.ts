@@ -34,8 +34,9 @@ import {UpdateAction} from '../../model/upate-action';
     templateUrl: './submission-project.component.html',
     styleUrls: ['./submission-project.component.scss'],
     providers: [{
-        provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
-    }]
+            provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false }
+        }],
+    standalone: false
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
 

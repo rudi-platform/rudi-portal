@@ -11,20 +11,28 @@ import {Level} from '@shared/notification-template/notification-template.compone
 import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
 import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {Form} from 'micro_service_modules/api-bpmn';
-import {Field, Organization, OrganizationFormType, Section, Task, TaskService} from 'micro_service_modules/strukture/api-strukture';
+import {
+    Field,
+    Organization,
+    OrganizationFormType,
+    OrganizationStatus,
+    Section,
+    Task,
+    TaskService
+} from 'micro_service_modules/strukture/api-strukture';
 import {Observable} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-organization-table',
     templateUrl: './organization-table.component.html',
-    styleUrls: ['./organization-table.component.scss']
+    styleUrls: ['./organization-table.component.scss'],
+    standalone: false
 })
 export class OrganizationTableComponent implements OnInit {
     @Input() isLoading: boolean;
     @Input() organization: Organization;
     @Input() enableCaptchaOnPage: boolean;
-    @Input() enableArchive: boolean = false;
     private urlToRedirectIfError: string;
 
     public form: Form;
@@ -55,21 +63,20 @@ export class OrganizationTableComponent implements OnInit {
             }
         });
         this.dataSource = new MatTableDataSource([this.organization]);
-        if (this.enableArchive) {
+
+        if (this.organization.organizationStatus == OrganizationStatus.Validated) {
             this.displayedColumns = ['name', 'id', 'dash'];
+            this.getArchiveForm();
+
         }
-        this.getArchiveForm();
     }
 
     getArchiveForm() {
-        if (this.enableArchive) {
-            this.taskService.lookupOrganizationDraftForm(OrganizationFormType.DraftArchive).subscribe({
-                next: (form) => {
-                    this.form = form;
-                    console.log(this.form);
-                },
-            });
-        }
+        this.taskService.lookupOrganizationDraftForm(OrganizationFormType.DraftArchive).subscribe({
+            next: (form) => {
+                this.form = form;
+            },
+        });
     }
 
     openPopinArchive() {
@@ -94,19 +101,24 @@ export class OrganizationTableComponent implements OnInit {
                         this.snackBarService.openSnackBar({
                             level: Level.SUCCESS,
                             message: this.translateService.instant('personalSpace.organization.archive.success')
-                        }, 3000);
+                        });
                     },
                     error: (err) => {
                         if (err.status == 400) {
                             this.snackBarService.openSnackBar({
                                 level: Level.ERROR,
+                                message: this.translateService.instant('personalSpace.organization.archive.errorArchiveAlreadyInProgress')
+                            });
+                        } else if (err.status == 409) {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
                                 message: this.translateService.instant('personalSpace.organization.archive.errorTaskInProgress')
-                            }, 3000);
+                            });
                         } else {
                             this.snackBarService.openSnackBar({
                                 level: Level.ERROR,
                                 message: `${this.translateService.instant('personalSpace.organization.archive.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('common.ici')}</a>`,
-                            }, 3000);
+                            });
                         }
                     }
                 });

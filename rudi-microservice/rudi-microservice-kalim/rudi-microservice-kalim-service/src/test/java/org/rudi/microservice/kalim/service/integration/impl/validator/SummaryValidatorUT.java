@@ -1,7 +1,5 @@
 package org.rudi.microservice.kalim.service.integration.impl.validator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 import java.util.Set;
 
@@ -12,13 +10,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.rudi.facet.kaccess.bean.DictionaryEntry;
 import org.rudi.facet.kaccess.bean.Language;
 import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
 import org.rudi.microservice.kalim.service.IntegrationError;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.SummaryValidator;
 import org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class SummaryValidatorUT {
@@ -67,12 +67,12 @@ class SummaryValidatorUT {
 	})
 	@DisplayName("Test de la validation titre du jdd avec une valeur vide")
 	void testValidateSummaryWithEmptyValue(String inputText) {
-		DictionaryEntry entry = new DictionaryEntry();
+		RichDictionaryEntry entry = new RichDictionaryEntry();
 
 		entry.text(inputText);
 		entry.lang(Language.FR);
 
-		List<DictionaryEntry> entries = List.of(entry);
+		List<RichDictionaryEntry> entries = List.of(entry);
 
 		Metadata metadata = new Metadata().summary(entries);
 		Set<IntegrationRequestErrorEntity> integrationRequestErrorEntities = summaryValidator
@@ -97,12 +97,12 @@ class SummaryValidatorUT {
 	//@formatter:on
 	@DisplayName("Test de la validation summary avec une valeur valide")
 	void testValidateSummaryWithNoErrors(String inputText) {
-		DictionaryEntry entry = new DictionaryEntry();
+		RichDictionaryEntry entry = new RichDictionaryEntry();
 
 		entry.text(inputText);
 		entry.lang(Language.FR);
 
-		List<DictionaryEntry> entries = List.of(entry);
+		List<RichDictionaryEntry> entries = List.of(entry);
 
 		Metadata metadata = new Metadata().summary(entries);
 
@@ -115,17 +115,17 @@ class SummaryValidatorUT {
 	@Test
 	@DisplayName("Test de la validation summary multilingue avec une valeur de dictionnaire vide")
 	void testValidateSummaryMultilingualWithOneEmptyValue() {
-		DictionaryEntry entryFr = new DictionaryEntry();
+		RichDictionaryEntry entryFr = new RichDictionaryEntry();
 
 		entryFr.text("<b></b>");
 		entryFr.lang(Language.FR);
 
-		DictionaryEntry entryEn = new DictionaryEntry();
+		RichDictionaryEntry entryEn = new RichDictionaryEntry();
 
 		entryEn.text("<b>valid value</b>");
 		entryEn.lang(Language.EN);
 
-		List<DictionaryEntry> entries = List.of(entryFr, entryEn);
+		List<RichDictionaryEntry> entries = List.of(entryFr, entryEn);
 
 		Metadata metadata = new Metadata().summary(entries);
 
@@ -144,17 +144,17 @@ class SummaryValidatorUT {
 	@Test
 	@DisplayName("Test de la validation summary multilingue avec 2 valeurs valides")
 	void testValidateSummaryMultilingualWithTwoValidValues() {
-		DictionaryEntry entryFr = new DictionaryEntry();
+		RichDictionaryEntry entryFr = new RichDictionaryEntry();
 
 		entryFr.text("<b>valeur valide</b>");
 		entryFr.lang(Language.FR);
 
-		DictionaryEntry entryEn = new DictionaryEntry();
+		RichDictionaryEntry entryEn = new RichDictionaryEntry();
 
 		entryEn.text("<b>valid value</b>");
 		entryEn.lang(Language.EN);
 
-		List<DictionaryEntry> entries = List.of(entryFr, entryEn);
+		List<RichDictionaryEntry> entries = List.of(entryFr, entryEn);
 
 		Metadata metadata = new Metadata().summary(entries);
 

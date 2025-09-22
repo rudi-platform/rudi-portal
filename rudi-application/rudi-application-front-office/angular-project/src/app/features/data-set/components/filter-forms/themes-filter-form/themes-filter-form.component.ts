@@ -7,7 +7,8 @@ import {ArrayFilterFormComponent, Item} from '../array-filter-form.component';
 @Component({
     selector: 'app-themes-filter-form',
     templateUrl: './themes-filter-form.component.html',
-    styleUrls: ['./themes-filter-form.component.scss']
+    styleUrls: ['./themes-filter-form.component.scss'],
+    standalone: false
 })
 export class ThemesFilterFormComponent extends ArrayFilterFormComponent<SimpleSkosConcept> {
 

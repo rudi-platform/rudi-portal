@@ -3,9 +3,10 @@ import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES} from '../models/title-icon-type';
 
 @Component({
-  selector: 'app-documentation-button',
-  templateUrl: './documentation-button.component.html',
-  styleUrls: ['./documentation-button.component.scss']
+    selector: 'app-documentation-button',
+    templateUrl: './documentation-button.component.html',
+    styleUrls: ['./documentation-button.component.scss'],
+    standalone: false
 })
 export class DocumentationButtonComponent {
 

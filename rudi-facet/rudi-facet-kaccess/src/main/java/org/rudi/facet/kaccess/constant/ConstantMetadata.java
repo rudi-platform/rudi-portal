@@ -13,6 +13,7 @@ public class ConstantMetadata {
 	public static final String LANG_FIELD_SUFFIX = "_" + LANG_FIELD_LOCAL_NAME;
 	public static final String TEXT_FIELD_LOCAL_NAME = "text";
 	public static final String TEXT_FIELD_SUFFIX = "_" + TEXT_FIELD_LOCAL_NAME;
+	public static final String HTML_FIELD_LOCAL_NAME = "html";
 
 	@SuppressWarnings("squid:S2386") // Utilisé par org.rudi.microservice.kalim.service.helper.ValidationHelper
 	public static final String[] SUPPORTED_METADATA_VERSIONS = {

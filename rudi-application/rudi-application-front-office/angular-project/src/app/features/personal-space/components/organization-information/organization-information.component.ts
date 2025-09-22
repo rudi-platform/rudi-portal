@@ -4,7 +4,8 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
 @Component({
     selector: 'app-organization-information',
     templateUrl: './organization-information.component.html',
-    styleUrls: ['./organization-information.component.scss']
+    styleUrls: ['./organization-information.component.scss'],
+    standalone: false
 })
 export class OrganizationInformationComponent {
     @Input()

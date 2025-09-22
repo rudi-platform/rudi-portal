@@ -6,3 +6,6 @@ Microservice de gestion de consentement des citoyens pour l'usage de leurs donn√
 
 ![Diagramme de classes](readme/rudi-microservice-konsent-storage-entities.png)
 
+## D√©pendances vers les facets
+
+![Dependencies](./readme/dependency_tree.svg)

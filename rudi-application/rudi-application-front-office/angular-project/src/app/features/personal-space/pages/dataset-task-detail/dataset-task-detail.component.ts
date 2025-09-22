@@ -3,7 +3,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {LogService} from '@core/services/log.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 
@@ -15,19 +14,21 @@ import {
 } from '@core/services/tasks/projekt/linked-dataset-task-dependencies.service';
 import {LinkedDatasetTaskMetierService} from '@core/services/tasks/projekt/linked-dataset-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
+import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {TranslateService} from '@ngx-translate/core';
 import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {LinkedDataset} from 'micro_service_modules/projekt/projekt-model';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {map, tap} from 'rxjs/operators';
 
 
 @Component({
     selector: 'app-dataset-task-detail',
     templateUrl: './dataset-task-detail.component.html',
-    styleUrls: ['./dataset-task-detail.component.scss']
+    styleUrls: ['./dataset-task-detail.component.scss'],
+    standalone: false
 })
 export class DatasetTaskDetailComponent
     extends TaskDetailComponent<LinkedDataset, LinkedDatasetDependencies, LinkedDatasetTask, ProjektTaskSearchCriteria>

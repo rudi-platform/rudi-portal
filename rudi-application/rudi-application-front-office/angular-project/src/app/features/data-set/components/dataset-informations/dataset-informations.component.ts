@@ -15,15 +15,16 @@ import MediaTypeEnum = Media.MediaTypeEnum;
 @Component({
     selector: 'app-dataset-informations',
     templateUrl: './dataset-informations.component.html',
-    styleUrls: ['./dataset-informations.component.scss']
+    styleUrls: ['./dataset-informations.component.scss'],
+    standalone: false
 })
 export class DatasetInformationsComponent {
-    @Input()  mediaType = mediaType.Media.MediaTypeEnum;
-    @Input()  mediaDataType = MediaTypeEnum;
+    @Input() mediaType = mediaType.Media.MediaTypeEnum;
+    @Input() mediaDataType = MediaTypeEnum;
     @Input() licenceLabel;
     @Input() conceptUri;
-    @Input()  themeLabel: string;
-    @Input()  downloadableMedias: Media[];
+    @Input() themeLabel: string;
+    @Input() downloadableMedias: Media[];
     @Input() metadata: Metadata | undefined;
     @Input() isRestricted: boolean;
     @Input() isSelfdata: boolean;
@@ -68,7 +69,7 @@ export class DatasetInformationsComponent {
      * @param item
      */
     getSummaryDescription(item: Metadata): SafeHtml {
-        return this.sanitize(this.languageService.getTextForCurrentLanguage(item.summary));
+        return this.sanitize(this.languageService.getRichTextForCurrentLanguage(item.summary));
     }
 
 
@@ -94,7 +95,7 @@ export class DatasetInformationsComponent {
     public hasManyOtherDatasets(): boolean {
         return this.totalOtherDatasets > this.maxDatasetDiplayed;
     }
-    
+
 
     sanitize(html: string): SafeHtml {
 

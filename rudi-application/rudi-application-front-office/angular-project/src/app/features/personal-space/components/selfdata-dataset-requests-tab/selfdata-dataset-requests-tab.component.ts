@@ -7,7 +7,8 @@ import {SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdat
 
 @Component({
     selector: 'app-selfdata-dataset-requests-tab',
-    templateUrl: './selfdata-dataset-requests-tab.component.html'
+    templateUrl: './selfdata-dataset-requests-tab.component.html',
+    standalone: false
 })
 export class SelfdataDatasetRequestsTabComponent implements OnInit {
 

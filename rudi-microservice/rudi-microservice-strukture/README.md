@@ -6,6 +6,10 @@ Le µService Strukture permet la gestion des fournisseurs, des noeuds fournisseu
 
 ![Diagramme de classes](readme/rudi-microservice-strukture-storage-entities.png)
 
+## Dépendances vers les facets
+
+![Dependencies](./readme/dependency_tree.svg)
+
 ## Extensions nécessaire en base de donnée.
 
 Pour le bon fonctionnement de l'application la base de donnée postgresql doit posséder ces extension :

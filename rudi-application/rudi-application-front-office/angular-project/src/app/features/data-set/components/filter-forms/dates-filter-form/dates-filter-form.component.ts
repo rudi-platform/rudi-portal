@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {FiltersService} from '@core/services/filters.service';
 import {Dates, DatesFilter} from '@core/services/filters/dates-filter';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable} from 'rxjs';
 import {Item} from '../array-filter-form.component';
 import {FilterFormComponent} from '../filter-form.component';
@@ -13,7 +13,8 @@ export const FIN_NAME_PREFIX = 'Fin';
 @Component({
     selector: 'app-dates-filter-form',
     templateUrl: './dates-filter-form.component.html',
-    styleUrls: ['./dates-filter-form.component.scss']
+    styleUrls: ['./dates-filter-form.component.scss'],
+    standalone: false
 })
 export class DatesFilterFormComponent extends FilterFormComponent<Dates, DatesFilter, Item> {
 

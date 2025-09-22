@@ -9,7 +9,8 @@ const EMPTY_SEARCH = '';
 @Component({
     selector: 'app-search-box',
     templateUrl: './search-box.component.html',
-    styleUrls: ['./search-box.component.scss']
+    styleUrls: ['./search-box.component.scss'],
+    standalone: false
 })
 export class SearchBoxComponent implements OnInit {
     @Input() mediaSize: MediaSize;

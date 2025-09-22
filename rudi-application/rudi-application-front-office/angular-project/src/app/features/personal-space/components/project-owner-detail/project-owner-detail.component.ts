@@ -20,7 +20,8 @@ export interface ProjectOwnerDependencies {
 @Component({
     selector: 'app-project-owner-detail',
     templateUrl: './project-owner-detail.component.html',
-    styleUrls: ['./project-owner-detail.component.scss']
+    styleUrls: ['./project-owner-detail.component.scss'],
+    standalone: false
 })
 export class ProjectOwnerDetailComponent implements OnInit {
 

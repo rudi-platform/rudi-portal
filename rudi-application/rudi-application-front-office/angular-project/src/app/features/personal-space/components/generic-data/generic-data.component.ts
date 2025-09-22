@@ -6,7 +6,8 @@ import {LanguageService} from '@core/i18n/language.service';
 @Component({
     selector: 'app-generic-data',
     templateUrl: './generic-data.component.html',
-    styleUrls: ['./generic-data.component.scss']
+    styleUrls: ['./generic-data.component.scss'],
+    standalone: false
 })
 export class GenericDataComponent {
     @Input() isLoading: boolean;

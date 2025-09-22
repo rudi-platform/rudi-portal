@@ -80,7 +80,7 @@
                             <div class="libelle-key w-50">{{'conditionsUtilisationBox.typeLicence'|translate}}</div>
                             <div *ngIf="metaDataFunctions.isLicenceTypeStandard(metadata.access_condition.licence)"
                                  class="type-licence-libelle libelle-value w-50">
-                                <a href="{{this.conceptUri | async}}" target="_blank">{{licenceLabel | async}}</a>
+                                <a href="{{conceptUri | async}}" target="_blank">{{licenceLabel | async}}</a>
                             </div>
                             <div *ngIf="metaDataFunctions.isLicenceTypeCustom(metadata.access_condition.licence)"
                                  class="type-licence-libelle libelle-value w-50">
@@ -251,17 +251,27 @@
                 <tbody class="rudi-panel-tbody-border mat-header-row">
                 <tr>
                     <th scope="row">{{'metaData.sourcesDonnees' | translate }}</th>
-                    <td><a [href]="metadata.metadata_info.metadata_source">{{metadataSource}}</a></td>
+                    <td><a [href]="metadata.metadata_info.metadata_source" target="_blank">{{metadataSource}}</a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div *ngIf="metadata.resource_languages" class="rudi-panel-data mx-4" id="data_language-table-header">
+        <div *ngIf="metadata.resource_languages" class="rudi-panel-data mx-4 mb-2" id="data_language-table-header">
             <table class="table rudi-panel-table" aria-describedby="data_language-table-header">
                 <tbody class="rudi-panel-tbody-border mat-header-row">
                 <tr>
                     <th scope="row">{{'metaData.dataLanguage' | translate}}</th>
                     <td>{{'languagesCodes.' + metadata.resource_languages | translate }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="documentation | async as url" class="rudi-panel-data mx-4 mb-2" id="data_doc-table-header">
+            <table class="table rudi-panel-table" aria-describedby="data_doc-table-header">
+                <tbody class="rudi-panel-tbody-border mat-header-row">
+                <tr>
+                    <th scope="row">{{'metaData.dataDocumentation' | translate}}</th>
+                    <td><a [href]="url" target="_blank">{{url}}</a></td>
                 </tr>
                 </tbody>
             </table>
@@ -504,7 +514,7 @@
             <div class="me-4 align-items-center">
                 <app-organization-logo organizationType="provider"
                                        cssClass="with-border"
-                                       [organizationId]="this.metadata.metadata_info.metadata_provider?.organization_id">
+                                       [organizationId]="metadata.metadata_info.metadata_provider?.organization_id">
                 </app-organization-logo>
             </div>
             <div class="d-flex w-50 flex-column">

@@ -32,14 +32,15 @@ import {
     TaskService
 } from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
-import * as moment from 'moment';
+import moment from 'moment';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-my-project-details',
     templateUrl: './my-project-details.component.html',
-    styleUrls: ['./my-project-details.component.scss']
+    styleUrls: ['./my-project-details.component.scss'],
+    standalone: false
 })
 export class MyProjectDetailsComponent implements OnInit {
     public childrenIsLoading: boolean;

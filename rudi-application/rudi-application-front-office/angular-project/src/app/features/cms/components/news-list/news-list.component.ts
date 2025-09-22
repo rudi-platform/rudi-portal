@@ -9,7 +9,8 @@ const FIRST_PAGE = 1;
 @Component({
     selector: 'cms-news-list',
     templateUrl: './news-list.component.html',
-    styleUrl: './news-list.component.scss'
+    styleUrl: './news-list.component.scss',
+    standalone: false
 })
 export class NewsListComponent implements OnInit {
 

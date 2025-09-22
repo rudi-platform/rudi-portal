@@ -5,7 +5,8 @@ import {BreakpointObserverService} from '@core/services/breakpoint-observer.serv
 @Component({
     selector: 'app-error-page',
     templateUrl: './error-page.component.html',
-    styleUrls: ['./error-page.component.scss']
+    styleUrls: ['./error-page.component.scss'],
+    standalone: false
 })
 export class ErrorPageComponent implements OnInit {
     statusError: number;

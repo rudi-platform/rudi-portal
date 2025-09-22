@@ -8,7 +8,8 @@ import {CloseEvent, DialogClosedData} from '../../models/dialog-closed-data';
 @Component({
     selector: 'app-success-restricted-request-dialog',
     templateUrl: './success-restricted-request-dialog.component.html',
-    styleUrls: ['./success-restricted-request-dialog.component.scss']
+    styleUrls: ['./success-restricted-request-dialog.component.scss'],
+    standalone: false
 })
 export class SuccessRestrictedRequestDialogComponent {
 

@@ -1,7 +1,5 @@
 package org.rudi.facet.kaccess.service.dataset.impl;
 
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.RUDI_ELEMENT_SPEC;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +45,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.RUDI_ELEMENT_SPEC;
 
 @Service
 @Slf4j
@@ -55,7 +54,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 	private static final List<FieldSpec> METADATAFIELDS = Arrays.asList(RudiMetadataField.STORAGE_STATUS, // actuellement obligatoire pour les mappers
 			RudiMetadataField.GLOBAL_ID, RudiMetadataField.RESOURCE_TITLE, RudiMetadataField.SYNOPSIS,
-			RudiMetadataField.SUMMARY_TEXT, RudiMetadataField.PRODUCER_ORGANIZATION_ID, RudiMetadataField.THEME,
+			RudiMetadataField.SUMMARY_TEXT, RudiMetadataField.SUMMARY_HTML, RudiMetadataField.PRODUCER_ORGANIZATION_ID, RudiMetadataField.THEME,
 			RudiMetadataField.KEYWORDS, RudiMetadataField.CONFIDENTIALITY);
 	public static final String MISSING_GLOBAL_ID = "L'identifiant du jeu de donnée est absent";
 

@@ -4,9 +4,10 @@ import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 
 @Component({
-  selector: 'app-reset-password-error-box',
-  templateUrl: './reset-password-error-box.component.html',
-  styleUrls: ['./reset-password-error-box.component.scss']
+    selector: 'app-reset-password-error-box',
+    templateUrl: './reset-password-error-box.component.html',
+    styleUrls: ['./reset-password-error-box.component.scss'],
+    standalone: false
 })
 export class ResetPasswordErrorBoxComponent implements OnInit {
     /**

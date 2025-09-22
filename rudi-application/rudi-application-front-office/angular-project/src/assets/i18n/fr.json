@@ -581,6 +581,7 @@
         "jeuDonneeSimilaire": "Jeux de données similaires",
         "projetMemeTheme": "Projets sur le même thème",
         "dataLanguage": "Langue des données",
+        "dataDocumentation": "Documentation API",
         "french": "Français",
         "octets": "octets",
         "reutilisations": {
@@ -1189,6 +1190,7 @@
                 },
                 "success": "L'archivage de votre organisation a été soumise",
                 "error": "Une erreur est survenue lors de l'archivage de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
+                "errorArchiveAlreadyInProgress": "L'archivage de votre organisation ne peut être effectuée pour la raison suivante : une demande d'archivage de votre organisation est déjà en cours.",
                 "errorTaskInProgress": "Votre organisation ne peut pas être archivée car des actions qui lui sont associées sont en cours. Assurez-vous de clôturer l'ensemble des actions sous-jacentes qui peuvent être liées aux : réutilisations, aux demandes d'accès à des jeux de données à accès restreint, à des demandes de nouvelles données."
             }
         },

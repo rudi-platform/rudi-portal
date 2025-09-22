@@ -18,7 +18,8 @@ const EMPTY_METADATA_LIST: MetadataList = {
 @Component({
     selector: 'app-dataset-list',
     templateUrl: './dataset-list.component.html',
-    styleUrls: ['./dataset-list.component.scss']
+    styleUrls: ['./dataset-list.component.scss'],
+    standalone: false
 })
 export class DatasetListComponent implements OnInit {
     // Indique si on affiche le loader pendant le chargement es JDD

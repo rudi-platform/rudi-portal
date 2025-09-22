@@ -85,7 +85,7 @@
                     <span class="label-licence">{{'metaData.TypeLicence'|translate}}</span>
                     <span *ngIf="metadata?.access_condition?.licence.licence_type === licenceType.Standard"
                           class="label-licence-status">
-                                    <a href="{{this.conceptUri | async}}" target="_blank">{{licenceLabel | async}}</a>
+                                    <a href="{{conceptUri | async}}" target="_blank">{{licenceLabel | async}}</a>
                                 </span>
                     <span *ngIf="metadata?.access_condition?.licence.licence_type === licenceType.Custom"
                           class="label-licence-status">

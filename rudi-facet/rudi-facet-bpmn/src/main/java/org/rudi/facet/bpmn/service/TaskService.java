@@ -13,6 +13,7 @@ import org.rudi.bpmn.core.bean.AssetDescription;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
@@ -41,7 +42,7 @@ public interface TaskService<D extends AssetDescription> {
 	 * @throws InvalidDataException si les données du formulaire sont incorrectes
 	 * @throws FormConvertException si le formulaire ne peut pas être traduit en map
 	 */
-	Task createDraft(D assertDescription) throws InvalidDataException, FormConvertException, FormDefinitionException;
+	Task createDraft(D assertDescription) throws InvalidDataException, FormConvertException, FormDefinitionException, AppServiceException;
 
 	/**
 	 * Demande d'affectation à la personne connectée
@@ -94,7 +95,7 @@ public interface TaskService<D extends AssetDescription> {
 	 * @throws FormDefinitionException
 	 * @throws FormConvertException
 	 */
-	Task startTask(Task task) throws InvalidDataException, FormDefinitionException, FormConvertException;
+	Task startTask(Task task) throws InvalidDataException, FormDefinitionException, FormConvertException, AppServiceException;
 
 	/**
 	 * @return le nom du process

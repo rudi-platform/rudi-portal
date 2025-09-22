@@ -8,7 +8,8 @@ import {from, Observable} from 'rxjs';
 @Component({
     selector: 'app-projects-section',
     templateUrl: './projects-section.component.html',
-    styleUrls: ['./projects-section.component.scss']
+    styleUrls: ['./projects-section.component.scss'],
+    standalone: false
 })
 export class ProjectsSectionComponent implements OnInit {
     @Input() projects: ProjectCatalogItem[];

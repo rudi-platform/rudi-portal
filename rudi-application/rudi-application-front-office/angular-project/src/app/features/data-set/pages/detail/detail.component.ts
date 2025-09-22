@@ -47,7 +47,7 @@ import {
 import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
 import {ProjectStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
-import * as moment from 'moment';
+import moment from 'moment';
 import {BehaviorSubject, combineLatest, from, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
@@ -58,7 +58,8 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
 @Component({
     selector: 'app-detail',
     templateUrl: './detail.component.html',
-    styleUrls: ['./detail.component.scss']
+    styleUrls: ['./detail.component.scss'],
+    standalone: false
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;

@@ -12,7 +12,8 @@ import {RequestItem} from '../request-item';
 @Component({
     selector: 'app-my-linked-datasets',
     templateUrl: './my-linked-datasets.component.html',
-    styleUrls: ['./my-linked-datasets.component.scss']
+    styleUrls: ['./my-linked-datasets.component.scss'],
+    standalone: false
 })
 export class MyLinkedDatasetsComponent extends AbstractMyRequestTableComponent implements OnInit {
 

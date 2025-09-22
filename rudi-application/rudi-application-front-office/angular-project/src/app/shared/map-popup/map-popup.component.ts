@@ -5,7 +5,8 @@ import {Geometry} from 'ol/geom';
 @Component({
     selector: 'app-map-popup',
     templateUrl: './map-popup.component.html',
-    styleUrls: ['./map-popup.component.scss']
+    styleUrls: ['./map-popup.component.scss'],
+    standalone: false
 })
 export class MapPopupComponent {
 

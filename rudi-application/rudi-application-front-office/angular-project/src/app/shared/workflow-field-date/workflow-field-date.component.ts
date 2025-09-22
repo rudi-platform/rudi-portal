@@ -5,7 +5,8 @@ import {WorkflowFieldComponent} from '@shared/workflow-field/workflow-field.comp
 @Component({
     selector: 'app-workflow-field-date',
     templateUrl: './workflow-field-date.component.html',
-    styleUrls: ['./workflow-field-date.component.scss']
+    styleUrls: ['./workflow-field-date.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldDateComponent extends WorkflowFieldComponent implements OnInit {
     ngOnInit(): void {

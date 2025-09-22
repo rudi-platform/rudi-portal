@@ -2,7 +2,8 @@ import {Component, Input} from '@angular/core';
 
 @Component({
     selector: 'app-contact-card',
-    templateUrl: './contact-card.component.html'
+    templateUrl: './contact-card.component.html',
+    standalone: false
 })
 export class ContactCardComponent {
 

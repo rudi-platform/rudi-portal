@@ -9,7 +9,8 @@ import {OrganizationMemberDialogData} from '../organization-members-table/organi
 @Component({
     selector: 'app-deletion-member-confirmation-popin',
     templateUrl: './deletion-member-confirmation-popin.component.html',
-    styleUrls: ['./deletion-member-confirmation-popin.component.scss']
+    styleUrls: ['./deletion-member-confirmation-popin.component.scss'],
+    standalone: false
 })
 export class DeletionMemberConfirmationPopinComponent {
 

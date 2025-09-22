@@ -24,7 +24,8 @@ interface News {
 @Component({
     selector: 'app-cms-news-section',
     templateUrl: './cms-news-section.component.html',
-    styleUrls: ['./cms-news-section.component.scss']
+    styleUrls: ['./cms-news-section.component.scss'],
+    standalone: false
 })
 export class CmsNewsSectionComponent implements OnInit {
     @Input() cmsNewsDescription: CmsNewsDescription;

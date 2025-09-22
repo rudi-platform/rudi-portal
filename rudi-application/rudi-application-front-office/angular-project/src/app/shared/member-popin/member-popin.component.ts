@@ -13,7 +13,8 @@ import {OrganizationMember} from 'micro_service_modules/strukture/strukture-mode
 @Component({
     selector: 'app-member-popin',
     templateUrl: './member-popin.component.html',
-    styleUrls: ['./member-popin.component.scss']
+    styleUrls: ['./member-popin.component.scss'],
+    standalone: false
 })
 export class MemberPopinComponent {
 

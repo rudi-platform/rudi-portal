@@ -9,6 +9,7 @@ import {Item} from '../filter-forms/array-filter-form.component';
     selector: 'app-banner',
     templateUrl: './banner.component.html',
     styleUrls: ['./banner.component.scss'],
+    standalone: false
 })
 export class BannerComponent {
     @Input() mediaSize: MediaSize;

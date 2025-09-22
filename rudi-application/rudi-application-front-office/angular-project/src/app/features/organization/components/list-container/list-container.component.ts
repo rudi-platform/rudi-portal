@@ -8,7 +8,8 @@ import {Observable} from 'rxjs';
 @Component({
     selector: 'app-list-container-organization',
     templateUrl: './list-container.component.html',
-    styleUrls: ['./list-container.component.scss']
+    styleUrls: ['./list-container.component.scss'],
+    standalone: false
 })
 export class ListContainerComponent implements OnInit, OnDestroy {
 

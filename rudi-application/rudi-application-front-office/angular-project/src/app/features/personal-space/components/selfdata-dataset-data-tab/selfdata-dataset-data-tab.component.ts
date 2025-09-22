@@ -15,7 +15,8 @@ import {catchError, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-selfdata-dataset-data-tab',
     templateUrl: './selfdata-dataset-data-tab.component.html',
-    styleUrls: ['./selfdata-dataset-data-tab.component.scss']
+    styleUrls: ['./selfdata-dataset-data-tab.component.scss'],
+    standalone: false
 })
 export class SelfdataDatasetDataTabComponent implements OnInit {
 

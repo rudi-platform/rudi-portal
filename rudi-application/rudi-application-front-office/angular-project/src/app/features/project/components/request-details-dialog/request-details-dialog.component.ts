@@ -5,8 +5,7 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {RequestDetails} from '@shared/models/request-details';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 
 /**
  * Les données que peuvent accepter la Dialog
@@ -26,7 +25,8 @@ const COMMENT_MAX_LENGTH = 3000;
 @Component({
     selector: 'app-request-details-dialog',
     templateUrl: './request-details-dialog.component.html',
-    styleUrls: ['./request-details-dialog.component.scss']
+    styleUrls: ['./request-details-dialog.component.scss'],
+    standalone: false
 })
 export class RequestDetailsDialogComponent implements OnInit {
     /**

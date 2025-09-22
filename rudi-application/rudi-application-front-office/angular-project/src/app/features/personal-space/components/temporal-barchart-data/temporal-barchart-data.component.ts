@@ -6,7 +6,8 @@ import {BarChartType} from 'micro_service_modules/selfdata/selfdata-api';
 @Component({
     selector: 'app-temporal-barchart-data',
     templateUrl: './temporal-barchart-data.component.html',
-    styleUrls: ['./temporal-barchart-data.component.scss']
+    styleUrls: ['./temporal-barchart-data.component.scss'],
+    standalone: false
 })
 export class TemporalBarchartDataComponent implements OnInit {
     @Input() isLoading: boolean;

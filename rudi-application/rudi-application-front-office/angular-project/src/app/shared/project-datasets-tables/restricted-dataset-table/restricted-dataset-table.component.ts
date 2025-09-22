@@ -1,8 +1,6 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
-import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {LinkedDatasetMetadatas} from '@core/services/asset/project/project-dependencies.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
@@ -10,15 +8,18 @@ import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.
 import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
 import {AccessStatusFiltersType} from '@core/services/filters/access-status-filters-type';
 import {SnackBarService} from '@core/services/snack-bar.service';
+import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
+import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
 import {DatasetsTableData, RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {Metadata} from 'micro_service_modules/api-kaccess';
-import * as moment from 'moment';
+import moment from 'moment';
 
 
 @Component({
     selector: 'app-restricted-dataset-table',
     templateUrl: './restricted-dataset-table.component.html',
+    standalone: false
 })
 export class RestrictedDatasetTableComponent {
     restrictedDatasets: DatasetsTableData[] = [];

@@ -7,7 +7,8 @@ import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-clo
 @Component({
     selector: 'app-deletion-confirmation-popin',
     templateUrl: './deletion-confirmation-popin.component.html',
-    styleUrls: ['./deletion-confirmation-popin.component.scss']
+    styleUrls: ['./deletion-confirmation-popin.component.scss'],
+    standalone: false
 })
 export class DeletionConfirmationPopinComponent {
 

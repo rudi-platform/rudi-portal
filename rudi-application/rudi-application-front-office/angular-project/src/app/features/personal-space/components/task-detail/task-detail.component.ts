@@ -19,7 +19,8 @@ import {RequestDisplayData} from './request-display-data';
 @Component({
     selector: 'app-task-detail',
     templateUrl: './task-detail.component.html',
-    styleUrls: ['./task-detail.component.scss']
+    styleUrls: ['./task-detail.component.scss'],
+    standalone: false
 })
 export class TaskDetailComponent implements OnInit {
     loading = false;

@@ -11,6 +11,8 @@ export interface Item {
 
 @Component({
     template: '' // required by Angular
+    ,
+    standalone: false
 })
 export abstract class ArrayFilterFormComponent<T> extends FilterFormComponent<string[], ArrayFilter, Item> {
     items: Item[];

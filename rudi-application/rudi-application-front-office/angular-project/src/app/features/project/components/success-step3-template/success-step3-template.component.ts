@@ -3,7 +3,8 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-success-step3-template',
     templateUrl: './success-step3-template.component.html',
-    styleUrls: ['./success-step3-template.component.scss']
+    styleUrls: ['./success-step3-template.component.scss'],
+    standalone: false
 })
 export class SuccessStep3TemplateComponent {
 

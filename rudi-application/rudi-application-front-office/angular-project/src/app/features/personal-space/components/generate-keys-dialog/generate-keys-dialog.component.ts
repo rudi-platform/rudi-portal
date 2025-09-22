@@ -6,7 +6,6 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {ProjectKey} from 'micro_service_modules/acl/acl-model';
-import {ApiKeys} from 'micro_service_modules/konsult/konsult-api';
 import {ProjectKeyCredential, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
@@ -21,7 +20,8 @@ export interface GenerateKeysDialogData {
 @Component({
     selector: 'app-generate-keys-dialog',
     templateUrl: './generate-keys-dialog.component.html',
-    styleUrl: './generate-keys-dialog.component.scss'
+    styleUrl: './generate-keys-dialog.component.scss',
+    standalone: false
 })
 export class GenerateKeysDialogComponent implements OnInit {
 
@@ -36,8 +36,6 @@ export class GenerateKeysDialogComponent implements OnInit {
 
     public passwordError: boolean;
     public hidePassword;
-
-    public keys: ApiKeys;
 
     constructor(
         public dialogRef: MatDialogRef<GenerateKeysDialogComponent>,

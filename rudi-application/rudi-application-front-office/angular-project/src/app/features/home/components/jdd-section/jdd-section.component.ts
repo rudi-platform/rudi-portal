@@ -5,7 +5,8 @@ import {Metadata} from 'micro_service_modules/api-kaccess';
 @Component({
     selector: 'app-jdd-section',
     templateUrl: './jdd-section.component.html',
-    styleUrls: ['./jdd-section.component.scss']
+    styleUrls: ['./jdd-section.component.scss'],
+    standalone: false
 })
 export class JddSectionComponent {
     @Input()

@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse } from '@angular/common/http';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Filters} from '@shared/models/filters';
 import {MetadataUtils} from '@shared/utils/metadata-utils';

@@ -6,7 +6,8 @@ import {OrderFilterFormComponent} from '../filter-forms/order-filter-form/order-
 @Component({
     selector: 'app-order',
     templateUrl: './order.component.html',
-    styleUrls: ['./order.component.scss']
+    styleUrls: ['./order.component.scss'],
+    standalone: false
 })
 export class OrderComponent extends OrderFilterFormComponent {
 

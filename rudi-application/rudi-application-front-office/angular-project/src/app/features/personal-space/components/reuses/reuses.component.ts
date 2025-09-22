@@ -27,7 +27,8 @@ const DEFAULT_SORT_DIRECTION: SortDirection = 'desc';
 @Component({
     selector: 'app-reuses',
     templateUrl: './reuses.component.html',
-    styleUrls: ['./reuses.component.scss']
+    styleUrls: ['./reuses.component.scss'],
+    standalone: false
 })
 export class ReusesComponent implements OnInit {
 

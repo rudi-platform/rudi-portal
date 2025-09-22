@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import io.micrometer.common.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.facet.acl.bean.User;
@@ -29,7 +30,6 @@ import org.rudi.microservice.projekt.core.bean.Project;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -78,18 +78,19 @@ public class EmailHelper {
 					locale,
 					deleteDatasetSubject, producerName, datasetTitle, projectTitle
 			);
-			DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
 
 			DeleteDatasetTemplateDataModel dataModelBody = new DeleteDatasetTemplateDataModel(
 					additionalProperties,
 					locale,
 					deleteDatasetBody, producerName, datasetTitle, projectTitle
 			);
-			DocumentContent body = templateGenerator.generateDocument(dataModelBody);
 
 			List<String> emailRecipients = computeEmailRecipients(project);
 			for(String emailRecipient : emailRecipients){
 				if(StringUtils.isNotEmpty(emailRecipient)){
+					DocumentContent subject = templateGenerator.generateDocument(dataModelSubject);
+					DocumentContent body = templateGenerator.generateDocument(dataModelBody);
+
 					EMailDescription eMailDescription = new EMailDescription(
 							emailRecipient,
 							FileUtils.readFileToString(subject.getFile(), StandardCharsets.UTF_8),

@@ -20,7 +20,8 @@ import {OrganizationMemberDialogData} from './organization-member-dialog-data';
 @Component({
     selector: 'app-organization-members-table',
     templateUrl: './organization-members-table.component.html',
-    styleUrls: ['./organization-members-table.component.scss']
+    styleUrls: ['./organization-members-table.component.scss'],
+    standalone: false
 })
 export class OrganizationMembersTableComponent implements OnInit {
 

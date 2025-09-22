@@ -17,7 +17,8 @@ import {MatchingDataView} from '../../components/matching-data-card/matching-dat
 @Component({
     selector: 'app-selfdata-dataset-details',
     templateUrl: './selfdata-dataset-details.component.html',
-    styleUrls: ['./selfdata-dataset-details.component.scss']
+    styleUrls: ['./selfdata-dataset-details.component.scss'],
+    standalone: false
 })
 export class SelfdataDatasetDetailsComponent implements OnInit {
 

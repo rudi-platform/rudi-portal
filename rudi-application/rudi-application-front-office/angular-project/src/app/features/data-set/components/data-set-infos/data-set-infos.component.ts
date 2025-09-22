@@ -1,5 +1,5 @@
 import {Clipboard} from '@angular/cdk/clipboard';
-import {HttpResponse} from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import {Component, Input, OnInit} from '@angular/core';
 import {LanguageService} from '@core/i18n/language.service';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
@@ -30,10 +30,11 @@ import {
     SelfdataContent,
 } from 'micro_service_modules/api-kaccess';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {LayerInformation} from 'micro_service_modules/konsult/konsult-model';
+import {HelpLink, LayerInformation} from 'micro_service_modules/konsult/konsult-model';
 import {Feature} from 'ol';
 import {Geometry, Polygon} from 'ol/geom';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {DetailFunctions} from '../../pages/detail/detail-functions';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import TypeEnum = MatchingData.TypeEnum;
@@ -45,7 +46,8 @@ import SelfdataCatagoriesEnum = SelfdataContent.SelfdataCategoriesEnum;
 @Component({
     selector: 'app-data-sets-infos',
     templateUrl: './data-set-infos.component.html',
-    styleUrls: ['./data-set-infos.component.scss']
+    styleUrls: ['./data-set-infos.component.scss'],
+    standalone: false
 })
 export class DataSetInfosComponent implements OnInit {
 
@@ -60,6 +62,7 @@ export class DataSetInfosComponent implements OnInit {
     totalMediaTypeSeries: number;
     licenceLabel;
     conceptUri;
+    documentation;
     // Indique si on affiche le loader pendant le téléchargement du Media
     public isLoading = false;
     panelOpenStateSelfData: boolean;
@@ -70,18 +73,18 @@ export class DataSetInfosComponent implements OnInit {
     panelOpenStateProvider: boolean;
     expanded: boolean;
     kindOfData: KindOfData;
+
     mapMediaIndexSeries: Map<number, number> = new Map<number, number>();
 
     /**
      * La map d'association : Média -> est-ce que j'ai copié son URL dans le presse papier ?
      */
     mapMediaUrlCopied: Map<Media, boolean> = new Map();
-
     boundingBox: Feature<Polygon>;
     centeredGeometry: Geometry;
     baseLayers: LayerInformation[] = [];
-    isMapLoading = false;
 
+    isMapLoading = false;
     maxSourceUrlSize: number = 100;
 
     constructor(private readonly konsultMetierService: KonsultMetierService,
@@ -94,11 +97,12 @@ export class DataSetInfosComponent implements OnInit {
                 private readonly getBackendPropertyPipe: GetBackendPropertyPipe,
                 private readonly clipboard: Clipboard,
                 private readonly displayMapService: DisplayMapService,
-                private readonly logService: LogService
+                private readonly logService: LogService,
     ) {
     }
 
     ngOnInit(): void {
+        this.documentation = this.getDatasetHelpLinks();
         this.licenceLabel = this.getLicenceLabel();
         this.conceptUri = this.getConceptUri();
 
@@ -282,6 +286,22 @@ export class DataSetInfosComponent implements OnInit {
             return this.kosMetierService.getLicenceLabelFromCode(licenceCode);
         }
         return null;
+    }
+
+    /**
+     * Fonction permettant de récupérer l'url d'aide au téléchargement
+     */
+    getDatasetHelpLinks(): Observable<string> {
+        let key: string = 'open';
+        if (this.metadata.access_condition.confidentiality.gdpr_sensitive) {
+            key = 'selfdata';
+        } else if (this.metadata.access_condition.confidentiality.restricted_access) {
+            key = 'restricted';
+        }
+
+        return this.propertiesMetierService.getHelpLink('front.datasetHelpLinks', key).pipe(
+            map((value: HelpLink) => value.url)
+        );
     }
 
     /**

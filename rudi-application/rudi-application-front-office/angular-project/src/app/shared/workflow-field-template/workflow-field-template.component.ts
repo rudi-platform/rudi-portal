@@ -14,7 +14,8 @@ import {WorkflowProperties} from '../workflow-form/workflow-properties';
 
 @Component({
     selector: 'app-workflow-field-template',
-    template: ''
+    template: '',
+    standalone: false
 })
 export class WorkflowFieldTemplateComponent implements OnInit {
 

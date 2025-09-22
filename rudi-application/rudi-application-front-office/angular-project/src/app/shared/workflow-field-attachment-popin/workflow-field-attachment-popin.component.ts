@@ -12,7 +12,8 @@ import {AttachmentPopinData} from './attachment-popin-data';
 @Component({
     selector: 'app-workflow-field-attachment-popin',
     templateUrl: './workflow-field-attachment-popin.component.html',
-    styleUrls: ['./workflow-field-attachment-popin.component.scss']
+    styleUrls: ['./workflow-field-attachment-popin.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldAttachmentPopinComponent {
 

@@ -15,7 +15,8 @@ import {ProjectDatasetItem} from '../../model/project-dataset-item';
 
 @Component({
     selector: 'app-reuse-project-common',
-    templateUrl: './reuse-project-common.component.html'
+    templateUrl: './reuse-project-common.component.html',
+    standalone: false
 })
 export class ReuseProjectCommonComponent {
 

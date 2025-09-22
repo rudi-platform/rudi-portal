@@ -9,6 +9,7 @@ import {switchMap} from 'rxjs/operators';
 @Component({
     selector: 'app-selfdata-information-request-creation-success',
     templateUrl: './selfdata-information-request-creation-success.component.html',
+    standalone: false
 })
 export class SelfdataInformationRequestCreationSuccessComponent {
     metadata: Metadata;

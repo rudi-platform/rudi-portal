@@ -1,4 +1,4 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
@@ -7,7 +7,10 @@ import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
 
-@Component({templateUrl: 'account-validation.component.html'})
+@Component({
+    templateUrl: 'account-validation.component.html',
+    standalone: false
+})
 export class AccountValidationComponent implements OnInit {
     /**
      * Est-ce que le composant se charge ? (traitement en cours)

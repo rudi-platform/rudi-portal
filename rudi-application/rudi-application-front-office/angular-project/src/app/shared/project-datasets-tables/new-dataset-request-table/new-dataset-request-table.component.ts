@@ -9,12 +9,13 @@ import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {DataRequestItem} from '@features/project/model/data-request-item';
 import {NewDatasetRequestTableData, RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {NewDatasetRequest, NewDatasetRequestStatus} from 'micro_service_modules/projekt/projekt-model';
-import * as moment from 'moment';
+import moment from 'moment';
 
 
 @Component({
     selector: 'app-new-dataset-request-table',
     templateUrl: './new-dataset-request-table.component.html',
+    standalone: false
 })
 export class NewDatasetRequestTableComponent {
     newDatasetsRequest: NewDatasetRequestTableData[] = [];
@@ -55,7 +56,7 @@ export class NewDatasetRequestTableComponent {
         private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
         private readonly projectConsultationService: ProjectConsultationService,
     ) {
-        this.defaultLogo  = '/assets/images/rudi_picto_nouvelle_demande.svg';
+        this.defaultLogo = '/assets/images/rudi_picto_nouvelle_demande.svg';
     }
 
     @Input()

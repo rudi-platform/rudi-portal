@@ -16,7 +16,8 @@ import {AddDataSetDialogData} from './add-data-set-dialog-data';
 @Component({
     selector: 'app-add-data-set-dialog',
     templateUrl: './add-data-set-dialog.component.html',
-    styleUrls: ['./add-data-set-dialog.component.scss']
+    styleUrls: ['./add-data-set-dialog.component.scss'],
+    standalone: false
 })
 export class AddDataSetDialogComponent implements OnInit {
     get selectedMetadata(): Metadata {

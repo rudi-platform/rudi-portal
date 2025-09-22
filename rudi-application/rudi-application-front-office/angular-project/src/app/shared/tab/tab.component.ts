@@ -5,7 +5,8 @@ import {ALL_TYPES, TitleIconType} from '@shared/models/title-icon-type';
 @Component({
     selector: 'app-tab',
     templateUrl: './tab.component.html',
-    styleUrls: ['./tab.component.scss']
+    styleUrls: ['./tab.component.scss'],
+    standalone: false
 })
 export class TabComponent {
 

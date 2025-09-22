@@ -4,7 +4,8 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 @Component({
     selector: 'app-page-heading',
     templateUrl: './page-heading.component.html',
-    styleUrls: ['./page-heading.component.scss']
+    styleUrls: ['./page-heading.component.scss'],
+    standalone: false
 })
 export class PageHeadingComponent {
 

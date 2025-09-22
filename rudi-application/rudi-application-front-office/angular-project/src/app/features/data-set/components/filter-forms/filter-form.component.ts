@@ -11,6 +11,8 @@ import {Item} from './array-filter-form.component';
  */
 @Component({
     template: '' // required by Angular
+    ,
+    standalone: false
 })
 export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item> implements OnInit, OnDestroy {
 

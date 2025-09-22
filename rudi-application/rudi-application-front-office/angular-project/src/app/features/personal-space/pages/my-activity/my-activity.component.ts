@@ -2,8 +2,9 @@ import {Component} from '@angular/core';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 
 @Component({
-  selector: 'app-my-activity',
-  templateUrl: './my-activity.component.html'
+    selector: 'app-my-activity',
+    templateUrl: './my-activity.component.html',
+    standalone: false
 })
 export class MyActivityComponent {
     urlToDoc: string;

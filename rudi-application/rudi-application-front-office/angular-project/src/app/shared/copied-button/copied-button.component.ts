@@ -7,7 +7,8 @@ import {Component, Input, OnInit} from '@angular/core';
 @Component({
     selector: 'app-copied-button',
     templateUrl: './copied-button.component.html',
-    styleUrls: ['./copied-button.component.scss']
+    styleUrls: ['./copied-button.component.scss'],
+    standalone: false
 })
 export class CopiedButtonComponent implements OnInit {
 

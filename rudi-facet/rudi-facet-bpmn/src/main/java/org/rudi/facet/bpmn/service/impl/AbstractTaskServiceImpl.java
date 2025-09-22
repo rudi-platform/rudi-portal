@@ -37,6 +37,8 @@ import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.DocumentContent;
+import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.bpmn.dao.workflow.AssetDescriptionDao;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
@@ -172,7 +174,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Override
 	@Transactional(readOnly = false)
 	public Task createDraft(D assetDescription)
-			throws FormConvertException, InvalidDataException, FormDefinitionException {
+			throws FormConvertException, InvalidDataException, FormDefinitionException, AppServiceException {
 		// contrôle des paramètres
 		if (assetDescription == null) {
 			throw new IllegalArgumentException("Asset is mandatory");
@@ -206,7 +208,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 	@Override
 	@Transactional(readOnly = false)
-	public Task startTask(Task task) throws InvalidDataException, FormDefinitionException, FormConvertException {
+	public Task startTask(Task task) throws InvalidDataException, FormDefinitionException, FormConvertException, AppServiceException {
 		// contrôle des données d'entrée
 		if (task == null || task.getAsset() == null) {
 			throw new IllegalArgumentException("Task with asset is mandatory");
@@ -819,10 +821,10 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	 * @throws IllegalArgumentException si l'argument est incorrect
 	 * @throws InvalidDataException     si les données (data) de l'entité ne peuvent être désérialisée
 	 */
-	protected void checkEntityStatus(E assetDescriptionEntity) throws IllegalArgumentException, InvalidDataException {
+	protected void checkEntityStatus(E assetDescriptionEntity) throws AppServiceException, InvalidDataException {
 		if (assetDescriptionEntity == null || (bpmnHelper.queryTaskByAssetId(assetDescriptionEntity.getClass(),
 				assetDescriptionEntity.getId()) != null && assetDescriptionEntity.getStatus() != Status.DRAFT)) {
-			throw new IllegalArgumentException("Asset is already linked to a task");
+			throw new AppServiceBadRequestException("Asset is already linked to a task");
 		}
 	}
 

@@ -6,7 +6,8 @@ import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-clo
 @Component({
     selector: 'app-remove-keys-dialog',
     templateUrl: './remove-keys-dialog.component.html',
-    styleUrl: './remove-keys-dialog.component.scss'
+    styleUrl: './remove-keys-dialog.component.scss',
+    standalone: false
 })
 export class RemoveKeysDialogComponent {
 

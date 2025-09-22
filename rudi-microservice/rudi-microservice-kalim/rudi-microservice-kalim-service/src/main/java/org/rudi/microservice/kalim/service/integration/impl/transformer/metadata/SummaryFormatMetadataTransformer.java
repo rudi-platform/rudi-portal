@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.rudi.facet.kaccess.bean.DictionaryEntry;
 import org.rudi.facet.kaccess.bean.Metadata;
+import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,30 +14,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class SummaryFormatMetadataTransformer
-		extends AbstractBasicHtmlSanitizerMetadataTransformer<List<DictionaryEntry>> {
+		extends AbstractBasicHtmlSanitizerMetadataTransformer<List<RichDictionaryEntry>> {
 
 	@Override
-	protected List<DictionaryEntry> getMetadataElementToTransform(Metadata metadata) {
+	protected List<RichDictionaryEntry> getMetadataElementToTransform(Metadata metadata) {
 		return metadata.getSummary();
 	}
 
 	@Override
-	protected void updateMetadata(Metadata metadata, List<DictionaryEntry> newValue) {
+	protected void updateMetadata(Metadata metadata, List<RichDictionaryEntry> newValue) {
 		metadata.setSummary(newValue);
 	}
 
 	@Override
-	public List<DictionaryEntry> tranform(List<DictionaryEntry> summaries) {
+	public List<RichDictionaryEntry> tranform(List<RichDictionaryEntry> summaries) {
 		if (CollectionUtils.isEmpty(summaries)) {
 			return Collections.emptyList();
 		}
 
-		List<DictionaryEntry> transformedSummaries = new ArrayList<>();
+		List<RichDictionaryEntry> transformedSummaries = new ArrayList<>();
 
-		for (DictionaryEntry dictionaryEntry : summaries) {
-			DictionaryEntry transformedEntry = new DictionaryEntry();
+		for (RichDictionaryEntry dictionaryEntry : summaries) {
+			RichDictionaryEntry transformedEntry = new RichDictionaryEntry();
 			transformedEntry.setLang(dictionaryEntry.getLang());
-			transformedEntry.setText(cleanupText(dictionaryEntry.getText()));
+			transformedEntry.setText(cleanupText(dictionaryEntry.getText())); // Retire toute forme de HTML
+			transformedEntry.setHtml(cleanupHtml(dictionaryEntry.getHtml()));
 			transformedSummaries.add(transformedEntry);
 		}
 		return transformedSummaries;

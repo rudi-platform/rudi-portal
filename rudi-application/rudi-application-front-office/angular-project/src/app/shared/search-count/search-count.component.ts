@@ -6,7 +6,8 @@ const DEFAULT_TEXT_RESULT = 'searchbox.results';
 @Component({
     selector: 'app-search-count',
     templateUrl: './search-count.component.html',
-    styleUrls: ['./search-count.component.scss']
+    styleUrls: ['./search-count.component.scss'],
+    standalone: false
 })
 export class SearchCountComponent implements OnInit {
 

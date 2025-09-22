@@ -49,7 +49,8 @@ Implémentation du protocole [OAuth2][OAuth2].
 * `GET /oauth/token_key`
 * `GET /oauth/check_token`
 
-Plus d'informations sur les paramètres acceptés ici : <https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/>.
+Plus d'informations sur les paramètres acceptés
+ici : <https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/>.
 
 ### Obtenir un access_token
 
@@ -66,7 +67,7 @@ curl "${host}:${port}/oauth/token" \
 ```
 
 - Le  _username_  doit être présent en tant que user dans la base du µService ACL.<br/>
-- Le header  _Authorization_  doit contenir  _base64(<username>:<user_password>)_ 
+- Le header  _Authorization_  doit contenir  _base64(<username>:<user_password>)_
 
 Requête avec [grant_type=client_credentials][client-credentials] :
 
@@ -79,7 +80,7 @@ curl "${host}:${port}/oauth/token" \
 ```
 
 - Le  _client_id_  doit être présent en tant que user de type  _API_  dans la base du µService ACL.<br/>
-- Le header  _Authorization_  doit contenir  _base64(<client_id>:<client_password>)_ 
+- Le header  _Authorization_  doit contenir  _base64(<client_id>:<client_password>)_
 
 Réponse :
 
@@ -133,12 +134,16 @@ Tous les composants se trouvent dans le package `org.springframework.security.oa
 
 ![Diagramme de classes](readme/rudi-microservice-acl-storage-entities.png)
 
+## Dépendances vers les facets
+
+![Dependencies](./readme/dependency_tree.svg)
+
 ## Voir aussi
 
-- [OAuth2]: https://www.oauth.com/
-- [password-grant]: https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
-- [client-credentials]: https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
-- [GitHub Rennes Métropole]: https://github.com/rudi-platform/rudi-documentation/blob/main/articles/_authentification/authentification.md
+- **[OAuth2]:** https://www.oauth.com/
+- **[password-grant]:** https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
+- **[client-credentials]:** https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
+- **[GitHub Rennes Métropole]:** https://github.com/rudi-platform/rudi-documentation/blob/main/articles/_authentification/authentification.md
 
 ## Tips
 

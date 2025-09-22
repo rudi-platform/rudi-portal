@@ -17,7 +17,8 @@ import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component
 @Component({
     selector: 'app-workflow-field-attachment',
     templateUrl: './workflow-field-attachment.component.html',
-    styleUrls: ['./workflow-field-attachment.component.scss']
+    styleUrls: ['./workflow-field-attachment.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
     attachmentLoading: boolean = false;

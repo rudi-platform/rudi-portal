@@ -8,7 +8,8 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
 @Component({
     selector: 'app-d3-bar-chart',
     templateUrl: './d3-bar-chart.component.html',
-    styleUrls: ['./d3-bar-chart.component.scss']
+    styleUrls: ['./d3-bar-chart.component.scss'],
+    standalone: false
 })
 export class D3BarChartComponent {
     @Input() graphBar: TpbcDataInterface;

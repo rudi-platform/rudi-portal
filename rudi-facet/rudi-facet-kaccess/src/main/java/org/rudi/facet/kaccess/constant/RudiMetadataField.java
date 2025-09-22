@@ -50,6 +50,7 @@ public class RudiMetadataField {
 	public static final FieldSpec SUMMARY_LANGUAGE = SUMMARY.newChildFromJavaField("lang", "language")
 			.allowControlledVocabulary(false);
 	public static final FieldSpec SUMMARY_TEXT = SUMMARY.newChildFromJavaField("text");
+	public static final FieldSpec SUMMARY_HTML = SUMMARY.newChildFromJavaField("html");
 
 	public static final FieldSpec THEME = ROOT.newChildFromJavaField("theme").isDirectSortable(false);
 	public static final FieldSpec KEYWORDS = ROOT.newChildFromJavaField("keywords").isDirectSortable(false);
@@ -250,7 +251,8 @@ public class RudiMetadataField {
 					SYNOPSIS_TEXT)
 			.add(SUMMARY,
 					SUMMARY_LANGUAGE,
-					SUMMARY_TEXT)
+					SUMMARY_TEXT,
+					SUMMARY_HTML)
 			.add(THEME)
 			.add(KEYWORDS)
 			.add(PRODUCER,

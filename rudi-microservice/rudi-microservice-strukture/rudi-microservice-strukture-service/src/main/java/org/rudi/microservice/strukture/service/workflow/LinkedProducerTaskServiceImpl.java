@@ -9,6 +9,8 @@ import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.security.RoleCodes;
+import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.service.util.ApplicationContext;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
@@ -86,9 +88,9 @@ public class LinkedProducerTaskServiceImpl extends
 	 * @throws IllegalArgumentException
 	 */
 	@Override
-	protected void checkEntityStatus(LinkedProducerEntity assetDescriptionEntity) throws IllegalArgumentException {
+	protected void checkEntityStatus(LinkedProducerEntity assetDescriptionEntity) throws AppServiceException {
 		if (assetDescriptionEntity == null) {
-			throw new IllegalArgumentException("Invalid task");
+			throw new AppServiceBadRequestException("Invalid task");
 		}
 
 		// Si le status n'est ni à DRAFT ni à COMPLETED, on lance une exception.
@@ -96,7 +98,7 @@ public class LinkedProducerTaskServiceImpl extends
 				|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
 			log.error("Invalid status for linkedProducer {} : status : {}", assetDescriptionEntity.getUuid(),
 					assetDescriptionEntity.getStatus());
-			throw new IllegalArgumentException("Invalid status on project " + assetDescriptionEntity.getUuid());
+			throw new AppServiceBadRequestException("Invalid status on project " + assetDescriptionEntity.getUuid());
 		}
 	}
 

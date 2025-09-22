@@ -1,6 +1,5 @@
 import {Period} from 'micro_service_modules/api-kaccess';
-import * as moment from 'moment';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 
 const ISO_STRING_WITHOUT_OFFSET_LENGTH = '2020-01-01T00:00:00.000'.length;
 

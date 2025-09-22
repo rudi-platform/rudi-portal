@@ -1,4 +1,4 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import {AttachmentService} from '@core/services/attachment.service';
 import {DataSize} from '@shared/models/data-size';
 import {UploaderAdapter} from '@shared/uploader/uploader.adapter';

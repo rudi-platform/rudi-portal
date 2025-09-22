@@ -27,6 +27,7 @@ import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.Metadata.StorageStatusEnum;
 import org.rudi.facet.kaccess.bean.MetadataDatasetSize;
 import org.rudi.facet.kaccess.bean.MetadataTemporalSpread;
+import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.mapper.fields.AbstractFieldsMapper;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.mapper.fields.RootFields;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,7 @@ import static org.rudi.facet.kaccess.constant.RudiMetadataField.RESOURCE_TITLE;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.RUDI_ELEMENT_SPEC;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.STORAGE_STATUS;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SUMMARY;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.SUMMARY_HTML;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SUMMARY_LANGUAGE;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SUMMARY_TEXT;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SYNOPSIS;
@@ -292,14 +294,15 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 	}
 
 	private void addSummaryField(Metadata metadata, List<DatasetMetadataBlockElementField> fields) {
-		List<DictionaryEntry> dictionaryEntries = metadata.getSummary();
+		List<RichDictionaryEntry> dictionaryEntries = metadata.getSummary();
 		if (!CollectionUtils.isEmpty(dictionaryEntries)) {
 			List<Map<String, Object>> summaryValues = new ArrayList<>();
-			for (DictionaryEntry dictionaryEntry : dictionaryEntries) {
+			for (RichDictionaryEntry dictionaryEntry : dictionaryEntries) {
 				Map<String, Object> summaryValue = new HashMap<>();
 
 				addOptionalPrimitiveField(dictionaryEntry.getLang().getValue(), summaryValue, SUMMARY_LANGUAGE);
 				addOptionalPrimitiveField(dictionaryEntry.getText(), summaryValue, SUMMARY_TEXT);
+				addOptionalPrimitiveField(dictionaryEntry.getHtml(), summaryValue, SUMMARY_HTML);
 
 				summaryValues.add(summaryValue);
 			}
@@ -311,7 +314,8 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 
 	private void setSummary(Metadata metadata, DatasetMetadataBlockElementField field) {
 		if (field != null && field.getValue() != null) {
-			List<DictionaryEntry> dictionnaryEntries = new ArrayList<>();
+			List<RichDictionaryEntry> richDictionaryEntries
+					= new ArrayList<>();
 			List<?> summaryFieldValues = (List<?>) field.getValue();
 			for (Object summaryFieldValueObject : summaryFieldValues) {
 				HashMap<?, ?> summaryFieldValue = (HashMap<?, ?>) summaryFieldValueObject;
@@ -325,12 +329,15 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 				final var languageValue = summaryLangField.getValue().toString();
 				final var language = Language.fromValue(languageValue);
 
-				final var dictionaryEntry = new DictionaryEntry().text(text).lang(language);
+				DatasetMetadataBlockElementField summaryHtmlField = objectMapper.convertValue(summaryFieldValue.get(SUMMARY_HTML.getName()), DatasetMetadataBlockElementField.class);
+				String html = getNullablePrimitiveFieldValue(summaryHtmlField);
 
-				dictionnaryEntries.add(dictionaryEntry);
+				final var dictionaryEntry = new RichDictionaryEntry().text(text).lang(language).html(html);
+
+				richDictionaryEntries.add(dictionaryEntry);
 			}
 
-			metadata.setSummary(dictionnaryEntries);
+			metadata.setSummary(richDictionaryEntries);
 		}
 	}
 

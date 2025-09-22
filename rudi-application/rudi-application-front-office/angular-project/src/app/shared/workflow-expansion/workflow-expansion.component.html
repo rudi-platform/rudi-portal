@@ -25,6 +25,8 @@
                                 [value]="getFieldListLabel(field.definition.extendedType, field.values)"
                             ></app-workflow-expansion-label>
                         </ng-container>
+                        <ng-container *ngSwitchCase="fieldType.Hidden">
+                        </ng-container>
                         <ng-container *ngSwitchDefault>
                             <app-workflow-expansion-label
                                 [label]="field.definition.label"

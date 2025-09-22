@@ -5,7 +5,8 @@ import {WorkflowFieldComponent} from '../workflow-field/workflow-field.component
 @Component({
     selector: 'app-workflow-field-boolean',
     templateUrl: './workflow-field-boolean.component.html',
-    styleUrls: ['./workflow-field-boolean.component.scss']
+    styleUrls: ['./workflow-field-boolean.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldBooleanComponent extends WorkflowFieldComponent {
 

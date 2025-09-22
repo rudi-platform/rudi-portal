@@ -3,13 +3,11 @@
  */
 package org.rudi.microservice.projekt.service.workflow;
 
-import static org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,6 +15,7 @@ import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.Nullable;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
+import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -43,8 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -147,12 +147,12 @@ public class ProjectTaskServiceImpl extends
 	 */
 	@Override
 	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity)
-			throws IllegalArgumentException, InvalidDataException {
+			throws AppServiceBadRequestException, InvalidDataException {
 		if (assetDescriptionEntity == null || getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getClass(),
 				assetDescriptionEntity.getId()) != null
 				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
 						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
-			throw new IllegalArgumentException("Asset is already linked to a task");
+			throw new AppServiceBadRequestException("Asset is already linked to a task");
 		}
 
 		// Vérifie si l'état de l'asset est DRAFT (création de project)
@@ -180,7 +180,7 @@ public class ProjectTaskServiceImpl extends
 				log.error(
 						"Invalid status for project {} : project is draft = {}, project is completed without restricted dataset = {}",
 						assetDescriptionEntity.getUuid(), isDraft, isCompletedAndNoRestrictedDataset);
-				throw new IllegalArgumentException(
+				throw new AppServiceBadRequestException(
 						"Invalid status or dataset type for project " + assetDescriptionEntity.getUuid());
 			}
 		}

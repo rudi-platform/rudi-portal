@@ -5,7 +5,8 @@ import {ALL_TYPES} from '../models/title-icon-type';
 @Component({
     selector: 'app-task-detail-header',
     templateUrl: './task-detail-header.component.html',
-    styleUrls: ['./task-detail-header.component.scss']
+    styleUrls: ['./task-detail-header.component.scss'],
+    standalone: false
 })
 export class TaskDetailHeaderComponent {
 

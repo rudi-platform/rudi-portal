@@ -8,7 +8,8 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
 @Component({
     selector: 'app-organization-informations',
     templateUrl: './organization-informations.component.html',
-    styleUrls: ['./organization-informations.component.scss']
+    styleUrls: ['./organization-informations.component.scss'],
+    standalone: false
 })
 export class OrganizationInformationsComponent {
     @Input() isLoading: boolean;

@@ -12,7 +12,8 @@ export type OrganizationType = 'producer' | 'provider';
 @Component({
     selector: 'app-organization-logo',
     templateUrl: './organization-logo.component.html',
-    styleUrls: ['./organization-logo.component.scss']
+    styleUrls: ['./organization-logo.component.scss'],
+    standalone: false
 })
 export class OrganizationLogoComponent implements OnInit {
     @Input() organizationType: OrganizationType;

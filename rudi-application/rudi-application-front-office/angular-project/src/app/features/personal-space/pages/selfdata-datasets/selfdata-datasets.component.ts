@@ -5,7 +5,8 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
 
 @Component({
     selector: 'app-selfdata-datasets',
-    templateUrl: './selfdata-datasets.component.html'
+    templateUrl: './selfdata-datasets.component.html',
+    standalone: false
 })
 export class SelfdataDatasetsComponent {
     urlToDoc: string;

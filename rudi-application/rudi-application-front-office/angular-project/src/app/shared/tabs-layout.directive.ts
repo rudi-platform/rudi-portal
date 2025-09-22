@@ -5,7 +5,8 @@ import {Directive} from '@angular/core';
  * @see TabsComponent
  */
 @Directive({
-    selector: '[appTabsLayout]'
+    selector: '[appTabsLayout]',
+    standalone: false
 })
 export class TabsLayoutDirective {
 }

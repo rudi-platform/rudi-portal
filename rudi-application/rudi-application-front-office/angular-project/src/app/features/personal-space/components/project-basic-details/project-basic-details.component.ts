@@ -3,7 +3,8 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-project-basic-details',
     templateUrl: './project-basic-details.component.html',
-    styleUrls: ['./project-basic-details.component.scss']
+    styleUrls: ['./project-basic-details.component.scss'],
+    standalone: false
 })
 export class ProjectBasicDetailsComponent {
 

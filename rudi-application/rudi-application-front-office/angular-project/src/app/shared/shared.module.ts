@@ -1,4 +1,5 @@
 import {CommonModule} from '@angular/common';
+import {provideHttpClient} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTableModule} from '@angular/material/table';
@@ -191,8 +192,8 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
             WorkflowExpansionDateComponent
         ],
     imports: [
-        CaptchetatAngularModule,
         CommonModule,
+        CaptchetatAngularModule,
         ...MaterialModules,
         CoreModule,
         FilePickerModule,
@@ -201,12 +202,13 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         NgbPopoverModule,
     ],
     exports: [
+        CommonModule,
         ErrorPageComponent,
         ProjectCardComponent,
         OrganizationCardComponent,
         ListOrganizationCardComponent,
         SearchBoxComponent,
-        MaterialModules,
+        ...MaterialModules,
         LabelSeparatorComponent,
         OrganizationLogoComponent,
         SplitPipe,
@@ -241,6 +243,8 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         TabContentDirective,
         BannerButtonComponent,
         WorkflowFormComponent,
+        WorkflowFieldTemplateComponent,
+        WorkflowFieldComponent,
         WorkflowFormDialogComponent,
         CopiedButtonComponent,
         PasswordComponent,
@@ -275,12 +279,12 @@ import {WorkflowFormComponent} from './workflow-form/workflow-form.component';
         RudiSwiperComponent,
         WorkflowExpansionComponent,
         WorkflowExpansionLabelComponent,
-        WorkflowExpansionDateComponent,
-        WorkflowFieldComponent
+        WorkflowExpansionDateComponent
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},
         ProcessDefinitionKeyTranslatePipe,
+        provideHttpClient()
     ]
 })
 export class SharedModule {

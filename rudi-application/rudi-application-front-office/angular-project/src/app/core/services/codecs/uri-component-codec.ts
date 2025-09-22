@@ -1,4 +1,4 @@
-import {HttpParameterCodec} from '@angular/common/http';
+import { HttpParameterCodec } from '@angular/common/http';
 
 
 export class URIComponentCodec implements HttpParameterCodec {

@@ -291,6 +291,7 @@
     <copyField source="rudi_summary" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_summary_language" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_summary_text" dest="_text_" maxChars="3000"/>
+	<copyField source="rudi_summary_html" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread_end_date" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread_start_date" dest="_text_" maxChars="3000"/>

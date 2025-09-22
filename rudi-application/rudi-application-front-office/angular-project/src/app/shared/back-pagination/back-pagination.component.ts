@@ -8,7 +8,8 @@ const FIRST_PAGE = 1;
 
 @Component({
     selector: 'app-back-pagination',
-    templateUrl: './back-pagination.component.html'
+    templateUrl: './back-pagination.component.html',
+    standalone: false
 })
 
 export class BackPaginationComponent {

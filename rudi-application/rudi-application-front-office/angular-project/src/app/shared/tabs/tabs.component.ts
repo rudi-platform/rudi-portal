@@ -1,4 +1,5 @@
-import {AfterViewInit, Component, ContentChild, ContentChildren, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Inject, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TabContentDirective} from '../tab-content.directive';
 import {TabComponent} from '../tab/tab.component';
@@ -8,7 +9,8 @@ import {WorkInProgressComponent} from '../work-in-progress/work-in-progress.comp
 @Component({
     selector: 'app-tabs',
     templateUrl: './tabs.component.html',
-    styleUrls: ['./tabs.component.scss']
+    styleUrls: ['./tabs.component.scss'],
+    standalone: false
 })
 export class TabsComponent implements AfterViewInit {
 
@@ -37,7 +39,10 @@ export class TabsComponent implements AfterViewInit {
             .find((tab) => tab.active);
     }
 
-    constructor(private readonly breakpointObserverService: BreakpointObserverService,
+    constructor(
+        private readonly breakpointObserverService: BreakpointObserverService,
+        @Inject(DOCUMENT) private readonly doc: Document
+
     ) {
         this.mediaSize = this.breakpointObserverService.getMediaSize();
     }
@@ -93,6 +98,9 @@ export class TabsComponent implements AfterViewInit {
 
     private displayWorkInProgressIntoCurrentTab() {
         this.viewContainerRef.clear();
-        this.viewContainerRef.createComponent(WorkInProgressComponent);
+        this.viewContainerRef.createComponent(WorkInProgressComponent, {
+            projectableNodes: [[this.doc.createTextNode('')]]
+        });
+
     }
 }

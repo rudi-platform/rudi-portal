@@ -24,7 +24,8 @@ const EMPTY_METADATA_LIST: MetadataList = {
 @Component({
     selector: 'app-list-container',
     templateUrl: './list-container.component.html',
-    styleUrls: ['./list-container.component.scss']
+    styleUrls: ['./list-container.component.scss'],
+    standalone: false
 })
 export class ListContainerComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;

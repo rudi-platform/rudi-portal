@@ -10,7 +10,8 @@ interface OrderItem extends Item {
 @Component({
     selector: 'cms-order',
     templateUrl: './order.component.html',
-    styleUrl: './order.component.scss'
+    styleUrl: './order.component.scss',
+    standalone: false
 })
 export class CmsOrderComponent {
 

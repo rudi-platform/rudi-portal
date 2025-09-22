@@ -8,7 +8,8 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
 @Component({
     selector: 'app-dataset-infos',
     templateUrl: './dataset-infos.component.html',
-    styleUrls: ['./dataset-infos.component.scss']
+    styleUrls: ['./dataset-infos.component.scss'],
+    standalone: false
 })
 export class DatasetsInfosComponent {
     /**

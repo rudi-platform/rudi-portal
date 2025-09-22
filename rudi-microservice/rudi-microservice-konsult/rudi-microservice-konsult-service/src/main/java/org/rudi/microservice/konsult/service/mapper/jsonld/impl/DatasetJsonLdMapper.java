@@ -9,11 +9,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Arrays;
 import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.facet.kaccess.bean.DictionaryEntry;
 import org.rudi.facet.kaccess.bean.Language;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataGeography;
 import org.rudi.facet.kaccess.bean.MetadataGeographyBoundingBox;
+import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
 import org.rudi.microservice.konsult.core.harvest.DcatJsonLdContext;
 import org.rudi.microservice.konsult.service.helper.media.MediaUrlHelper;
 import org.rudi.microservice.konsult.service.mapper.jsonld.AbstractJsonLdMapper;
@@ -72,21 +72,21 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 		return result;
 	}
 
-	private String getDescription(List<DictionaryEntry> dictionaryEntries) {
-		if(CollectionUtils.isEmpty(dictionaryEntries)) {
+	private String getDescription(List<RichDictionaryEntry> richDictionaryEntries) {
+		if(CollectionUtils.isEmpty(richDictionaryEntries)) {
 			return "";
 		}
 
-		Optional<DictionaryEntry> frenchEntry = dictionaryEntries
+		Optional<RichDictionaryEntry> frenchEntry = richDictionaryEntries
 				.stream()
 				.filter(summary -> summary.getLang().equals(Language.FR) ||
 								summary.getLang().equals(Language.FR_FR))
 				.findFirst();
 		if (frenchEntry.isPresent()) {
-			return frenchEntry.get().getText();
+			return getFilledEntry(frenchEntry.get());
 		}
 
-		Optional<DictionaryEntry> englishEntry = dictionaryEntries
+		Optional<RichDictionaryEntry> englishEntry = richDictionaryEntries
 				.stream()
 				.filter(summary -> summary.getLang().equals(Language.EN) ||
 						summary.getLang().equals(Language.EN_GB) ||
@@ -94,10 +94,10 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 				.findFirst();
 
 		if(englishEntry.isPresent()){
-			return englishEntry.get().getText();
+			return getFilledEntry(englishEntry.get());
 		}
 
-		return dictionaryEntries.get(0).getText();
+		return getFilledEntry(richDictionaryEntries.get(0));
 	}
 
 	private String getDatasetUrl(Metadata metadata) {
@@ -123,5 +123,16 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 		spatial.addProperty("geo:long", averageLongitude);
 
 		return spatial;
+	}
+	private String getFilledEntry(RichDictionaryEntry entry){
+		if(entry == null){
+			return "";
+		}
+
+		if(StringUtils.isNotEmpty(entry.getHtml())){
+			return entry.getHtml();
+		}
+
+		return entry.getText();
 	}
 }

@@ -1,4 +1,4 @@
-import {HttpEvent} from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AttachmentService} from '@core/services/attachment.service';
 import {FilePreviewModel} from '@sleiss/ngx-awesome-uploader';

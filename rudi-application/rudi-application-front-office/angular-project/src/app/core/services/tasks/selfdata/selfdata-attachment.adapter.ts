@@ -1,4 +1,4 @@
-import {HttpEvent} from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.service';
 import {UploaderAdapter} from '@shared/uploader/uploader.adapter';

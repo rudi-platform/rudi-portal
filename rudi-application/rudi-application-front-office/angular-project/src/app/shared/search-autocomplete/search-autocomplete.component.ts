@@ -6,7 +6,8 @@ import {SearchAutocompleteItem} from './search-autocomplete-item.interface';
 @Component({
     selector: 'app-search-autocomplete',
     templateUrl: './search-autocomplete.component.html',
-    styleUrls: ['./search-autocomplete.component.scss']
+    styleUrls: ['./search-autocomplete.component.scss'],
+    standalone: false
 })
 export class SearchAutocompleteComponent<T> implements OnInit {
 

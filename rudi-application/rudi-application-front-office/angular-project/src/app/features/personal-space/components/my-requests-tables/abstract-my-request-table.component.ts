@@ -12,7 +12,8 @@ import {Observable} from 'rxjs';
 import {RequestItem} from './request-item';
 
 @Component({
-    template: ''
+    template: '',
+    standalone: false
 })
 export abstract class AbstractMyRequestTableComponent {
 

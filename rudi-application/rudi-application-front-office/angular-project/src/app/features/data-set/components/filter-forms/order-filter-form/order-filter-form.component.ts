@@ -18,7 +18,8 @@ const DEFAULT_ORDER: OrderValue = '-dataset_dates.created';
 @Component({
     selector: 'app-order-filter-form',
     templateUrl: './order-filter-form.component.html',
-    styleUrls: ['./order-filter-form.component.scss']
+    styleUrls: ['./order-filter-form.component.scss'],
+    standalone: false
 })
 export class OrderFilterFormComponent extends FilterFormComponent<string, OrderFilter, OrderItem> implements OnInit {
 

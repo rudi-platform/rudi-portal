@@ -13,12 +13,13 @@ import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset
 import {TranslateService} from '@ngx-translate/core';
 import {DatasetsTableData, RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {Metadata} from 'micro_service_modules/api-kaccess';
-import * as moment from 'moment';
+import moment from 'moment';
 
 
 @Component({
     selector: 'app-open-dataset-table',
     templateUrl: './open-dataset-table.component.html',
+    standalone: false
 })
 export class OpenDatasetTableComponent {
     openDatasets: DatasetsTableData[] = [];

@@ -1,4 +1,4 @@
-import {HttpEvent, HttpEventType} from '@angular/common/http';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import {AbstractControl} from '@angular/forms';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';

@@ -1,14 +1,14 @@
 # Rudi - µService Selfdata
- 
+
 Le µService Selfdata permet la gestion des données personnelles.
 
 On se base sur le swagger RUDI-PRODUCER-ext_selfdata_content.yml pour décrire la partie SelfData contenue dans
 la propriété `ext_metadata.ext_selfdata.ext_selfdata_content` d'un jeu de données.
 
-
 ## Migration de données
 
-Si l'on souhaite chiffrer des données non chiffrées (migration de données anciennes), il est possible d'utiliser le point d'entrée suivant sans paramètre : 
+Si l'on souhaite chiffrer des données non chiffrées (migration de données anciennes), il est possible d'utiliser le
+point d'entrée suivant sans paramètre :
 
 ```
 http(s):///<host>:<port>/selfdata/api/v1/admin/recrypt
@@ -36,7 +36,7 @@ keytool.exe" -storepasswd -keystore rudi-selfdata.jks -storepass <ancien-mot de 
 keytool.exe" -genseckey -alias <alias>-<yyyyMMdd> -keystore rudi-selfdata.jks -storetype PKCS12 -keyalg AES -keysize 256 -storepass <mot de passe> -keypass <mot de passe> 
 ```
 
-- Executer le point d'entrée suivant 
+- Executer le point d'entrée suivant
 
 ```
 http(s):///<host>:<port>/selfdata/api/v1/admin/recrypt?previous-alias-key=<alias compromis>
@@ -46,3 +46,6 @@ http(s):///<host>:<port>/selfdata/api/v1/admin/recrypt?previous-alias-key=<alias
 
 ![Diagramme de classes](readme/rudi-microservice-selfdata-storage-entities.png)
 
+## Dépendances vers les facets
+
+![Dependencies](./readme/dependency_tree.svg)

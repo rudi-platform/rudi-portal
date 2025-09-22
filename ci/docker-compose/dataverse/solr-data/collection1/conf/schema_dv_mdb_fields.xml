@@ -356,6 +356,7 @@
     <field name="rudi_summary" type="text_en" multiValued="true" stored="true" indexed="true"/>
     <field name="rudi_summary_language" type="text_en" multiValued="true" stored="true" indexed="true"/>
     <field name="rudi_summary_text" type="text_en" multiValued="true" stored="true" indexed="true"/>
+	<field name="rudi_summary_html" type="text_en" multiValued="true" stored="true" indexed="true"/>
     <field name="rudi_temporal_spread" type="text_en" multiValued="false" stored="true" indexed="true"/>
     <field name="rudi_temporal_spread_end_date" type="text_en" multiValued="false" stored="true" indexed="true"/>
     <field name="rudi_temporal_spread_start_date" type="text_en" multiValued="false" stored="true" indexed="true"/>

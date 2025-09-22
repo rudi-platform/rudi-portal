@@ -8,7 +8,8 @@ import {SwiperBreakpoint} from '@shared/rudi-swiper/types';
 @Component({
     selector: 'app-themes-section',
     templateUrl: './themes-section.component.html',
-    styleUrls: ['./themes-section.component.scss']
+    styleUrls: ['./themes-section.component.scss'],
+    standalone: false
 })
 export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];

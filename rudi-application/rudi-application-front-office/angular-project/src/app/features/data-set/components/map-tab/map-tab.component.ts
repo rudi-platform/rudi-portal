@@ -9,7 +9,8 @@ import {switchMap} from 'rxjs/operators';
 @Component({
     selector: 'app-map-tab',
     templateUrl: './map-tab.component.html',
-    styleUrls: ['./map-tab.component.scss']
+    styleUrls: ['./map-tab.component.scss'],
+    standalone: false
 })
 export class MapTabComponent implements OnInit {
 

@@ -15,7 +15,6 @@ import org.hsqldb.lib.StringUtil;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.security.RoleCodes;
-import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
@@ -28,8 +27,12 @@ import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
 import org.rudi.facet.bpmn.service.TaskService;
+import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.generator.text.TemplateGenerator;
+import org.rudi.facet.kmedia.bean.KindOfData;
+import org.rudi.facet.kmedia.bean.MediaOrigin;
+import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
 import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
@@ -64,7 +67,8 @@ import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflow
 @Component(value = "organizationWorkflowContext")
 @Transactional
 @Slf4j
-public class OrganizationWorkflowContext extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
+public class OrganizationWorkflowContext
+		extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
 
 	private static final String CREATION_COMMENT_KEY = "messageToOrganizationCreator";
 	private static final String ARCHIVAGE_COMMENT_KEY = "messageToOrganizationArchiver";
@@ -90,8 +94,15 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	private final TaskService<LinkedProducer> linkedProducerTaskService;
 	private final AttachmentsHelper attachmentsHelper;
 	private final OrganizationMembersHelper organizationMembersHelper;
+	private final MediaService mediaService;
 
-	public OrganizationWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator, OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper, FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper, ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper, TaskService<LinkedProducer> linkedProducerTaskService, LinkedProducerHelper linkedProducerHelper, AttachmentsHelper attachmentsHelper, ProjektHelper projektHelper, OrganizationMembersHelper organizationMembersHelper) {
+	public OrganizationWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
+			OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper,
+			FormHelper formHelper, NodeProviderUserHelper nodeProviderUserHelper, ReportHelper reportHelper,
+			ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper,
+			TaskService<LinkedProducer> linkedProducerTaskService, LinkedProducerHelper linkedProducerHelper,
+			AttachmentsHelper attachmentsHelper, ProjektHelper projektHelper,
+			OrganizationMembersHelper organizationMembersHelper, MediaService mediaService) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
@@ -102,22 +113,28 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		this.attachmentsHelper = attachmentsHelper;
 		this.projektHelper = projektHelper;
 		this.organizationMembersHelper = organizationMembersHelper;
+		this.mediaService = mediaService;
 	}
 
 	@Transactional(readOnly = false)
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void updateStatus(ScriptContext context, ExecutionEntity executionEntity, String statusValue, String organizationStatusValue, String functionalStatusValue) {
+	public void updateStatus(ScriptContext context, ExecutionEntity executionEntity, String statusValue,
+			String organizationStatusValue, String functionalStatusValue) {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
-		log.debug("WkC - Update {} to status {}, {}, {}", processInstanceBusinessKey, statusValue, organizationStatusValue, functionalStatusValue);
+		log.debug("WkC - Update {} to status {}, {}, {}", processInstanceBusinessKey, statusValue,
+				organizationStatusValue, functionalStatusValue);
 		Status status = Status.valueOf(statusValue);
-		OrganizationStatus organizationStatus = StringUtil.isEmpty(organizationStatusValue) ? null : OrganizationStatus.valueOf(organizationStatusValue);
+		OrganizationStatus organizationStatus = StringUtil.isEmpty(organizationStatusValue) ? null
+				: OrganizationStatus.valueOf(organizationStatusValue);
 
 		if (!StringUtils.isEmpty(processInstanceBusinessKey) && status != null && functionalStatusValue != null) {
 			UUID organizationUuid = UUID.fromString(processInstanceBusinessKey);
 			OrganizationEntity assetDescriptionEntity = getAssetDescriptionDao().findByUuid(organizationUuid);
 			if (assetDescriptionEntity != null) {
 				assetDescriptionEntity.setStatus(status);
-				assetDescriptionEntity.setOrganizationStatus(organizationStatus == null ? assetDescriptionEntity.getOrganizationStatus() : organizationStatus);
+				assetDescriptionEntity.setOrganizationStatus(
+						organizationStatus == null ? assetDescriptionEntity.getOrganizationStatus()
+								: organizationStatus);
 				assetDescriptionEntity.setFunctionalStatus(functionalStatusValue);
 				assetDescriptionEntity.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescriptionEntity);
@@ -131,12 +148,14 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendEmailToOrganizationInitiator(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData, boolean isValidated) {
+	public void sendEmailToOrganizationInitiator(ScriptContext context, ExecutionEntity executionEntity,
+			EMailData eMailData, boolean isValidated) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		User initiator = lookupUser(assetDescription.getInitiator());
 		if (initiator != null) {
 			String email = lookupEMailAddress(initiator);
-			if (initiator.getType().equals(UserType.ROBOT) && initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+			if (initiator.getType().equals(UserType.ROBOT)
+					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
 				// On est dans le cas d'un provider : donc rapport
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
@@ -149,9 +168,11 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 					email = providerContactEmail;
 				}
 
-				Report report = buildReport(assetDescription, CREATION_COMMENT_KEY, isValidated, assetDescription.getCreationDate(), Method.POST, null);
+				Report report = buildReport(assetDescription, CREATION_COMMENT_KEY, isValidated,
+						assetDescription.getCreationDate(), Method.POST, null);
 
-				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts, assetDescription.getUuid()));
+				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts,
+						assetDescription.getUuid()));
 				thread.start();
 			}
 			// On envoie un mail à l'initiator
@@ -165,10 +186,12 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void startAttachOrganizationToProvider(ScriptContext context, ExecutionEntity executionEntity) throws FormDefinitionException, FormConvertException, InvalidDataException, AppServiceBadRequestException {
+	public void startAttachOrganizationToProvider(ScriptContext context, ExecutionEntity executionEntity)
+			throws FormDefinitionException, FormConvertException, InvalidDataException, AppServiceException {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		User initiator = lookupUser(assetDescription.getInitiator());
-		if (initiator != null && UserType.ROBOT.equals(initiator.getType()) && initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+		if (initiator != null && UserType.ROBOT.equals(initiator.getType())
+				&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
 
 			NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
@@ -181,7 +204,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 				throw new InvalidParameterException("Provider introuvable");
 			}
 
-			LinkedProducer lp = linkedProducerHelper.createLinkedProducer(assetDescription, providerEntity, nodeProvider);
+			LinkedProducer lp = linkedProducerHelper.createLinkedProducer(assetDescription, providerEntity,
+					nodeProvider);
 			lp.setInitiator(assetDescription.getInitiator());
 			Task t = linkedProducerTaskService.createDraft(lp);
 			linkedProducerTaskService.startTask(t);
@@ -241,25 +265,33 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 			getAssetDescriptionDao().save(assetDescription);
 
 			// Appel à Projekt pour archiver les projets et leurs linkedDatasets
-			projektHelper.archiveOwnerProjects(assetDescription.getUuid(), mapOrganizationArchiveModeToProjektArchiveMode(archivageType));
+			projektHelper.archiveOwnerProjects(assetDescription.getUuid(),
+					mapOrganizationArchiveModeToProjektArchiveMode(archivageType));
 
 			// on detach l'organisation de tous ses providers
 			linkedProducerHelper.detachOrganizationFromItsProviders(assetDescription.getUuid());
+
+			// on archive les medias de l'organisation
+			try {
+				mediaService.deleteMediaFor(MediaOrigin.PRODUCER, assetDescription.getUuid(), KindOfData.LOGO);
+			} catch (DataverseAPIException e) {
+				log.error("Erreur lors de la suppression du logo de l'organisation d'id {}", assetDescription.getUuid(),
+						e);
+			}
 		} else {
 			throw new AppServiceException(String.format("Invalid data on %s", assetDescription.getUuid()));
 		}
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendArchivageEmail(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData, boolean isValidated) {
+	public void sendArchivageEmail(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData,
+			boolean isValidated) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
 		if (isValidated) {
 			// envoi du rapport
-			sendReportToLinkedProviders(assetDescription,
-					buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY, isValidated, assetDescription.getUpdatedDate(),
-							Method.DELETE, BASE_COMMENT_ARCHIVE)
-			);
+			sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
+					isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
 
 			sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
 
@@ -269,7 +301,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void notifyOrganizationMembersArchive(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData) {
+	public void notifyOrganizationMembersArchive(ScriptContext context, ExecutionEntity executionEntity,
+			EMailData eMailData) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
 		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
@@ -278,20 +311,24 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
 	public void resetArchiveDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		OrganizationEntity assetDescriptionB = lookupAssetDescriptionEntity(executionEntity);
-		resetFormData(context, executionEntity, FormHelper.DRAFT_ARCHIVE_USER_TASK_ID, null, DRAFT_ARCHIVE_FORM_SECTION_NAME);
+		resetFormData(context, executionEntity, FormHelper.DRAFT_ARCHIVE_USER_TASK_ID, null,
+				DRAFT_ARCHIVE_FORM_SECTION_NAME);
 		OrganizationEntity assetDescriptionA = lookupAssetDescriptionEntity(executionEntity);
 		log.debug("WkC - resetArchiveDraftForm - assetDescriptionA: {}", assetDescriptionA);
 	}
 
 	private ProjektArchiveMode mapOrganizationArchiveModeToProjektArchiveMode(String organizationArchiveMode) {
-		return organizationArchiveMode.equals(ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED : ProjektArchiveMode.ARCHIVED;
+		return organizationArchiveMode.equals(ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
+				: ProjektArchiveMode.ARCHIVED;
 	}
 
-	private void sendEmailToArchiveInitiator(ExecutionEntity executionEntity, OrganizationEntity assetDescription, EMailData eMailData) {
+	private void sendEmailToArchiveInitiator(ExecutionEntity executionEntity, OrganizationEntity assetDescription,
+			EMailData eMailData) {
 		User initiator = lookupUser(assetDescription.getInitiator());
 		if (initiator != null) {
 			String email = lookupEMailAddress(initiator);
-			if (initiator.getType().equals(UserType.ROBOT) && initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+			if (initiator.getType().equals(UserType.ROBOT)
+					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
 				if (nodeProvider == null) {
@@ -304,12 +341,14 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 			try {
 				sendEMail(executionEntity, assetDescription, eMailData, List.of(email));
 			} catch (Exception e) {
-				log.warn("WkC - Failed to send mail to archive initiator for " + executionEntity.getProcessDefinitionKey(), e);
+				log.warn("WkC - Failed to send mail to archive initiator for "
+						+ executionEntity.getProcessDefinitionKey(), e);
 			}
 		}
 	}
 
-	private void sendEmailToOrganizationMembers(ExecutionEntity executionEntity, OrganizationEntity assetDescription, EMailData eMailData) {
+	private void sendEmailToOrganizationMembers(ExecutionEntity executionEntity, OrganizationEntity assetDescription,
+			EMailData eMailData) {
 		List<String> emails = getOrganizationMembersEmails(assetDescription);
 
 		try {
@@ -322,10 +361,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	private List<String> getOrganizationMembersEmails(OrganizationEntity assetDescription) {
 		// envoi du mail à l'ensemble des membres de l'organsiation
 		List<String> emails = new ArrayList<>();
-		List<User> users = organizationMembersHelper
-				.searchCorrespondingUsers(assetDescription.getMembers().stream().toList(),
-						new OrganizationMembersSearchCriteria()
-				);
+		List<User> users = organizationMembersHelper.searchCorrespondingUsers(
+				assetDescription.getMembers().stream().toList(), new OrganizationMembersSearchCriteria());
 
 		for (User user : users) {
 
@@ -338,7 +375,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		return emails;
 	}
 
-	private Report buildReport(OrganizationEntity assetDescription, String commentKey, boolean isValidated, LocalDateTime submissionDate, Method method, String baseComment) {
+	private Report buildReport(OrganizationEntity assetDescription, String commentKey, boolean isValidated,
+			LocalDateTime submissionDate, Method method, String baseComment) {
 		Map<String, Object> data = null;
 		try {
 			data = getFormHelper().hydrateData(assetDescription.getData());
@@ -368,7 +406,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		List<NodeProvider> nodeProviders = providerHelper.getOrganizationsNodeProviders(assetDescription.getUuid());
 
 		for (NodeProvider nodeProvider : nodeProviders) {
-			Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts, assetDescription.getUuid()));
+			Thread thread = new Thread(
+					new ReportSendExecutor(reportHelper, report, nodeProvider, attempts, assetDescription.getUuid()));
 			thread.start();
 		}
 	}
@@ -377,7 +416,8 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 		ArrayList<ReportError> errors = new ArrayList<>();
 
 		for (IntegrationError integrationError : integrationErrors) {
-			errors.add(new ReportError().errorCode(integrationError.getCode()).errorMessage(integrationError.getMessage()));
+			errors.add(new ReportError().errorCode(integrationError.getCode())
+					.errorMessage(integrationError.getMessage()));
 		}
 
 		return errors;
@@ -389,22 +429,24 @@ public class OrganizationWorkflowContext extends AbstractWorkflowContext<Organiz
 	 * @param eMailDataModel
 	 */
 	@Override
-	protected void addEmailDataModelData(EMailDataModel<OrganizationEntity, OrganizationAssignmentHelper> eMailDataModel) {
+	protected void addEmailDataModelData(
+			EMailDataModel<OrganizationEntity, OrganizationAssignmentHelper> eMailDataModel) {
 		super.addEmailDataModelData(eMailDataModel);
-		eMailDataModel.addData("denomination", ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
+		eMailDataModel.addData("denomination",
+				ownerInfoHelper.getAssetDescriptionOwnerInfo(eMailDataModel.getAssetDescription()).getName());
 
 		try {
 			OrganizationEntity organization = eMailDataModel.getAssetDescription();
 			Map<String, Object> data = getFormHelper().hydrateData(organization.getData());
 
 			if (data != null && data.containsKey(ORGANIZATION_ARCHIVE_MODE_KEY)) {
-				eMailDataModel.addData(ORGANIZATION_ARCHIVE_MODE_KEY, data.get(ORGANIZATION_ARCHIVE_MODE_KEY).toString());
+				eMailDataModel.addData(ORGANIZATION_ARCHIVE_MODE_KEY,
+						data.get(ORGANIZATION_ARCHIVE_MODE_KEY).toString());
 			}
 
 		} catch (InvalidDataException e) {
 			log.error("Failed to hydrate data", e);
 		}
 	}
-
 
 }

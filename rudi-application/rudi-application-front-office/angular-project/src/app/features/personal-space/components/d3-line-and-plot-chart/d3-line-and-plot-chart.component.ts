@@ -14,7 +14,8 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
 @Component({
     selector: 'app-d3-line-and-plot-chart',
     templateUrl: './d3-line-and-plot-chart.component.html',
-    styleUrls: ['./d3-line-and-plot-chart.component.scss']
+    styleUrls: ['./d3-line-and-plot-chart.component.scss'],
+    standalone: false
 })
 export class D3LineAndPlotChartComponent implements OnInit {
     @Input() graphBar: TpbcDataInterface;

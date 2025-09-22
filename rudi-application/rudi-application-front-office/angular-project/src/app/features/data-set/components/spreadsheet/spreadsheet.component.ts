@@ -14,7 +14,8 @@ export const SPREADSHEET_COLDEF_INDEX: ColDef = {
 @Component({
     selector: 'app-spreadsheet',
     templateUrl: './spreadsheet.component.html',
-    styleUrls: ['./spreadsheet.component.scss']
+    styleUrls: ['./spreadsheet.component.scss'],
+    standalone: false
 })
 export class SpreadsheetComponent {
 

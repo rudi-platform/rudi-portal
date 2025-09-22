@@ -20,7 +20,8 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
-    styleUrls: ['./footer.component.scss']
+    styleUrls: ['./footer.component.scss'],
+    standalone: false
 })
 export class FooterComponent implements OnInit {
 

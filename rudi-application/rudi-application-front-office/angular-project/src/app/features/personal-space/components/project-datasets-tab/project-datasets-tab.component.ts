@@ -29,7 +29,8 @@ import {switchMap, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-project-datasets-tab',
     templateUrl: './project-datasets-tab.component.html',
-    styleUrls: ['./project-datasets-tab.component.scss']
+    styleUrls: ['./project-datasets-tab.component.scss'],
+    standalone: false
 })
 export class ProjectDatasetsTabComponent implements OnInit {
 

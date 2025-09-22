@@ -3,9 +3,10 @@ import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 
 @Component({
-  selector: 'app-my-account',
-  templateUrl: './my-account.component.html',
-  styleUrls: ['./my-account.component.scss']
+    selector: 'app-my-account',
+    templateUrl: './my-account.component.html',
+    styleUrls: ['./my-account.component.scss'],
+    standalone: false
 })
 export class MyAccountComponent implements OnInit {
     isLoading: boolean;

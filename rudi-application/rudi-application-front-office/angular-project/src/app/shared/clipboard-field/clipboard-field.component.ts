@@ -4,7 +4,8 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-clipboard-field',
     templateUrl: './clipboard-field.component.html',
-    styleUrls: ['clipboard-field.component.scss']
+    styleUrls: ['clipboard-field.component.scss'],
+    standalone: false
 })
 export class ClipboardFieldComponent {
     @Input()

@@ -35,7 +35,8 @@ import {map, switchMap, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-project-task-detail',
     templateUrl: './project-task-detail.component.html',
-    styleUrls: ['./project-task-detail.component.scss']
+    styleUrls: ['./project-task-detail.component.scss'],
+    standalone: false
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>

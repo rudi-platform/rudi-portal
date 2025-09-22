@@ -1,4 +1,4 @@
-import {HttpEvent} from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import {FilePreviewModel} from '@sleiss/ngx-awesome-uploader';
 import {Observable} from 'rxjs';
 

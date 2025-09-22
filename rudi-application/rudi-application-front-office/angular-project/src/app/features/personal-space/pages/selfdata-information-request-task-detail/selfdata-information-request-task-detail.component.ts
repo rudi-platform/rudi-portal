@@ -2,8 +2,6 @@ import {Component, OnInit} from '@angular/core';
 
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
-import {Form, SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-api';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {LogService} from '@core/services/log.service';
 import {SelfdataInformationRequestDetailService} from '@core/services/selfdata-information-request-detail.service';
@@ -16,13 +14,15 @@ import {
 } from '@core/services/tasks/selfdata/selfdata-information-request-task-dependencies.service';
 import {SelfdataInformationRequestTaskMetierService} from '@core/services/tasks/selfdata/selfdata-information-request-task-metier.service';
 import {SelfdataTaskSearchCriteria} from '@core/services/tasks/selfdata/selfdata-task-search-criteria.interface';
+import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {TranslateService} from '@ngx-translate/core';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {Level} from '@shared/notification-template/notification-template.component';
 import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Period} from 'micro_service_modules/api-kaccess';
-import * as moment from 'moment/moment';
+import {Form, SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-api';
+import moment from 'moment';
 import {map, tap} from 'rxjs/operators';
 import UnitEnum = Period.UnitEnum;
 
@@ -30,7 +30,8 @@ import UnitEnum = Period.UnitEnum;
 @Component({
     selector: 'app-selfdata-information-request-task-detail',
     templateUrl: './selfdata-information-request-task-detail.component.html',
-    styleUrls: ['./selfdata-information-request-task-detail.component.scss']
+    styleUrls: ['./selfdata-information-request-task-detail.component.scss'],
+    standalone: false
 })
 export class SelfdataInformationRequestTaskDetailComponent
     extends TaskDetailComponent<SelfdataInformationRequest, SelfdataInformationRequestDependencies,

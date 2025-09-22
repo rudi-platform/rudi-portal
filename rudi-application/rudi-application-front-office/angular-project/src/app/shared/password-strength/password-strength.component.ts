@@ -6,7 +6,8 @@ import {PasswordStrengthCriterion} from './password-strength-criterion';
 @Component({
     selector: 'app-password-strength',
     templateUrl: './password-strength.component.html',
-    styleUrls: ['./password-strength.component.scss']
+    styleUrls: ['./password-strength.component.scss'],
+    standalone: false
 })
 export class PasswordStrengthComponent implements OnChanges {
     /** Le mot-de-passe dont on cherche la force */

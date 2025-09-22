@@ -4,7 +4,8 @@ import {FieldType, Section} from 'micro_service_modules/projekt/projekt-api';
 @Component({
     selector: 'app-workflow-expansion',
     templateUrl: './workflow-expansion.component.html',
-    styleUrl: './workflow-expansion.component.scss'
+    styleUrl: './workflow-expansion.component.scss',
+    standalone: false
 })
 export class WorkflowExpansionComponent {
 

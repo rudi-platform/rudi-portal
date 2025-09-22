@@ -6,7 +6,8 @@ import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 @Component({
     selector: 'app-organization-card',
     templateUrl: './organization-card.component.html',
-    styleUrls: ['./organization-card.component.scss']
+    styleUrls: ['./organization-card.component.scss'],
+    standalone: false
 })
 export class OrganizationCardComponent {
     @Input() organizationBean: OrganizationBean;

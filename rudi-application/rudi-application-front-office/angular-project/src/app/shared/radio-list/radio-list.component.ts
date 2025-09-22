@@ -8,7 +8,8 @@ import {RadioListItem} from './radio-list-item';
 @Component({
     selector: 'app-radio-list',
     templateUrl: './radio-list.component.html',
-    styleUrls: ['./radio-list.component.scss']
+    styleUrls: ['./radio-list.component.scss'],
+    standalone: false
 })
 export class RadioListComponent {
 

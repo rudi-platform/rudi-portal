@@ -3,9 +3,10 @@ import {MatMenuTrigger} from '@angular/material/menu';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-filter-menu',
-  templateUrl: './filter-menu.component.html',
-  styleUrls: ['./filter-menu.component.scss']
+    selector: 'app-filter-menu',
+    templateUrl: './filter-menu.component.html',
+    styleUrls: ['./filter-menu.component.scss'],
+    standalone: false
 })
 export class FilterMenuComponent {
   @Input() buttonTextKey: string;

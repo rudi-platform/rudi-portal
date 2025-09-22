@@ -5,7 +5,8 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
     selector: 'app-workflow-form-submit-success',
     templateUrl: './workflow-form-submit-success.component.html',
-    styleUrls: ['./workflow-form-submit-success.component.scss']
+    styleUrls: ['./workflow-form-submit-success.component.scss'],
+    standalone: false
 })
 export class WorkflowFormSubmitSuccessComponent {
     @Input()

@@ -5,7 +5,8 @@ import {ALL_TYPES} from '../models/title-icon-type';
 @Component({
     selector: 'app-boolean-data-block',
     templateUrl: './boolean-data-block.component.html',
-    styleUrls: ['./boolean-data-block.component.scss']
+    styleUrls: ['./boolean-data-block.component.scss'],
+    standalone: false
 })
 export class BooleanDataBlockComponent {
 

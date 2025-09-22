@@ -5,7 +5,8 @@ import {RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 @Component({
     selector: 'app-dataset-table',
     templateUrl: './dataset-table.component.html',
-    styleUrls: ['./dataset-table.component.scss']
+    styleUrls: ['./dataset-table.component.scss'],
+    standalone: false
 })
 export class DatasetTableComponent {
     displayedColumns: string[] = ['addedDate', 'title', 'status', 'comment-action', 'delete-action'];

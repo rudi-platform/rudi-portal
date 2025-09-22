@@ -4,7 +4,8 @@ import {WorkflowFieldComponent} from '@shared/workflow-field/workflow-field.comp
 @Component({
     selector: 'app-workflow-field-list',
     templateUrl: './workflow-field-list.component.html',
-    styleUrls: ['./workflow-field-list.component.scss']
+    styleUrls: ['./workflow-field-list.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldListComponent extends WorkflowFieldComponent implements OnInit {
 

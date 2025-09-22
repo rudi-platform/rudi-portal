@@ -20,13 +20,23 @@ public abstract class AbstractBasicHtmlSanitizerMetadataTransformer<T> extends A
 					"valign", "value", "vlink", "vspace", "width");
 
 	protected String cleanupText(String text) {
-		log.debug("Cleaning up text with basic sanitizer : {}", text);
+		log.debug("Cleaning up text with strict sanitizer : {}", text);
 		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
-		String cleanedText = Jsoup.clean(text, RUDI_SAFELIST_BASIC_EXTENDED);
+		String cleanedText = Jsoup.clean(text, Safelist.none());
 		log.debug("Clean text: {}", cleanedText);
 		return cleanedText;
+	}
+
+	protected String cleanupHtml(String html) {
+		log.debug("Cleaning up html with basic sanitizer : {}", html);
+		if (StringUtils.isEmpty(html)) {
+			return html;
+		}
+		String cleanedHtml = Jsoup.clean(html, RUDI_SAFELIST_BASIC_EXTENDED);
+		log.debug("Clean html: {}", cleanedHtml);
+		return cleanedHtml;
 	}
 
 }

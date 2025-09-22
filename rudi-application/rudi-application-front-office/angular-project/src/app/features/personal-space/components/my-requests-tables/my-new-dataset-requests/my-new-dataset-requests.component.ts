@@ -12,7 +12,8 @@ import {RequestItem} from '../request-item';
 @Component({
     selector: 'app-my-new-dataset-requests',
     templateUrl: './my-new-dataset-requests.component.html',
-    styleUrls: ['./my-new-dataset-requests.component.scss']
+    styleUrls: ['./my-new-dataset-requests.component.scss'],
+    standalone: false
 })
 export class MyNewDatasetRequestsComponent extends AbstractMyRequestTableComponent implements OnInit {
 

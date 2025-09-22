@@ -11,6 +11,7 @@ import {Observable, of, switchMap} from 'rxjs';
     templateUrl: './social-media-section.component.html',
     styleUrl: './social-media-section.component.scss',
     encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SocialMediaSectionComponent implements OnInit {
 

@@ -10,7 +10,8 @@ import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_serv
 @Component({
     selector: 'app-step1-project',
     templateUrl: './step1-project.component.html',
-    styleUrls: ['./step1-project.component.scss']
+    styleUrls: ['./step1-project.component.scss'],
+    standalone: false
 })
 export class Step1ProjectComponent implements OnInit {
     

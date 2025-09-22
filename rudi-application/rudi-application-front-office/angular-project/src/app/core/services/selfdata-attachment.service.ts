@@ -1,4 +1,4 @@
-import {HttpEvent} from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {AttachmentService} from '@core/services/attachment.service';

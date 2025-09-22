@@ -56,6 +56,11 @@
 #   - Added 'ext_metadata' to be able to extend the current metadata with
 #     additional sub-parts, in particular 'ext_selfdata' to describe a
 #     dataset that contains personal (GDPR) information.
+#
+# [1.4.1]
+#   - The metadata_provider no longer needs to be filled in the metadatas,
+#     as the provider of the authenticated nodeProvider is now used for the request.
+#   - Summary is now a RichDictionaryEntry with lang, text, and html fields (instead of a DictionaryEntry)
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
@@ -178,7 +183,7 @@ components:
           description: More precise description for the whole dataset
           type: array
           items:
-            $ref: '#/components/schemas/DictionaryEntry'
+            $ref: '#/components/schemas/RichDictionaryEntry'
           minItems: 1
           # TODO: size ≤ 500
         # !DICO!
@@ -327,7 +332,7 @@ components:
         'dataset_dates':
           $ref: '#/components/schemas/ReferenceDates' # On met $ref en 1er car s'il est en 2e, il est ignoré par la génération de code
           description: Dates of the actions performed on the data (creation, publishing, update, deletion...)
-          
+
         #——————————————————————————
         'storage_status':
           description: >-
@@ -401,7 +406,7 @@ components:
               items:
                 $ref: '#/components/schemas/DictionaryEntry'
               minItems: 1
-              example: [{ 'lang': 'fr-FR', 'text': 'Source: Région Bretagne' }]
+              example: [{'lang': 'fr-FR', 'text': 'Source: Région Bretagne'}]
             #......................
             'access_constraint':
               type: array
@@ -412,7 +417,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/DictionaryEntry'
-              example: [{ 'lang': 'fr', 'text': "Pas de restriction d'accès public" }]
+              example: [{'lang': 'fr', 'text': "Pas de restriction d'accès public"}]
         #—•—•—•—•—•—•—•—•—•—•—•—•—•
         # METADATA INFO
         #——————————————————————————
@@ -433,7 +438,7 @@ components:
             'metadata_provider':
               $ref: '#/components/schemas/Organization' # On met $ref en 1er car s'il est en 2e, il est ignoré par la génération de code
               description: Description of the organization that produced the metadata
-              
+
             #......................
             'metadata_contacts':
               description: Addresses to get further information on the metadata
@@ -617,7 +622,7 @@ components:
               description: URL towards the custom licence
               type: string
               format: uri
-              x-constraints: "@org.rudi.common.core.validator.URI" 
+              x-constraints: "@org.rudi.common.core.validator.URI"
 
     #---------------------------------------------------------------------------
     'Media':
@@ -1008,7 +1013,7 @@ components:
           items:
             type: string
             #TODO: possibly set limitations (size, characters allowed, HTML-ready or not)
-      example: { lang: 'fr-FR', text: ['abeilles', 'Apis'] }
+      example: {lang: 'fr-FR', text: ['abeilles', 'Apis']}
 
     #---------------------------------------------------------------------------
     'DictionaryEntry':
@@ -1022,10 +1027,39 @@ components:
         'text':
           type: string
           #TODO: possibly set limitations (size, characters allowed, HTML-ready or not)
-      example: { lang: 'fr-FR', text: 'abeilles' }
-
+      example: {lang: 'fr-FR', text: 'abeilles'}
 
     #---------------------------------------------------------------------------
+    'RichDictionaryEntry':
+      allOf:
+        - $ref: '#/components/schemas/DictionaryEntry'
+        - type: object
+          description: >
+            Formatted description, HTML for instance. Should reflect the above
+            plain text description.
+          properties:
+            'html':
+              type: string
+          example: {
+            'lang': 'en-GB',
+            'text':
+              "Cryptides de Bretagne: Les Marie Morganes, sirènes d’Ouessant, 
+                    les Gallizènes de l’île de Sein, les korrigans, l'Ankou.",
+            'html':
+              "<p>Cryptides de Bretagne:</p>
+                      <dl>
+                        <dt>Les Marie Morganes</dt><dd>Sirènes d’Ouessant.</dd>
+                        <dt>Les Gallizènes</dt><dd>Neuf prêtresses de l’île de Sein.</dd>
+                        <dt>Les korrigans</dt><dd>Lutins farceurs.</dd>
+                        <dt>L'Ankou</dt>
+                          <dd>
+                            La mort personnifiée, squelette drapé d’un linceul sombre
+                            tenant une faux emmanchée à l’envers.
+                          </dd>
+                      </dl>"
+          }
+
+      #---------------------------------------------------------------------------
     'Language':
       description: >
         Lowercase ISO-639 language code followed by the

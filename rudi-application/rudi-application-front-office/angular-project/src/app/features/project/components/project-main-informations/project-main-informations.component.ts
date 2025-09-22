@@ -18,13 +18,14 @@ import {
     TargetAudience,
     TerritorialScale
 } from 'micro_service_modules/projekt/projekt-model';
-import * as moment from 'moment';
+import moment from 'moment';
 import {switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-project-main-informations',
     templateUrl: './project-main-informations.component.html',
-    styleUrls: ['./project-main-informations.component.scss']
+    styleUrls: ['./project-main-informations.component.scss'],
+    standalone: false
 })
 export class ProjectMainInformationsComponent implements OnInit {
     @Input() project: Project;

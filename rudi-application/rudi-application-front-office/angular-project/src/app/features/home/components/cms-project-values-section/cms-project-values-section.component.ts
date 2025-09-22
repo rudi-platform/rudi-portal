@@ -14,7 +14,8 @@ const LIMIT: number = 4;
 @Component({
     selector: 'app-cms-project-values-section',
     templateUrl: './cms-project-values-section.component.html',
-    styleUrls: ['./cms-project-values-section.component.scss']
+    styleUrls: ['./cms-project-values-section.component.scss'],
+    standalone: false
 })
 export class CmsProjectValuesSectionComponent implements OnInit {
     @Input() cmsProjectValuesDescription: CmsProjectValuesDescription;

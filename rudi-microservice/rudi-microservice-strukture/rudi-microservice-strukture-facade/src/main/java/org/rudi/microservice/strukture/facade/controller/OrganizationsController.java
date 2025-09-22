@@ -211,7 +211,7 @@ public class OrganizationsController implements OrganizationsApi {
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
 	public ResponseEntity<UUID> requestOrganizationCreation(NodeOrganization nodeOrganization)
-			throws AppServiceBadRequestException, FormDefinitionException, FormConvertException, InvalidDataException {
+			throws AppServiceException, FormDefinitionException, FormConvertException, InvalidDataException {
 		Organization organization = nodeOrganizationMapper.nodeDtoToDTO(nodeOrganization);
 		// Le champ description est obligatoire dans Rudi :
 		if (StringUtils.isEmpty(organization.getDescription())) {

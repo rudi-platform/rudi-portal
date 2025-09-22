@@ -7,7 +7,8 @@ import {Form} from 'micro_service_modules/strukture/api-strukture';
 @Component({
     selector: 'app-organization-form-dialog',
     templateUrl: './organization-form-dialog.component.html',
-    styleUrls: ['./organization-form-dialog.component.scss']
+    styleUrls: ['./organization-form-dialog.component.scss'],
+    standalone: false
 })
 export class OrganizationFormDialogComponent implements OnInit {
     @ViewChild('OrganizationForm', {static: true})

@@ -7,7 +7,6 @@ import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-project-modification-confirmation-popin',
-    standalone: true,
     imports: [
         MatDialogContent,
         MatButton,

@@ -13,7 +13,8 @@ import {RequestItem} from '../request-item';
 @Component({
     selector: 'app-my-selfdata-requests',
     templateUrl: './my-selfdata-requests.component.html',
-    styleUrls: ['./my-selfdata-requests.component.scss']
+    styleUrls: ['./my-selfdata-requests.component.scss'],
+    standalone: false
 })
 export class MySelfdataRequestsComponent extends AbstractMyRequestTableComponent implements OnInit {
 

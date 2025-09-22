@@ -6,7 +6,8 @@ import {Component, Input} from '@angular/core';
 @Component({
     selector: 'app-label-separator',
     templateUrl: './label-separator.component.html',
-    styleUrls: ['./label-separator.component.scss']
+    styleUrls: ['./label-separator.component.scss'],
+    standalone: false
 })
 export class LabelSeparatorComponent {
 

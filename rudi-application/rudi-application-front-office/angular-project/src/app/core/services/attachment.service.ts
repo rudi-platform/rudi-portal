@@ -1,4 +1,4 @@
-import {HttpEvent} from '@angular/common/http';
+import { HttpEvent } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {FilePreviewModel} from '@sleiss/ngx-awesome-uploader';
 import {DocumentMetadata} from 'micro_service_modules/selfdata/selfdata-api';

@@ -1,4 +1,4 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {LogService} from '@core/services/log.service';
@@ -13,7 +13,8 @@ import {switchMap, tap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-detail',
-    templateUrl: './detail.component.html'
+    templateUrl: './detail.component.html',
+    standalone: false
 })
 export class DetailComponent implements OnInit {
 

@@ -10,7 +10,8 @@ import {Field} from 'micro_service_modules/api-bpmn';
 @Component({
     selector: 'app-workflow-field',
     templateUrl: './workflow-field.component.html',
-    styleUrls: ['./workflow-field.component.scss']
+    styleUrls: ['./workflow-field.component.scss'],
+    standalone: false
 })
 export class WorkflowFieldComponent {
     /**

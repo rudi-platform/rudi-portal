@@ -6,7 +6,8 @@ import {ProjectDatasetItem} from '../../model/project-dataset-item';
 @Component({
     selector: 'app-step3-project',
     templateUrl: './step3-project.component.html',
-    styleUrls: ['./step3-project.component.scss']
+    styleUrls: ['./step3-project.component.scss'],
+    standalone: false
 })
 export class Step3ProjectComponent {
 

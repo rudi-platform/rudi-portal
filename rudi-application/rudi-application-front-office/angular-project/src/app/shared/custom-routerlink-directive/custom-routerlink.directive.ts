@@ -1,7 +1,8 @@
 import {Directive, ElementRef} from '@angular/core';
 
 @Directive({
-    selector: '[routerLink]'
+    selector: '[routerLink]',
+    standalone: false
 })
 export class CustomRouterlinkDirective {
 

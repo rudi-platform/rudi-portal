@@ -2,7 +2,7 @@ import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy, registerLocaleDat
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 
 import localeFr from '@angular/common/locales/fr';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Injector, LOCALE_ID, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Injector, LOCALE_ID, NgModule, provideAppInitializer} from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {BrowserModule} from '@angular/platform-browser';
@@ -66,7 +66,7 @@ registerLocaleData(localeFr);
         {provide: MESSAGE_FORMAT_CONFIG, useValue: {locales: ['fr']}},
         {provide: TranslateService, useClass: CustomTranslateService},
         {
-            provide: APP_INITIALIZER,
+            provide: provideAppInitializer,
             useFactory: appInitializerFactory,
             deps: [CustomTranslateService, Injector, PropertiesMetierService],
             multi: true

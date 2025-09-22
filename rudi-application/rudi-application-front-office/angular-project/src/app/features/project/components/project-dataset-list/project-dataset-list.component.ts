@@ -8,7 +8,8 @@ import {ProjectDatasetPictoType} from '../../model/project-dataset-picto-type';
 @Component({
     selector: 'app-project-dataset-list',
     templateUrl: './project-dataset-list.component.html',
-    styleUrls: ['./project-dataset-list.component.scss']
+    styleUrls: ['./project-dataset-list.component.scss'],
+    standalone: false
 })
 export class ProjectDatasetListComponent {
 

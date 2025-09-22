@@ -1,7 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-    name: 'parseInt'
+    name: 'parseInt',
+    standalone: false
 })
 export class ParseIntPipe implements PipeTransform {
 

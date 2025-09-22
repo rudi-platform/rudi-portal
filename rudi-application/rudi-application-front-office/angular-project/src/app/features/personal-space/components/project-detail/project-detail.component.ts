@@ -63,7 +63,8 @@ export interface ProjectDependencies {
 @Component({
     selector: 'app-project-detail',
     templateUrl: './project-detail.component.html',
-    styleUrls: ['./project-detail.component.scss']
+    styleUrls: ['./project-detail.component.scss'],
+    standalone: false
 })
 export class ProjectDetailComponent implements OnInit {
 

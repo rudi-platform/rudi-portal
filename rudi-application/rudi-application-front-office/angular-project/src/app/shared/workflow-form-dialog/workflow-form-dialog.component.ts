@@ -9,7 +9,8 @@ import {Field, Section} from 'micro_service_modules/projekt/projekt-api';
 @Component({
     selector: 'app-workflow-form-dialog',
     templateUrl: './workflow-form-dialog.component.html',
-    styleUrls: ['./workflow-form-dialog.component.scss']
+    styleUrls: ['./workflow-form-dialog.component.scss'],
+    standalone: false
 })
 export class WorkflowFormDialogComponent {
     @ViewChild('workflowForm', {static: true})

@@ -36,9 +36,9 @@
 
             <!--période | dateDebut | dateFin-->
             <app-project-main-information-date
-                *ngIf="this.project.expected_completion_end_date || this.project.expected_completion_start_date"
-                [startDate]="this.project.expected_completion_start_date"
-                [endDate]="this.project.expected_completion_end_date"
+                *ngIf="project.expected_completion_end_date || project.expected_completion_start_date"
+                [startDate]="project.expected_completion_start_date"
+                [endDate]="project.expected_completion_end_date"
             ></app-project-main-information-date>
 
             <!--support desiré -->

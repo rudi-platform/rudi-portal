@@ -59,6 +59,7 @@
 # [1.4.1]
 #   - The metadata_provider no longer needs to be filled in the metadatas,
 #     as the provider of the authenticated nodeProvider is now used for the request.
+#   - Summary is now a RichDictionaryEntry with lang, text, and html fields (instead of a DictionaryEntry)
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
@@ -413,7 +414,7 @@ components:
           description: More precise description for the whole dataset
           type: array
           items:
-            $ref: '#/components/schemas/DictionaryEntry'
+            $ref: '#/components/schemas/RichDictionaryEntry'
           minItems: 1
           # TODO: size ≤ 500
         # !DICO!
@@ -1332,7 +1333,37 @@ components:
       example: {lang: 'fr-FR', text: 'abeilles'}
 
     #---------------------------------------------------------------------------
-    'SkosScheme':
+    'RichDictionaryEntry':
+      allOf:
+        - $ref: '#/components/schemas/DictionaryEntry'
+        - type: object
+          description: >
+            Formatted description, HTML for instance. Should reflect the above
+            plain text description.
+          properties:
+            'html':
+              type: string
+          example: {
+            'lang': 'en-GB',
+            'text':
+              "Cryptides de Bretagne: Les Marie Morganes, sirènes d’Ouessant, 
+                   les Gallizènes de l’île de Sein, les korrigans, l'Ankou.",
+            'html':
+              "<p>Cryptides de Bretagne:</p>
+                     <dl>
+                       <dt>Les Marie Morganes</dt><dd>Sirènes d’Ouessant.</dd>
+                       <dt>Les Gallizènes</dt><dd>Neuf prêtresses de l’île de Sein.</dd>
+                       <dt>Les korrigans</dt><dd>Lutins farceurs.</dd>
+                       <dt>L'Ankou</dt>
+                         <dd>
+                           La mort personnifiée, squelette drapé d’un linceul sombre
+                           tenant une faux emmanchée à l’envers.
+                         </dd>
+                     </dl>"
+          }
+
+      #---------------------------------------------------------------------------
+      'SkosScheme':
       description: >
         Set of SKOS concepts gathered in a transversal and hierarchical 
         relationships.

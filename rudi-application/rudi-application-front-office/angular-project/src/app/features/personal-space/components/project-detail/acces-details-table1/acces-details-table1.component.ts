@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import * as moment from 'moment';
 import {Task} from 'micro_service_modules/api-bpmn';
 import {Indicators} from 'micro_service_modules/projekt/projekt-api';
+import moment from 'moment';
 
 export interface Table1Data {
     date: string;
@@ -19,7 +19,8 @@ export interface OtherIndicators {
 @Component({
     selector: 'app-acces-details-table1',
     templateUrl: './acces-details-table1.component.html',
-    styleUrls: ['./acces-details-table1.component.scss']
+    styleUrls: ['./acces-details-table1.component.scss'],
+    standalone: false
 })
 export class AccesDetailsTable1Component implements AfterViewInit {
     jdds: Table1Data[] = [];

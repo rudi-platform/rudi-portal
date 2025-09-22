@@ -7,7 +7,8 @@ import {DEBUT_NAME_PREFIX, FIN_NAME_PREFIX} from '../filter-forms/dates-filter-f
 @Component({
     selector: 'app-filters-items-list',
     templateUrl: './filters-items-list.component.html',
-    styleUrls: ['./filters-items-list.component.scss']
+    styleUrls: ['./filters-items-list.component.scss'],
+    standalone: false
 })
 export class FiltersItemsListComponent {
     @Input() selectedDatesItems: Item[];

@@ -22,7 +22,8 @@ import {map, tap} from 'rxjs/operators';
 @Component({
     selector: 'app-new-request-task-detail',
     templateUrl: './new-request-task-detail.component.html',
-    styleUrls: ['./new-request-task-detail.component.scss']
+    styleUrls: ['./new-request-task-detail.component.scss'],
+    standalone: false
 })
 export class NewRequestTaskDetailComponent
     extends TaskDetailComponent<LinkedDataset, LinkedDatasetDependencies, LinkedDatasetTask, ProjektTaskSearchCriteria>

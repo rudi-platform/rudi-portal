@@ -5,7 +5,10 @@ import {TranslateService} from '@ngx-translate/core';
 /**
  *
  */
-@Pipe({name: 'processDefinitionKeyTranslate'})
+@Pipe({
+    name: 'processDefinitionKeyTranslate',
+    standalone: false
+})
 export class ProcessDefinitionKeyTranslatePipe implements PipeTransform {
 
     constructor(

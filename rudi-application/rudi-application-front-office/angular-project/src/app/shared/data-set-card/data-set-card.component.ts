@@ -12,7 +12,8 @@ import {MetadataUtils} from '../utils/metadata-utils';
 @Component({
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
-    styleUrls: ['./data-set-card.component.scss']
+    styleUrls: ['./data-set-card.component.scss'],
+    standalone: false
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;

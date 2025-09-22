@@ -13,7 +13,8 @@ import {UploaderAdapter} from './uploader.adapter';
 @Component({
     selector: 'app-uploader',
     templateUrl: './uploader.component.html',
-    styleUrls: ['./uploader.component.scss']
+    styleUrls: ['./uploader.component.scss'],
+    standalone: false
 })
 export class UploaderComponent<T> {
 

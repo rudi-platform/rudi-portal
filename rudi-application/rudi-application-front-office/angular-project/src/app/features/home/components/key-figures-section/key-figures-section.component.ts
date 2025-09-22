@@ -6,7 +6,8 @@ import {switchMap} from 'rxjs/operators';
 @Component({
     selector: 'app-key-figures-section',
     templateUrl: 'key-figures-section.component.html',
-    styleUrls: ['./key-figures-section.component.scss']
+    styleUrls: ['./key-figures-section.component.scss'],
+    standalone: false
 })
 export class KeyFiguresSectionComponent implements OnInit {
 

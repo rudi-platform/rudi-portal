@@ -10,7 +10,8 @@ const CAPTCHA_NAMESPACE = '/kaptcha';
 @Component({
     selector: 'app-rudi-captcha',
     templateUrl: './rudi-captcha.component.html',
-    styleUrls: ['./rudi-captcha.component.scss']
+    styleUrls: ['./rudi-captcha.component.scss'],
+    standalone: false
 })
 export class RudiCaptchaComponent implements OnInit {
 

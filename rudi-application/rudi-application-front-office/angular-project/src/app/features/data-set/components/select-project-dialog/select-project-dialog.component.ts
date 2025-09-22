@@ -27,7 +27,8 @@ export interface SelectProjectDialogData {
 @Component({
     selector: 'app-restricted-dataset-request-dialog',
     templateUrl: './select-project-dialog.component.html',
-    styleUrls: ['./select-project-dialog.component.scss']
+    styleUrls: ['./select-project-dialog.component.scss'],
+    standalone: false
 })
 export class SelectProjectDialogComponent implements OnInit {
 

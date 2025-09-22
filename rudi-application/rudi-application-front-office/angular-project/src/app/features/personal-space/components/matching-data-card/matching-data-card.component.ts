@@ -5,7 +5,8 @@ import {MatchingData} from 'micro_service_modules/selfdata/selfdata-api';
 @Component({
     selector: 'app-matching-data-card',
     templateUrl: './matching-data-card.component.html',
-    styleUrls: ['./matching-data-card.component.scss']
+    styleUrls: ['./matching-data-card.component.scss'],
+    standalone: false
 })
 export class MatchingDataCardComponent {
     @Input() isDataTabEmpty: boolean;

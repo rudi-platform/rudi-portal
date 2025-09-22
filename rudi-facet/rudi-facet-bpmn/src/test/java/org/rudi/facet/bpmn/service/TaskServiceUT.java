@@ -3,12 +3,6 @@
  */
 package org.rudi.facet.bpmn.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -20,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -38,6 +33,7 @@ import org.rudi.common.core.DocumentContent;
 import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.common.test.RudiAssertions;
 import org.rudi.facet.acl.bean.User;
@@ -70,8 +66,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 /**
  * @author FNI18300
@@ -243,7 +243,7 @@ class TaskServiceUT {
 
 	@Test
 	void start_update_workflow() throws BpmnInitializationException, InvalidDataException, FormConvertException,
-			FormDefinitionException, IOException {
+			FormDefinitionException, IOException, AppServiceException {
 		Mockito.when(utilContextHelper.getAuthenticatedUser()).thenReturn(createAuthenticatedUser());
 		Mockito.when(aclHelper.getUserByLogin(any())).thenReturn(createUser());
 
@@ -348,7 +348,7 @@ class TaskServiceUT {
 
 	@Test
 	void start_historic_workflow() throws BpmnInitializationException, InvalidDataException, FormConvertException,
-			FormDefinitionException, IOException {
+			FormDefinitionException, IOException, AppServiceException {
 		Mockito.when(utilContextHelper.getAuthenticatedUser()).thenReturn(createAuthenticatedUser());
 		Mockito.when(aclHelper.getUserByLogin(any())).thenReturn(createUser());
 
@@ -426,7 +426,7 @@ class TaskServiceUT {
 
 	@Test
 	void start_delete_workflow() throws BpmnInitializationException, InvalidDataException, FormConvertException,
-			FormDefinitionException, IOException {
+			FormDefinitionException, IOException, AppServiceException {
 		Mockito.when(utilContextHelper.getAuthenticatedUser()).thenReturn(createAuthenticatedUser());
 		Mockito.when(aclHelper.getUserByLogin(any())).thenReturn(createUser());
 

@@ -6,9 +6,12 @@ package org.rudi.microservice.projekt.service.workflow;
 import java.io.IOException;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.rudi.bpmn.core.bean.Status;
+import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -36,7 +39,6 @@ import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -155,7 +157,7 @@ public class NewDatasetRequestTaskServiceImpl extends
 	 */
 	@Override
 	protected void checkEntityStatus(NewDatasetRequestEntity assetDescriptionEntity)
-			throws IllegalArgumentException, InvalidDataException {
+			throws AppServiceException, InvalidDataException {
 		super.checkEntityStatus(assetDescriptionEntity);
 
 		ProjectEntity projectEntity = projectCustomDao
@@ -165,7 +167,7 @@ public class NewDatasetRequestTaskServiceImpl extends
 				|| getBpmnHelper().queryTaskByAssetId(projectEntity.getClass(), projectEntity.getId()) != null
 						&& (projectEntity.getStatus().equals(Status.DRAFT)
 								|| projectEntity.getStatus().equals(Status.PENDING))) {
-			throw new IllegalArgumentException("Projekt is linked to a running task");
+			throw new AppServiceBadRequestException("Projekt is linked to a running task");
 		}
 	}
 

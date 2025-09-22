@@ -9,7 +9,8 @@ import {Form, Section} from 'micro_service_modules/api-bpmn';
 @Component({
     selector: 'app-workflow-form',
     templateUrl: './workflow-form.component.html',
-    styleUrls: ['./workflow-form.component.scss']
+    styleUrls: ['./workflow-form.component.scss'],
+    standalone: false
 })
 export class WorkflowFormComponent implements OnInit {
     formGroup: FormGroup;

@@ -12,7 +12,8 @@ import {Level} from '@shared/notification-template/notification-template.compone
 @Component({
     selector: 'app-my-notifications',
     templateUrl: './my-notifications.component.html',
-    styleUrls: ['./my-notifications.component.scss']
+    styleUrls: ['./my-notifications.component.scss'],
+    standalone: false
 })
 export class MyNotificationsComponent implements OnInit {
     searchIsRunning = false;
