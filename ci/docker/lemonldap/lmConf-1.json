@@ -399,7 +399,7 @@
          "oidcRPMetaDataOptionsLogoutSessionRequired" : 0,
          "oidcRPMetaDataOptionsLogoutType" : "front",
          "oidcRPMetaDataOptionsPublic" : 0,
-         "oidcRPMetaDataOptionsRedirectUris" : "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/login/oauth2/code/ http://localhost:8085/login/oauth2/code/ http://localhost:4200/",
+         "oidcRPMetaDataOptionsRedirectUris" : "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/login/oauth2/code/ http://localhost:8085/login/oauth2/code/ http://localhost:4200/login/oauth2/code/",
          "oidcRPMetaDataOptionsRefreshToken" : 0,
          "oidcRPMetaDataOptionsRequirePKCE" : 0,
          "oidcRPMetaDataOptionsUserInfoSignAlg" : ""

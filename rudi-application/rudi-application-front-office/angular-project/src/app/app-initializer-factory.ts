@@ -10,7 +10,10 @@ const TRANSLATE_SERVICE_IS_READY = new ReplaySubject<void>();
  */
 export const TRANSLATE_SERVICE_IS_READY$: Observable<void> = TRANSLATE_SERVICE_IS_READY.asObservable();
 
-export function appInitializerFactory(translate: CustomTranslateService, injector: Injector, propertiesMetierService: PropertiesMetierService): () => Promise<void> {
+export function appInitializerFactory(
+    translate: CustomTranslateService, 
+    injector: Injector, 
+    propertiesMetierService: PropertiesMetierService): () => Promise<void> {
     return () => new Promise<void>(resolve => {
         const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
         forkJoin({
@@ -19,7 +22,7 @@ export function appInitializerFactory(translate: CustomTranslateService, injecto
             projectName: propertiesMetierService.get('front.projectName')
         }).subscribe(res => {
             const langToSet = 'fr';
-            translate.setDefaultLang('fr');
+            translate.setFallbackLang('fr');
             translate.setProjectName(res.projectName);
             translate.setTeamName(res.teamName);
             translate.use(langToSet).subscribe({

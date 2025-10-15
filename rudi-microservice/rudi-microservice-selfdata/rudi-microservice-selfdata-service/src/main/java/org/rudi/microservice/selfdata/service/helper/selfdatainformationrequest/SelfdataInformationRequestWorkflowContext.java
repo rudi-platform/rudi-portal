@@ -133,13 +133,21 @@ public class SelfdataInformationRequestWorkflowContext extends
 	@SuppressWarnings("unused") // Utilisé par selfdata-information-request-process.bpmn20.xml
 	public List<String> computePotentialProducersOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			String subject, String body) {
+		return computePotentialProducersOwners(scriptContext, executionEntity, subject, body, false);
+	}
+
+	/**
+	 * Retourne la liste des users candidats pour la tâche
+	 *
+	 * @param scriptContext   le context
+	 * @param executionEntity l'entité d'execution
+	 * @param isRecompute     indique si l'appel est fait dans le cadre d'un recalcul de la liste des candidats
+	 * @return la liste des users par leur identifiant sec-username
+	 */
+	@SuppressWarnings("unused") // Utilisé par selfdata-information-request-process.bpmn20.xml
+	public List<String> computePotentialProducersOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
+			String subject, String body, boolean isRecompute) {
 		log.debug("computePotentialProducersOwners...");
-		EMailData eMailData = null;
-		// On Calcul les données de EmailData que si un subject et un body ont été
-		// fournis
-		if (StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
-			eMailData = new EMailData(subject, body);
-		}
 		final List<String> assignees = new ArrayList<>();
 		final List<String> assigneeEmails = new ArrayList<>();
 		SelfdataInformationRequestEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
@@ -163,7 +171,9 @@ public class SelfdataInformationRequestWorkflowContext extends
 				}
 				log.info("liste des producers owner : {}", assignees);
 
-				if (eMailData != null) {
+				// envoi du mail uniquement dans le cas d'un premier calcul de la liste des assignees, pas en cas de recalcul
+				if (!isRecompute && StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
+					EMailData eMailData = new EMailData(subject, body);
 					sendEMail(executionEntity, assetDescription, eMailData, assigneeEmails, null);
 				}
 			} catch (Exception e) {

@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
+import {OrganizationSearchCriteria} from '@core/bean/strukture/organization-search-criteria';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
+import {Status} from 'micro_service_modules/api-bpmn';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {
     Organization,
     OrganizationMember,
     OrganizationMemberType,
-    OrganizationSearchCriteria,
     OrganizationStatus,
     PagedOrganizationList,
     PagedOrganizationUserMembers
@@ -49,18 +50,23 @@ export abstract class OrganizationMetierService {
             searchCriteria.uuid,
             searchCriteria.name,
             searchCriteria.active,
-            searchCriteria.user_uuid,
-            searchCriteria.organization_status,
+            searchCriteria.userUuid,
+            searchCriteria.organizationStatus,
+            searchCriteria.status,
             searchCriteria.offset,
-            searchCriteria.limit);
+            searchCriteria.limit,
+            searchCriteria.order
+        );
     }
 
     getMyOrganizations(userUuid: string): Observable<Organization[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
             this.searchOrganizations({
-                offset,
-                user_uuid: userUuid,
-                organization_status: OrganizationStatus.Validated
+                userUuid: userUuid,
+                organizationStatus: OrganizationStatus.Validated,
+                status: Status.Completed,
+                offset: offset,
+                order: 'name'
             }));
     }
 

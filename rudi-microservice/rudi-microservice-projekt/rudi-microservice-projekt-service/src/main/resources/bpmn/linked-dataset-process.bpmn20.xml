@@ -92,7 +92,7 @@ linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailDa
       <bpmn:incoming>SequenceFlow_9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_2</bpmn:outgoing>
       <bpmn:script>
-        linkedDatasetWorkflowContext.info(&quot;Update status validated
+        linkedDatasetWorkflowContext.info(&quot;Update status closed&quot;);
         linkedDatasetWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;,&quot;CANCELLED&quot;, &quot;clôturée&quot;);
         var localEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/linked-dataset/close-subject.txt&quot;, &quot;file:templates/emails/linked-dataset/close-body.html&quot;);
         linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailData);</bpmn:script>

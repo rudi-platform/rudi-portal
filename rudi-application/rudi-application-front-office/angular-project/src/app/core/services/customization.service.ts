@@ -19,7 +19,7 @@ export class CustomizationService {
 
     getCustomizationDescription() {
         if (!this.customizationDescription$) {
-            this.customizationDescription$ = this.konsultService.getCustomizationDescription(this.translateService.currentLang).pipe(
+            this.customizationDescription$ = this.konsultService.getCustomizationDescription(this.translateService.getCurrentLang()).pipe(
                 shareReplay(1)
             );
         }

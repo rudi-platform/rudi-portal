@@ -28,8 +28,8 @@ import org.rudi.microservice.strukture.core.bean.Feature;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationRole;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.Point;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
@@ -340,8 +340,7 @@ class OrganizationServiceUT {
 		Organization organization = createOrganizationDto();
 
 		Organization created = organizationService.createOrganization(organization);
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
-		criteria.setUuid(created.getUuid());
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuid(created.getUuid()).build();
 		Page<Organization> organizations = organizationService.searchOrganizations(criteria, Pageable.unpaged());
 		assertTrue(organizations.get().anyMatch(collected -> collected.getName().equals(organization.getName())));
 		assertTrue(organizations.get()

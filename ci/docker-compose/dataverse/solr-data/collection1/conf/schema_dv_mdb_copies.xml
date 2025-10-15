@@ -204,6 +204,7 @@
     <copyField source="rudi_dataset_size" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_dataset_size_number_of_fields" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_dataset_size_numbers_of_records" dest="_text_" maxChars="3000"/>
+	<copyField source="rudi_dataset_update_frequency" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_doi" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_ext_metadata_ext_selfdata_ext_selfdata_content" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_ext_metadata_ext_selfdata_ext_selfdata_content_deletable_data" dest="_text_" maxChars="3000"/>

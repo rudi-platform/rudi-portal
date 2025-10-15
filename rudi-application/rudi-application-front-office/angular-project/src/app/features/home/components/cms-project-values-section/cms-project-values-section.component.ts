@@ -49,7 +49,7 @@ export class CmsProjectValuesSectionComponent implements OnInit {
             this.cmsProjectValuesDescription.template_simple,
             [this.cmsProjectValuesDescription.category],
             [],
-            this.translateService.currentLang,
+            this.translateService.getCurrentLang(),
             OFFSET,
             LIMIT
         ).subscribe({

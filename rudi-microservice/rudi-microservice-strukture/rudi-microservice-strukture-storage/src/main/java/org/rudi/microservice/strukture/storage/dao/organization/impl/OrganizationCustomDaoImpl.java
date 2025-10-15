@@ -7,9 +7,10 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
@@ -43,7 +44,8 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		final var searchCriteria = builder.getSearchCriteria();
 		builder.addIsNotNull(searchCriteria.getActive(), organization -> organization.get("closing_date"));
 		builder.add(searchCriteria.getUserUuid(), (organization, userUuid) -> organization.join("members").get("userUuid").in(userUuid));
-		builder.add(searchCriteria.getOrganizationStatus(), OrganizationStatus::valueOf, (organization, status) -> organization.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS).in(status));
+		builder.add(searchCriteria.getOrganizationStatus(), OrganizationStatus::valueOf, (organization, organizationStatus) -> organization.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS).in(organizationStatus));
+		builder.add(searchCriteria.getStatus(), Status::valueOf, (organization, status) -> organization.get(OrganizationEntity.FIELD_STATUS).in(status));
 	}
 
 

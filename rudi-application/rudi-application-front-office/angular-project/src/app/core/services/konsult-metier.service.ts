@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse} from '@angular/common/http';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Filters} from '@shared/models/filters';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
@@ -31,6 +31,7 @@ export class KonsultMetierService {
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;
+    private static customMime = new Mime();
 
     constructor(
         private readonly konsultService: KonsultService,
@@ -80,7 +81,7 @@ export class KonsultMetierService {
 
     private static loadCustomMimeType(): void {
         // Le fichier JSON est chargé dans notre objet sous la propriété default et est de type Module
-        new Mime().define(customMimeDatabase, true);
+        this.customMime.define(customMimeDatabase, true);
     }
 
     private static getFacetsValues(facets: MetadataFacets): string[] {
@@ -241,6 +242,14 @@ export class KonsultMetierService {
     getMediaFileExtension(media: Media): string {
         const mediaFile = media as MediaFile;
         const originalFileType = mediaFile.file_type.replace(CRYPT_SUFFIX, '');
-        return mime.getExtension(originalFileType) ?? UNKNOWN_EXTENSION;
+
+        // Récupération de l'extension du fichier
+        return mime.getExtension(originalFileType)
+            ??
+            // Si rien n'est trouvé : utilisation d'un tableau custom
+            KonsultMetierService.customMime.getExtension(originalFileType)
+            ??
+            // Si rien n'est trouvé renvoi "extension inconnue"
+            UNKNOWN_EXTENSION;
     }
 }

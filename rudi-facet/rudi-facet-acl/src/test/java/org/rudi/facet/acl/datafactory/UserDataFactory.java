@@ -22,7 +22,7 @@ public class UserDataFactory extends AbstractDataFactory {
 	private final ACLHelper helper;
 	private final RoleDataFactory roleDataFactory;
 
-	public User getOrCreateUser(String login, UserType type, List<Role> roles) {
+	public User getOrCreateUser(String login, UserType type, List<Role> roles, boolean hasNames) {
 		User user = null;
 
 		if (StringUtils.isNotEmpty(login)) {
@@ -38,8 +38,10 @@ public class UserDataFactory extends AbstractDataFactory {
 		user.setLogin(login);
 		user.setPassword(randomString(10)+"Az!1");
 		user.setCompany(randomString(20));
-		user.setFirstname(randomString(20));
-		user.setLastname(randomString(20));
+		if(hasNames){
+			user.setFirstname(randomString(20));
+			user.setLastname(randomString(20));
+		}
 		user.setType(type);
 		user.setRoles(roles);
 
@@ -47,18 +49,18 @@ public class UserDataFactory extends AbstractDataFactory {
 	}
 
 	public User createUserNodeProvider(String login) {
-		return getOrCreateUser(login, UserType.ROBOT, List.of(roleDataFactory.getOrCreate("PROVIDER", null)));
+		return getOrCreateUser(login, UserType.ROBOT, List.of(roleDataFactory.getOrCreate("PROVIDER", null)), true);
 	}
 
-	public User createUser(String login){
-		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null)));
+	public User createUser(String login, boolean hasNames){
+		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null)), hasNames);
 	}
 
 	public User createUserAdmin(String login){
-		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("ADMINISTRATOR", null)));
+		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("ADMINISTRATOR", null)), true);
 	}
 
 	public User createUserModerator(String login){
-		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("MODERATOR", null)));
+		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("MODERATOR", null)), true);
 	}
 }

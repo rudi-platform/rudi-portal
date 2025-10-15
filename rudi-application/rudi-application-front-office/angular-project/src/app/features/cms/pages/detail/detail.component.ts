@@ -51,7 +51,7 @@ export class DetailComponent implements OnInit {
         this.route.params.pipe(
             switchMap((params: Params) => {
                 if (params[TYPE_FIELD] && params[UUID_FIELD] && params[TEMPLATE_FIELD]) {
-                    return this.konsultService.renderAsset(params[TYPE_FIELD].toUpperCase(), params[UUID_FIELD], params[TEMPLATE_FIELD], this.translateService.currentLang);
+                    return this.konsultService.renderAsset(params[TYPE_FIELD].toUpperCase(), params[UUID_FIELD], params[TEMPLATE_FIELD], this.translateService.getCurrentLang());
                 } else {
                     return throwError(() => new Error('Certains paramètres obligatoire ne sont pas renseignées'));
                 }

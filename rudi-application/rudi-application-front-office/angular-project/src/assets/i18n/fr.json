@@ -419,7 +419,7 @@
         "errorAccountValidationEnd": " Vous pouvez saisir la même adresse mail que précédemment.",
         "successResetPassword": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter au portail {projectName}.",
         "resetPasswordError": "Le délai de réinitialisation de votre mot de passe est dépassé. Nous vous invitons à renouveler votre demande ",
-        "successInitPassword": "Un mail de réinitialisation de votre mot de passe vous a été envoyé. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter "
+        "successInitPassword": "Un mail de réinitialisation de votre mot de passe vous a été envoyé si votre adresse est connue de {projectName}. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter"
     },
     "searchbox": {
         "jeux": "Jeux",
@@ -734,7 +734,8 @@
                     "success": "L'utilisateur a bien été détaché de l’organisation."
                 }
             }
-        }
+        },
+        "datasetUpdateFrequency": "Fréquence de mise à jour"
     },
     "availableFormats": {
         "formatsDisponibles": "Formats disponibles :",
@@ -1341,7 +1342,8 @@
                         "in_progress": "En cours",
                         "validated": "Validé",
                         "cancelled": "Annulé",
-                        "archived": "Archivé"
+                        "archived": "Archivé",
+                        "disengaged": "Archivé"
                     }
                 },
                 "information": "Information",
@@ -1581,5 +1583,19 @@
                 "plural": "{number} jeux de données"
             }
         }
+    },
+    "datasetUpdateFrequency": {
+        "continual": "Continue",
+        "daily": "Journalière",
+        "weekly": "Hebdomadaire",
+        "fortnightly": "Toutes les deux semaines",
+        "monthly": "Tous les mois",
+        "quarterly": "Tous les trois mois",
+        "biannually": "Tous les six mois",
+        "annually": "Tous les ans",
+        "asNeeded": "Si besoin",
+        "irregular": "Sans régularité",
+        "notPlanned": "Non planifiée",
+        "unknown": "Inconnue"
     }
 }

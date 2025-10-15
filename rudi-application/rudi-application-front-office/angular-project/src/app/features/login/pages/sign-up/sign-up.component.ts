@@ -171,7 +171,7 @@ export class SignUpComponent implements OnInit {
             this.cmsTermsDescription.template_simple,
             [this.cmsTermsDescription.cgu_category],
             [],
-            this.translateService.currentLang,
+            this.translateService.getCurrentLang(),
             0,
             1
         ).subscribe({

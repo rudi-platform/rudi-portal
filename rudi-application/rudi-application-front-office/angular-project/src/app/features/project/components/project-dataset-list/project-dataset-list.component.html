@@ -3,7 +3,9 @@
         <ng-container>
             <app-organization-logo [organizationId]="isItemLogo(item) ? item.pictoValue : null"
                                    cssClass="with-border"
-                                   organizationType="producer">
+                                   organizationType="producer"
+                                   [defaultLogo]="getDefaultLogo(item)"
+            >
             </app-organization-logo>
         </ng-container>
     </div>

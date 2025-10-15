@@ -10,8 +10,8 @@ import {AppInfo} from 'micro_service_modules/acl/acl-api/model/models';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CustomizationDescription, KonsultService, MiscellaneousService} from 'micro_service_modules/konsult/konsult-api';
 import {CmsTermsDescription} from 'micro_service_modules/konsult/konsult-model';
-import {FooterUtils} from '../utils/footer-utils';
 import {switchMap} from 'rxjs';
+import {FooterUtils} from '../utils/footer-utils';
 
 const OFFSET: number = 0;
 const LIMIT: number = 3;
@@ -72,7 +72,7 @@ export class FooterComponent implements OnInit {
             this.cmsTermsDescription.template_simple,
             [this.cmsTermsDescription.category],
             [],
-            this.translateService.currentLang,
+            this.translateService.getCurrentLang(),
             OFFSET,
             LIMIT
         ).subscribe({
@@ -139,7 +139,7 @@ export class FooterComponent implements OnInit {
         });
     }
 
-    public redirectToRudi(): void{
+    public redirectToRudi(): void {
         window.open(this.footerLogoLink).focus();
     }
 }

@@ -1,6 +1,6 @@
 package org.rudi.microservice.strukture.storage.dao.organization;
 
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

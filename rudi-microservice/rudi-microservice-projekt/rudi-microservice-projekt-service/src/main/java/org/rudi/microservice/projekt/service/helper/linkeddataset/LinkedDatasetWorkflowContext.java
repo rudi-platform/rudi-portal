@@ -108,22 +108,36 @@ public class LinkedDatasetWorkflowContext
 	}
 
 	/**
-	 * Retourne la liste des users candidats pour la tâche
+	 * Retourne la liste des users candidats pour la tâche et leur envoie un email. En cas de recalcul de cette liste, le mail n'est pas renvoyé car cet
+	 * envoi est inhibé dans le bpmnHelper.
 	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
+	 * @param subject         le sujet du mail
+	 * @param body            le corps du mail
 	 * @return la liste des users par leur identifiant sec-username
 	 */
 	@SuppressWarnings("unused") // Utilisé par linked-dataset-process.bpmn20.xml
 	public List<String> computePotentialProducersOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			String subject, String body) throws AppServiceException {
+		return computePotentialProducersOwners(scriptContext, executionEntity, subject, body, false);
+	}
+
+	/**
+	 * Retourne la liste des users candidats pour la tâche et leur envoie un email. En cas de recalcul de cette liste, le mail n'est pas renvoyé car cet
+	 * envoi est inhibé dans le bpmnHelper.
+	 *
+	 * @param scriptContext   le context
+	 * @param executionEntity l'entité d'execution
+	 * @param subject         le sujet du mail
+	 * @param body            le corps du mail
+	 * @param isRecompute     indique si l'appel est fait dans le cadre d'un recalcul de la liste des candidats
+	 * @return la liste des users par leur identifiant sec-username
+	 */
+	@SuppressWarnings("unused") // Utilisé par linked-dataset-process.bpmn20.xml
+	public List<String> computePotentialProducersOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
+			String subject, String body, boolean isRecompute) throws AppServiceException {
 		log.debug("computePotentialProducersOwners...");
-		EMailData eMailData = null;
-		// On Calcul les données de EmailData que si un subject et un body ont été
-		// fournis
-		if (StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
-			eMailData = new EMailData(subject, body);
-		}
 		List<String> assignees = new ArrayList<>();
 		List<String> assigneeEmails = new ArrayList<>();
 		LinkedDatasetEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
@@ -144,15 +158,19 @@ public class LinkedDatasetWorkflowContext
 				throw new AppServiceException(String.format("Unable to retrieve dataset information for dataset %s",
 						assetDescription.getDatasetUuid()), e);
 			}
-			try {
-				if (eMailData != null) {
+
+			// envoi du mail uniquement dans le cas d'un premier calcul de la liste des assignees, pas en cas de recalcul
+			if (!isRecompute && StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
+				EMailData eMailData = new EMailData(subject, body);
+
+				try {
 					// On rajoute le nom de l'utilisateur ou de l'organisateur ayant initié le projet.
 					injectData(executionEntity, "userName", getUserDenomination(assetDescription.getInitiator()));
 
 					sendEMail(executionEntity, assetDescription, eMailData, assigneeEmails, null);
+				} catch (Exception e) {
+					log.warn("Failed to send email to " + assignees + " from " + assetDescription, e);
 				}
-			} catch (Exception e) {
-				log.warn("Failed to send email to " + assignees + " from " + assetDescription, e);
 			}
 		}
 		return assignees;

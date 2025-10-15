@@ -1,7 +1,5 @@
 package org.rudi.microservice.konsult.service.customization.impl;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.util.Strings;
 import org.rudi.facet.organization.bean.OrganizationStatus;
 import org.rudi.facet.organization.bean.PagedOrganizationList;
@@ -31,7 +29,7 @@ public class OrganizationKeyFigureComputerImpl implements KeyFigureComputer {
 		// comptage des organizations
 		try {
 			PagedOrganizationList organizationResult = organizationHelper.searchOrganizations(null, null, null, null,
-				OrganizationStatus.VALIDATED, 0, 0, Strings.EMPTY);
+				OrganizationStatus.VALIDATED, null,0, 0, Strings.EMPTY);
 			Long organizationCount = organizationResult.getTotal();
 			keyFigureData.setCount(organizationCount);
 		} catch (Exception e) {

@@ -4,6 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import {ProjectDatasetPictoType} from '@features/project/model/project-dataset-picto-type';
 import {DataRequestItem} from '../../model/data-request-item';
 
 /**
@@ -97,7 +98,8 @@ export class EditNewDataSetDialogComponent implements OnInit {
             title: this.newDatasetRequestFormGroup.get('title').value
                 ? this.newDatasetRequestFormGroup.get('title').value : this.defaultTitle,
             description: this.newDatasetRequestFormGroup.get('description').value,
-            uuid: null
+            uuid: null,
+            pictoType: ProjectDatasetPictoType.STATIC
         };
 
         this.dialogRef.close(request);

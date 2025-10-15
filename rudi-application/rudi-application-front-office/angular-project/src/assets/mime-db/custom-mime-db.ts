@@ -9,7 +9,8 @@ const types: { [key: string]: string[] } = {
     'application/zstd': ['zst'],
     'image/flif': ['flif'],
     'multipart/form-data': ['data'],
-    'text/php': ['php']
+    'text/php': ['php'],
+    'application/geopackage+sqlite3': ['gpkg'],
 };
 Object.freeze(types);
 export default types;

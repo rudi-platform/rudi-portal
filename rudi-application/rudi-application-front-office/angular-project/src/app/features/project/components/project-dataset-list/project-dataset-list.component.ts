@@ -13,6 +13,9 @@ import {ProjectDatasetPictoType} from '../../model/project-dataset-picto-type';
 })
 export class ProjectDatasetListComponent {
 
+    private static DEFAULT_ORGANIZATION_LOGO: string = '/assets/images/rudi_default_picto_organization.png';
+    private static DEFAULT_NEW_DATASET_REQUEST_LOGO: string = '/assets/images/rudi_picto_nouvelle_demande.svg';
+
     @Input()
     public items: ProjectDatasetItem[];
 
@@ -48,5 +51,12 @@ export class ProjectDatasetListComponent {
 
     public handleDelete(item: ProjectDatasetItem): void {
         this.delete.emit(item);
+    }
+
+    getDefaultLogo(item: ProjectDatasetItem): string | undefined {
+        if (this.isItemLogo(item)) {
+            return ProjectDatasetListComponent.DEFAULT_ORGANIZATION_LOGO;
+        }
+        return ProjectDatasetListComponent.DEFAULT_NEW_DATASET_REQUEST_LOGO;
     }
 }

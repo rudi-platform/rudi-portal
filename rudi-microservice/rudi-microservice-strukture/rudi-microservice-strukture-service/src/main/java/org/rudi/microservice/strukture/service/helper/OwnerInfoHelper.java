@@ -50,6 +50,10 @@ public class OwnerInfoHelper {
 
 			return new OwnerInfo().ownerType(OwnerType.ORGANIZATION).contact(contact).name(user.getCompany());
 		}
-		return new OwnerInfo().ownerType(OwnerType.USER).contact(user.getLogin()).name(String.format("%s %s", user.getFirstname(), user.getLastname()));
+
+		if(StringUtils.isNotEmpty(user.getFirstname()) && StringUtils.isNotEmpty(user.getLastname())){
+			return new OwnerInfo().ownerType(OwnerType.USER).contact(user.getLogin()).name(String.format("%s %s", user.getFirstname(), user.getLastname()).trim());
+		}
+		return new OwnerInfo().ownerType(OwnerType.USER).contact(user.getLogin()).name(user.getLogin());
 	}
 }

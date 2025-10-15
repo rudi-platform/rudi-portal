@@ -109,24 +109,49 @@
 
 .burger-menu-btn {
     margin-left: 7px;
+
+    /* Forme et fond type M17 */
     --mdc-fab-container-shape: 4px;
-    --mdc-fab-container-elevation-shadow: none !important;
     --mdc-fab-container-color: #ffffff !important;
 
+    /* Retirer l’ombre */
+    --mdc-fab-container-elevation-shadow: none !important;
+    box-shadow: none !important;
+
+    /* Supprimer l’ombre au hover/focus */
+    &:hover,
+    &:focus,
+    &:active {
+        box-shadow: none !important;
+    }
+
+    /* Bordure focus accessible (style M17) */
+    &:focus-visible {
+        border: 2px solid #1D1D1B !important;
+    }
+
+    /* Icône plus grande et sombre */
     mat-icon {
         scale: 1.4;
         color: #1D1D1B;
+        margin: 0;
     }
 }
 
+/* Cibler aussi la classe Material au cas où */
 .mat-mdc-mini-fab {
-    &:hover {
+    background: #ffffff !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus,
+    &:active {
         box-shadow: none !important;
     }
 
-    &:focus {
-        border: #1D1D1B 2px solid !important;
-        box-shadow: none !important;
+    &:focus-visible {
+        border: 2px solid #1D1D1B !important;
     }
 }
 

@@ -1,5 +1,5 @@
 import {Clipboard} from '@angular/cdk/clipboard';
-import { HttpResponse } from '@angular/common/http';
+import {HttpResponse} from '@angular/common/http';
 import {Component, Input, OnInit} from '@angular/core';
 import {LanguageService} from '@core/i18n/language.service';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
@@ -417,7 +417,7 @@ export class DataSetInfosComponent implements OnInit {
             return null;
         }
 
-        const currentLanguage = this.translateService.currentLang;
+        const currentLanguage = this.translateService.getCurrentLang();
         let pivotLabels: string[] = [];
         const matchingDatas = metadata.ext_metadata.ext_selfdata.ext_selfdata_content.matching_data;
         if (matchingDatas && matchingDatas.length > 0) {

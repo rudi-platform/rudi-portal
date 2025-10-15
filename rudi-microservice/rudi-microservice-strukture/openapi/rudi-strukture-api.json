@@ -1588,6 +1588,14 @@
 						}
 					},
 					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Status"
+						}
+					},
+					{
 						"$ref": "#/components/parameters/OffsetParam"
 					},
 					{

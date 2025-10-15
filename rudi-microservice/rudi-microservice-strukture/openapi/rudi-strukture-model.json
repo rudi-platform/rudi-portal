@@ -360,38 +360,6 @@
 				"type": "string",
 				"format": "uuid"
 			},
-			"OrganizationSearchCriteria": {
-				"description": "Critère de recherche d'organisations",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					},
-					{
-						"properties": {
-							"uuid": {
-								"$ref": "#/components/schemas/OrganizationUuidParam"
-							},
-							"name": {
-								"$ref": "#/components/schemas/OrganizationNameParam"
-							},
-							"active": {
-								"$ref": "#/components/schemas/OrganizationActiveParam"
-							},
-							"user_uuid": {
-								"$ref": "#/components/schemas/OrganizationUserUuidParam"
-							},
-							"organization_status": {
-								"$ref": "#/components/schemas/OrganizationStatus"
-							},
-							"load_all_informations": {
-								"description": "Utilisé dans le cadre des organizationBean pour savoir si l'on charge l'ensemble des informations",
-								"type": "boolean"
-							}
-						}
-					}
-				]
-			},
 			"PagedList": {
 				"description": "Liste paginée d'éléments",
 				"type": "object",

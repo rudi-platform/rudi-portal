@@ -83,7 +83,7 @@ public class LinkedProducerServiceImplUT {
 	}
 
 	private void mockAuthenticatedUserAsUser(UUID nodeUuid) throws AppServiceUnauthorizedException {
-		User user = userDataFactory.createUser(nodeUuid.toString());
+		User user = userDataFactory.createUser(nodeUuid.toString(), true);
 
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		AuthenticatedUser authenticatedUser = createAuthenticatedUserFromUser(user);

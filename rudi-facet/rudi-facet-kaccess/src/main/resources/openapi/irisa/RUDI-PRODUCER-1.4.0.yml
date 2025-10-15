@@ -1200,6 +1200,8 @@ components:
         - 'text/x-yaml' # (.yaml | .yml)
         - 'application/x-executable+crypt' # Unconventionnal MIME types for encypted files
         - 'application/graphql+crypt'
+        - 'application/geopackage+sqlite3'
+        - 'application/geopackage+sqlite3+crypt'
         - 'application/javascript+crypt' # (.js)
         - 'application/json+crypt' # (.json)
         - 'application/ld+json+crypt'

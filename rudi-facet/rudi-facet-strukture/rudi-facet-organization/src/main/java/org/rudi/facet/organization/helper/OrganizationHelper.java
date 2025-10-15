@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.bean.OrganizationMember;
 import org.rudi.facet.organization.bean.OrganizationRole;
@@ -125,7 +126,7 @@ public class OrganizationHelper {
 	}
 
 	@Nonnull
-	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid,OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws GetOrganizationException {
+	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid,OrganizationStatus organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
 						.queryParamIfPresent("uuid", Optional.ofNullable(uuid))
@@ -133,6 +134,7 @@ public class OrganizationHelper {
 						.queryParamIfPresent("active", Optional.ofNullable(active))
 						.queryParamIfPresent("user_uuid", Optional.ofNullable(userUuid))
 						.queryParamIfPresent("organization_status", Optional.ofNullable(organizationStatus))
+						.queryParamIfPresent("status", Optional.ofNullable(status))
 						.queryParamIfPresent("offset", Optional.ofNullable(offset))
 						.queryParamIfPresent("limit", Optional.ofNullable(limit))
 						.queryParamIfPresent("order", Optional.ofNullable(order))
@@ -151,7 +153,7 @@ public class OrganizationHelper {
 		int offset = 0;
 		long total;
 		do {
-			PagedOrganizationList organizationsPage = searchOrganizations(null, null, null, null, null, offset, 10, "name");
+			PagedOrganizationList organizationsPage = searchOrganizations(null, null, null, null, null, null, offset, 10, "name");
 			total = organizationsPage.getTotal();
 			if (CollectionUtils.isNotEmpty(organizationsPage.getElements())) {
 				organizations.addAll(organizationsPage.getElements());
@@ -190,7 +192,7 @@ public class OrganizationHelper {
 	}
 
 	public PagedOrganizationList getMyOrganizations(UUID userUuid, int offset, int limit, String order) throws GetOrganizationException {
-		return searchOrganizations(null, null, null, userUuid, null, offset, limit, order);
+		return searchOrganizations(null, null, null, userUuid, null, null,offset, limit, order);
 	}
 
 	private List<UUID> extractUuidFromPageList(PagedOrganizationList page) {

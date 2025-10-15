@@ -22,18 +22,18 @@ import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationBean;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -228,7 +228,7 @@ class OrganizationBeanServiceUT {
 	@Test
 	@DisplayName("Vérifier que je récupère bien l'ensemble des organization quand je ne met aucun paramètre.")
 	void testSearchAllOrganizations() throws Exception {
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> initialOrganizations = organizationBeanService.searchOrganizationBeans(criteria, pageable);
@@ -249,8 +249,7 @@ class OrganizationBeanServiceUT {
 		List<Organization> organizations = createOrganizations();
 		List<Organization> metalOrganizations = organizations.stream().filter(o -> o.getName().equals("Hellfest") || o.getName().equals("Wacken") || o.getName().equals("Motocultor")).collect(Collectors.toList());
 
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
-		criteria.setUserUuid(metalOwner);
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().userUuid(metalOwner).build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
@@ -266,7 +265,7 @@ class OrganizationBeanServiceUT {
 		List<Organization> organizations = createOrganizations();
 		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getOpeningDate)).collect(Collectors.toList());
 
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
 		Pageable pageable = PageRequest.of(0,10, Sort.by("openingDate"));
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
@@ -289,7 +288,7 @@ class OrganizationBeanServiceUT {
 		List<Organization> organizations = createOrganizations();
 		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getOpeningDate)).collect(Collectors.toList());
 
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
 		Pageable pageable = PageRequest.of(0,10, Sort.by("openingDate").descending());
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
@@ -312,7 +311,7 @@ class OrganizationBeanServiceUT {
 		List<Organization> organizations = createOrganizations();
 		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getName)).collect(Collectors.toList());
 
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
 		Pageable pageable = PageRequest.of(0,10, Sort.by("name"));
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
@@ -335,7 +334,7 @@ class OrganizationBeanServiceUT {
 		List<Organization> organizations = createOrganizations();
 		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getName)).collect(Collectors.toList());
 
-		OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
 		Pageable pageable = PageRequest.of(0,10, Sort.by("name").descending());
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);

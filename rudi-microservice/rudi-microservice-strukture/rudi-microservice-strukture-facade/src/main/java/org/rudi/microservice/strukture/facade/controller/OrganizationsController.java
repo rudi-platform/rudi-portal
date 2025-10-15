@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -23,15 +24,16 @@ import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationFormType;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationList;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationUserMembers;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
 import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,11 +79,11 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	public ResponseEntity<PagedOrganizationList> searchOrganizations(UUID uuid, String name, Boolean active,
-			UUID userUuid, OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) {
-		val searchCriteria = new OrganizationSearchCriteria().uuid(uuid).name(name).active(active).userUuid(userUuid)
-				.organizationStatus(organizationStatus);
-		val pageable = utilPageable.getPageable(offset, limit, order);
-		val page = organizationService.searchOrganizations(searchCriteria, pageable);
+			UUID userUuid, OrganizationStatus organizationStatus, Status status, Integer offset, Integer limit, String order) {
+		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria.builder().uuid(uuid).name(name).active(active).userUuid(userUuid)
+				.organizationStatus(organizationStatus).status(status).build();
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		Page<Organization> page = organizationService.searchOrganizations(searchCriteria, pageable);
 		return ResponseEntity
 				.ok(new PagedOrganizationList().total(page.getTotalElements()).elements(page.getContent()));
 	}

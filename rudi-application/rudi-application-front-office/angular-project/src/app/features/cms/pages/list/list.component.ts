@@ -161,7 +161,7 @@ export class ListComponent {
         const formattedDate: string = date.toISOString().slice(0, 10);
         const publishDateFilter: string = 'publishdate[lte]=' + formattedDate;
         const unpublishDateFilter: string = 'unpublishdate[gt]=' + formattedDate;
-        this.konsultService.renderAssets('NEWS', this.customizationDescription.cms_news_description.template_news_list, undefined, [publishDateFilter, unpublishDateFilter], this.translateService.currentLang, this.offset, this.limit, this.order)
+        this.konsultService.renderAssets('NEWS', this.customizationDescription.cms_news_description.template_news_list, undefined, [publishDateFilter, unpublishDateFilter], this.translateService.getCurrentLang(), this.offset, this.limit, this.order)
             .subscribe({
                 next: (pagedCmsAssets: PagedCmsAssets) => {
                     this.newsListTotal = pagedCmsAssets.total;

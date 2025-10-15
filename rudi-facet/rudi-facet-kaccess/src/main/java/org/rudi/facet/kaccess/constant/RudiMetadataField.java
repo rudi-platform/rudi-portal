@@ -159,6 +159,8 @@ public class RudiMetadataField {
 	public static final FieldSpec DATASET_DATES_EXPIRES = DATASET_DATES.newChildFromJavaField(EXPIRES);
 	public static final FieldSpec DATASET_DATES_DELETED = DATASET_DATES.newChildFromJavaField(DELETED);
 
+	public static final FieldSpec DATASET_UPDATE_FREQUENCY = ROOT.newChildFromJavaField("datasetUpdateFrequency");
+
 	public static final FieldSpec STORAGE_STATUS = RudiMetadataField.ROOT.newChildFromJavaField("storageStatus")
 			.allowControlledVocabulary(false);
 
@@ -324,6 +326,7 @@ public class RudiMetadataField {
 					DATASET_DATES_EXPIRES,
 					DATASET_DATES_DELETED
 			)
+			.add(DATASET_UPDATE_FREQUENCY)
 			.add(STORAGE_STATUS)
 			.add(METADATA_INFO,
 					METADATA_INFO_API_VERSION,

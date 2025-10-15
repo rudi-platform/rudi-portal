@@ -15,7 +15,7 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
 import org.rudi.microservice.strukture.core.bean.OrganizationBean;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.mapper.OrganizationBeanMapper;
 import org.rudi.microservice.strukture.service.organization.bean.OrganizationBeanService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;

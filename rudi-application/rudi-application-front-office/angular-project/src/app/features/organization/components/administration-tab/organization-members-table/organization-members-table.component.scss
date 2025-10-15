@@ -150,14 +150,6 @@ button {
     }
 }
 
-.button-menu {
-    cursor: pointer;
-    font-weight: 600;
-    height: 42px;
-    outline: none;
-    border: none;
-}
-
 .menu-open {
     cursor: pointer;
     font-weight: 600;
@@ -168,13 +160,6 @@ button {
     height: 30px;
     width: 0px;
     padding-bottom: 35px;
-}
-
-mat-icon {
-    top: -3px;
-    position: relative;
-    height: 20px;
-    margin-right: 5px;
 }
 
 .search-bar {

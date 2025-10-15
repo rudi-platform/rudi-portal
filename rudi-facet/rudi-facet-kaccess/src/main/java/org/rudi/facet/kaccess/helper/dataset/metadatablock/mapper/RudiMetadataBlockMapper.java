@@ -28,6 +28,7 @@ import org.rudi.facet.kaccess.bean.Metadata.StorageStatusEnum;
 import org.rudi.facet.kaccess.bean.MetadataDatasetSize;
 import org.rudi.facet.kaccess.bean.MetadataTemporalSpread;
 import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
+import org.rudi.facet.kaccess.bean.UpdateFrequency;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.mapper.fields.AbstractFieldsMapper;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.mapper.fields.RootFields;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_SIZE;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_SIZE_NUMBER_OF_FIELDS;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_SIZE_NUMBER_OF_RECORDS;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_UPDATE_FREQUENCY;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.DOI;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.GLOBAL_ID;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.KEYWORDS;
@@ -106,6 +108,7 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 		setTemporalSpread(metadata, getField(rudiFields, TEMPORAL_SPREAD));
 		setDatasetSize(metadata, getField(rudiFields, DATASET_SIZE));
 		setStorageStatus(metadata, getField(rudiFields, STORAGE_STATUS));
+		setDatasetUpdateFrequency(metadata, getField(rudiFields, DATASET_UPDATE_FREQUENCY));
 
 		final var allRudiRootFields = new RootFields(rudiFields);
 		for (final var fieldsMapper : sortedFieldsMappers) {
@@ -134,6 +137,7 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 		addTemporalSpreadField(metadata, fields);
 		addDatasetSizeField(metadata, fields);
 		addStorageStatusField(metadata, fields);
+		addDatasetUpdateFrequency(metadata, fields);
 
 		for (final var fieldsMapper : sortedFieldsMappers) {
 			fieldsMapper.metadataToFields(metadata, fields);
@@ -425,6 +429,21 @@ public class RudiMetadataBlockMapper extends AbstractMetadataBlockElementMapper<
 
 		DatasetMetadataBlockElementField storageStatusField = createField(STORAGE_STATUS, storageStatus.getValue());
 		fields.add(storageStatusField);
+
+	}
+
+	private void setDatasetUpdateFrequency(Metadata metadata, DatasetMetadataBlockElementField field) {
+		if (field != null && field.getValue() != null) {
+			metadata.setDatasetUpdateFrequency(UpdateFrequency.fromValue(field.getValue().toString()));
+		}
+	}
+
+	private void addDatasetUpdateFrequency(Metadata metadata, List<DatasetMetadataBlockElementField> fields) {
+		UpdateFrequency updateFrequency = metadata.getDatasetUpdateFrequency();
+		if (updateFrequency != null) {
+			DatasetMetadataBlockElementField updateFrequencyField = createField(DATASET_UPDATE_FREQUENCY, updateFrequency.getValue());
+			fields.add(updateFrequencyField);
+		}
 
 	}
 

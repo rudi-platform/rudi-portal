@@ -8,18 +8,19 @@ import org.rudi.microservice.acl.core.bean.PasswordChange;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.facade.controller.api.AccountApi;
 import org.rudi.microservice.acl.service.account.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 public class AccountController implements AccountApi {
 
-	@Autowired
-	private AccountService accountService;
+	private final AccountService accountService;
 
-	@Override
 	// Méthode accessible derrière authent si on est authentifié ça passe (anonymous = OK)
+	@Override
 	public ResponseEntity<Void> requestAccountCreation(Account account) throws AppServiceException {
 		// Création du compte utilisateur
 		accountService.registerAccount(account);

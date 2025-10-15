@@ -421,14 +421,14 @@ public class BpmnHelper {
 		return action;
 	}
 
-	public List<String> recomputeCandidateUsers(Task task) {
+	public List<String> recomputeCandidateUsers(Task task, boolean isRecompute) {
 		List<String> result = new ArrayList<>();
 		UserTask userTask = lookupUserTask(task);
 		// Liste de script à executer pour recalculer les users
-		List<String> candidateUsers = userTask.getCandidateUsers();
-		for (String candidateUser : candidateUsers) {
+		List<String> scriptletsList = userTask.getCandidateUsers();
+		for (String scriptlet : scriptletsList) {
 			try {
-				result.addAll(executeCandidateUser(candidateUser, task));
+				result.addAll(executeScriptlet(scriptlet, task, isRecompute));
 			} catch (InvocationTargetException | IllegalAccessException exception) {
 				log.error("Exeception thrown during scriplet execution", exception);
 			}
@@ -436,16 +436,46 @@ public class BpmnHelper {
 		return result;
 	}
 
-	private List<String> executeCandidateUser(String candidateUser, Task task)
+	/**
+	 * Exécute le scriptlet de calcul des candidats
+	 * 
+	 * Ce scriptlet est de la forme ${bean.method(execution, "param1", 2, true)}
+	 * 
+	 * Si isRecompute = true, on ignore les paramètres commencant par file:templates/emails afin d'éviter de renvoyer le mail à des candidats déjà
+	 * identifiés.
+	 * 
+	 * @param scriptlet   le scriptlet
+	 * @param task        la tâche
+	 * @param isRecompute true si on est dans le cadre d'un recalcul
+	 * @return la liste des candidats
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 */
+	private List<String> executeScriptlet(String scriptlet, Task task, boolean isRecompute)
 			throws InvocationTargetException, IllegalAccessException {
-		String inputWithoutBrackets = removeBrackets(candidateUser);
+		String inputWithoutBrackets = removeBrackets(scriptlet);
 		String objectName = extractObject(inputWithoutBrackets);
-		String methodName = extractMethod(candidateUser);
-		String[] parametersFromScriptlet = extractParameters(candidateUser);
+		String methodName = extractMethod(scriptlet);
+		// ajout systématique du paramètre isRecompute dans la liste des paramètres
+		String[] parametersFromScriptlet = extractParameters(scriptlet, isRecompute);
 		Object bean = applicationContext.getBean(objectName);
 		Method[] methods = bean.getClass().getDeclaredMethods();
+		log.info("Looking for method {} with {} parameters in bean {}", methodName, parametersFromScriptlet.length,
+				objectName);
+		// recherche de la méthode avec le bon nombre de paramètres
 		Method targetMethod = lookupMethod(methods, methodName, parametersFromScriptlet.length);
+		if (targetMethod == null) {
+			// recherche de la méthode avec un paramètre en moins (le isRecompute)
+			parametersFromScriptlet = ArrayUtils.remove(parametersFromScriptlet, parametersFromScriptlet.length - 1);
+
+			log.info("Method not found -> Looking for method {} with {} parameters in bean {}", methodName,
+					parametersFromScriptlet.length, objectName);
+			targetMethod = lookupMethod(methods, methodName, parametersFromScriptlet.length);
+		}
 		if (targetMethod != null) {
+			log.info("Executing {}.{} with parameters {}", objectName, methodName,
+					String.join(",", parametersFromScriptlet));
+			// execution de la méthode trouvée
 			ExecutionEntity executionEntity = lookupExecution(task);
 			Object[] parametersConverted = convertParameters(executionEntity, targetMethod.getParameters(),
 					parametersFromScriptlet);
@@ -512,16 +542,18 @@ public class BpmnHelper {
 		return result;
 	}
 
-	private String[] extractParameters(String input) {
+	private String[] extractParameters(String input, boolean isRecompute) {
 		input = removeBrackets(input);
 		int index1 = input.indexOf('(');
 		int index2 = input.indexOf(')');
 		if (index1 >= 0 && index2 > index1) {
 			input = input.substring(index1 + 1, index2);
-			return input.split(",");
 		} else {
-			return new String[0];
+			input = "";
 		}
+		// ajout systématique du paramètre isRecompute
+		input = String.join(",", input, Boolean.toString(isRecompute));
+		return input.split(",");
 	}
 
 	private String removeBrackets(String input) {

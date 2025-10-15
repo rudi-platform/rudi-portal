@@ -18,10 +18,10 @@ import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.exception.UserIsNotOrganizationAdministratorException;
 import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
@@ -92,7 +92,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	public Organization getOrganization(UUID uuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException {
 		OrganizationEntity entity = organizationHelper.getOrganizationEntity(uuid);
-		if(OrganizationStatus.DISENGAGED.equals(entity.getOrganizationStatus())) {
+		if (OrganizationStatus.DISENGAGED.equals(entity.getOrganizationStatus())) {
 			struktureAuthorisationHelper.checkRightsAdminsterOrganization(entity);
 		}
 		return organizationMapper.entityToDto(entity);
@@ -205,7 +205,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = {CannotRemoveLastAdministratorException.class, RuntimeException.class})
+	@Transactional(rollbackFor = { CannotRemoveLastAdministratorException.class, RuntimeException.class })
 	// readOnly = false
 	public void removeOrganizationMembers(UUID organizationUuid, UUID userUuid) throws AppServiceException {
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
@@ -250,7 +250,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	public Page<OrganizationUserMember> searchOrganizationMembers(OrganizationMembersSearchCriteria searchCriteria,
-																  Pageable pageable) throws AppServiceException {
+			Pageable pageable) throws AppServiceException {
 
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper
 				.getADMINISTRATOR_MODULE_STRUKTURE_ACCESS();
@@ -284,7 +284,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	@Transactional
 	public OrganizationMember updateOrganizationMember(UUID organizationUuid, UUID userUuid,
-													   OrganizationMember organizationMember) throws AppServiceException {
+			OrganizationMember organizationMember) throws AppServiceException {
 		Map<String, Boolean> accessRightsRoles = StruktureAuthorisationHelper.getADMINISTRATOR_ACCESS();
 
 		// Vérifie que l'utilisateur connecté est bien administrateur de l'organisation

@@ -988,7 +988,7 @@ components:
               type: string
               default: 'WGS 84'
               example: 'WGS 84 (EPSG:4326)'
-                # 'RGF93/Lambert-93 (EPSG:2154)'
+              # 'RGF93/Lambert-93 (EPSG:2154)'
               # 'RGF93/CC48 (EPSG:3948)'
               #TODO: 'Projection' thesaurus
 
@@ -1340,7 +1340,7 @@ components:
               type: string
                 #format:
                 #ISO/CEI 10646'
-                #TODO: thesaurus for encoding
+              #TODO: thesaurus for encoding
 
 
     #---------------------------------------------------------------------------
@@ -1462,13 +1462,13 @@ components:
               type: string
             - $ref: '#/components/schemas/Date'
         #——————————————————————————
-        'method' :
+        'method':
           description:
             Method used by the Producer node for the integration request
           type: string
-          enum: [ POST, PUT, DELETE ]
+          enum: [POST, PUT, DELETE]
         #——————————————————————————
-        'version' :
+        'version':
           description:
             Version number of the integration contract used for the file
           type: string
@@ -1478,7 +1478,7 @@ components:
           description:
             State of the integration of the resource in the Portal
           type: string
-          enum: [ OK, KO ]
+          enum: [OK, KO]
         #——————————————————————————
         'comment':
           description: >
@@ -1515,6 +1515,8 @@ components:
       type: string
       enum:
         - 'application/x-executable'
+        - 'application/geopackage+sqlite3'
+        - 'application/geopackage+sqlite3+crypt'
         - 'application/graphql'
         - 'application/javascript' # (.js)
         - 'application/json' # (.json)

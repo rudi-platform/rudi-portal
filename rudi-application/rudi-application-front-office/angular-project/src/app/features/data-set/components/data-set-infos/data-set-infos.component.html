@@ -231,6 +231,14 @@
                         class="rudi-panel-card-hour ms-2">{{ metadata?.dataset_dates.validated | date :'HH:mm'}}</span>
           </span>
             </div>
+            <div *ngIf="metadata.dataset_update_frequency" class="rudi-panel-card row g-0">
+                <span
+                    class="col-sm-12 col-md-6 rudi-panel-card-libelle w-75">{{'metaData.datasetUpdateFrequency'|translate}}</span>
+                <span class="col-sm-12 col-md-6 text-sm-left text-md-right w-25"
+                      [ngClass]="{'rudi-panel-card-large': mediaSize.isMd || mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}">
+                    {{'datasetUpdateFrequency.' + metadata.dataset_update_frequency | translate }}
+          </span>
+            </div>
         </div>
     </mat-expansion-panel>
 

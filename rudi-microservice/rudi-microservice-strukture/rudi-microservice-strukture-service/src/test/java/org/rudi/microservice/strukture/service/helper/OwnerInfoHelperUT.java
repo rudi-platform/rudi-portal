@@ -3,6 +3,7 @@ package org.rudi.microservice.strukture.service.helper;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,8 +66,8 @@ class OwnerInfoHelperUT {
 		return user;
 	}
 
-	private User mockAuthenticatedUser(UUID nodeUuid) throws AppServiceUnauthorizedException {
-		User user = userDataFactory.createUser(nodeUuid.toString());
+	private User mockAuthenticatedUser(UUID nodeUuid, boolean hasNames) throws AppServiceUnauthorizedException {
+		User user = userDataFactory.createUser(nodeUuid.toString(), hasNames);
 
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		when(aclHelper.getUserByLogin(nodeUuid.toString())).thenReturn(user);
@@ -176,7 +177,7 @@ class OwnerInfoHelperUT {
 	@DisplayName("récupération du mail de contact d'un utilisateur à partir d'une organization")
 	void getOwnerInfoFromOrganizationUser() throws AppServiceUnauthorizedException {
 		UUID userUuid = UUID.randomUUID();
-		User user = mockAuthenticatedUser(userUuid);
+		User user = mockAuthenticatedUser(userUuid, true);
 
 		OrganizationEntity organizationEntity = organizationDataFactory.createLiksiOrganization();
 		organizationEntity.setInitiator(user.getLogin());
@@ -189,5 +190,32 @@ class OwnerInfoHelperUT {
 				.matches(o -> OwnerType.USER.equals(o.getOwnerType()))
 				.as("Le nom doit être le prénom et le nom de l'utilisateur")
 				.matches(o -> o.getName().equals(user.getFirstname() + " " + user.getLastname()));
+	}
+
+	@Test
+	@DisplayName("Récupération d'un ownerInfo pour un user n'ayant pas de firstname ni de lastname")
+	void getOwnerInfoFromOrganizationUserWithoutNames() throws AppServiceUnauthorizedException {
+		UUID userUuid = UUID.randomUUID();
+		User user = mockAuthenticatedUser(userUuid, false);
+
+		assertThat(user)
+				.as("Le first name doit être null ou vide")
+				.matches(u -> StringUtils.isEmpty(u.getFirstname()))
+				.as("Le last name doit être null ou vide")
+				.matches(u -> StringUtils.isEmpty(u.getLastname()))
+		;
+
+		OrganizationEntity organizationEntity = organizationDataFactory.createLiksiOrganization();
+		organizationEntity.setInitiator(user.getLogin());
+		OwnerInfo ownerInfo = ownerInfoHelper.getAssetDescriptionOwnerInfo(organizationEntity);
+
+		assertThat(ownerInfo)
+				.as("Le contact doit être celui dans le provider.")
+				.matches(o -> o.getContact().equals(userUuid.toString()))
+				.as("Le type doit être User")
+				.matches(o -> OwnerType.USER.equals(o.getOwnerType()))
+				.as("Le prénom doit être le login car vide initialement")
+				.matches(o -> o.getName().equals(user.getLogin()))
+		;
 	}
 }

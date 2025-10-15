@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet-strukture</artifactId>
-		<version>3.3.2</version>
+		<version>3.3.3</version>
 	</parent>
 
 	<artifactId>rudi-facet-organization</artifactId>
@@ -19,6 +19,10 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-facet-strukture-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-bpmn</artifactId>
 		</dependency>
 
 	</dependencies>

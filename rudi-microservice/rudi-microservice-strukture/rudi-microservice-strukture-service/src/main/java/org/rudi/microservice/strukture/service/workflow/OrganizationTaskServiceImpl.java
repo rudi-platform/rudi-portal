@@ -1,11 +1,13 @@
 package org.rudi.microservice.strukture.service.workflow;
 
+import static org.rudi.microservice.strukture.service.helper.organization.OrganizationWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,7 +31,6 @@ import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
-import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.Organization;
@@ -45,9 +46,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.strukture.service.helper.organization.OrganizationWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
 
 @Slf4j
 @Service
@@ -67,8 +67,6 @@ public class OrganizationTaskServiceImpl extends
 	private final TaskService<LinkedProducer> linkedProducerTaskService;
 	private final LinkedProducerHelper linkedProducerHelper;
 
-	private final MediaService mediaService;
-
 	public OrganizationTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
 			OrganizationDao assetDescriptionDao, OrganizationWorkflowHelper assetDescriptionHelper,
@@ -77,7 +75,7 @@ public class OrganizationTaskServiceImpl extends
 			StruktureAuthorisationHelper struktureAuthorisationHelper, AttachmentsHelper attachmentsHelper,
 			OrganizationWorkflowHelper organizationWorkflowHelper, DatasetService datasetService,
 			ProjektHelper projektHelper, TaskService<LinkedProducer> linkedProducerTaskService,
-			LinkedProducerHelper linkedProducerHelper, MediaService mediaService) {
+			LinkedProducerHelper linkedProducerHelper) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
 				assetDescriptionHelper, assignmentHelper, workflowContext, processEngineConfiguration);
 		this.formService = formService;
@@ -88,7 +86,6 @@ public class OrganizationTaskServiceImpl extends
 		this.projektHelper = projektHelper;
 		this.linkedProducerTaskService = linkedProducerTaskService;
 		this.linkedProducerHelper = linkedProducerHelper;
-		this.mediaService = mediaService;
 	}
 
 	@Override
@@ -228,7 +225,8 @@ public class OrganizationTaskServiceImpl extends
 		try {
 			if (datasetService.datasetExists(datasetSearchCriteria)) {
 				log.error("Error, dataset attached to organization {}", assetDescriptionEntity.getUuid());
-				throw new InvalidStateException("L'archivage de votre organisation ne peut être effectuée pour la raison suivante : Au moins un jeu de donnée lié à votre organisation est publié. Nous vous invitions à vous rendre sur votre noeud producteur afin de retirer l'ensemble des jeux de données.");
+				throw new InvalidStateException(
+						"L'archivage de votre organisation ne peut être effectuée pour la raison suivante : Au moins un jeu de données lié à votre organisation est publié. Nous vous invitons à vous rendre sur votre noeud producteur afin de retirer l'ensemble des jeux de données.");
 			}
 		} catch (DataverseAPIException e) {
 			log.error("Error while checking if JDD are attached to the organization {}",
@@ -247,7 +245,8 @@ public class OrganizationTaskServiceImpl extends
 			for (final LinkedProducerEntity linkedProducerEntity : linkedProducers) {
 				if (linkedProducerTaskService.hasTask(linkedProducerEntity.getUuid())) {
 					log.error("Error, linkedProducer {} is running", linkedProducerEntity.getUuid());
-					throw new InvalidStateException("L'archivage de votre organisation ne peut être effectuée pour la raison suivante : votre organisation est en cours de rattachement ou de détachement auprès d'un fournisseur de données");
+					throw new InvalidStateException(
+							"L'archivage de votre organisation ne peut être effectuée pour la raison suivante : votre organisation est en cours de rattachement ou de détachement auprès d'un fournisseur de données");
 				}
 			}
 		}

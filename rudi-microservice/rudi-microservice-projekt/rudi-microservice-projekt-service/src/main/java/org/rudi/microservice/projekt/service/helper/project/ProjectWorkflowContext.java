@@ -3,9 +3,6 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
-import static org.rudi.common.core.security.RoleCodes.MODERATOR;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,6 +58,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.common.core.security.RoleCodes.MODERATOR;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -370,7 +369,12 @@ public class ProjectWorkflowContext
 		String result = null;
 		User owner = aclHelper.getUserByUUID(assetDescription.getOwnerUuid());
 		if (owner != null) {
-			result = String.format("%s %s", owner.getFirstname(), owner.getLastname());
+			if(StringUtils.isNotEmpty(owner.getFirstname()) && StringUtils.isNotEmpty(owner.getLastname())){
+				result = String.format("%s %s", owner.getFirstname(), owner.getLastname()).trim();
+			}
+			else {
+				result = owner.getLogin();
+			}
 		} else {
 			log.error("L'UUID renseignée n'est pas rattachée à un utilisateur RUDI.");
 		}

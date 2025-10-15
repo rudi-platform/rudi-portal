@@ -34,7 +34,7 @@
                 {{'metaData.administrationTab.robotTable.dash'|translate}}
             </th>
             <td mat-cell *matCellDef="let element">
-                <button type="button" class="button-menu" mat-stroked-button [matMenuTriggerFor]="menu">
+                <button type="button" class="action-fab-btn-icon" mat-mini-fab [matMenuTriggerFor]="menu">
                     <mat-icon class="little-icon-size" aria-hidden="true" [svgIcon]="'dashes'"></mat-icon>
                 </button>
                 <mat-menu #menu="matMenu" role="menu" xPosition="before">

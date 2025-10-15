@@ -35,6 +35,7 @@ public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 	public static final String FIELD_UUID = "uuid";
 	public static final String FIELD_MEMBERS = "members";
 	public static final String FIELD_ORGANIZATION_STATUS = "organizationStatus";
+	public static final String FIELD_STATUS = "status";
 
 	private static final long serialVersionUID = -8031214852147803138L;
 

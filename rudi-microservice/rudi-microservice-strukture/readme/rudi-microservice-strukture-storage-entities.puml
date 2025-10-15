@@ -332,6 +332,7 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
 --
 	{field} {static} +FIELD_MEMBERS : String
 	{field} {static} +FIELD_ORGANIZATION_STATUS : String
+	{field} {static} +FIELD_STATUS : String
 	{field} {static} +FIELD_UUID : String
 	{field} +@Column("address") address : String
 	{field} +closingDate : java.time.LocalDateTime

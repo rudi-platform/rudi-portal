@@ -3,16 +3,18 @@ package org.rudi.microservice.strukture.facade.controller;
 import java.util.UUID;
 
 import org.rudi.common.facade.util.UtilPageable;
-import org.rudi.microservice.strukture.core.bean.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.OrganizationBean;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationBeanList;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationBeansApi;
 import org.rudi.microservice.strukture.service.organization.bean.OrganizationBeanService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,13 +27,12 @@ public class OrganizationBeanController implements OrganizationBeansApi {
 	public ResponseEntity<PagedOrganizationBeanList> searchOrganizationsBeans(UUID userUuid,
 			OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws Exception {
 
-		val pageable = utilPageable.getPageable(offset, limit, order);
-		val criteria = new OrganizationSearchCriteria();
-		criteria.setUserUuid(userUuid);
-		criteria.setOrganizationStatus(organizationStatus);
-		val organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().userUuid(userUuid).organizationStatus(organizationStatus).build();
 
-		val pagedOrganizationBeans = new PagedOrganizationBeanList();
+		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
+
+		PagedOrganizationBeanList pagedOrganizationBeans = new PagedOrganizationBeanList();
 		pagedOrganizationBeans.setElements(organizationBeans.getContent());
 		pagedOrganizationBeans.setTotal(organizationBeans.getTotalElements());
 

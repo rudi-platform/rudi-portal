@@ -39,9 +39,9 @@ public class NotifyServiceImpl implements NotifyService {
 		String login = aclHelper.getUserByUUID(userUUid).getLogin();
 		List<Task> tasks = getTasks();
 		if (CollectionUtils.isNotEmpty(tasks)) {
-			for(Task task : tasks) {
+			for (Task task : tasks) {
 				// Calcule et retourne la nouvelle liste des candidats éligibles
-				List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task);
+				List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task, true);
 				// Si notre user en fait partie, alors on l'ajoute vraiment à la task
 				// && S'assurer que la task n'était pas déjà affectée à l'utilisateur
 				if (CollectionUtils.isNotEmpty(potentialsUsers) && potentialsUsers.contains(login)
@@ -52,17 +52,16 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 	}
 
-
 	@Override
 	public void handleRemoveOrganizationMember(UUID organizationUuid, UUID userUUid) {
 		String login = aclHelper.getUserByUUID(userUUid).getLogin();
 		List<Task> tasks = getTasks();
 		if (CollectionUtils.isNotEmpty(tasks)) {
-			for(Task task : tasks) {
+			for (Task task : tasks) {
 				// Vérifier que notre user faisait partie des users auxquels la task était affectée
-				if(bpmnHelper.isCandidateUser(task.getId(), login)) {
+				if (bpmnHelper.isCandidateUser(task.getId(), login)) {
 					// Calcule et retourne la nouvelle liste des candidats éligibles
-					List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task);
+					List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task, true);
 					// Si le user ne fait plus partie de la liste recalculée, alors on le supp oui
 					if (CollectionUtils.isNotEmpty(potentialsUsers) && !potentialsUsers.contains(login)) {
 						bpmnHelper.removeTaskCandidateUser(task.getId(), login);

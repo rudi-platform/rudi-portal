@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
         private readonly pageTitleService: PageTitleService,
         private readonly propertiesService: PropertiesMetierService,
     ) {
-        translate.setDefaultLang('fr');
+        translate.setFallbackLang('fr');
         router.events.pipe(
             filter(event => event instanceof NavigationEnd),
             map(event => event as NavigationEnd),

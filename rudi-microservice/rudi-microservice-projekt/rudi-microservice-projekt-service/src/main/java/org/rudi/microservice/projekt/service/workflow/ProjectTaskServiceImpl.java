@@ -27,6 +27,9 @@ import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.service.FormService;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
+import org.rudi.facet.organization.bean.PagedOrganizationList;
+import org.rudi.facet.organization.helper.OrganizationHelper;
+import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
@@ -35,6 +38,7 @@ import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowConte
 import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
+import org.rudi.microservice.projekt.storage.entity.OwnerType;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
@@ -74,6 +78,8 @@ public class ProjectTaskServiceImpl extends
 	private FormService formService;
 	@Autowired
 	private ProjectWorkflowHelper projectWorkflowHelper;
+	@Autowired
+	private OrganizationHelper organizationHelper;
 
 	public ProjectTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
@@ -153,6 +159,24 @@ public class ProjectTaskServiceImpl extends
 				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
 						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
 			throw new AppServiceBadRequestException("Asset is already linked to a task");
+		}
+
+		// Si le owner est une organisation
+		if(OwnerType.ORGANIZATION.equals(assetDescriptionEntity.getOwnerType()) && assetDescriptionEntity.getOwnerUuid() != null) {
+			try {
+				// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
+				// L'organisation ne doit pas avoir de Workflow en cours
+				PagedOrganizationList organizations = organizationHelper.searchOrganizations(assetDescriptionEntity.getOwnerUuid(), null, null, null, null, Status.COMPLETED, 0, 1, null);
+
+				// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
+				// Soit qu'elle a un workflow en cours
+				// On empêche donc le lancement du workflow
+				if(organizations.getElements() == null || organizations.getElements().isEmpty()) {
+					throw new IllegalArgumentException("Invalid organization");
+				}
+			} catch (GetOrganizationException e) {
+				throw new IllegalArgumentException("Invalid organization uuid");
+			}
 		}
 
 		// Vérifie si l'état de l'asset est DRAFT (création de project)

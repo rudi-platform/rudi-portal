@@ -1,5 +1,5 @@
-#FROM postgres:15.12-bookworm
-FROM postgres:10.23-bullseye
+FROM postgres:15.12-bookworm
+
 USER root
 
 COPY dataverse-dump.sql /docker-entrypoint-initdb.d

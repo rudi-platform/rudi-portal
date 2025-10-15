@@ -215,30 +215,30 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @param roleName        le rôle rechercher
+	 * @param subject         le sujet du mail à envoyer aux potentiels owners (null pour ne pas envoyer de mail)
+	 * @param body            le corps du mail à envoyer aux potentiels owners (null pour ne pas envoyer de mail)
 	 * @return la liste des users par leur identifiant sec-username
 	 */
 	public List<String> computePotentialOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
 			String roleName, String subject, String body) {
-		log.debug("computePotentialOwners...");
-		EMailData eMailData = null;
-		// On Calcul les données de EmailData que si un subject et un body ont été
-		// fournis
-		if (StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
-			eMailData = new EMailData(subject, body);
-		}
-		return computePotentialOwners(scriptContext, executionEntity, roleName, eMailData);
+		return computePotentialOwners(scriptContext, executionEntity, roleName, subject, body, false);
 	}
 
 	/**
 	 * Retourne la liste des users candidats pour la tâche
+	 * 
+	 * N'envoie pas de mail si isRecompute est à true. Cette méthode est utilisée lors d'un recompute forcé des candidats, via BpmnHelper.executeScriptlet
 	 *
 	 * @param scriptContext   le context
 	 * @param executionEntity l'entité d'execution
 	 * @param roleName        le rôle rechercher
+	 * @param subject         le sujet du mail à envoyer aux potentiels owners (null pour ne pas envoyer de mail)
+	 * @param body            le corps du mail à envoyer aux potentiels owners (null pour ne pas envoyer de mail)
+	 * @param isRecompute     true si on est dans le cadre d'un recompute (on n'envoie pas de mail dans ce cas)
 	 * @return la liste des users par leur identifiant sec-username
 	 */
 	public List<String> computePotentialOwners(ScriptContext scriptContext, ExecutionEntity executionEntity,
-			String roleName, EMailData eMailData) {
+			String roleName, String subject, String body, boolean isRecompute) {
 		log.debug("computePotentialOwners...");
 		List<String> assignees = null;
 		E assetDescription = lookupAssetDescriptionEntity(executionEntity);
@@ -248,9 +248,12 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 				if (log.isInfoEnabled()) {
 					log.info("Assignees: {}", StringUtils.join(assignees, ", "));
 				}
-				// Ici il faut calcule le contenue de recipients
+
 				// On envoie un mail à tous les potentialOwners si demandé
-				if (eMailData != null) {
+				if (!isRecompute && StringUtils.isNotEmpty(subject) && StringUtils.isNotEmpty(body)) {
+					// On Calcul les données de EmailData que si un subject et un body ont été
+					// fournis
+					EMailData eMailData = new EMailData(subject, body);
 					sendEMail(executionEntity, assetDescription, eMailData,
 							lookupEMailAddresses(lookupUsers(assignees)), roleName);
 				}
@@ -469,10 +472,10 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 	 * Supprime le contenu des données de la section 'sectionName' correspondant au form userky_actionname retrouvé par processInstanceBusinessKey pour
 	 * l'entite assetDescriptionEntity
 	 * 
-	 * @param userKey                    le nom technique de l'étape dans le workflow, pour retrouver le form
-	 * @param actionName                 le nom de la branche de sortie de l'étape, pour retrouver le form
-	 * @param sectionName                le nom de la section à supprimer
-	 * @param assetDescriptionEntity     l'entité à corriger
+	 * @param userKey                le nom technique de l'étape dans le workflow, pour retrouver le form
+	 * @param actionName             le nom de la branche de sortie de l'étape, pour retrouver le form
+	 * @param sectionName            le nom de la section à supprimer
+	 * @param assetDescriptionEntity l'entité à corriger
 	 */
 	private void cleanDataBySection(String userKey, String actionName, String sectionName,
 			@Nonnull E assetDescriptionEntity) {

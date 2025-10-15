@@ -56,10 +56,6 @@ mat-error {
 
     }
 
-    .mat-primary .mat-pseudo-checkbox-checked, .mat-primary .mat-pseudo-checkbox-indeterminate {
-        background: var(--primary-color) !important;
-    }
-
     .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
         color: var(--primary-color);
     }

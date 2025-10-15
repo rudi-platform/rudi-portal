@@ -62,7 +62,7 @@ export class CmsNewsSectionComponent implements OnInit {
         const publishDateFilter: string = 'publishdate[lte]=' + formattedDate;
         const unpublishDateFilter: string = 'unpublishdate[gt]=' + formattedDate;
 
-        this.konsultService.renderAssets('NEWS', this.cmsNewsDescription.template_simple_with_image, DEFAULT_CATEGORIES, [publishDateFilter, unpublishDateFilter], this.translateService.currentLang, OFFSET_TEMPLATE_WITH_IMAGE, LIMIT_TEMPLATE_WITH_IMAGE, DEFAULT_ORDER)
+        this.konsultService.renderAssets('NEWS', this.cmsNewsDescription.template_simple_with_image, DEFAULT_CATEGORIES, [publishDateFilter, unpublishDateFilter], this.translateService.getCurrentLang(), OFFSET_TEMPLATE_WITH_IMAGE, LIMIT_TEMPLATE_WITH_IMAGE, DEFAULT_ORDER)
             .subscribe({
                 next: (pagedCmsAssets: PagedCmsAssets) => {
                     this.displayComponent = pagedCmsAssets.elements.length > 0;
@@ -76,7 +76,7 @@ export class CmsNewsSectionComponent implements OnInit {
                 }
             });
 
-        this.konsultService.renderAssets('NEWS', this.cmsNewsDescription.template_simple, DEFAULT_CATEGORIES, [publishDateFilter, unpublishDateFilter], this.translateService.currentLang, OFFSET_TEMPLATE_WITHOUT_IMAGE, LIMIT_TEMPLATE_WITHOUT_IMAGE, DEFAULT_ORDER)
+        this.konsultService.renderAssets('NEWS', this.cmsNewsDescription.template_simple, DEFAULT_CATEGORIES, [publishDateFilter, unpublishDateFilter], this.translateService.getCurrentLang(), OFFSET_TEMPLATE_WITHOUT_IMAGE, LIMIT_TEMPLATE_WITHOUT_IMAGE, DEFAULT_ORDER)
             .subscribe({
                 next: (pagedCmsAssets: PagedCmsAssets) => {
                     this.displayNewsWithoutImage = pagedCmsAssets.elements.length > 0;

@@ -334,6 +334,13 @@ components:
           description: Dates of the actions performed on the data (creation, publishing, update, deletion...)
 
         #——————————————————————————
+        'dataset_update_frequency':
+          allOf:
+            - $ref: '#/components/schemas/UpdateFrequency'
+            - description: Frequency at which the data is updated
+              type: object
+
+        #——————————————————————————
         'storage_status':
           description: >-
             Status of the storage of the dataset
@@ -893,6 +900,8 @@ components:
         - 'text/xml' # (.xml)
         - 'text/x-yaml' # (.yaml | .yml)
         - 'application/geo+json+crypt'
+        - 'application/geopackage+sqlite3'
+        - 'application/geopackage+sqlite3+crypt'
         - 'application/x-executable+crypt' # Unconventionnal MIME types for encypted files
         - 'application/graphql+crypt'
         - 'application/javascript+crypt' # (.js)
@@ -998,6 +1007,63 @@ components:
           $ref: '#/components/schemas/Date'
         'deleted':
           $ref: '#/components/schemas/Date'
+
+    #---------------------------------------------------------------------------
+    'UpdateFrequency':
+      description: >
+        'Frequency with which a dataset is updated or maintained.
+        Based on ISO 19115-1:2014 `MD_MaintenanceFrequencyCode`.'
+      type: string
+      enum:
+        - continual
+        - daily
+        - weekly
+        - fortnightly
+        - monthly
+        - quarterly
+        - biannually
+        - annually
+        - asNeeded
+        - irregular
+        - notPlanned
+        - unknown
+      x-enumDescriptions:
+        continual:
+          en: "Data is repeatedly and frequently updated"
+          fr: "Les données sont mises à jour de façon continue"
+        daily:
+          en: "Data is updated each day"
+          fr: "Les données sont mises à jour chaque jour"
+        weekly:
+          en: "Data is updated on a weekly basis"
+          fr: "Les données sont mises à jour chaque semaine"
+        fortnightly:
+          en: "Data is updated every two weeks"
+          fr: "Les données sont mises à jour toutes les deux semaines"
+        monthly:
+          en: "Data is updated each month"
+          fr: "Les données sont mises à jour chaque mois"
+        quarterly:
+          en: "Data is updated every three months"
+          fr: "Les données sont mises à jour tous les trois mois"
+        biannually:
+          en: "Data is updated twice each year"
+          fr: "Les données sont mises à jour deux fois par an"
+        annually:
+          en: "Data is updated every year"
+          fr: "Les données sont mises à jour chaque année"
+        asNeeded:
+          en: "Data is updated as deemed necessary"
+          fr: "Les données sont mises à jour si nécessaire"
+        irregular:
+          en: "Data is updated in uneven intervals"
+          fr: "Les données sont mises à jour sans régularité"
+        notPlanned:
+          en: "There are no plans to update the data"
+          fr: "Aucune mise à jour n’est prévue"
+        unknown:
+          en: "Frequency of maintenance is not known"
+          fr: "La fréquence de mise à jour n’est pas connue"
 
     #---------------------------------------------------------------------------
     'DictionaryList':

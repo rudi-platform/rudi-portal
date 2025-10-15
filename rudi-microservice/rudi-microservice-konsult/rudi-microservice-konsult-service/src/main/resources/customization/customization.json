@@ -192,11 +192,6 @@
 				"icon": "/assets/footer/linkedin.svg"
 			},
 			{
-				"label": "Loopedin",
-				"url": "https://roadmap.rudi.fr/rudi",
-				"icon": "/assets/footer/loopedin.svg"
-			},
-			{
 				"label": "Github",
 				"url": "https://github.com/rudi-platform/rudi-portal",
 				"icon": "/assets/footer/github.svg"

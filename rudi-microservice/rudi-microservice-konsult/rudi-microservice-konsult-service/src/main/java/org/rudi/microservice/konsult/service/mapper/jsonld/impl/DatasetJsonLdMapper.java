@@ -25,6 +25,7 @@ import static org.rudi.microservice.konsult.service.helper.sitemap.SitemapUtils.
 @Component
 public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 
+
 	@Value("${front.urlCatalog:/catalogue/detail/}")
 	private String catalogueUrlPrefixe;
 
@@ -49,7 +50,8 @@ public class DatasetJsonLdMapper extends AbstractJsonLdMapper<Metadata> {
 		result.addProperty("description", getDescription(metadata.getSummary()));
 		result.addProperty("issued", metadata.getDatasetDates().getCreated().toString());
 		result.addProperty("modified", metadata.getDatasetDates().getUpdated().toString());
-		result.addProperty("accrualPeriodicity", "irregular");
+		result.addProperty("accrualPeriodicity", UpdateFrequencyMapper.toDataGouv(metadata.getDatasetUpdateFrequency()));
+
 		result.addProperty("landingPage", getDatasetUrl(metadata));
 
 		if(!keywords.isEmpty()){
