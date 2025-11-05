@@ -6,8 +6,8 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {RequestToStudy} from '@core/services/tasks-aggregator/request-to-study.interface';
 import {TasksAggregatorService} from '@core/services/tasks-aggregator/tasks-aggregator.service';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Level} from '@shared/notification-template/notification-template.component';
 
 @Component({
     selector: 'app-my-notifications',

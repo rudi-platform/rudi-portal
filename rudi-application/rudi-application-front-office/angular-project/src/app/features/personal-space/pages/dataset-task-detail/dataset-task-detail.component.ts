@@ -16,7 +16,7 @@ import {LinkedDatasetTaskMetierService} from '@core/services/tasks/projekt/linke
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
 import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {TranslateService} from '@ngx-translate/core';
-import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
+import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {LinkedDataset} from 'micro_service_modules/projekt/projekt-model';
 

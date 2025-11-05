@@ -9,7 +9,7 @@ import {RedirectService} from '@core/services/redirect.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {forkJoin} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 

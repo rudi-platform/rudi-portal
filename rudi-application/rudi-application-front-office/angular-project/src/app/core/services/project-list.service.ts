@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ProjectSearchCriteria} from '@core/bean/projekt/project-search-criteria';
 import {ProjectCatalogItem, ProjectCatalogItemPage} from '@features/project/model/project-catalog-item';
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {PagedProjectList, Project, ProjectStatus} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';

@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
@@ -9,8 +9,8 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {ResetPasswordErrorBoxComponent} from '@shared/reset-password-error-box/reset-password-error-box.component';
+import {ResetPasswordErrorBoxComponent} from '@shared/core/form/reset-password-error-box/reset-password-error-box.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
 import {ConfirmedValidator} from '../sign-up/confirmed-validator';
 

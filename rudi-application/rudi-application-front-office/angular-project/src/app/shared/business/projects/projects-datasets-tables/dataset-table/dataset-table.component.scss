@@ -1,0 +1,26 @@
+@import "app/styles/common-style";
+@import "app/styles/add-link-to-project";
+
+.comment-action {
+    border-radius: 50%;
+    border: 1px solid var(--blocks-and-menus-outline);
+
+    &:hover {
+        stroke: var(--secondary-color);
+        color: var(--secondary-color);
+        background-color: var(--primary-color);
+    }
+
+    mat-icon {
+        transform: scale(1.5);
+    }
+}
+
+
+.add-link-button {
+    &:hover {
+        color: var(--secondary-color);
+        background-color: var(--primary-color);
+    }
+}
+

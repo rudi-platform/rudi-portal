@@ -10,13 +10,13 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
-import {TabComponent} from '@shared/tab/tab.component';
-import {TabsComponent} from '@shared/tabs/tabs.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {WorkflowFormDialogOutputData} from '@shared/core/workflow/forms/workflow-form-dialog/types';
+import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {WorkflowFormDialogOutputData} from '@shared/workflow-form-dialog/types';
-import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {Form, Status} from 'micro_service_modules/api-bpmn';
 import {OwnerType} from 'micro_service_modules/konsent/konsent-api';
 import {
@@ -101,7 +101,7 @@ export class MyProjectDetailsComponent implements OnInit {
         ).subscribe({
             next: ([form, data]) => {
                 if (data?.project?.status === Status.Completed) {
-                    this.form = form;
+                    this.form = form as Form;
                 }
                 loadProjectData(data);
             },

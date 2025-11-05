@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Item} from '@features/data-set/components/filter-forms/array-filter-form.component';
 import {TranslateService} from '@ngx-translate/core';
+import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 
 interface OrderItem extends Item {
     libelle: string;

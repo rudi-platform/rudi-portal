@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
 
 @Component({

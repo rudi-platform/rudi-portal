@@ -3,11 +3,11 @@ import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
+import {CoreModule} from '@core/core.module';
 import {DataSetModule} from '@features/data-set/data-set.module';
 import {ListContainerComponent} from '@features/organization/components/list-container/list-container.component';
 import {OrderComponent} from '@features/organization/components/order/order.component';
 import {ListComponent} from '@features/organization/pages/list/list.component';
-import {CoreModule} from '@core/core.module';
 import {SharedModule} from '@shared/shared.module';
 import {AdministrationTabComponent} from './components/administration-tab/administration-tab.component';
 import {

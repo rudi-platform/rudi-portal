@@ -1,7 +1,7 @@
-import { HttpEvent } from '@angular/common/http';
+import {HttpEvent} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.service';
-import {UploaderAdapter} from '@shared/uploader/uploader.adapter';
+import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
 import {FilePreviewModel} from '@sleiss/ngx-awesome-uploader';
 import {Observable} from 'rxjs';
 

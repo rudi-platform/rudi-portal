@@ -13,10 +13,10 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
+import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
-import {RudiValidators} from '@shared/validators/rudi-validators';
+import {RudiValidators} from '@shared/utils/validators/rudi-validators';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CmsTermsDescription, CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {ConfirmedValidator} from './confirmed-validator';

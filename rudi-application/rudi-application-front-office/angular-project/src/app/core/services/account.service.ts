@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -120,5 +120,9 @@ export class AccountService {
      */
     accoutLogout(token: string): Observable<void> {
         return this.aclService.accountLogout(token);
+    }
+
+    mustValidateCaptcha(login: string): Observable<boolean> {
+        return this.aclService.mustValidateCaptcha(login);
     }
 }

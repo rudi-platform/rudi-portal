@@ -16,8 +16,8 @@ import {
     LinkedProducerTaskSearchCriteria
 } from '@core/services/tasks/strukture/linked-producer/linked-producer-task-search-criteria.interface';
 import {TranslateService} from '@ngx-translate/core';
+import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
-import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Task} from 'micro_service_modules/projekt/projekt-api';
 import {LinkedProducer, LinkedProducersService} from 'micro_service_modules/strukture/api-strukture';

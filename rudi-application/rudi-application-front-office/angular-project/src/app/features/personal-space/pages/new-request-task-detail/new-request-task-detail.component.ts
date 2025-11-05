@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {LogService} from '@core/services/log.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
@@ -13,9 +12,10 @@ import {
 } from '@core/services/tasks/projekt/linked-dataset-task-dependencies.service';
 import {NewDatasetRequestTaskMetierService} from '@core/services/tasks/projekt/new-dataset-request-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
+import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {TranslateService} from '@ngx-translate/core';
+import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {ALL_TYPES, PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
-import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {LinkedDataset} from 'micro_service_modules/projekt/projekt-model';
 import {map, tap} from 'rxjs/operators';
 
@@ -77,6 +77,7 @@ export class NewRequestTaskDetailComponent
                 });
         }
     }
+
     protected goBackToList(): Promise<boolean> {
         return this.router.navigate(['/personal-space/my-notifications']);
     }

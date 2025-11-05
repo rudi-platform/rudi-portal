@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {DependencyFetcher, ObjectWithDependencies, OwnerKey} from '@shared/utils/dependencies-utils';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {NewDatasetRequest, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {LinkedDataset, LinkedDatasetStatus, OwnerInfo, PagedProjectList, Project} from 'micro_service_modules/projekt/projekt-model';
@@ -65,7 +65,7 @@ export class ProjectDependenciesService {
             map(({total, elements}) => {
                 return elements;
             }),
-            mapEach(project => new ProjectWithDependencies(project, {}))
+            mapEach((project: Project) => new ProjectWithDependencies(project, {}))
         );
     }
 }

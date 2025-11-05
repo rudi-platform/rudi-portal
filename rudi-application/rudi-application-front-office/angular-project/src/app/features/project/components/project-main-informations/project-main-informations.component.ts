@@ -7,7 +7,7 @@ import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-da
 import {FiltersService} from '@core/services/filters.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {UpdateAction} from '@features/project/model/upate-action';
-import {RadioListItem} from '@shared/radio-list/radio-list-item';
+import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Project, ProjektService, ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {

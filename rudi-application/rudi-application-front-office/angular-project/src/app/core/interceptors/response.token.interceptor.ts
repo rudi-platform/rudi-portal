@@ -1,8 +1,8 @@
-import { HttpClient, HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {AuthenticationService} from '../services/authentication.service';

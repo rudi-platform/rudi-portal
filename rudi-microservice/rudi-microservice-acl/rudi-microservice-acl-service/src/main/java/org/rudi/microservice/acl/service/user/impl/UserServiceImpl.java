@@ -6,12 +6,15 @@ package org.rudi.microservice.acl.service.user.impl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.LongId;
@@ -52,7 +55,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,10 +72,16 @@ public class UserServiceImpl implements UserService {
 	private static final String ADDRESS_UNKNOWN_MESSAGE = "Address unknown:";
 	private static final String ADDRESS_MISSING_MESSAGE = "Address missing";
 	private static final String ADDRESS_ROLE_INVALID_MESSAGE = "AddresseRole invalid";
+	private static final Map<String, Integer> LOGIN_ATTEMPTS = new HashMap<>();
+
 
 	@Value("${user.authentication.maxFailedAttempt:10}")
 	@Getter
 	private int maxFailedAttempt;
+
+	@Value("${user.authentication.maxFailedAttemptBeforeCaptcha:2}")
+	@Getter
+	private int maxFailedAttemptBeforeCaptcha;
 
 	@Value("${user.authentication.lockDuration:20}")
 	@Getter
@@ -368,12 +376,16 @@ public class UserServiceImpl implements UserService {
 		if (user == null) {
 			throw new IllegalArgumentException("Unknown user:" + userUuid);
 		}
+
 		if (success) {
 			unlockUser(user);
 			user.setLastConnexion(LocalDateTime.now());
+			resetFailedAttempts(user.getLogin());
 		} else {
 			user.setLastFailedAttempt(LocalDateTime.now());
 			user.incrementFailedAttempts();
+			addFailedAttempt(user.getLogin());
+
 			if (user.getFailedAttempt() > maxFailedAttempt) {
 				if (user.getType() != UserType.ROBOT) {
 					user.lockAccount();
@@ -453,4 +465,20 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userDao.findByUuid(uuid);
 		return user != null ? user.getPassword() : null;
 	}
+
+	@Override
+	public boolean mustValidateCaptcha(String login){
+		return LOGIN_ATTEMPTS.containsKey(login) && LOGIN_ATTEMPTS.get(login) >= maxFailedAttemptBeforeCaptcha;
+	}
+
+	@Override
+	public void addFailedAttempt(String login){
+		LOGIN_ATTEMPTS.put(login, LOGIN_ATTEMPTS.getOrDefault(login, 0) + 1);
+	}
+
+	@Override
+	public void resetFailedAttempts(String login){
+		LOGIN_ATTEMPTS.remove(login);
+	}
+
 }

@@ -1,7 +1,10 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
 import {Order} from '@features/organization/components/order/type';
-import {searchDefaultPageSize, SearchOrganizationsService} from '@shared/list-organization-card/search-organizations.service';
+import {
+    searchDefaultPageSize,
+    SearchOrganizationsService
+} from '@shared/business/organisation/list-organization-card/search-organizations.service';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {Observable} from 'rxjs';
 

@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {Theme} from '@features/home/types';
-import {SwiperBreakpoint} from '@shared/rudi-swiper/types';
+import {SwiperBreakpoint} from '@shared/business/home/rudi-swiper/types';
 
 @Component({
     selector: 'app-themes-section',

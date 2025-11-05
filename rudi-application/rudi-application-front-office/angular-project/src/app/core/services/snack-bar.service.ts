@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
-import {Data, Level, NotificationTemplateComponent} from '@shared/notification-template/notification-template.component';
+import {Data, Level, NotificationTemplateComponent} from '@shared/core/layout/notification-template/notification-template.component';
 import {Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 

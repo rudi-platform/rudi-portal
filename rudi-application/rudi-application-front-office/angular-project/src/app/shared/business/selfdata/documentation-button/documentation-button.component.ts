@@ -1,0 +1,18 @@
+import {Component} from '@angular/core';
+import {IconRegistryService} from '@core/services/icon-registry.service';
+import {ALL_TYPES} from '@shared/models/title-icon-type';
+
+@Component({
+    selector: 'app-documentation-button',
+    templateUrl: './documentation-button.component.html',
+    styleUrls: ['./documentation-button.component.scss'],
+    standalone: false
+})
+export class DocumentationButtonComponent {
+
+
+    constructor(private readonly iconRegistryService: IconRegistryService,) {
+        iconRegistryService.addAllSvgIcons(ALL_TYPES);
+    }
+
+}

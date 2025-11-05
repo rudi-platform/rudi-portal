@@ -8,9 +8,9 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
-import {BackPaginationSort} from '@shared/back-pagination/back-pagination-sort';
-import {SortTableInterface} from '@shared/back-pagination/sort-table-interface';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {OrganizationRole, OrganizationUserMember} from 'micro_service_modules/strukture/api-strukture';
 import {Organization, OrganizationMember, PagedOrganizationUserMembers} from 'micro_service_modules/strukture/strukture-model';
 import {BehaviorSubject, combineLatest, EMPTY, merge, Observable, of} from 'rxjs';

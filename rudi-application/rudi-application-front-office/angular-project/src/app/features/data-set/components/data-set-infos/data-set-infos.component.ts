@@ -10,9 +10,9 @@ import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import saveAs from 'file-saver';
 import {
     DictionaryEntry2,

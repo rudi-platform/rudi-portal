@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ObjectType} from '@core/services/tasks/object-type.enum';
 import {ORGANIZATION_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
 import {TranslateService} from '@ngx-translate/core';
-import {WorkflowProperties} from '@shared/workflow-form/workflow-properties';
+import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
 

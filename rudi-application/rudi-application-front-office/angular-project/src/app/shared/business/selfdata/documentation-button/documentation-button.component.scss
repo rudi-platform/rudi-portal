@@ -1,0 +1,17 @@
+@import "app/styles/common-style";
+
+.button-label {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.86;
+    color: var(--0-classic-blue);
+}
+
+.icon {
+    width: 18px;
+    margin-right: 8px;
+}
+
+.button {
+    height: 42px;
+}

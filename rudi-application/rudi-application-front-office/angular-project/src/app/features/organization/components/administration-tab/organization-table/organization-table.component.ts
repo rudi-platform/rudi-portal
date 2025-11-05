@@ -6,10 +6,10 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
-import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {Form} from 'micro_service_modules/api-bpmn';
 import {
     Field,

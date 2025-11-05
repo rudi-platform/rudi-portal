@@ -6,11 +6,11 @@ import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.serv
 import {SelfdataInformationRequestSubmissionService} from '@core/services/selfdata-information-request-submission.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {SELFDATA_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
+import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
+import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {DataSize} from '@shared/models/data-size';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
-import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
-import {WorkflowFormComponent} from '@shared/workflow-form/workflow-form.component';
-import {WorkflowProperties} from '@shared/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/api-bpmn';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {switchMap, tap} from 'rxjs/operators';

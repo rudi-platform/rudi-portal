@@ -23,8 +23,8 @@ import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-tas
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';

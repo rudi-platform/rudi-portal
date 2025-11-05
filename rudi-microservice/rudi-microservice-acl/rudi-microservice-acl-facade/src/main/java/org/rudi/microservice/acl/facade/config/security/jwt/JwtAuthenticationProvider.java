@@ -75,6 +75,7 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 	private void checkUser(User user, String login) {
 		if (user == null) {
 			log.info("Impossible de trouver l'utilisateur: {}", login);
+			userService.addFailedAttempt(login);
 			throw new UsernameNotFoundException("Impossible de trouver l'utilisateur : " + login + ".");
 		} else if (Boolean.TRUE.equals(user.getAccountLocked())) {
 			log.warn("Le compte est vérouillé l'utilisateur: {}", login);

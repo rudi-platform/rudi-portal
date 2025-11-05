@@ -123,6 +123,49 @@
 				}
 			}
 		},
+		"/account/{login}/must-validate-captcha": {
+			"get": {
+				"tags": [
+					"acl"
+				],
+				"summary": "Indique si un compte doit valider le captcha pour se connecter",
+				"description": "Indique si un compte doit valider le captcha pour se connecter",
+				"operationId": "mustValidateCaptcha",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "login",
+						"description": "Le login du compte",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/account": {
 			"post": {
 				"tags": [

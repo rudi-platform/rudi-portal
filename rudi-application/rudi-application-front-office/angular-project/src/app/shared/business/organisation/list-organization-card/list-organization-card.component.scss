@@ -1,0 +1,25 @@
+@import "app/styles/common-style";
+@import "app/styles/pagination";
+@import "../../../../../../node_modules/bootstrap/scss/bootstrap-grid";
+
+.rudi-filters-toolbar {
+    width: auto;
+    margin: 42px -95px 35px -95px;
+    background-color: #e7e9ed;
+    padding-left: 95px;
+
+    :focus-visible {
+        outline: var(--focus) solid 1px;
+        color: var(--focus);
+    }
+}
+
+.card-container {
+    @extend .row;
+
+    .card-organization {
+        @extend .col-sm-12;
+        @extend .col-md-6;
+        @extend .col-lg-4;
+    }
+}

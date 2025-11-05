@@ -28,12 +28,11 @@ import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-clo
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {DetailFunctions} from '@features/data-set/pages/detail/detail-functions';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {RequestDetails} from '@shared/models/request-details';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Level} from '@shared/notification-template/notification-template.component';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
-import {ObservableUtils} from '@shared/utils/ObservableUtils';
-import {PageResultUtils} from '@shared/utils/page-result-utils';
+import {ObservableUtils} from '@shared/utils/observable-utils';
 import saveAs from 'file-saver';
 import {
     ConnectorConnectorParameters,
@@ -45,7 +44,6 @@ import {
     Metadata
 } from 'micro_service_modules/api-kaccess';
 import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
-import {ProjectStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
 import {BehaviorSubject, combineLatest, from, Observable, of, throwError} from 'rxjs';
@@ -73,7 +71,6 @@ export class DetailComponent implements OnInit {
     licenceLabel;
     conceptUri;
     downloadableMedias: Media[] = [];
-    linkedProjects: Project[] = [];
     // Indique si on affiche le loader pendant le téléchargement du media
     public isLoading = false;
     otherDatasets: Metadata[] = [];
@@ -88,6 +85,8 @@ export class DetailComponent implements OnInit {
     selfDataIcon = 'self-data-icon';
 
     mapHasError: boolean = false;
+
+    nbLinkedProjects: number = 1;
 
     /**
      * Permet de suivre la valeur du JDD récupéré. Nous devons passer par un Observable car le chargement
@@ -139,7 +138,6 @@ export class DetailComponent implements OnInit {
         this._metadata = metadata;
         if (metadata) {
             this.metadataLoaded.next(metadata);
-            this.loadLinkedProjects(metadata);
             this.loadOtherDatasets(metadata);
             if (metadata.resource_title) {
                 this.pageTitleService.setPageTitle(metadata.resource_title, this.translateService.instant('pageTitle.defaultDetail'));
@@ -409,18 +407,6 @@ export class DetailComponent implements OnInit {
         return null;
     }
 
-    private loadLinkedProjects(metadata: Metadata): void {
-        this.linkedProjects = [];
-        PageResultUtils
-            .fetchAllElementsUsing(offset =>
-                this.projektMetierService.searchProjects({
-                    dataset_uuids: [metadata.global_id],
-                    status: [ProjectStatus.Validated],
-                    offset
-                }))
-            .subscribe(projects => this.linkedProjects = projects as Project[]);
-    }
-
     /**
      * Fonction permettant de charger les média téléchargeables
      * @private
@@ -647,6 +633,10 @@ export class DetailComponent implements OnInit {
     // Validation d'un un objet
     private isValidObject(obj: any): boolean {
         return typeof obj.key === 'string' && 'value' in obj;
+    }
+
+    protected setLinkedProjectTotal($event: number): void {
+        this.nbLinkedProjects = $event;
     }
 }
 

@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {MyRequestsService} from '@core/services/my-requests/my-requests.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
+import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
 import {LinkedDataset, LinkedDatasetSearchCriteria, LinkedDatasetStatus} from 'micro_service_modules/projekt/projekt-api';
 import {DatasetConfidentiality, PagedLinkedDatasetList} from 'micro_service_modules/projekt/projekt-model';
-import {SortTableInterface} from '@shared/back-pagination/sort-table-interface';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {AbstractMyRequestTableComponent} from '../abstract-my-request-table.component';
 import {RequestItem} from '../request-item';
 

@@ -20,6 +20,7 @@ import {AddDataSetDialogData} from './add-data-set-dialog-data';
     standalone: false
 })
 export class AddDataSetDialogComponent implements OnInit {
+
     get selectedMetadata(): Metadata {
         return this._selectedMetadata;
     }
@@ -38,6 +39,8 @@ export class AddDataSetDialogComponent implements OnInit {
     private _selectedMetadata: Metadata;
     public readonly accessStatusForcedValue: AccessStatusFiltersType;
     public readonly accessStatusHiddenValues: AccessStatusFiltersType[];
+
+    producerNames: string[];
 
     constructor(
         private matIconRegistry: MatIconRegistry,

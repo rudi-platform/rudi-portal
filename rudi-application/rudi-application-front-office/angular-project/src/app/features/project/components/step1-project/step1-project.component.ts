@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
+import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
+import {AdapterWithoutBackend} from '@shared/core/form/uploader/adapter-without-backend';
 import {DataSize} from '@shared/models/data-size';
-import {RadioListItem} from '@shared/radio-list/radio-list-item';
-import {AdapterWithoutBackend} from '@shared/uploader/adapter-without-backend';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
 
@@ -14,7 +14,7 @@ import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_serv
     standalone: false
 })
 export class Step1ProjectComponent implements OnInit {
-    
+
     @Input()
     public isConfidentialityValid: boolean;
 

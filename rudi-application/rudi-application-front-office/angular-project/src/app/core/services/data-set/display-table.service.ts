@@ -1,9 +1,9 @@
-import { HttpResponse } from '@angular/common/http';
+import {HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {SPREADSHEET_COLDEF_INDEX} from '@features/data-set/components/spreadsheet/spreadsheet.component';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {ColDef} from 'ag-grid-community';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {Observable} from 'rxjs';

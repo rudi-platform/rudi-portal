@@ -286,6 +286,7 @@
 					"DRAFT",
 					"IN_PROGRESS",
 					"VALIDATED",
+					"ARCHIVED",
 					"REFUSED"
 				]
 			},

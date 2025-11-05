@@ -8,11 +8,13 @@ import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
 import {ProvidersMetierService} from '@core/services/providers-metier.service';
 import {SidenavOpeningsService} from '@core/services/sidenav-openings.service';
+import {
+    AccessStatusFilterItem
+} from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
+import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {of, Subject} from 'rxjs';
 import {switchMap, takeUntil} from 'rxjs/operators';
-import {AccessStatusFilterItem} from '../../components/filter-forms/access-status-filter-form/access-status-filter-form.component';
-import {Item} from '../../components/filter-forms/array-filter-form.component';
 
 @Component({
     selector: 'app-list',

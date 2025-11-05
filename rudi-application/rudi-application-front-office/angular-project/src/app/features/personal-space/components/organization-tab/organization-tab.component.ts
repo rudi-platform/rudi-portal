@@ -10,8 +10,8 @@ import {
     OrganizationFormDialogComponent
 } from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
 import {TranslateService} from '@ngx-translate/core';
-import {SearchOrganizationsService} from '@shared/list-organization-card/search-organizations.service';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {SearchOrganizationsService} from '@shared/business/organisation/list-organization-card/search-organizations.service';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {Form, Organization, OrganizationBean, OrganizationService, Task, TaskService} from 'micro_service_modules/strukture/api-strukture';
 import {Observable, switchMap} from 'rxjs';
 

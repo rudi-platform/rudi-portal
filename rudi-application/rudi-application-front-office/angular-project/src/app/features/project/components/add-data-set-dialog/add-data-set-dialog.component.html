@@ -6,27 +6,30 @@
             </button>
         </div>
         <div class="dialog-content">
-            <div class="dialog-title">{{'project.addDatasetPopup.title1'|translate}}</div>
-            <app-list-container class="list-container" [hidePagination]="true" [limit]="maxResultPerPage"
+            <div class="dialog-title">{{ 'project.addDatasetPopup.title1'|translate }}</div>
+            <app-list-container class="list-container"
+                                [hidePagination]="true"
+                                [limit]="maxResultPerPage"
                                 [isSelectable]="true"
                                 (dbSelectMetadata)="doubleSelect($event)  "
                                 (selectMetadata)="selectMetadata($event)"
                                 [accessStatusForcedValue]="accessStatusForcedValue"
                                 [accessStatusHiddenValues]="accessStatusHiddenValues" [orders]="orders"
                                 [mediaSize]="mediaSize"
-                                [themes]="themes"></app-list-container>
+                                [themes]="themes"
+                                [showMobileFilters]="false">
+            </app-list-container>
 
 
             <mat-dialog-actions class="dialog-buttons">
                 <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
-                    <span>{{'project.addDatasetPopup.cancel'|translate}}</span>
+                    <span>{{ 'project.addDatasetPopup.cancel'|translate }}</span>
                 </button>
                 <button class="primary-raised-button" mat-raised-button (click)="validate()"
                         [disabled]="!selectedMetadata">
-                    <span>{{'project.addDatasetPopup.validate'|translate}}</span>
+                    <span>{{ 'project.addDatasetPopup.validate'|translate }}</span>
                 </button>
             </mat-dialog-actions>
         </div>
     </mat-dialog-content>
-
 </div>

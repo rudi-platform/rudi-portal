@@ -1,6 +1,6 @@
 @import "bootstrap/scss/bootstrap-grid";
 @import "common-style";
-@import "_responsive.scss";
+@import "responsive";
 
 
 .colo-1 {
@@ -229,6 +229,7 @@
 /* Card */
 .metadata-card {
     padding: 16px;
+
     .card-label-title {
         font-size: 18px;
         font-weight: 600;

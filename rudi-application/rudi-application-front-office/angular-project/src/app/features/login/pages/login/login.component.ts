@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AccountService} from '@core/services/account.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
@@ -8,9 +9,11 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
+import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {RudiCaptchaComponent} from '@shared/rudi-captcha/rudi-captcha.component';
+import {Observable, of} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-login',
@@ -75,6 +78,11 @@ export class LoginComponent implements OnInit {
      */
     enableCaptchaOnPage = true;
 
+    /**
+     * Indique si le captcha doit s'activer sur cette page
+     */
+    isCaptchaNeeded = false;
+
     @ViewChild(RudiCaptchaComponent) rudiCaptcha: RudiCaptchaComponent;
 
     /**
@@ -88,7 +96,8 @@ export class LoginComponent implements OnInit {
      * Activer ou non le bouton de soumission
      */
     get isValid(): boolean {
-        return this.loginForm.valid && (this.rudiCaptcha?.isFilled() || !this.enableCaptchaOnPage);
+        // True si le form est valid et que le captcha est rempli s'il est nécessaire et activé.
+        return this.loginForm.valid && (!this.enableCaptchaOnPage || !this.isCaptchaNeeded || this.rudiCaptcha?.isFilled());
     }
 
     get redirectToParam(): string | null {
@@ -114,7 +123,9 @@ export class LoginComponent implements OnInit {
                 private readonly snackBarService: SnackBarService,
                 private readonly translateService: TranslateService,
                 private readonly propertiesMetierService: PropertiesMetierService,
-                private readonly captchaCheckerService: CaptchaCheckerService) {
+                private readonly captchaCheckerService: CaptchaCheckerService,
+                private readonly accountService: AccountService,
+    ) {
     }
 
     ngOnInit(): void {
@@ -123,6 +134,7 @@ export class LoginComponent implements OnInit {
         } else {
             this.enableCaptchaOnPage = false;
         }
+
         // On récupère les infos sur la restitution
         this.mediaSize = this.breakpointObserver.getMediaSize();
 
@@ -176,43 +188,67 @@ export class LoginComponent implements OnInit {
         this.errorUserLocked = false;
         this.errorCaptchaInput = false;
         this.loading = true;
-        // Validation du captcha avant tout
-        this.captchaCheckerService.validateCaptchaAndDoNextStep(this.enableCaptchaOnPage, this.rudiCaptcha, this.authentificationService.authenticate(this.loginForm))
-            .subscribe({
-                    next: () => {
-                        this.loading = false;
-                        this.redirectService.followRedirectOrGoBack();
-                    },
-                    error: (error: Error) => {
-                        console.error(error);
-                        this.loading = false;
-                        if (error instanceof ErrorWithCause && error.code === CAPTCHA_NOT_VALID_CODE) {
-                            this.errorCaptchaInput = true;
-                            return;
-                        }
-                        // Si le code http 423 est renvoyé, le compte est bloqué
-                        if (error.message === AuthenticationService.ERROR_SERVER_USER_LOCKED) {
-                            this.errorUserLocked = true;
-                        } // Sinon erreur server renvoyé
-                        else {
-                            this.isError4xx = AuthenticationService.isError4xx(error.message);
-                        }
 
-                        switch (error.message) {
-                            case AuthenticationService.ERROR_ACCOUNT_NOT_ACTIVE :
-                                this.errorAccountNotActif = true;
-                                break;
+        this.needCaptchaAndNextStep().subscribe({
+                next: () => {
+                    this.loading = false;
+                    this.redirectService.followRedirectOrGoBack();
+                },
+                error: (error: Error) => {
+                    console.error(error);
+                    this.loading = false;
+                    if (error instanceof ErrorWithCause && error.code === CAPTCHA_NOT_VALID_CODE) {
+                        this.errorCaptchaInput = true;
+                        return;
+                    }
+                    // Si le code http 423 est renvoyé, le compte est bloqué
+                    if (error.message === AuthenticationService.ERROR_SERVER_USER_LOCKED) {
+                        this.errorUserLocked = true;
+                    } // Sinon erreur server renvoyé
+                    else {
+                        this.isError4xx = AuthenticationService.isError4xx(error.message);
+                    }
 
-                            case AuthenticationService.ERROR_SERVER_IS_NOT_ACTIVE :
-                                this.errorServerAccountNotActive = true;
-                                break;
+                    switch (error.message) {
+                        case AuthenticationService.ERROR_ACCOUNT_NOT_ACTIVE :
+                            this.errorAccountNotActif = true;
+                            break;
 
-                            case AuthenticationService.ERROR_SERVER_AUTHENTICATE :
-                                this.errorServerAuthenticate = true;
-                                break;
-                        }
+                        case AuthenticationService.ERROR_SERVER_IS_NOT_ACTIVE :
+                            this.errorServerAccountNotActive = true;
+                            break;
+
+                        case AuthenticationService.ERROR_SERVER_AUTHENTICATE :
+                            this.errorServerAuthenticate = true;
+                            break;
                     }
                 }
-            );
+            }
+        );
+    }
+
+    authenticate(): Observable<unknown> {
+        return this.authentificationService.authenticate(this.loginForm);
+    }
+
+    validateCaptchaAndAuthenticate(): Observable<unknown> {
+        return this.captchaCheckerService.validateCaptchaAndDoNextStep(
+            (this.enableCaptchaOnPage && this.isCaptchaNeeded), this.rudiCaptcha, this.authenticate()
+        );
+    }
+
+    needCaptchaAndNextStep(): Observable<unknown> {
+        // Si pas de captcha ou que le flag isCpatchaNeeded a déjà été positionné, alors on passe directement à la vérification du captcha
+        return (!this.enableCaptchaOnPage || this.isCaptchaNeeded) ? this.validateCaptchaAndAuthenticate() : this.accountService.mustValidateCaptcha(this.loginForm.value.login).pipe(
+            switchMap((isCaptchaNeeded: boolean) => {
+                this.isCaptchaNeeded = isCaptchaNeeded;
+                if (!isCaptchaNeeded) {
+                    return this.validateCaptchaAndAuthenticate();
+                } else {
+                    this.loading = false;
+                    return of();
+                }
+            })
+        );
     }
 }

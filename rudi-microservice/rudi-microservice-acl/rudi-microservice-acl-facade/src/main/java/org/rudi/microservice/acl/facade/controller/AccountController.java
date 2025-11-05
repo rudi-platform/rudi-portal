@@ -8,6 +8,7 @@ import org.rudi.microservice.acl.core.bean.PasswordChange;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.facade.controller.api.AccountApi;
 import org.rudi.microservice.acl.service.account.AccountService;
+import org.rudi.microservice.acl.service.user.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountController implements AccountApi {
 
 	private final AccountService accountService;
+	private final UserService userService;
 
 	// Méthode accessible derrière authent si on est authentifié ça passe (anonymous = OK)
 	@Override
@@ -58,5 +60,18 @@ public class AccountController implements AccountApi {
 	@Override
 	public ResponseEntity<Void> accountLogout(String token) throws Exception {
 		return ResponseEntity.noContent().build();
+	}
+
+	/**
+	 * GET /account/{login}/must-validate-captcha : Indique si un compte doit valider le captcha pour se connecter
+	 * Indique si un compte doit valider le captcha pour se connecter
+	 *
+	 * @param login Le login du compte (required)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
+	@Override
+	public ResponseEntity<Boolean> mustValidateCaptcha(String login) throws Exception {
+		return ResponseEntity.ok(userService.mustValidateCaptcha(login));
 	}
 }

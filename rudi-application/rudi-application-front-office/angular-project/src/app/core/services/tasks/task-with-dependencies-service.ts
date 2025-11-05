@@ -1,9 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {AttachmentService} from '@core/services/attachment.service';
+import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
 import {DataSize} from '@shared/models/data-size';
-import {UploaderAdapter} from '@shared/uploader/uploader.adapter';
 import {DependencyFetcher} from '@shared/utils/dependencies-utils';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {TaskWithDependencies} from '@shared/utils/task-utils';
 import {AclService, User} from 'micro_service_modules/acl/acl-api';
 import {AssetDescription, Field, Task} from 'micro_service_modules/api-bpmn';

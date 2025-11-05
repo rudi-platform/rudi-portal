@@ -67,8 +67,8 @@ registerLocaleData(localeFr);
         {provide: TranslateService, useClass: CustomTranslateService},
         provideAppInitializer(() => {
             const initFn = appInitializerFactory(
-                inject(CustomTranslateService), 
-                inject(Injector), 
+                inject(CustomTranslateService),
+                inject(Injector),
                 inject(PropertiesMetierService)
             );
             return initFn();

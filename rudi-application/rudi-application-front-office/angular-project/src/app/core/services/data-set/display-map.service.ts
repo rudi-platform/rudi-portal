@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
-import {SearchAutocompleteItem} from '@shared/search-autocomplete/search-autocomplete-item.interface';
+import {SearchAutocompleteItem} from '@shared/core/search/search-autocomplete/search-autocomplete-item.interface';
 import {Metadata, MetadataGeographyBoundingBox} from 'micro_service_modules/api-kaccess';
 import {Address, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {LayerInformation, Proj4Information} from 'micro_service_modules/konsult/konsult-model';
 import {Feature} from 'ol';
+import {boundingExtent} from 'ol/extent';
 import GeoJSON from 'ol/format/GeoJSON';
 import {Geometry, Polygon} from 'ol/geom';
 import {get, getTransform, Projection, TransformFunction} from 'ol/proj';
@@ -14,7 +15,6 @@ import {Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {KonsultRvaService} from '../rva/konsult/konsult-rva.service';
 import {readFile} from './display.function';
-import { boundingExtent } from 'ol/extent';
 
 /**
  * Projection utilisée par la vue OpenLayers par défaut

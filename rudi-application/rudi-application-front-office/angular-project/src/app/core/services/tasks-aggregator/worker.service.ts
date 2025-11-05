@@ -1,5 +1,5 @@
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {TaskWithDependencies} from '@shared/utils/task-utils';
 import {Task} from 'micro_service_modules//api-bpmn/model/task';
 import {AssetDescription} from 'micro_service_modules/api-bpmn';
@@ -19,7 +19,8 @@ export abstract class WorkerService<T extends TaskWithDependencies<A, D>,
     protected constructor(
         protected readonly taskWithDependenciesService: TaskWithDependenciesService<T, C, A>,
         protected readonly dependencyFetchers: TaskDependencyFetchers<T, A, D>
-    ) {}
+    ) {
+    }
 
     loadTasks(): Observable<RequestToStudy[]> {
         return this.mapTaskWithDependenciesToRequestToStudy(this.searchTasksAndInjectGeneric());

@@ -8,8 +8,8 @@ import {
 import {
     OrganizationMemberDialogData
 } from '@features/organization/components/administration-tab/organization-members-table/organization-member-dialog-data';
+import {MemberPopinComponent} from '@shared/business/organisation/member-popin/member-popin.component';
 import {OrganizationMember} from 'micro_service_modules/strukture/strukture-model';
-import {MemberPopinComponent} from '@shared/member-popin/member-popin.component';
 import {Observable} from 'rxjs';
 
 @Injectable({

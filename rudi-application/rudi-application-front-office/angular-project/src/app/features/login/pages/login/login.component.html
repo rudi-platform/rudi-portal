@@ -60,7 +60,7 @@
                                             {{'authentification.passwordRequired'|translate}}
                                         </mat-error>
                                     </mat-form-field>
-                                    <app-rudi-captcha *ngIf="enableCaptchaOnPage"
+                                    <app-rudi-captcha *ngIf="enableCaptchaOnPage && isCaptchaNeeded"
                                                       [nomCaptcha]="'captchaFR'"></app-rudi-captcha>
                                     <!-- Box erreur sur le captcha -->
                                     <app-error-box *ngIf="errorCaptchaInput" class="pt-3"

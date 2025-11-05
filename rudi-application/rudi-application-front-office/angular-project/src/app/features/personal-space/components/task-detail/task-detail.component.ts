@@ -3,8 +3,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {map} from 'rxjs/operators';
 import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {
@@ -12,8 +10,10 @@ import {
     LinkedDatasetTaskDependencyFetchers
 } from '@core/services/tasks/projekt/linked-dataset-task-dependencies.service';
 import {NewDatasetRequestTaskDepenciesService} from '@core/services/tasks/projekt/new-dataset-request-task-depencies.service';
-import {Level} from '@shared/notification-template/notification-template.component';
+import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {map} from 'rxjs/operators';
 import {RequestDisplayData} from './request-display-data';
 
 @Component({
@@ -37,7 +37,7 @@ export class TaskDetailComponent implements OnInit {
                 private readonly translateService: TranslateService,
                 private readonly linkedDatasetTaskDependenciesService: LinkedDatasetTaskDependenciesService,
                 private readonly linkedDatasetDependencyFetchers: LinkedDatasetTaskDependencyFetchers,
-                private readonly newDatasetRequestTaskDepenciesService: NewDatasetRequestTaskDepenciesService, ) {
+                private readonly newDatasetRequestTaskDepenciesService: NewDatasetRequestTaskDepenciesService,) {
     }
 
     // Recup de l'id de la task depuis la route

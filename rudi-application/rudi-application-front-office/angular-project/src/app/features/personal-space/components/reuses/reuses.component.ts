@@ -4,10 +4,10 @@ import {ProjectDependenciesFetchers, ProjectDependenciesService} from '@core/ser
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {UserService} from '@core/services/user.service';
-import {BackPaginationSort} from '@shared/back-pagination/back-pagination-sort';
-import {SortTableInterface} from '@shared/back-pagination/sort-table-interface';
+import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {PagedProjectList} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';

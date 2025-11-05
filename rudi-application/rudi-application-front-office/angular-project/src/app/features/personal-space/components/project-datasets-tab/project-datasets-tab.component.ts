@@ -15,11 +15,11 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
+import {RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {RowTableData} from '@shared/project-datasets-tables/dataset.interface';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {WorkflowFormDialogComponent} from '@shared/workflow-form-dialog/workflow-form-dialog.component';
 import {Field, NewDatasetRequest, ProjektService, Section} from 'micro_service_modules/projekt/projekt-api';
 import {Form} from 'micro_service_modules/projekt/projekt-api/model/form';
 import {Project} from 'micro_service_modules/projekt/projekt-model';

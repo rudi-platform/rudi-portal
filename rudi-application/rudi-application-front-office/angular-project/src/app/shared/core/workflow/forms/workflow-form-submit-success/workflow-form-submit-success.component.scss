@@ -1,0 +1,35 @@
+@import "app/styles/common-style";
+
+.subtitle {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.additional {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+
+}
+
+.link-text {
+    font-size: 16px;
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+button {
+    @extend .button;
+    @extend .mat-stroked-button !optional;
+    @include button-blue;
+    margin-top: 2em;
+
+    &.mat-raised-button {
+        font-weight: bold;
+    }
+}
+

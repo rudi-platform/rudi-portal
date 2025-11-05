@@ -16,9 +16,9 @@ import {SelfdataInformationRequestTaskMetierService} from '@core/services/tasks/
 import {SelfdataTaskSearchCriteria} from '@core/services/tasks/selfdata/selfdata-task-search-criteria.interface';
 import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
 import {TranslateService} from '@ngx-translate/core';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {TaskDetailComponent} from '@shared/task-detail/task-detail.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Period} from 'micro_service_modules/api-kaccess';
 import {Form, SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-api';

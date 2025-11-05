@@ -4,8 +4,8 @@ import {Order} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {SelfdataDatasetService} from '@core/services/selfdata-dataset/selfdata-dataset.service';
-import {BackPaginationSort} from '@shared/back-pagination/back-pagination-sort';
-import {SortTableInterface} from '@shared/back-pagination/sort-table-interface';
+import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
 import {SelfdataDataset} from './selfdata-dataset.interface';
 
@@ -40,7 +40,7 @@ export class SelfdataDatasetsTableComponent implements OnInit {
 
     constructor(processDefinitionsKeyIconRegistryService: ProcessDefinitionsKeyIconRegistryService,
                 private readonly selfdataDatasetService: SelfdataDatasetService,
-                private readonly breakpointObserver: BreakpointObserverService, ) {
+                private readonly breakpointObserver: BreakpointObserverService,) {
         this.mediaSize = this.breakpointObserver.getMediaSize();
         processDefinitionsKeyIconRegistryService.addAllSvgIcons(PROCESS_DEFINITION_KEY_TYPES);
     }

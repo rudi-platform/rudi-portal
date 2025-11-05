@@ -11,7 +11,6 @@ import {
 import {ProjectMainInformationsComponent} from '@features/project/components/project-main-informations/project-main-informations.component';
 import {SharedModule} from '@shared/shared.module';
 import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
-import {DataSetModule} from '@features/data-set/data-set.module';
 import {AddDataSetDialogComponent} from './components/add-data-set-dialog/add-data-set-dialog.component';
 import {BannerComponent} from './components/banner/banner.component';
 import {DataSetButtonComponent} from './components/data-set-button/data-set-button.component';
@@ -61,10 +60,9 @@ import {ProjectRoutingModule} from './project-routing.module';
         CoreModule,
         FilePickerModule,
         ProjectRoutingModule,
-        DataSetModule,
         MatStepperModule
     ],
-    exports: [ProjectMainInformationsComponent, ProjectMainInformationLabelComponent, ProjectMainInformationDateComponent, BannerComponent],
+    exports: [ProjectMainInformationsComponent, ProjectMainInformationLabelComponent, ProjectMainInformationDateComponent,],
     providers:
         [
             {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}

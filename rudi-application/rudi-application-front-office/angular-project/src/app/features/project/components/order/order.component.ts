@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Item} from '@features/data-set/components/filter-forms/array-filter-form.component';
 import {Order, ORDERS} from '@core/services/asset/project/projekt-metier.service';
 import {TranslateService} from '@ngx-translate/core';
+import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {forkJoin, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -11,7 +11,7 @@ interface OrderItem extends Item {
 }
 
 @Component({
-    selector: 'app-order',
+    selector: 'app-project-order',
     templateUrl: './order.component.html',
     styleUrls: ['./order.component.scss'],
     standalone: false
@@ -61,7 +61,7 @@ export class OrderComponent implements OnInit {
                 } as OrderItem))
             );
         });
-        forkJoin(item$).subscribe(items => {
+        forkJoin(item$).subscribe((items: OrderItem[]) => {
             this.items = items;
             this.selectedItem = this.getItemWithValue(this.order);
         });

@@ -14,9 +14,9 @@ import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslateService} from '@ngx-translate/core';
+import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
+import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {RequestDetails} from '@shared/models/request-details';
-import {Level} from '@shared/notification-template/notification-template.component';
-import {RadioListItem} from '@shared/radio-list/radio-list-item';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
@@ -34,8 +34,8 @@ import {UpdateAction} from '../../model/upate-action';
     templateUrl: './submission-project.component.html',
     styleUrls: ['./submission-project.component.scss'],
     providers: [{
-            provide: STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false }
-        }],
+        provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
+    }],
     standalone: false
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {

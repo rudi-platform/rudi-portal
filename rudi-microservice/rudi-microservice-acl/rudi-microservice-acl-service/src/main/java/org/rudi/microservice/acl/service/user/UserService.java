@@ -6,6 +6,7 @@ package org.rudi.microservice.acl.service.user;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
 import org.rudi.microservice.acl.core.bean.PasswordUpdate;
@@ -13,8 +14,6 @@ import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import jakarta.validation.Valid;
 
 /**
  * Service de gestion des utilisateurs Rudi
@@ -173,4 +172,10 @@ public interface UserService {
 	Long countUsers();
 
 	String getUserPassword(UUID uuid);
+
+	boolean mustValidateCaptcha(String login);
+
+	void addFailedAttempt(String login);
+
+	void resetFailedAttempts(String login);
 }

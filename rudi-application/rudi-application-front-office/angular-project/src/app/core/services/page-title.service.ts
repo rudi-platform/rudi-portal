@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Meta, Title} from '@angular/platform-browser';
 import {LogService} from '@core/services/log.service';
 import {TranslateService} from '@ngx-translate/core';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {Observable} from 'rxjs';
 import {defaultIfEmpty, filter, map, switchMap, take} from 'rxjs/operators';
 

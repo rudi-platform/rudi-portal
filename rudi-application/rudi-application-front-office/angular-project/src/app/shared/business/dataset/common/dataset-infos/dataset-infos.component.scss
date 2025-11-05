@@ -1,0 +1,112 @@
+@import "app/styles/common-style";
+@import "app/styles/responsive";
+@import "../../../../../../../node_modules/bootstrap/scss/bootstrap-grid";
+
+.container-global {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    padding: 0 18px;
+
+    .logo-container {
+        padding: 0;
+    }
+}
+
+
+.dataset-info {
+    margin-left: 5px;
+
+    &-organization_name {
+        font-size: 12px;
+        line-height: 1.67;
+        color: var(--primary-text);
+        min-height: 12px;
+    }
+
+    &-resource_title {
+        font-size: 16px;
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-top: 5px;
+    }
+}
+
+.mat-divider {
+    position: inherit;
+}
+
+.svg-style {
+    height: 15px;
+}
+
+@mixin mobile() {
+    .text-container {
+        margin-left: 0;
+    }
+
+}
+
+@mixin desktop() {
+    .container-global {
+        flex-direction: row;
+    }
+
+    .logo-container {
+        margin-bottom: 0;
+    }
+}
+
+@include sm {
+    @include mobile();
+}
+
+@include md {
+    @include desktop();
+}
+
+@include lg {
+    @include desktop();
+}
+
+@include xl {
+    @include desktop();
+}
+
+.jdd-card {
+    &-lg {
+        display: flex;
+        flex-wrap: nowrap;
+        padding: 0 18px;
+        align-items: center;
+        margin-bottom: auto;
+
+        .text-container {
+            margin-left: 5px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3; /* start showing ellipsis when 3rd line is reached */
+            white-space: pre-wrap; /* let the text wrap preserving spaces */
+        }
+    }
+
+    &-md {
+        @extend .jdd-card-lg;
+
+        .text-container {
+            margin-left: 5px;
+        }
+    }
+
+    &-xs {
+
+        @extend .jdd-card-lg;
+        flex-wrap: nowrap;
+        height: 100px;
+
+        .text-container {
+            margin-left: 5px;
+        }
+    }
+}

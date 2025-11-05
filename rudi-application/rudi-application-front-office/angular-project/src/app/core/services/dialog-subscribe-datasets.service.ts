@@ -6,7 +6,7 @@ import {
 } from '@features/project/components/project-modification-confirmation-popin/project-modification-confirmation-popin.component';
 import {
     DeletionConfirmationPopinComponent
-} from '@shared/project-datasets-tables/deletion-confirmation-popin/deletion-confirmation-popin.component';
+} from '@shared/business/projects/projects-datasets-tables/deletion-confirmation-popin/deletion-confirmation-popin.component';
 import {Observable} from 'rxjs';
 import {DefaultMatDialogConfig} from './default-mat-dialog-config';
 

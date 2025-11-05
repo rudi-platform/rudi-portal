@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {SkosConceptsService} from 'micro_service_modules/kos/kos-api';
-import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
-import {mapEach} from '@shared/utils/ObservableUtils';
+import {mapEach} from '@shared/utils/observable-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
+import {SkosConceptsService} from 'micro_service_modules/kos/kos-api';
+import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {forkJoin, Observable, of, Subject} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 

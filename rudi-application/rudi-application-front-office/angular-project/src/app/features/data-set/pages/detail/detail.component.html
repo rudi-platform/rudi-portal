@@ -143,13 +143,13 @@
             <!-- Fin Bandeau -->
 
 
-            <div *ngIf="linkedProjects"
+            <div
                  [ngClass]="{'p-small': mediaSize.isDeviceMobile, 'p-large': mediaSize.isDeviceDesktop}"
                  class="banner-reuses">
 
                 <div class="banner-reuses-header d-flex justify-content-between">
-                    <h2 class="blue-theme">{{ 'metaData.reutilisations.titre'|translate }}{{ linkedProjects.length > 1 ? 's' : '' }}
-                        ({{ linkedProjects.length }})</h2>
+                    <h2 class="blue-theme">{{ 'metaData.reutilisations.titre'|translate }}{{ nbLinkedProjects > 1 ? 's' : '' }}
+                        ({{ nbLinkedProjects }})</h2>
                     <span class="spacer"></span>
                     <app-popover
                         (click)="clickDeclareReuse()"
@@ -160,15 +160,17 @@
                     </app-popover>
                 </div>
 
-                <div *ngIf="linkedProjects.length" class="banner-reuses-cards">
+                <div *ngIf="nbLinkedProjects > 0" class="banner-reuses-cards">
                     <app-project-list [disableScrollOnPageChange]="true"
                                       [linkedDatasetsGlobalIds]="[metadata.global_id]"
                                       [maxResultsPerPage]="(mediaSize.isXs || mediaSize.isSm) ? 1 : 3"
-                                      [resultsPerRow]="(mediaSize.isXs || mediaSize.isSm) ? 1 : 3">
+                                      [resultsPerRow]="(mediaSize.isXs || mediaSize.isSm) ? 1 : 3"
+                                      (reuseListTotal)="setLinkedProjectTotal($event)"
+                    >
                     </app-project-list>
                 </div>
 
-                <div *ngIf="!linkedProjects.length">
+                <div *ngIf="nbLinkedProjects === 0">
                     {{ 'metaData.reutilisations.aucuneReutilisation'|translate }}
                 </div>
 

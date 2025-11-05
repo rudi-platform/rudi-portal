@@ -5,7 +5,6 @@ package org.rudi.microservice.apigateway.facade.controller;
 
 import java.util.UUID;
 
-import jakarta.validation.Valid;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.apigateway.core.bean.PagedThrottlingList;
 import org.rudi.microservice.apigateway.core.bean.Throttling;
@@ -35,7 +34,7 @@ public class ThrottlingsController implements ThrottlingsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
-	public ResponseEntity<Throttling> createThrottling(@Valid Throttling throttling) throws Exception {
+	public ResponseEntity<Throttling> createThrottling(Throttling throttling) throws Exception {
 		return ResponseEntity.ok(throttlingService.createThrottling(throttling));
 	}
 
@@ -51,9 +50,21 @@ public class ThrottlingsController implements ThrottlingsApi {
 		return ResponseEntity.ok(throttlingService.getThrottling(throttlingUuid));
 	}
 
+	/**
+	 * GET /throttlings : Search Thorttlings
+	 * Return a list of Thorttlings
+	 *
+	 * @param active (optional)
+	 * @param code   (optional)
+	 * @param limit  Le nombre de résultats à retourner par page (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param order  (optional)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
+	 */
 	@Override
-	public ResponseEntity<PagedThrottlingList> searchThorttlings(@Valid Boolean active, @Valid String code,
-			@Valid Integer limit, @Valid Integer offset, @Valid String order) throws Exception {
+	public ResponseEntity<PagedThrottlingList> searchThorttlings(Boolean active, String code, Integer limit, 
+			Integer offset, String order) throws Exception {
 		PagedThrottlingList result = new PagedThrottlingList();
 		ThrottlingSearchCriteria searchCriteria = new ThrottlingSearchCriteria().active(active).code(code);
 
@@ -66,7 +77,7 @@ public class ThrottlingsController implements ThrottlingsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + MODULE_APIGATEWAY_ADMINISTRATOR + ")")
-	public ResponseEntity<Throttling> updateThrottling(@Valid Throttling throttling) throws Exception {
+	public ResponseEntity<Throttling> updateThrottling(Throttling throttling) throws Exception {
 		return ResponseEntity.ok(throttlingService.updateThrottling(throttling));
 	}
 

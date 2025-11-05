@@ -3,7 +3,6 @@ package org.rudi.microservice.strukture.facade.controller;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
@@ -168,8 +167,7 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + PROVIDER + ", " + USER + ")")
-	public ResponseEntity<ProcessHistoricInformation> getOrganizationTaskHistoryByTaskId(String taskId,
-			@Valid Boolean asAdmin) throws Exception {
+	public ResponseEntity<ProcessHistoricInformation> getOrganizationTaskHistoryByTaskId(String taskId, Boolean asAdmin) throws Exception {
 		return ResponseEntity.ok(organizationTaskService.getTaskHistoryByTaskId(taskId, asAdmin));
 	}
 

@@ -4,10 +4,10 @@ import {MatTableDataSource} from '@angular/material/table';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {RequestToStudy} from '@core/services/tasks-aggregator/request-to-study.interface';
 import {ProcessDefinitionEnum} from '@core/services/tasks/process-definition.enum';
+import {PaginatorComponent} from '@shared/core/common/paginator/paginator.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
-import {PaginatorComponent} from '@shared/paginator/paginator.component';
-import {ProcessDefinitionKeyTranslatePipe} from '@shared/pipes/process-definition-key-translate.pipe';
 import {compareDates, compareIgnoringCase} from '@shared/utils/comparators-utils';
+import {ProcessDefinitionKeyTranslatePipe} from '@shared/utils/pipes/process-definition-key-translate.pipe';
 
 @Component({
     selector: 'app-tasks',

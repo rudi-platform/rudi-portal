@@ -3,7 +3,6 @@ package org.rudi.microservice.projekt.facade.controller;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
@@ -37,6 +36,7 @@ import org.rudi.microservice.projekt.service.project.LinkedDatasetService;
 import org.rudi.microservice.projekt.service.project.NewDatasetRequestService;
 import org.rudi.microservice.projekt.service.project.ProjectService;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +83,8 @@ public class ProjectController implements ProjectsApi {
 	}
 
 	/**
-	 * GET /projects : Recherche de projets Recherche de projets
+	 * GET /projects : Recherche de projets
+	 * Recherche de projets
 	 *
 	 * @param datasetUuids       UUIDs des jeux de données liés aux projets recherchés (optional)
 	 * @param linkedDatasetUuids UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
@@ -96,20 +97,20 @@ public class ProjectController implements ProjectsApi {
 	 * @param offset             Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
 	 * @param limit              Le nombre de résultats à retourner par page (optional)
 	 * @param order              (optional)
-	 * @return OK (status code 200) or Service Unavailable (status code 500)
+	 * @return OK (status code 200)
+	 * or Service Unavailable (status code 500)
 	 */
 	@Override
-	public ResponseEntity<PagedProjectList> searchProjects(@Valid List<UUID> datasetUuids,
-			@Valid List<UUID> linkedDatasetUuids, @Valid List<UUID> ownerUuids, @Valid List<UUID> projectUuids,
-			@Valid List<ProjectStatus> status, @Valid List<String> themes, @Valid List<String> keywords,
-			@Valid List<@Valid TargetAudience> targetAudiennces, @Valid Integer offset, @Valid Integer limit,
-			@Valid String order) throws Exception {
-		val searchCriteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids)
+	public ResponseEntity<PagedProjectList> searchProjects(List<UUID> datasetUuids, List<UUID> linkedDatasetUuids,
+			List<UUID> ownerUuids, List<UUID> projectUuids, List<ProjectStatus> status, List<String> themes,
+			List<String> keywords, List<TargetAudience> targetAudiennces, Integer offset, Integer limit,
+			String order) throws Exception {
+		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids)
 				.linkedDatasetUuids(linkedDatasetUuids).ownerUuids(ownerUuids).projectUuids(projectUuids).projectStatus(status)
 				.themes(themes).keywords(keywords).targetAudiences(targetAudiennces).build();
 
-		val pageable = utilPageable.getPageable(offset, limit, order);
-		val page = projectService.searchProjects(searchCriteria, pageable);
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		Page<Project> page = projectService.searchProjects(searchCriteria, pageable);
 		return ResponseEntity.ok(new PagedProjectList().total(page.getTotalElements()).elements(page.getContent()));
 	}
 
@@ -341,7 +342,8 @@ public class ProjectController implements ProjectsApi {
 	}
 
 	/**
-	 * GET /projects/count-per-owner : Retourne le nombre de projects par owner Recherche de statut de réutilisation
+	 * GET /projects/count-per-owner : Retourne le nombre de projects par owner
+	 * Recherche de statut de réutilisation
 	 *
 	 * @param datasetUuids       UUIDs des jeux de données liés aux projets recherchés (optional)
 	 * @param linkedDatasetUuids UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
@@ -354,15 +356,15 @@ public class ProjectController implements ProjectsApi {
 	 * @param offset             Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
 	 * @param limit              Le nombre de résultats à retourner par page (optional)
 	 * @param order              (optional)
-	 * @return OK (status code 200) or Internal server error (status code 500)
+	 * @return OK (status code 200)
+	 * or Internal server error (status code 500)
 	 */
 	@Override
-	public ResponseEntity<List<ProjectByOwner>> getNumberOfProjectsPerOwners(@Valid List<UUID> datasetUuids,
-			@Valid List<UUID> linkedDatasetUuids, @Valid List<UUID> ownerUuids, @Valid List<UUID> projectUuids,
-			@Valid List<ProjectStatus> status, @Valid List<String> themes, @Valid List<String> keywords,
-			@Valid List<@Valid TargetAudience> targetAudiennces, @Valid Integer offset, @Valid Integer limit,
-			@Valid String order) throws Exception {
-		val criteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids).linkedDatasetUuids(linkedDatasetUuids)
+	public ResponseEntity<List<ProjectByOwner>> getNumberOfProjectsPerOwners(List<UUID> datasetUuids,
+			List<UUID> linkedDatasetUuids, List<UUID> ownerUuids, List<UUID> projectUuids, List<ProjectStatus> status,
+			List<String> themes, List<String> keywords, List<TargetAudience> targetAudiennces, Integer offset,
+			Integer limit, String order) throws Exception {
+		ProjectSearchCriteria criteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids).linkedDatasetUuids(linkedDatasetUuids)
 				.ownerUuids(ownerUuids).projectUuids(projectUuids).projectStatus(status).themes(themes).keywords(keywords)
 				.targetAudiences(targetAudiennces).build();
 

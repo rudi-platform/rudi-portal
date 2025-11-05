@@ -4,7 +4,7 @@ import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {WorkerLinkedProducerService} from '@core/services/tasks-aggregator/strukture/linked-producer/worker-linked-producer.service';
 import {WorkerOrganizationService} from '@core/services/tasks-aggregator/strukture/organization/worker-organization.service';
-import {GetBackendPropertyPipe} from '@shared/pipes/get-backend-property.pipe';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {ProjectListService} from './services/project-list.service';
 import {WorkerLinkedDatasetService} from './services/tasks-aggregator/projekt/worker-linked-dataset.service';
 import {WorkerNewDatasetRequestService} from './services/tasks-aggregator/projekt/worker-new-dataset-request.service';

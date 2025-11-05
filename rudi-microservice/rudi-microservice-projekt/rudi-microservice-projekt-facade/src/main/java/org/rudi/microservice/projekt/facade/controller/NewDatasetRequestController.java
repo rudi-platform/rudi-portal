@@ -3,9 +3,6 @@
  */
 package org.rudi.microservice.projekt.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-
 import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Form;
@@ -21,8 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
 
 /**
  * @author FNI18300
@@ -79,7 +77,7 @@ public class NewDatasetRequestController implements NewDatasetRequestApi {
 
 	@Override
 	public ResponseEntity<ProcessHistoricInformation> getNewDatasetRequestTaskHistoryByTaskId(String taskId,
-			@Valid Boolean asAdmin) throws Exception {
+			Boolean asAdmin) throws Exception {
 		return ResponseEntity.ok(newDatasetRequestTaskService.getTaskHistoryByTaskId(taskId, asAdmin));
 	}
 
