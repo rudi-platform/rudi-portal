@@ -877,6 +877,10 @@
 					},
 					"organization_coordinates": {
 						"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"
+					},
+					"linked_producer_status": {
+						"$ref": "#/components/schemas/LinkedProducerStatus",
+						"description": "Etat du lien entre le provider et l'organisation"
 					}
 				}
 			},
@@ -886,6 +890,35 @@
 				"enum": [
 					"DRAFT",
 					"DRAFT_ARCHIVE"
+				]
+			},
+			"NodeOrganizationNameParam": {
+				"description": "Tout ou partie du nom d'une organisation",
+				"type": "string"
+			},
+			"NodeOrganizationUuidParam": {
+				"description": "UUID d'une organisation",
+				"type": "string",
+				"format": "uuid"
+			},
+			"PagedNodeOrganizationList": {
+				"description": "Liste paginée de nodeOrganization",
+				"type": "object",
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PagedList"
+					},
+					{
+						"properties": {
+							"elements": {
+								"description": "Organisations de la page courante pour cette recherche",
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/NodeOrganization"
+								}
+							}
+						}
+					}
 				]
 			}
 		}

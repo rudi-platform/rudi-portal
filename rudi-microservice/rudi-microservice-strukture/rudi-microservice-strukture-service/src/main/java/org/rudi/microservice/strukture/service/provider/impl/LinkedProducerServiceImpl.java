@@ -139,7 +139,7 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 		// Vérifie que l'organisation existe bien et qu'elle a bien été validée par un moderateur.
 		OrganizationEntity organizationEntity = organizationHelper.getOrganizationEntity(uuid);
 		if (!organizationEntity.getOrganizationStatus().equals(OrganizationStatus.VALIDATED)) {
-			throw new InvalidParameterException("Orgnanization is not in a valid state");
+			throw new InvalidParameterException("Organization is not in a valid state");
 		}
 
 		return organizationEntity;

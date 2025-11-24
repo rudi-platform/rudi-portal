@@ -9,10 +9,12 @@ import org.rudi.common.service.exception.AppServiceForbiddenException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
+import org.rudi.microservice.strukture.core.bean.NodeOrganization;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
+import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.springframework.data.domain.Page;
@@ -58,5 +60,8 @@ public interface OrganizationService {
 	 */
 
 	Organization createOrganization(Organization organization) throws AppServiceBadRequestException;
+
+	Page<NodeOrganization> searchNodeOrganizations(NodeOrganizationSearchCriteria searchCriteria, Pageable pageable)
+			throws AppServiceException;
 
 }

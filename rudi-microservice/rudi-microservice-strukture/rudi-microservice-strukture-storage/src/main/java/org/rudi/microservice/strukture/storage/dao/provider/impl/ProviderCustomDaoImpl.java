@@ -14,9 +14,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
+import org.rudi.common.storage.dao.RepositoryConstants;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
@@ -137,7 +137,8 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 			// Ajout du filtre sur l'organisation
 			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getOrganisationUuid())) {
 				Join<ProviderEntity, LinkedProducerEntity> linkedProducerJoin = root.join(FIELD_LINKED_PRODUCER, JoinType.LEFT);
-				predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_ORGANIZATION).get(OrganizationEntity.FIELD_UUID).in(searchProviderCriteria.getOrganisationUuid()));
+				predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_ORGANIZATION)
+						.get(RepositoryConstants.FIELD_UUID).in(searchProviderCriteria.getOrganisationUuid()));
 			}
 
 

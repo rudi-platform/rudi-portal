@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.locationtech.jts.geom.Geometry;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -14,16 +18,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.locationtech.jts.geom.Geometry;
-import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * <ul>
- *     <li>Sa photo peut être déposée dans le Dataverse identique à celui utilisé pour les images des Providers</li>
+ * <li>Sa photo peut être déposée dans le Dataverse identique à celui utilisé pour les images des Providers</li>
  * </ul>
  */
 @Entity
@@ -32,10 +32,16 @@ import lombok.Setter;
 @Setter
 public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 
-	public static final String FIELD_UUID = "uuid";
+	public static final String FIELD_NAME = "name";
 	public static final String FIELD_MEMBERS = "members";
 	public static final String FIELD_ORGANIZATION_STATUS = "organizationStatus";
 	public static final String FIELD_STATUS = "status";
+	public static final String FIELD_ADDRESS = "address";
+	public static final String FIELD_POSITION = "position";
+	public static final String FIELD_URL = "url";
+	public static final String FIELD_DESCRIPTION = "description";
+	public static final String FIELD_CREATION_DATE = "creationDate";
+	public static final String FIELD_UPDATED_DATE = "updatedDate";
 
 	private static final long serialVersionUID = -8031214852147803138L;
 

@@ -2769,6 +2769,56 @@
 			}
 		},
 		"/organizations/request": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Collection d'organisations",
+				"description": "Retourne une liste d'organisations et leur statut par rapport au provider",
+				"operationId": "searchNodeOrganizations",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "uuid",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/NodeOrganizationUuidParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/NodeOrganizationNameParam"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-strukture-model.json#/components/schemas/PagedNodeOrganizationList"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			},
 			"post": {
 				"tags": [
 					"organization"

@@ -25,8 +25,10 @@ import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
+import org.rudi.microservice.strukture.core.bean.PagedNodeOrganizationList;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationList;
 import org.rudi.microservice.strukture.core.bean.PagedOrganizationUserMembers;
+import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
@@ -104,7 +106,7 @@ public class OrganizationsController implements OrganizationsApi {
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_STRUKTURE_ADMINISTRATOR + ", "
-			+ MODULE_PROJEKT + ", " + USER + ", " + MODULE_KALIM  + ")")
+			+ MODULE_PROJEKT + ", " + USER + ", " + MODULE_KALIM + ")")
 	public ResponseEntity<List<OrganizationMember>> getOrganizationMembers(UUID organizationUuid)
 			throws AppServiceException {
 		return ResponseEntity.ok(organizationService.getOrganizationMembers(organizationUuid));
@@ -215,7 +217,7 @@ public class OrganizationsController implements OrganizationsApi {
 		Organization organization = nodeOrganizationMapper.nodeDtoToDTO(nodeOrganization);
 		// Le champ description est obligatoire dans Rudi :
 		if (StringUtils.isEmpty(organization.getDescription())) {
-			organization.setDescription(String.format("Organsiation %s", organization.getName()));
+			organization.setDescription(String.format("Organisation %s", organization.getName()));
 		}
 		Organization createdOrganization = organizationService.createOrganization(organization);
 
@@ -248,5 +250,18 @@ public class OrganizationsController implements OrganizationsApi {
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
 	public ResponseEntity<NodeOrganization> getNodeOrganization(UUID uuid) throws Exception {
 		return ResponseEntity.ok(nodeOrganizationMapper.dtoToNodeDto(organizationService.getOrganization(uuid)));
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + PROVIDER + ")")
+	public ResponseEntity<PagedNodeOrganizationList> searchNodeOrganizations(UUID uuid, String name, Integer offset,
+			Integer limit, String order) throws Exception {
+
+		NodeOrganizationSearchCriteria searchCriteria = NodeOrganizationSearchCriteria.builder().uuid(uuid).name(name)
+				.build();
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		Page<NodeOrganization> page = organizationService.searchNodeOrganizations(searchCriteria, pageable);
+		return ResponseEntity
+				.ok(new PagedNodeOrganizationList().total(page.getTotalElements()).elements(page.getContent()));
 	}
 }

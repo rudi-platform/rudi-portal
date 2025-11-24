@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
+import org.rudi.common.storage.dao.RepositoryConstants;
 import org.rudi.microservice.strukture.core.bean.criteria.LinkedProducerSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerCustomDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
@@ -85,7 +86,8 @@ public class LinkedProducerCustomDaoImpl extends AbstractCustomDaoImpl<LinkedPro
 
 			if(criteria.getOrganizationUuid() != null){
 				Join<LinkedProducerEntity, OrganizationEntity> organizationJoin = root.join(LinkedProducerEntity.FIELD_ORGANIZATION);
-				predicates.add(builder.equal(organizationJoin.get(OrganizationEntity.FIELD_UUID), criteria.getOrganizationUuid()));
+				predicates.add(builder.equal(organizationJoin.get(RepositoryConstants.FIELD_UUID),
+						criteria.getOrganizationUuid()));
 			}
 
 

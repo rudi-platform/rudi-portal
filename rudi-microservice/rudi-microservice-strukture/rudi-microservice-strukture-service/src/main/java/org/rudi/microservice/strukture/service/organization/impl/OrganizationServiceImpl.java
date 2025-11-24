@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -16,19 +17,23 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.projekt.helper.ProjektHelper;
+import org.rudi.microservice.strukture.core.bean.NodeOrganization;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
 import org.rudi.microservice.strukture.core.bean.OwnerInfo;
+import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.exception.UserIsNotOrganizationAdministratorException;
 import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
+import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
+import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationMapper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationMemberMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
@@ -40,6 +45,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
+import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,8 +56,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -65,6 +72,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private final OrganizationDao organizationDao;
 	private final OrganizationCustomDao organizationCustomDao;
 	private final OrganizationMapper organizationMapper;
+	private final NodeOrganizationMapper nodeOrganizationMapper;
 	private final Collection<CreateOrganizationFieldProcessor> createOrganizationFieldProcessors;
 	private final Collection<UpdateOrganizationFieldProcessor> updateOrganizationFieldProcessors;
 
@@ -80,8 +88,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Value("${default.organization.roles:USER,ORGANIZATION}")
 	private List<String> defaultOrganizationRoles;
 
+	@Autowired
+	private ProviderHelper providerHelper;
+
 	@Override
-	public OwnerInfo getOrganizationOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException {
+	public OwnerInfo getOrganizationOwnerInfo(UUID uuid)
+			throws AppServiceBadRequestException, IllegalArgumentException {
 		OrganizationEntity entity = organizationDao.findByUuid(uuid);
 		if (entity == null) {
 			throw new AppServiceBadRequestException(String.format("No organization for the uuid : %s", uuid));
@@ -147,6 +159,21 @@ public class OrganizationServiceImpl implements OrganizationService {
 	public void deleteOrganization(UUID uuid) throws AppServiceNotFoundException {
 		val entity = organizationHelper.getOrganizationEntity(uuid);
 		organizationDao.delete(entity);
+	}
+
+	@Override
+	public Page<NodeOrganization> searchNodeOrganizations(NodeOrganizationSearchCriteria searchCriteria,
+			Pageable pageable) throws AppServiceException {
+		// On ne veut que les organisations dont le status BPMN est COMPLETED
+		searchCriteria.setStatus(Status.COMPLETED);
+
+		// Récupération du provider concerné
+		ProviderEntity provider = providerHelper.getMyProvider();
+		if (provider != null) {
+			searchCriteria.setProviderUUID(provider.getUuid());
+		}
+		return nodeOrganizationMapper
+				.beansToNodeDto(organizationCustomDao.searchNodeOrganizations(searchCriteria, pageable), pageable);
 	}
 
 	@Override
@@ -333,7 +360,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 		return organizationMemberMapper.entityToDto(member);
 	}
-
 
 	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {
 		val adminMembers = organization.getMembers().stream()

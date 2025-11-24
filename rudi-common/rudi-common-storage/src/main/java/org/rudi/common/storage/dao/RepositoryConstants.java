@@ -10,4 +10,5 @@ public class RepositoryConstants {
 	public static final String FIELD_CODE = "code";
 	public static final String FIELD_OPENING_DATE = "openingDate";
 	public static final String FIELD_CLOSING_DATE = "closingDate";
+	public static final String QUERY_ITEM_SEPARATOR = "|";
 }

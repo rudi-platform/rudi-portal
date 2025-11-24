@@ -394,13 +394,13 @@
          "oidcRPMetaDataOptionsClientID" : "66044585-0bbc-49fd-837e-ce6f22d8824a",
          "oidcRPMetaDataOptionsClientSecret" : "9d9d0b6a-310a-46c8-9fbb-402d41e4a939",
          "oidcRPMetaDataOptionsDisplayName" : "RUDI !",
-         "oidcRPMetaDataOptionsIDTokenForceClaims" : 0,
+         "oidcRPMetaDataOptionsIDTokenForceClaims" : 1,
          "oidcRPMetaDataOptionsIDTokenSignAlg" : "RS256",
          "oidcRPMetaDataOptionsLogoutSessionRequired" : 0,
          "oidcRPMetaDataOptionsLogoutType" : "front",
          "oidcRPMetaDataOptionsPublic" : 0,
          "oidcRPMetaDataOptionsRedirectUris" : "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/login/oauth2/code/ http://localhost:8085/login/oauth2/code/ http://localhost:4200/login/oauth2/code/",
-         "oidcRPMetaDataOptionsRefreshToken" : 0,
+         "oidcRPMetaDataOptionsRefreshToken" : 1,
          "oidcRPMetaDataOptionsRequirePKCE" : 0,
          "oidcRPMetaDataOptionsUserInfoSignAlg" : ""
       }

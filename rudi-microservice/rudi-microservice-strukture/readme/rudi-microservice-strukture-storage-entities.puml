@@ -330,10 +330,16 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
  {TableName=organization}
  {TableSchema=strukture_data}
 --
+	{field} {static} +FIELD_ADDRESS : String
+	{field} {static} +FIELD_CREATION_DATE : String
+	{field} {static} +FIELD_DESCRIPTION : String
 	{field} {static} +FIELD_MEMBERS : String
+	{field} {static} +FIELD_NAME : String
 	{field} {static} +FIELD_ORGANIZATION_STATUS : String
+	{field} {static} +FIELD_POSITION : String
 	{field} {static} +FIELD_STATUS : String
-	{field} {static} +FIELD_UUID : String
+	{field} {static} +FIELD_UPDATED_DATE : String
+	{field} {static} +FIELD_URL : String
 	{field} +@Column("address") address : String
 	{field} +closingDate : java.time.LocalDateTime
 	{field} +name : String
@@ -381,6 +387,7 @@ class org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnti
  {TableUniqueConstraints=UniqueConstraint (columnNames=[organization_fk,provider_fk] )}
 --
 	{field} {static} +FIELD_ID : String
+	{field} {static} +FIELD_LINKED_PRODUCER_STATUS : String
 	{field} {static} +FIELD_ORGANIZATION : String
 	{field} {static} +FIELD_UUID : String
 	{field} {static} +ORGANIZATION_FK : String

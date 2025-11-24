@@ -1,10 +1,22 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -13,6 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -21,42 +34,46 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.Feature;
+import org.rudi.microservice.strukture.core.bean.LinkedProducer;
+import org.rudi.microservice.strukture.core.bean.LinkedProducerStatus;
+import org.rudi.microservice.strukture.core.bean.NodeOrganization;
+import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationRole;
+import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.Point;
+import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
+import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
+import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
+import org.rudi.microservice.strukture.service.mapper.ProviderMapper;
+import org.rudi.microservice.strukture.service.provider.ProviderService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
+import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
+import org.rudi.microservice.strukture.storage.dao.provider.ProviderDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.val;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationServiceUT {
-
-	private final List<OrganizationEntity> createdOrganizations = new ArrayList<>();
 
 	@Autowired
 	private OrganizationService organizationService;
@@ -78,8 +95,27 @@ class OrganizationServiceUT {
 
 	@MockitoBean
 	DatasetService datasetService;
+
+	@MockitoBean
+	private ProviderHelper providerHelper;
+
+	@MockitoBean
+	private ProviderService providerService;
+
 	@Autowired
 	private OrganizationDataFactory organizationDataFactory;
+
+	@MockitoBean
+	private ProviderMapper providerMapper;
+
+	@Autowired
+	private ProviderDao providerDao;
+
+	@Autowired
+	private LinkedProducerDao linkedProducerDao;
+
+	@Autowired
+	private LinkedProducerHelper linkedProducerHelper;
 
 	private Organization createOrganizationDto() {
 		Organization organization = new Organization();
@@ -108,6 +144,46 @@ class OrganizationServiceUT {
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		when(organizationMembersHelper.isAuthenticatedUserOrganizationMember(any())).thenReturn(true);
+	}
+
+	private User mockNodeAuthenticationData(String login) throws AppServiceException {
+		Role userRole = new Role();
+		userRole.setCode(RoleCodes.PROVIDER);
+
+		final List<Role> roles = List.of(userRole);
+		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
+		authenticatedUser.setLogin(login);
+		User user = new User().login(authenticatedUser.getLogin()).uuid(UUID.randomUUID());
+		user.setRoles(roles);
+		user.setType(UserType.ROBOT);
+		when(aclHelper.getUserByLogin(login)).thenReturn(user);
+		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(organizationMembersHelper.isAuthenticatedUserOrganizationMember(any())).thenReturn(true);
+		return user;
+
+	}
+
+	private void mockProviderData(ProviderEntity provider, User user) throws AppServiceException {
+
+		when(providerHelper.getProviderFromUser(user)).thenReturn(provider);
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+	}
+
+	private ProviderEntity initProvider(String login) {
+		ProviderEntity provider = new ProviderEntity();
+		provider.setUuid(UUID.randomUUID());
+		provider.setCode(login);
+		provider.setLinkedProducers(new HashSet<LinkedProducerEntity>());
+		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
+		provider.setOpeningDate(date);
+		return providerDao.save(provider);
+	}
+
+	private NodeProvider initNodeProvider() {
+		NodeProvider nodeProvider = new NodeProvider();
+		nodeProvider.setUuid(UUID.randomUUID());
+		return nodeProvider;
 	}
 
 	private Organization createTestOrganization() throws AppServiceBadRequestException {
@@ -149,9 +225,8 @@ class OrganizationServiceUT {
 
 	@AfterEach
 	void tearDown() {
-		for (OrganizationEntity o : createdOrganizations) {
-			organizationDao.delete(o);
-		}
+		providerDao.deleteAll();
+		organizationDao.deleteAll();
 	}
 
 	@Test
@@ -177,23 +252,18 @@ class OrganizationServiceUT {
 
 		OrganizationEntity inDb = organizationDao.findByUuid(created.getUuid());
 
-		assertThat(inDb)
-				.as("Le resultat ne doit pas être null")
-				.isNotNull()
+		assertThat(inDb).as("Le resultat ne doit pas être null").isNotNull()
 				.as("Le nom en BDD doit correspondre au nom saisi")
 				.matches(o -> o.getName().equals(organization.getName()))
 				.as("L'opening date ne doit pas être celle saisie, mais celle du jour")
-				.matches(
-						o -> o.getOpeningDate() != organization.getOpeningDate() &&
-								(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-										.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))
-				)
+				.matches(o -> o.getOpeningDate() != organization.getOpeningDate()
+						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
 				.as("La date de cloture doit être égale à celle saisie")
 				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
 				.as("La description doit correspondre à celle saiaie")
 				.matches(o -> o.getDescription().equals(organization.getDescription()))
-				.as("L'url doit correspondre à celui saisi")
-				.matches(o -> o.getUrl().equals(organization.getUrl()));
+				.as("L'url doit correspondre à celui saisi").matches(o -> o.getUrl().equals(organization.getUrl()));
 
 		organizationDao.delete(inDb);
 	}
@@ -233,14 +303,14 @@ class OrganizationServiceUT {
 		organization.setName("OpeningDate OK");
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
-		LocalDateTime openingDate = LocalDateTime.now().minus(3,ChronoUnit.MONTHS);
+		LocalDateTime openingDate = LocalDateTime.now().minus(3, ChronoUnit.MONTHS);
 		organization.setOpeningDate(openingDate);
 
 		Organization created = organizationService.createOrganization(organization);
 		assertThat(created).as("Le résultat ne doit pas être null").isNotNull()
 				.as("Et la date ne doit pas être celle renseignée, mais celle du jour")
-				.matches(o -> !o.getOpeningDate().equals(openingDate) &&
-						(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+				.matches(o -> !o.getOpeningDate().equals(openingDate)
+						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
 								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
@@ -256,9 +326,8 @@ class OrganizationServiceUT {
 		Organization created = organizationService.createOrganization(organization);
 		assertThat(created).as("Le résultat ne doit pas être null").isNotNull()
 				.as("Et la date doit être égale à celle du jour")
-				.matches(o ->
-						(o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+				.matches(o -> (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
@@ -343,8 +412,9 @@ class OrganizationServiceUT {
 		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuid(created.getUuid()).build();
 		Page<Organization> organizations = organizationService.searchOrganizations(criteria, Pageable.unpaged());
 		assertTrue(organizations.get().anyMatch(collected -> collected.getName().equals(organization.getName())));
-		assertTrue(organizations.get()
-				.anyMatch(collected -> (collected.getOpeningDate().truncatedTo(ChronoUnit.MINUTES)).equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))));
+		assertTrue(
+				organizations.get().anyMatch(collected -> (collected.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))));
 	}
 
 	@Test
@@ -356,7 +426,6 @@ class OrganizationServiceUT {
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
 		organization.setOpeningDate(LocalDateTime.now());
-
 
 		Organization created = organizationService.createOrganization(organization);
 		created.setName("Teenage Engineering");
@@ -384,7 +453,8 @@ class OrganizationServiceUT {
 		Organization created = organizationService.createOrganization(organization);
 		organizationService.deleteOrganization(created.getUuid());
 
-		assertThat(organizationDao.findAll()).as("On doit avoir le même nombre d'organization qu'au début du test").hasSize((int) initialValue);
+		assertThat(organizationDao.findAll()).as("On doit avoir le même nombre d'organization qu'au début du test")
+				.hasSize((int) initialValue);
 	}
 
 	@Test
@@ -642,7 +712,8 @@ class OrganizationServiceUT {
 		Feature feature = new Feature();
 		Point point = new Point();
 
-		List<BigDecimal> coordinates = List.of(BigDecimal.valueOf(48.132819955157245), BigDecimal.valueOf(-1.6390905740588901));
+		List<BigDecimal> coordinates = List.of(BigDecimal.valueOf(48.132819955157245),
+				BigDecimal.valueOf(-1.6390905740588901));
 		point.setType("Point");
 		point.setCoordinates(coordinates);
 
@@ -650,8 +721,6 @@ class OrganizationServiceUT {
 		feature.setGeometry(point);
 
 		organization.setPosition(feature);
-
-		String featureString = feature.toString();
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
@@ -662,13 +731,180 @@ class OrganizationServiceUT {
 		Organization created = organizationService.createOrganization(organization);
 		OrganizationEntity organizationEntity = organizationDao.findByUuid(created.getUuid());
 
-		assertThat(organizationEntity)
-				.as("L'entité ne doit pas être null")
-				.isNotNull()
-				.as("La position ne doit pas être null non plus.")
-				.matches(o -> o.getPosition() != null)
+		assertThat(organizationEntity).as("L'entité ne doit pas être null").isNotNull()
+				.as("La position ne doit pas être null non plus.").matches(o -> o.getPosition() != null)
 				.as("La position doit petre la même que celle renseignée")
-				.matches(o -> o.getPosition().getCoordinates() != null)
-		;
+				.matches(o -> o.getPosition().getCoordinates() != null);
 	}
+
+	@Test
+	@DisplayName("Noeud - Recherche d'une organisation par nom")
+	void searchNodeOrganizationByName() throws AppServiceException {
+
+		// Création de deux organisations validées
+		String organisation1Name = "Organisation 1";
+		Organization orga1Created = initOrganisation(organisation1Name, OrganizationStatus.VALIDATED, Status.COMPLETED);
+
+		String organisation2Name = "Organisation 2";
+		initOrganisation(organisation2Name, OrganizationStatus.VALIDATED, Status.COMPLETED);
+
+		// Création d'une organisation en brouillon
+		String organisation3Name = "Organisation 3";
+		initOrganisation(organisation3Name, OrganizationStatus.VALIDATED, Status.DRAFT);
+
+		// Création d'un provider et d'un node provider
+		ProviderEntity provider1 = initProvider("user-provider-1");
+		NodeProvider nodeProvider1 = initNodeProvider();
+		assertNotNull(provider1);
+		assertNotNull(nodeProvider1);
+
+		// Association de la première organisation au provider avec le statut VALIDATED
+		attachWithStatus(orga1Created, provider1, nodeProvider1,
+				org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus.VALIDATED);
+
+		// Recherche en tant que user-provider-1
+		User u = mockNodeAuthenticationData("user-provider-1");
+		mockProviderData(provider1, u);
+
+		NodeOrganizationSearchCriteria criteriaNode = NodeOrganizationSearchCriteria.builder().name("*Organisation*")
+				.build();
+
+		Page<NodeOrganization> organizationsNode = organizationService.searchNodeOrganizations(criteriaNode,
+				Pageable.unpaged());
+		assertEquals(2, organizationsNode.getTotalElements());
+		// Seules les organisations 1 et 2 doivent être retournées (orga 3 en brouillon)
+		val no1 = organizationsNode.get().filter(collected -> collected.getOrganizationName().equals(organisation1Name))
+				.findFirst().orElse(null);
+		assertNotNull(no1);
+		// seule l'organisation 1 est liée au provider avec le statut VALIDATED
+		assertTrue(no1.getLinkedProducerStatus() == LinkedProducerStatus.VALIDATED);
+
+		val no2 = organizationsNode.get().filter(collected -> collected.getOrganizationName().equals(organisation2Name))
+				.findFirst().orElse(null);
+		assertNotNull(no2);
+		assertNull(no2.getLinkedProducerStatus());
+
+	}
+
+	@Test
+	@DisplayName("Noeud - Recherche d'une organisation par uuid")
+	void searchNodeOrganizationByUuid() throws AppServiceException {
+
+		// Création de deux organisations validées
+		String organisation1Name = "Organisation 1";
+		Organization orga1Created = initOrganisation(organisation1Name, OrganizationStatus.VALIDATED, Status.COMPLETED);
+
+		String organisation2Name = "Organisation 2";
+		Organization orga2Created = initOrganisation(organisation2Name, OrganizationStatus.VALIDATED, Status.COMPLETED);
+
+		// Création d'une organisation en brouillon
+		String organisation3Name = "Organisation 3";
+		Organization orga3Created = initOrganisation(organisation3Name, OrganizationStatus.VALIDATED, Status.DRAFT);
+
+		// Création d'un provider et d'un node provider
+		ProviderEntity provider1 = initProvider("user-provider-1");
+		NodeProvider nodeProvider1 = initNodeProvider();
+		assertNotNull(provider1);
+		assertNotNull(nodeProvider1);
+
+		// Association de la première organisation au provider avec le statut VALIDATED
+		attachWithStatus(orga1Created, provider1, nodeProvider1,
+				org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus.VALIDATED);
+
+		// Recherche en tant que user-provider-1
+		User u = mockNodeAuthenticationData("user-provider-1");
+		mockProviderData(provider1, u);
+
+		// Recherche de chaque organisation par son uuid
+		// la 1e remonte correctement avec son statut
+		NodeOrganizationSearchCriteria criteriaNodeOrga1 = NodeOrganizationSearchCriteria.builder()
+				.uuid(orga1Created.getUuid()).build();
+
+		Page<NodeOrganization> organizationsNode1 = organizationService.searchNodeOrganizations(criteriaNodeOrga1,
+				Pageable.unpaged());
+		assertEquals(1, organizationsNode1.getTotalElements());
+		val no1 = organizationsNode1.get()
+				.filter(collected -> collected.getOrganizationName().equals(organisation1Name)).findFirst()
+				.orElse(null);
+		assertNotNull(no1);
+		assertTrue(no1.getLinkedProducerStatus() == LinkedProducerStatus.VALIDATED);
+
+		NodeOrganizationSearchCriteria criteriaNodeOrga2 = NodeOrganizationSearchCriteria.builder()
+				.uuid(orga2Created.getUuid()).build();
+
+		// la 2e remonte correctement sans statut
+		Page<NodeOrganization> organizationsNode2 = organizationService.searchNodeOrganizations(criteriaNodeOrga2,
+				Pageable.unpaged());
+		assertEquals(1, organizationsNode2.getTotalElements());
+		val no2 = organizationsNode2.get()
+				.filter(collected -> collected.getOrganizationName().equals(organisation2Name)).findFirst()
+				.orElse(null);
+		assertNotNull(no2);
+
+		// la 3e n'est pas retournée car en brouillon
+		NodeOrganizationSearchCriteria criteriaNodeOrga3 = NodeOrganizationSearchCriteria.builder()
+				.uuid(orga3Created.getUuid()).build();
+
+		Page<NodeOrganization> organizationsNode3 = organizationService.searchNodeOrganizations(criteriaNodeOrga3,
+				Pageable.unpaged());
+		assertEquals(0, organizationsNode3.getTotalElements());
+	}
+
+	@Test
+	@DisplayName("Noeud - Recherche d'une organisation cancelled")
+	void searchNodeOrganizationCancelledByUuid() throws AppServiceException {
+
+		// Création de deux organisations validées
+		String organisation1Name = "Organisation 1";
+		Organization orga1Created = initOrganisation(organisation1Name, OrganizationStatus.CANCELLED, Status.CANCELLED);
+
+		// Création d'un provider et d'un node provider
+		ProviderEntity provider1 = initProvider("user-provider-1");
+		NodeProvider nodeProvider1 = initNodeProvider();
+		assertNotNull(provider1);
+		assertNotNull(nodeProvider1);
+
+		// Association de la première organisation au provider avec le statut VALIDATED
+		attachWithStatus(orga1Created, provider1, nodeProvider1,
+				org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus.VALIDATED);
+
+		// Recherche en tant que user-provider-1
+		User u = mockNodeAuthenticationData("user-provider-1");
+		mockProviderData(provider1, u);
+
+		// Recherche de chaque organisation par son uuid
+		// la 1e remonte correctement avec son statut
+		NodeOrganizationSearchCriteria criteriaNodeOrga1 = NodeOrganizationSearchCriteria.builder()
+				.uuid(orga1Created.getUuid()).build();
+
+		Page<NodeOrganization> organizationsNode1 = organizationService.searchNodeOrganizations(criteriaNodeOrga1,
+				Pageable.unpaged());
+		assertEquals(0, organizationsNode1.getTotalElements());
+	}
+
+	@Transactional
+	private void attachWithStatus(Organization organization, ProviderEntity provider, NodeProvider nodeProvider,
+			final org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus expectedStatus)
+			throws AppServiceException {
+		LinkedProducer linkedProducer = linkedProducerHelper
+				.createLinkedProducer(organizationDao.findByUuid(organization.getUuid()), provider, nodeProvider);
+		LinkedProducerEntity linkedProducerEntity = linkedProducerDao.findByUuid(linkedProducer.getUuid());
+		linkedProducerEntity.setLinkedProducerStatus(expectedStatus);
+		linkedProducerDao.save(linkedProducerEntity);
+	}
+
+	private Organization initOrganisation(String organisationName, OrganizationStatus organisationStatus, Status status)
+			throws AppServiceException {
+		Organization organization1 = new Organization();
+		organization1.setName(organisationName);
+		organization1.setDescription("Description " + organisationName);
+		organization1.setInitiator("initiator@mail.fr");
+
+		Organization orga1Created = organizationService.createOrganization(organization1);
+		orga1Created.setStatus(status);
+		orga1Created.setOrganizationStatus(organisationStatus);
+		organizationService.updateOrganization(orga1Created);
+		return orga1Created;
+	}
+
 }

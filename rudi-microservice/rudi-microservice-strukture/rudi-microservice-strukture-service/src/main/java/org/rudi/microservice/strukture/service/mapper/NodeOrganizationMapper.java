@@ -1,7 +1,7 @@
 package org.rudi.microservice.strukture.service.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
+import java.util.List;
+
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -14,15 +14,21 @@ import org.rudi.microservice.strukture.core.bean.Feature;
 import org.rudi.microservice.strukture.core.bean.GeoJsonObject;
 import org.rudi.microservice.strukture.core.bean.NodeOrganization;
 import org.rudi.microservice.strukture.core.bean.Organization;
+import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
-		MapperUtils.class,
-})
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.minidev.json.JSONObject;
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class, })
 @Component
-public abstract class NodeOrganizationMapper  {
+public abstract class NodeOrganizationMapper {
 	@Autowired
 	private GeometryHelper geojsonHelper;
 
@@ -41,8 +47,6 @@ public abstract class NodeOrganizationMapper  {
 	@Mapping(source = "updatedDate", target = "organizationDates.modified")
 	public abstract NodeOrganization dtoToNodeDto(Organization organization);
 
-
-
 	@InheritInverseConfiguration
 	public abstract Organization nodeDtoToDTO(NodeOrganization nodeOrganization);
 
@@ -60,6 +64,12 @@ public abstract class NodeOrganizationMapper  {
 
 	@InheritInverseConfiguration
 	public abstract OrganizationEntity nodeDtoToEntity(NodeOrganization nodeOrganization);
+
+	public Page<NodeOrganization> beansToNodeDto(Page<NodeOrganizationProjectionBean> beans, Pageable pageable) {
+		return new PageImpl<>(beansToNodeDto(beans.getContent()), pageable, beans.getTotalElements());
+	}
+
+	public abstract List<NodeOrganization> beansToNodeDto(List<NodeOrganizationProjectionBean> beans);
 
 	@AfterMapping
 	private void handlePosition(NodeOrganization dto, @MappingTarget OrganizationEntity entity) {
@@ -80,4 +90,5 @@ public abstract class NodeOrganizationMapper  {
 		}
 		return objectMapper.convertValue(geoJsonObject, JSONObject.class);
 	}
+
 }
