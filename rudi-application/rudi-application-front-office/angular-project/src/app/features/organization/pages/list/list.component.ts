@@ -7,7 +7,7 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
     styleUrls: ['./list.component.scss'],
     standalone: false
 })
-export class ListComponent implements OnInit{
+export class ListComponent implements OnInit {
 
     @Input() mediaSize: MediaSize;
 
@@ -15,12 +15,6 @@ export class ListComponent implements OnInit{
         private readonly breakpointObserver: BreakpointObserverService,
     ) {
 
-    }
-
-
-
-    onChanges(search: string): void {
-        console.log(search);
     }
 
     ngOnInit(): void {

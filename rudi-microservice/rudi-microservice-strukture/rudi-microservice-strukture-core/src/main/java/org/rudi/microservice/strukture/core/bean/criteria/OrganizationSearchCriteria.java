@@ -1,5 +1,6 @@
 package org.rudi.microservice.strukture.core.bean.criteria;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Status;
@@ -24,11 +25,13 @@ public class OrganizationSearchCriteria implements SearchCriteria {
 	private String name;
 	private Boolean active;
 	private UUID userUuid;
-	private OrganizationStatus organizationStatus;
+	private List<OrganizationStatus> organizationStatus;
 	private Status status;
 	private Boolean loadAllInformations;
 
 	private Integer offset;
 	private Integer limit;
 	private String order;
+
+	List<OrganizationStatus> adminMemberAllowedStatus;
 }

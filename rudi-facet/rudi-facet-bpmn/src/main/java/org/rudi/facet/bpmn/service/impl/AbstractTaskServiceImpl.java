@@ -844,7 +844,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		}
 
 		List<HistoricProcessInstance> historicProcessInstances = historicHelper
-				.collectHistoricProcess(List.of(task.getProcessInstanceId()));
+				.collectHistoricProcess(List.of(task.getProcessInstanceId()), false);
 		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
 				.convertHistoricProcessInstance(historicProcessInstances);
 
@@ -877,7 +877,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 		// Conversion des processInstanceIds en ProcessHistoricInformation
 		List<HistoricProcessInstance> historicProcessInstances = historicHelper
-				.collectHistoricProcess(processInstanceIds);
+				.collectHistoricProcess(processInstanceIds, false);
 		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
 				.convertHistoricProcessInstance(historicProcessInstances);
 

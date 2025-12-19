@@ -15,6 +15,7 @@ export class SelfdataProcessDefinitionKeyTranslatePipe implements PipeTransform 
         private readonly translateService: TranslateService,
     ) {
     }
+
     transform(value: string): string {
         let result: string;
         if (value === ProcessDefinitionEnum.SELFDATA_INFORMATION_REQUEST_Process) {

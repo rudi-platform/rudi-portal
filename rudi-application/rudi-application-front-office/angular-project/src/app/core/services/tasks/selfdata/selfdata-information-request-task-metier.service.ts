@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Task} from 'micro_service_modules/api-bpmn';
+import {ProcessHistoricInformation, Task} from 'micro_service_modules/api-bpmn';
 import {TaskService as SelfdataTaskService} from 'micro_service_modules/selfdata/selfdata-api';
 import {SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-model';
 import {Observable} from 'rxjs';
@@ -43,5 +43,9 @@ export class SelfdataInformationRequestTaskMetierService extends MicroserviceSel
 
     startTask(task: Task): Observable<Task> {
         return this.selfdataTaskService.startSelfdataInformationRequestTask(task);
+    }
+
+    getMyHistoricInformations(): Observable<ProcessHistoricInformation[]> {
+        return this.selfdataTaskService.getMyHistoricInformations();
     }
 }

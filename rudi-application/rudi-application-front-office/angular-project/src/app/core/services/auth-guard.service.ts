@@ -56,7 +56,7 @@ export class AuthGuardService {
      */
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
         Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        return this.userService.getConnectedUser().pipe(
+        return this.userService.getAuthenticatedUser().pipe(
             // ça marche : je peux accéder normalement à la page en restant authentifié
             map(() => true),
             // KO : j'ai pas accès à la page, j'ai perdu mon authent donc j'essaye de m'authent en anonymous

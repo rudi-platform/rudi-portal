@@ -17,7 +17,8 @@ export class ProjectListService {
 
     constructor(
         private readonly projektMetierService: ProjektMetierService,
-        private readonly projectDependenciesFetchers: ProjectDependenciesFetchers) {
+        private readonly projectDependenciesFetchers: ProjectDependenciesFetchers,
+    ) {
     }
 
     /**
@@ -27,18 +28,17 @@ export class ProjectListService {
      * @param limit le nombre de projets pour la page
      * @param order la colonne sur léquelles on trie
      * @param producerUuid UUIDs des organisations ayant déclaré la réutilisation ou soumis le projet
+     * @param isMember true if authenticated user is member of the producer, false otherwise
      */
     public searchProjectsCatalog(linkedDatasetsGlobalIds: string[], offset: number, limit: number,
-                                 order = DEFAULT_PROJECT_ORDER, producerUuid?: string): Observable<ProjectCatalogItemPage> {
-
+                                 order = DEFAULT_PROJECT_ORDER, producerUuid?: string, isMember: boolean = false): Observable<ProjectCatalogItemPage> {
         // La page renvoyée
         const page = new ProjectCatalogItemPage();
-
         // Tout va partir des projets à récupérer
         const criteria: ProjectSearchCriteria = {
             dataset_uuids: linkedDatasetsGlobalIds,
             owner_uuids: [producerUuid],
-            status: [ProjectStatus.Validated, ProjectStatus.Archived],
+            status: isMember ? [ProjectStatus.Validated, ProjectStatus.Archived, ProjectStatus.Disengaged] : [ProjectStatus.Validated, ProjectStatus.Archived],
             offset,
             limit
         };

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -56,8 +55,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Service
 @Transactional(readOnly = true)
@@ -102,7 +101,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	public Organization getOrganization(UUID uuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException {
+	public Organization getOrganization(UUID uuid) throws AppServiceException {
 		OrganizationEntity entity = organizationHelper.getOrganizationEntity(uuid);
 		if (OrganizationStatus.DISENGAGED.equals(entity.getOrganizationStatus())) {
 			struktureAuthorisationHelper.checkRightsAdminsterOrganization(entity);
@@ -355,16 +354,33 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 		organizationMemberMapper.dtoToEntity(organizationMember, member);
 
-		// Pour Jules : Un mapper.dtoToEntity(dto, entity) ne fait pas de modification de la BD, il FAUT un dao.save(entity)
+		// Un mapper.dtoToEntity(dto, entity) ne fait pas de modification de la BD, il FAUT un dao.save(entity)
 		organizationDao.save(existingOrganization);
 
 		return organizationMemberMapper.entityToDto(member);
 	}
 
+	/**
+	 * @param criteria
+	 * @param pageable
+	 * @return
+	 * @throws AppServiceException
+	 */
+	@Override
+	public Page<Organization> searchMyOrganizations(OrganizationSearchCriteria criteria, Pageable pageable) throws AppServiceException {
+		// On force les valeurs liées au contexte du "my".
+		criteria.setOrganizationStatus(List.of(org.rudi.microservice.strukture.core.bean.OrganizationStatus.VALIDATED));
+		criteria.setStatus(Status.COMPLETED);
+		criteria.setUserUuid(aclHelper.getAuthenticatedUserUuid());
+
+		// Appel du search classique et pas du searchMy car pas de restriction supplémentaires
+		return organizationMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
+	}
+
 	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {
 		val adminMembers = organization.getMembers().stream()
 				.filter(orgaMember -> OrganizationRole.ADMINISTRATOR.equals(orgaMember.getRole()))
-				.collect(Collectors.toList());
+				.toList();
 		return adminMembers.size() == 1 && adminMembers.get(0).getUserUuid().equals(userUuid);
 	}
 }

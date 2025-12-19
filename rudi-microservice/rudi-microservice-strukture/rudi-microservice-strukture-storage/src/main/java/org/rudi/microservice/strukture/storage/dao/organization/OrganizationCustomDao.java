@@ -15,4 +15,6 @@ public interface OrganizationCustomDao {
 
 	Page<NodeOrganizationProjectionBean> searchNodeOrganizations(NodeOrganizationSearchCriteria searchCriteria,
 			Pageable pageable);
+
+	Page<OrganizationEntity> searchMyOrganizations(OrganizationSearchCriteria searchCriteria, Pageable pageable);
 }

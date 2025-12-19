@@ -384,7 +384,7 @@
    },
    "oidcRPMetaDataOptions" : {
       "rudi-application" : {
-         "oidcRPMetaDataOptionsAccessTokenClaims" : 0,
+         "oidcRPMetaDataOptionsAccessTokenClaims" : 1,
          "oidcRPMetaDataOptionsAccessTokenJWT" : 1,
          "oidcRPMetaDataOptionsAccessTokenSignAlg" : "RS256",
          "oidcRPMetaDataOptionsAllowClientCredentialsGrant" : 1,
@@ -406,7 +406,9 @@
       }
    },
    "oidcRPMetaDataOptionsExtraClaims" : {
-      "rudi-application" : {}
+      "rudi-application" : {
+		"rudi_profile": "dn"
+	  }
    },
    "oidcRPMetaDataScopeRules" : {
       "rudi-application" : {}

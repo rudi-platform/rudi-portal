@@ -152,7 +152,7 @@ public class OrganizationHelperTestUT {
 	}
 
 	private OrganizationEntity createOrganization() {
-		OrganizationEntity o = organizationDataFactory.createLiksiOrganization();
+		OrganizationEntity o = organizationDataFactory.createIRISAOrganization(null);
 		createdOrganizations.add(o);
 		return o;
 	}

@@ -179,7 +179,7 @@ class OwnerInfoHelperUT {
 		UUID userUuid = UUID.randomUUID();
 		User user = mockAuthenticatedUser(userUuid, true);
 
-		OrganizationEntity organizationEntity = organizationDataFactory.createLiksiOrganization();
+		OrganizationEntity organizationEntity = organizationDataFactory.createIRISAOrganization(null);
 		organizationEntity.setInitiator(user.getLogin());
 		OwnerInfo ownerInfo = ownerInfoHelper.getAssetDescriptionOwnerInfo(organizationEntity);
 
@@ -205,7 +205,7 @@ class OwnerInfoHelperUT {
 				.matches(u -> StringUtils.isEmpty(u.getLastname()))
 		;
 
-		OrganizationEntity organizationEntity = organizationDataFactory.createLiksiOrganization();
+		OrganizationEntity organizationEntity = organizationDataFactory.createIRISAOrganization(null);
 		organizationEntity.setInitiator(user.getLogin());
 		OwnerInfo ownerInfo = ownerInfoHelper.getAssetDescriptionOwnerInfo(organizationEntity);
 

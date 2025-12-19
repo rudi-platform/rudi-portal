@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
+import {OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
 
 @Component({
     selector: 'app-organization-card',
@@ -29,4 +30,7 @@ export class OrganizationCardComponent {
         return `organization.card.projectsCount.${this.organizationBean.projectCount > 1 ? 'plural' : 'single'}`;
     }
 
+    protected isArchived(): boolean {
+        return this.organizationBean!.organizationStatus === OrganizationStatus.Disengaged;
+    }
 }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
     MicroserviceLinkedProducerTaskMetierService
 } from '@core/services/tasks/strukture/linked-producer/microservice-linked-producer-task-metier.service';
-import {Task} from 'micro_service_modules/api-bpmn';
+import {ProcessHistoricInformation, Task} from 'micro_service_modules/api-bpmn';
 import {TaskService as LinkedProducerTaskService} from 'micro_service_modules/strukture/api-strukture';
 import {LinkedProducer} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
@@ -42,4 +42,9 @@ export class LinkedProducerTaskMetierService extends MicroserviceLinkedProducerT
     startTask(task: Task): Observable<Task> {
         return this.linkedProducerTaskService.startLinkedProducerTask(task);
     }
+
+    getMyHistoricInformations(): Observable<ProcessHistoricInformation[]> {
+        return this.linkedProducerTaskService.getMyHistoricInformations();
+    }
+
 }

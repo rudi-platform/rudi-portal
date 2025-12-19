@@ -10,7 +10,8 @@
 
 <!-- On utilise hidden à la place de *ngIf pour éviter des bugs avec mat-table : https://stackoverflow.com/a/56127490/1655155 -->
 <div [hidden]="!(requestsToStudy?.length)">
-    <span id="table-description" class="invisible">{{ 'personalSpace.myNotifications.title1' | translate }}</span>
+    <span id="table-description"
+          class="invisible">{{ 'personalSpace.myNotifications.title' | translate }}</span>
     <table
         mat-table
         matSort
@@ -23,13 +24,14 @@
 
         <ng-container matColumnDef="receivedDate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
-                scope="col">{{'personalSpace.myNotifications.receivedDate'|translate}}</th>
+                scope="col">{{ 'personalSpace.myNotifications.receivedDate'|translate }}
+            </th>
             <td mat-cell *matCellDef="let requestToStudy"> {{requestToStudy.receivedDate | date: 'dd/MM/YYYY'}} </td>
         </ng-container>
 
         <ng-container matColumnDef="processDefinitionKey">
             <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col" class="table-header">
-                {{'personalSpace.myNotifications.processDefinitionKey'|translate}}
+                {{ 'personalSpace.myNotifications.processDefinitionKey'|translate }}
             </th>
             <td mat-cell *matCellDef="let requestToStudy">
                 <div class="icon-container">
@@ -41,7 +43,8 @@
 
         <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
-                scope="col">{{'personalSpace.myNotifications.description'|translate}}</th>
+                scope="col">{{ 'personalSpace.myNotifications.description'|translate }}
+            </th>
             <td mat-cell *matCellDef="let requestToStudy" class="dataset-title">
                 <div class="description-container">
                     {{requestToStudy.description}}
@@ -53,7 +56,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header status-header"
                 scope="col">
                 <div>
-                    <span>{{'personalSpace.myNotifications.status'|translate}}</span>
+                    <span>{{ 'personalSpace.myNotifications.status'|translate }}</span>
                 </div>
             </th>
             <td mat-cell *matCellDef="let requestToStudy"><span

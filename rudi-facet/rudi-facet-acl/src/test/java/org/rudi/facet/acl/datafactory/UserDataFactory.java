@@ -63,4 +63,62 @@ public class UserDataFactory extends AbstractDataFactory {
 	public User createUserModerator(String login){
 		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("MODERATOR", null)), true);
 	}
+
+	public User getOrCreateJean() {
+		User user = null;
+		String login = "jean@user-rudi.bzh";
+		UserType type = UserType.PERSON;
+		List<Role> roles = List.of(roleDataFactory.getOrCreate("USER", null));
+
+		if (StringUtils.isNotEmpty(login)) {
+			user = helper.getUserByLogin(login);
+		}
+
+		if (user != null) {
+			return user;
+		}
+
+		user = new User();
+		user.setUuid(UUID.fromString("fdbce920-324c-4cd5-8d90-0ab98bb58e1b"));
+		user.setLogin(login);
+		user.setPassword(randomString(10) + "Az!1");
+		user.setCompany(randomString(20));
+		user.setFirstname("Jean");
+		user.setLastname("Dupond");
+
+		user.setType(type);
+		user.setRoles(roles);
+
+		return user;
+	}
+
+	public User getOrCreateJacques() {
+		User user = null;
+		String login = "jacques@user-rudi.bzh";
+		UserType type = UserType.PERSON;
+		List<Role> roles = List.of(roleDataFactory.getOrCreate("USER", null));
+
+		if (StringUtils.isNotEmpty(login)) {
+			user = helper.getUserByLogin(login);
+		}
+
+		if (user != null) {
+			return user;
+		}
+
+		user = new User();
+		user.setUuid(UUID.fromString("c8c2efad-3685-4c0d-b318-fd2f79b471b2"));
+		user.setLogin(login);
+		user.setPassword(randomString(10) + "Az!1");
+		user.setCompany(randomString(20));
+		user.setFirstname("Jacques");
+		user.setLastname("Durand");
+
+		user.setType(type);
+		user.setRoles(roles);
+
+		return user;
+	}
+
+
 }

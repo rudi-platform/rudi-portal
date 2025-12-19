@@ -4,6 +4,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
+import {MyTasksHistoriesTabComponent} from '@features/personal-space/components/my-tasks-histories-tab/my-tasks-histories-tab.component';
 import {
     OrganizationFormDialogComponent
 } from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
@@ -128,6 +129,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         MatPaginatorModule,
         MatSortModule,
         ProjectModule,
+        MyTasksHistoriesTabComponent,
     ]
     ,
     providers:

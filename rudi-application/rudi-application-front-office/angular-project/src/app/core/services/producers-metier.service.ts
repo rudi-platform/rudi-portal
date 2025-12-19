@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {UserService} from '@core/services/user.service';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
 import {OrganizationService, ProducersService} from 'micro_service_modules/strukture/api-strukture';
 import {Observable} from 'rxjs';
@@ -13,9 +14,10 @@ export class ProducersMetierService extends OrganizationMetierService {
     constructor(
         protected imageLogoService: ImageLogoService,
         private producersService: ProducersService,
-        protected readonly organizationService: OrganizationService
+        protected readonly organizationService: OrganizationService,
+        protected readonly userService: UserService
     ) {
-        super(imageLogoService, organizationService);
+        super(imageLogoService, organizationService, userService);
     }
 
     protected downloadProducerMediaByType(producerUuid: string, kindOfData: KindOfData): Observable<Blob> {

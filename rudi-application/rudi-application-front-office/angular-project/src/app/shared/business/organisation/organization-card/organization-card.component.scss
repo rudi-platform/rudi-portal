@@ -1,7 +1,11 @@
 @import "app/styles/common-style";
 
-.organization-card {
+.archived {
+    background-color: var(--banner-solid-color-60);
+}
 
+
+.organization-card {
     box-shadow: none;
     border: solid 1.1px var(--blocks-and-menus-outline);
     cursor: pointer;

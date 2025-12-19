@@ -3,6 +3,7 @@
         [organizationName]="'organization.label'|translate"
         [resourceTitle]="organization?.name"
         [organizationId]="organization?.uuid"
+        [status]="getStatus()"
     >
     </app-page-heading>
     <app-tabs>

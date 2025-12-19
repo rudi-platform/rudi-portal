@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
     MicroserviceOrganizationTaskMetierService
 } from '@core/services/tasks/strukture/organization/microservice-organization-task-metier.service';
-import {Task} from 'micro_service_modules/api-bpmn';
+import {ProcessHistoricInformation, Task} from 'micro_service_modules/api-bpmn';
 import {TaskService as OrganizationTaskService} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
@@ -41,5 +41,9 @@ export class OrganizationTaskMetierService extends MicroserviceOrganizationTaskM
 
     startTask(task: Task): Observable<Task> {
         return this.organizationTaskService.startOrganizationTask(task);
+    }
+
+    getMyHistoricInformations(): Observable<ProcessHistoricInformation[]> {
+        return this.organizationTaskService.getMyHistoricInformations();
     }
 }

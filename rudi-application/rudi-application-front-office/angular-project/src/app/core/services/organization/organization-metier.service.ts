@@ -1,18 +1,15 @@
 import {Injectable} from '@angular/core';
-import {OrganizationSearchCriteria} from '@core/bean/strukture/organization-search-criteria';
+import {UserService} from '@core/services/user.service';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
-import {Status} from 'micro_service_modules/api-bpmn';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {
     Organization,
     OrganizationMember,
     OrganizationMemberType,
-    OrganizationStatus,
-    PagedOrganizationList,
     PagedOrganizationUserMembers
 } from 'micro_service_modules/strukture/strukture-model';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {shareReplay, switchMap} from 'rxjs/operators';
 import {Base64EncodedLogo, ImageLogoService} from '../image-logo.service';
 
@@ -24,6 +21,7 @@ export abstract class OrganizationMetierService {
     protected constructor(
         protected imageLogoService: ImageLogoService,
         protected organizationService: OrganizationService,
+        protected userService: UserService,
     ) {
     }
 
@@ -45,29 +43,10 @@ export abstract class OrganizationMetierService {
 
     protected abstract downloadProducerMediaByType(organizationId: string, kindOfData: KindOfData): Observable<Blob>;
 
-    searchOrganizations(searchCriteria: OrganizationSearchCriteria): Observable<PagedOrganizationList> {
-        return this.organizationService.searchOrganizations(
-            searchCriteria.uuid,
-            searchCriteria.name,
-            searchCriteria.active,
-            searchCriteria.userUuid,
-            searchCriteria.organizationStatus,
-            searchCriteria.status,
-            searchCriteria.offset,
-            searchCriteria.limit,
-            searchCriteria.order
+    getMyOrganizations(): Observable<Organization[]> {
+        return PageResultUtils.fetchAllElementsUsing(
+            offset => this.organizationService.searchMyOrganizations(null, null, null, offset, 100, 'name')
         );
-    }
-
-    getMyOrganizations(userUuid: string): Observable<Organization[]> {
-        return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.searchOrganizations({
-                userUuid: userUuid,
-                organizationStatus: OrganizationStatus.Validated,
-                status: Status.Completed,
-                offset: offset,
-                order: 'name'
-            }));
     }
 
     getOrganizationByUuid(userUuid: string): Observable<Organization> {
@@ -84,6 +63,15 @@ export abstract class OrganizationMetierService {
 
     isAdministrator(organizationUuid?: string): Observable<boolean> {
         return this.organizationService.isAuthenticatedUserOrganizationAdministrator(organizationUuid);
+    }
+
+    isMember(organzationUuid?: string): Observable<boolean> {
+        return this.userService.getAuthenticatedUser().pipe(
+            switchMap(user => this.organizationService.getOrganizationMembers(organzationUuid).pipe(
+                switchMap(members => of(members.find(m => m.uuid === user.uuid) !== null)))
+            )
+        );
+
     }
 
     addOrganizationMember(organizationUuid: string, organizationMember: OrganizationMember): Observable<OrganizationMember> {

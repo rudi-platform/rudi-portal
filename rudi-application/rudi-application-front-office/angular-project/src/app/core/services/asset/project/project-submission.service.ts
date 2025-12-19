@@ -333,7 +333,7 @@ export class ProjectSubmissionService {
      * Chargement des éléments requis pour afficher le formulaire de projet
      */
     public loadDependenciesProject(): Observable<FormProjectDependencies> {
-        const connectedUser$: Observable<User | undefined> = this.userService.getConnectedUser();
+        const connectedUser$: Observable<User | undefined> = this.userService.getAuthenticatedUser();
         const dependencies = {
             confidentialities: this.projektMetierService.searchProjectConfidentialities({active: true}),
             territorialScales: this.projektMetierService.searchTerritorialScales(true),
@@ -341,9 +341,7 @@ export class ProjectSubmissionService {
             projectPublicCible: this.projektMetierService.searchProjectPublicCible(true),
             projectTypes: this.projektMetierService.searchProjectTypes(true),
             user: connectedUser$,
-            organizations: connectedUser$.pipe(
-                switchMap(connectedUser => this.organizationMetierService.getMyOrganizations(connectedUser.uuid))
-            ),
+            organizations: this.organizationMetierService.getMyOrganizations(),
             reuseStatus: this.projektMetierService.searchReuseStatus(true)
         };
 

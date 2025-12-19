@@ -195,8 +195,8 @@ public class StruktureAuthorisationHelper {
 	 * @param entity l'entité organization concernée
 	 * @throws AppServiceUnauthorizedException
 	 */
-	public void checkRightsAdminsterOrganization(OrganizationEntity entity) throws AppServiceUnauthorizedException {
-		if (!isAccessGrantedByRole(ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS)) {
+	public void checkRightsAdminsterOrganization(OrganizationEntity entity) throws AppServiceException {
+		if (!isAccessGrantedByRole(ADMINISTRATOR_MODERATOR_PROJEKT_ACCESS) && !isAccessGrantedForUserOnOrganizationAsAdministrator(entity.getUuid())) {
 			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}

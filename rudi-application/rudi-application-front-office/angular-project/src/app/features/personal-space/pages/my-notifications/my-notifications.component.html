@@ -2,16 +2,25 @@
     <app-loader [allPage]="false" [isTransparent]="true" [noText]="true"
                 [active]="searchUrlLoading"></app-loader>
     <app-page-title *ngIf="!searchUrlLoading"
-                    [title1]="'personalSpace.myNotifications.title1'|translate"
+                    [title1]="'personalSpace.myNotifications.title'|translate"
                     [title3]="'personalSpace.myNotifications.explainationText'|translate"
                     [title4]="'personalSpace.myNotifications.linkText'|translate"
                     [urlToDoc]="urlToDoc"
                     class="d-flex justify-content-center w-100"></app-page-title>
 
-    <div class="filters-container"></div>
 
-    <div class="tasks-container">
-        <app-tasks [loading]="searchIsRunning" [requestsToStudy]="requestsToStudy"></app-tasks>
-    </div>
-
+    <app-tabs>
+        <app-tab [label]="'personalSpace.myNotifications.tabTitle'|translate"
+                 [icon]="'icon-demands'">
+            <ng-template>
+                <app-tasks [loading]="searchIsRunning" [requestsToStudy]="requestsToStudy"></app-tasks>
+            </ng-template>
+        </app-tab>
+        <app-tab [label]="'personalSpace.myTasksHistories.tabTitle'|translate"
+                 [icon]="'icon-my-reuses'">
+            <ng-template>
+                <app-my-tasks-histories-tab></app-my-tasks-histories-tab>
+            </ng-template>
+        </app-tab>
+    </app-tabs>
 </app-page>

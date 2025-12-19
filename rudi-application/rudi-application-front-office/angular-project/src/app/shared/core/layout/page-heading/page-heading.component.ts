@@ -21,6 +21,9 @@ export class PageHeadingComponent {
     @Input()
     resourceTitle: string;
 
+    @Input()
+    status: string;
+
     mediaSize: MediaSize;
 
     constructor(private readonly breakpointObserverService: BreakpointObserverService) {

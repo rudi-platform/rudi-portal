@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.ListUtils;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
+import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 @Component
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class MyInformationsHelper {
 	private final OrganizationHelper organizationHelper;
 
 	public List<UUID> getMeAndMyOrganizationsUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
-		val user = aclHelper.getAuthenticatedUser();
+		User user = aclHelper.getAuthenticatedUser();
 		// Récupération des UUIDs du connectedUser et de ses organisations.
 		return ListUtils.union(ListUtils.emptyIfNull(getMyOrganizationsUuids()), List.of(user.getUuid()));
 	}
 
 	public List<UUID> getMyOrganizationsUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
-		val user = aclHelper.getAuthenticatedUser();
+		User user = aclHelper.getAuthenticatedUser();
 		if (user == null || user.getLogin() == null) {
 			throw new AppServiceUnauthorizedException(
 					"Impossible de récupérer les demandes de l'utilisateur connecté sans être authentifié");

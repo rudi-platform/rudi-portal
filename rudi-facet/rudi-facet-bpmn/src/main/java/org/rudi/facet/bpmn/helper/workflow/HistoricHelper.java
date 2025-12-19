@@ -344,7 +344,10 @@ public class HistoricHelper {
 			query.processDefinitionKeyIn(processDefinitionKeys);
 		}
 		if (CollectionUtils.isNotEmpty(assignees)) {
+			query.or();
 			query.taskAssigneeIds(assignees);
+			assignees.forEach(assignee -> query.processVariableValueEquals(TaskConstants.INITIATOR, assignee));
+			query.endOr();
 		}
 		if (StringUtils.isNotBlank(processInstanceId)) {
 			query.processInstanceId(processInstanceId);
@@ -374,13 +377,16 @@ public class HistoricHelper {
 	 * @param endCompletionDate
 	 * @return
 	 */
-	public List<HistoricProcessInstance> collectHistoricProcess(Collection<String> processInstanceIds) {
+	public List<HistoricProcessInstance> collectHistoricProcess(Collection<String> processInstanceIds, boolean isFinished) {
 		HistoryService historyService = processEngine.getHistoryService();
 		HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery();
 		if (CollectionUtils.isNotEmpty(processInstanceIds)) {
 			Set<String> processInstanceIdSet = new HashSet<>();
 			processInstanceIdSet.addAll(processInstanceIds);
 			query.processInstanceIds(processInstanceIdSet);
+		}
+		if (isFinished) {
+			query.finished();
 		}
 		query.orderByProcessInstanceId().asc();
 		return query.list();

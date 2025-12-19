@@ -1,4 +1,4 @@
-import {Action, AssetDescription, Task} from 'micro_service_modules/api-bpmn';
+import {Action, AssetDescription, ProcessHistoricInformation, Task} from 'micro_service_modules/api-bpmn';
 import {Observable, throwError} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {ObjectType} from './object-type.enum';
@@ -87,4 +87,7 @@ export abstract class TaskMetierService<T extends AssetDescription> {
      * @param actionName nom de l'action de workflow
      */
     abstract doIt(taskId: string, actionName: string): Observable<Task>;
+
+    //getProjectTaskHistoryByTaskId
+    abstract getMyHistoricInformations(): Observable<ProcessHistoricInformation[]>;
 }

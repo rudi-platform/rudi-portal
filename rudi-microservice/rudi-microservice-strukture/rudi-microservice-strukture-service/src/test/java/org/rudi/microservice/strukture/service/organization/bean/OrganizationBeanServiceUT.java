@@ -1,12 +1,8 @@
 package org.rudi.microservice.strukture.service.organization.bean;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,19 +11,23 @@ import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
+import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
-import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationBean;
-import org.rudi.microservice.strukture.core.bean.OrganizationMember;
+import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.organizationmember.OrganizationMemberDataFactory;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,8 +36,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
@@ -50,6 +48,12 @@ class OrganizationBeanServiceUT {
 	private OrganizationBeanService organizationBeanService;
 	@Autowired
 	private OrganizationDao organizationDao;
+	@Autowired
+	private OrganizationDataFactory organizationDataFactory;
+	@Autowired
+	private OrganizationMemberDataFactory organizationMemberDataFactory;
+	@Autowired
+	private UserDataFactory userDataFactory;
 
 
 	@MockitoBean
@@ -65,9 +69,8 @@ class OrganizationBeanServiceUT {
 	@MockitoBean
 	StruktureAuthorisationHelper struktureAuthorisationHelper;
 
-	private UUID metalOwner;
-	private UUID familialOwner;
-	private UUID macumbaOwner;
+	User jean;
+	User jacques;
 	@AfterEach
 	void tearDown() {
 		organizationDao.deleteAll();
@@ -78,152 +81,64 @@ class OrganizationBeanServiceUT {
 	 * Permet de créer un lot de 5 organizations pour permettre les tests.
 	 * Avec des dates de créations et des noms différents pour vérifier les tris.
 	 *
-	 *
 	 * @return List<Organization> : La liste des organizations créées pour le test
 	 * @throws AppServiceBadRequestException thown si les process "CreateOrganizationProcessor ne passent pas
 	 */
-	private List<Organization> createOrganizations() throws Exception {
-		List<Organization> organizations = new ArrayList<>();
-		metalOwner = UUID.randomUUID();
-		familialOwner = UUID.randomUUID();
-		macumbaOwner = UUID.randomUUID();
+	private List<OrganizationEntity> createOrganizations() throws Exception {
+		List<OrganizationEntity> organizations = new ArrayList<>();
 
-		// On se "connecte" en tant qu'administrateur des organisation pour les créer et les modifier.
-		when(struktureAuthorisationHelper.isAccessGrantedForUserOnOrganizationAsAdministrator(any())).thenReturn(true);
-		
-		// Organization HellFest
-		LocalDateTime hFestCreationDate = LocalDateTime.of(2006, Month.JUNE, 23, 14, 0, 0, 0);
-		LocalDateTime hFestEndingDate = LocalDateTime.of(2024, Month.JUNE, 27, 14, 30, 0, 0);
-		Organization hellfest = createOneOrganization("Hellfest","Best fest that will you make drive on the Highway To Hell !","https://hellfest.fr/","@C!DcHigway2Hell!",hFestCreationDate, hFestEndingDate);
-		organizations.add(hellfest);
-		//Rajout d'un User d'organization pour les tris
-		addMemberToAnOrganization("as-of-spades@lemmi.jd", metalOwner, hellfest.getUuid());
+		// Initialisation des users utilisés comme membre.
+		jean = userDataFactory.getOrCreateJean();
+		when(aclHelper.getUserByLogin(jean.getLogin())).thenReturn(jean); // Force la récupération du même user quand on repassera dans le get or create.
+		jacques = userDataFactory.getOrCreateJacques();
+		when(aclHelper.getUserByLogin(jacques.getLogin())).thenReturn(jacques); // Force la récupération du même user quand on repassera dans le get or create.
 
+		OrganizationEntity irisa = organizationDataFactory.createIRISAOrganization(null);
+		irisa = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(irisa);
+		irisa = organizationMemberDataFactory.createOrganizationMemberJeanEditor(irisa);
+		organizations.add(irisa);
 
-		//Organization Vieilles Charrues
-		LocalDateTime vCharruesCreationDate = LocalDateTime.of(1992, Month.JULY, 4, 13, 0, 0, 0);
-		LocalDateTime vCharruesEndingDate = LocalDateTime.of(2024, Month.JULY, 11, 14, 0, 0, 0);
-		Organization vieillesCharrues = createOneOrganization("Vieilles Charrues","Un festival pour toute la famille, entre \"power roger\" et sanic","https://www.vieillescharrues.asso.fr/","Vi3ll3sCh@rru3s!",vCharruesCreationDate, vCharruesEndingDate);
-		organizations.add(vieillesCharrues);
-		//Rajout d'un User d'organization pour les tris
-		addMemberToAnOrganization("brezzblock@delta.j", familialOwner, vieillesCharrues.getUuid());
+		OrganizationEntity open = organizationDataFactory.createOpenOrganization(null);
+		open = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(open);
+		open = organizationMemberDataFactory.createOrganizationMemberJeanEditor(open);
+		organizations.add(open);
 
+		OrganizationEntity rm = organizationDataFactory.createRMOrganization(null);
+		rm = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(rm);
+		rm = organizationMemberDataFactory.createOrganizationMemberJeanEditor(rm);
+		organizations.add(rm);
 
+		OrganizationEntity viaRoma = organizationDataFactory.createViaRomaOrganization(null);
+		viaRoma = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(viaRoma);
+		organizations.add(viaRoma);
 
-		//Organization Wacken
-		LocalDateTime wackenCreationDate = LocalDateTime.of(1990, Month.AUGUST, 24, 14, 0, 0, 0);
-		LocalDateTime wackenEndingDate = LocalDateTime.of(2024, Month.JULY, 31, 14, 30, 0, 0);
-		Organization wacken = createOneOrganization("Wacken","Wacken ist einen Metalfestival dass in Deutschland passiert.","https://www.wacken.com/en/","Wacken1stw@ckingUup!",wackenCreationDate, wackenEndingDate);
-		organizations.add(wacken);
-		//Rajout d'un User d'organization pour les tris
-		addMemberToAnOrganization("ich-will@metal.de", metalOwner, wacken.getUuid());
+		OrganizationEntity cookingPot = organizationDataFactory.createCookingPotOrganization(null);
+		cookingPot = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(cookingPot);
+		cookingPot = organizationMemberDataFactory.createOrganizationMemberJacquesEditor(cookingPot);
+		organizations.add(cookingPot);
 
-
-		//Organization Motoc
-		LocalDateTime motocCreationDate = LocalDateTime.of(2007, Month.AUGUST, 25, 16, 0, 0, 0);
-		LocalDateTime motocEndingDate = LocalDateTime.of(2024, Month.AUGUST, 15, 15, 30, 0, 0);
-		Organization motocultor = createOneOrganization("Motocultor","Here is some trash ! Bang !","https://www.motocultor-festival.com/","b33r&drugs&Metal",motocCreationDate, motocEndingDate);
-		organizations.add(motocultor);
-		//Rajout d'un User d'organization pour les tris
-		addMemberToAnOrganization("motocultor@le-gros-bordel.bzh", metalOwner, motocultor.getUuid());
-
-
-		//Organization Macumba
-		LocalDateTime macumbaCreationDate = LocalDateTime.of(2021, Month.AUGUST, 5, 14, 0, 0, 0);
-		LocalDateTime macumbaEndingDate = LocalDateTime.of(2024, Month.AUGUST, 2, 14, 30, 0, 0);
-		Organization macumba = createOneOrganization("Macumba","What am I doing here ?","https://www.macumba-festival.fr/","bataille2Poubelles!",macumbaCreationDate, macumbaEndingDate);
-		organizations.add(macumba);
-		//Rajout d'un User d'organization pour les tris
-		addMemberToAnOrganization("macumba@tous-les-soirs.drunk", macumbaOwner, macumba.getUuid());
+		OrganizationEntity block = organizationDataFactory.createBlockOrganization(null);
+		block = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(block);
+		block = organizationMemberDataFactory.createOrganizationMemberJacquesEditor(block);
+		organizations.add(block);
 
 		return organizations;
 	}
 
-	/**
-	 *  Crée une organization à l'aide des paramètres donnés
-	 *
-	 * @param name : nom de l'organization
-	 * @param description : description de l'oganization
-	 * @param url : url de l'irganization
-	 * @param password : mot de passe du USER d'organizatoin
-	 * @param openingDate : date d'ouverture (création) de l'organization
-	 * @param closingDate : @Nullable : date de fermeture de l'organization
-	 * @return Organization : l'organization créée en BDD
-	 *
-	 * @throws AppServiceBadRequestException thown si les process "CreateOrganizationProcessor ne passent pas
-	 */
-	private Organization createOneOrganization(String name, String description, String url, String password, LocalDateTime openingDate, LocalDateTime closingDate) throws AppServiceBadRequestException {
-		Organization organization = new Organization();
-		organization.setName(name);
-		organization.setDescription(description);
-		organization.setUrl(url);
-		organization.setInitiator("initiator@mail.fr");
-
-		organization.setOpeningDate(openingDate);
-
-		if(closingDate != null){
-			organization.setClosingDate(closingDate);
-		}
-
-		UUID organizationUuid = UUID.randomUUID();
-
-		User userOrganisation = new User();
-		userOrganisation.setUuid(organizationUuid);
-		userOrganisation.setLogin(organizationUuid.toString());
-		userOrganisation.setPassword(password);
-		when(aclHelper.createUser(any())).thenReturn(userOrganisation);
-
-
-		return organizationService.createOrganization(organization);
-	}
-
-	/**
-	 * Permet de rajouter un user à une organization
-	 *
-	 * @param login login du user
-	 * @param userUuid uuid du user
-	 * @param organizationUuid organization cible
-	 * @throws Exception exception
-	 */
-	private void addMemberToAnOrganization(String login, UUID userUuid, UUID organizationUuid) throws Exception {
-		OrganizationMember member = new OrganizationMember();
-		member.setUserUuid(userUuid);
-		member.setLogin(login);
-		member.setUuid(organizationUuid);
-
-		mockAuthenticationData(login, userUuid);
-		mockExternalCalls();
-
-		organizationService.addOrganizationMember(organizationUuid, member);
-	}
-
-	/**
-	 *  mock les accès extérieurs pour la création des membres d'organization
-	 *
-	 * @throws AppServiceException exceptions
-	 */
-	private void mockExternalCalls() throws AppServiceException {
-		when(organizationMembersHelper.isAuthenticatedUserOrganizationAdministrator(any())).thenReturn(true);
-
-		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
-	}
-
-	/**
-	 * mock l'authenticatedUser pour la création des membres d'organization
-	 *
-	 * @param login login du member
-	 * @param userUuid uuid du member
-	 * @throws AppServiceException exception
-	 */
-	private void mockAuthenticationData(String login, UUID userUuid) throws AppServiceException {
+	private void mockAuthenticatedUser(User user) throws AppServiceException {
 		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin(login);
-		User user = new User().login(authenticatedUser.getLogin()).uuid(userUuid);
-		when(aclHelper.getUserByLogin(any())).thenReturn(user);
-		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
-		when(organizationMembersHelper.getUserByLoginOrByUuid(any(), any())).thenReturn(user);
-	}
+		authenticatedUser.setLogin(user.getLogin());
+		authenticatedUser.setFirstname(user.getFirstname());
+		authenticatedUser.setLastname(user.getLastname());
+		authenticatedUser.setRoles(user.getRoles().stream().map(Role::getCode).toList());
 
+		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
+//		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(aclHelper.getAuthenticatedUserUuid()).thenReturn(user.getUuid());
+
+//		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
+		when(organizationMembersHelper.getUserByLoginOrByUuid(user.getLogin(), user.getUuid())).thenReturn(user);
+	}
 
 	@Test
 	@DisplayName("Vérifier que je récupère bien l'ensemble des organization quand je ne met aucun paramètre.")
@@ -232,52 +147,55 @@ class OrganizationBeanServiceUT {
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> initialOrganizations = organizationBeanService.searchOrganizationBeans(criteria, pageable);
-		List<Organization> organizations = createOrganizations();
+		List<OrganizationEntity> organizations = createOrganizations();
 
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste ne doit pas être nullele, mais contenir les organizations créées au préalable.").isNotEmpty()
 				.as("Les listes doivent être équivalentes.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-					.allMatch(bean -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid()) || initialOrganizations.getContent().contains(bean)));
+				.allMatch(o -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
+				.allMatch(bean -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid()) || initialOrganizations.getContent().contains(bean)));
 
 	}
 
 	@Test
 	@DisplayName("Vérifie l'absence que je peux bien remonter les Organizations liées à un utilisateur")
 	void testSearchMyOrganizations() throws Exception {
-		List<Organization> organizations = createOrganizations();
-		List<Organization> metalOrganizations = organizations.stream().filter(o -> o.getName().equals("Hellfest") || o.getName().equals("Wacken") || o.getName().equals("Motocultor")).collect(Collectors.toList());
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<String> jacquesOrgaNames = List.of("IRISA", "Open", "Rennes Métropole", "Block", "Cooking Pot"); // Car on ne tient pas compte ici du statut de l'organisation
+		List<OrganizationEntity> expectedOrganizations = organizations.stream().filter(o -> jacquesOrgaNames.contains(o.getName())).toList();
 
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().userUuid(metalOwner).build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().userUuid(jacques.getUuid()).build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nul, mais contenir les organizations créées au préalable.").isNotEmpty()
-				.as("La liste ne doit plus que contenir les 3 organizations metal.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-				.allMatch(bean -> metalOrganizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste ne doit plus que contenir les 3 organizations : IRISA, Open, RM.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
+				.allMatch(bean -> expectedOrganizations.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
 	}
 
 	@Test
 	@DisplayName("Vérifie le tri par date ASC")
 	void testSearchOrganizationsOrderByDateASC() throws Exception {
-		List<Organization> organizations = createOrganizations();
-		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getOpeningDate)).collect(Collectors.toList());
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> sortedOrganization = organizations.stream().sorted(Comparator.comparing(OrganizationEntity::getOpeningDate)).toList();
 
 		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
-		Pageable pageable = PageRequest.of(0,10, Sort.by("openingDate"));
+		Pageable pageable = PageRequest.of(0, 10, Sort.by("openingDate"));
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nul, mais contenir les organizations créées au préalable.").isNotEmpty()
-				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-				.allMatch(bean -> organizationBeans.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
-		for(int i = 0; i< organizationBeans.getTotalElements(); i++){
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste doit toujours contenir le même nombre d'organisations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
+				.allMatch(o -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
+		;
+		for (int i = 0; i < organizationBeans.getTotalElements(); i++) {
 			OrganizationBean bean = organizationBeans.getContent().get(i);
-			Organization o = sortedOrganization.get(i);
+			OrganizationEntity o = sortedOrganization.get(i);
 			assertThat(bean.getUuid())
-					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d",bean.getName(), o.getName(), i))
+					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d", bean.getName(), o.getName(), i))
 					.isEqualTo(o.getUuid());
 		}
 	}
@@ -285,22 +203,22 @@ class OrganizationBeanServiceUT {
 	@Test
 	@DisplayName("Vérifie le tri par date DESC")
 	void testSearchOrganizationsOrderByDateDESC() throws Exception {
-		List<Organization> organizations = createOrganizations();
-		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getOpeningDate)).collect(Collectors.toList());
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> sortedOrganization = organizations.stream().sorted(Comparator.comparing(OrganizationEntity::getOpeningDate)).toList();
 
 		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
-		Pageable pageable = PageRequest.of(0,10, Sort.by("openingDate").descending());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by("openingDate").descending());
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nul, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
 				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-				.allMatch(bean -> organizationBeans.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
-		for(int i = 0; i< organizationBeans.getTotalElements(); i++){
+				.allMatch(o -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+		for (int i = 0; i < organizationBeans.getTotalElements(); i++) {
 			OrganizationBean bean = organizationBeans.getContent().get(i);
-			Organization o = sortedOrganization.get(sortedOrganization.size()-i-1);
+			OrganizationEntity o = sortedOrganization.get(sortedOrganization.size() - i - 1);
 			assertThat(bean.getUuid())
-					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d",bean.getName(), o.getName(), i))
+					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d", bean.getName(), o.getName(), i))
 					.isEqualTo(o.getUuid());
 		}
 	}
@@ -308,22 +226,22 @@ class OrganizationBeanServiceUT {
 	@Test
 	@DisplayName("Vérifie le tri par nom d'organization ASC")
 	void testSearchOrganizationsOrderByNameASC() throws Exception {
-		List<Organization> organizations = createOrganizations();
-		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getName)).collect(Collectors.toList());
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> sortedOrganization = organizations.stream().sorted(Comparator.comparing(OrganizationEntity::getName)).toList();
 
 		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
-		Pageable pageable = PageRequest.of(0,10, Sort.by("name"));
+		Pageable pageable = PageRequest.of(0, 10, Sort.by("name"));
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nul, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
 				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-				.allMatch(bean -> organizationBeans.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
-		for(int i = 0; i< organizationBeans.getTotalElements(); i++){
+				.allMatch(o -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+		for (int i = 0; i < organizationBeans.getTotalElements(); i++) {
 			OrganizationBean bean = organizationBeans.getContent().get(i);
-			Organization o = sortedOrganization.get(i);
+			OrganizationEntity o = sortedOrganization.get(i);
 			assertThat(bean.getUuid())
-					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d",bean.getName(), o.getName(), i))
+					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d", bean.getName(), o.getName(), i))
 					.isEqualTo(o.getUuid());
 		}
 	}
@@ -331,23 +249,164 @@ class OrganizationBeanServiceUT {
 	@Test
 	@DisplayName("Vérifie le tri par nom d'organization DESC")
 	void testSearchOrganizationsOrderByNameDESC() throws Exception {
-		List<Organization> organizations = createOrganizations();
-		List<Organization> sortedOrganization = organizations.stream().sorted(Comparator.comparing(Organization::getName)).collect(Collectors.toList());
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> sortedOrganization = organizations.stream().sorted(Comparator.comparing(OrganizationEntity::getName)).toList();
 
 		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
-		Pageable pageable = PageRequest.of(0,10, Sort.by("name").descending());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by("name").descending());
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 		assertThat(organizationBeans)
-				.as("La liste ne doit pas être nul, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
 				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
-				.allMatch(bean -> organizationBeans.stream().anyMatch(organization -> organization.getUuid().equals(bean.getUuid())));
-		for(int i = 0; i< organizationBeans.getTotalElements(); i++){
+				.allMatch(o -> organizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+		for (int i = 0; i < organizationBeans.getTotalElements(); i++) {
 			OrganizationBean bean = organizationBeans.getContent().get(i);
-			Organization o = sortedOrganization.get(sortedOrganization.size()-i-1);
+			OrganizationEntity o = sortedOrganization.get(sortedOrganization.size() - i - 1);
 			assertThat(bean.getUuid())
-					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d",bean.getName(), o.getName(), i))
+					.as(String.format("Les listes doivent être dans le même ordre :: %s == %s index=%d", bean.getName(), o.getName(), i))
 					.isEqualTo(o.getUuid());
 		}
+	}
+
+	@Test
+	@DisplayName("Search public organization")
+	void testSearcPublicOrganizations() throws Exception {
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<OrganizationBean> initialOrganizationBeans = organizationBeanService.searchPublicOrganizationBeans(criteria, pageable);
+
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> filteredOrganization = organizations.stream().filter(o -> o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)).toList();
+
+		Page<OrganizationBean> organizationBeans = organizationBeanService.searchPublicOrganizationBeans(criteria, pageable);
+
+		assertThat(organizationBeans)
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
+				.allMatch(o -> filteredOrganization.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+
+		assertThat(organizationBeans.getTotalElements())
+				.as("La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				.isEqualTo(filteredOrganization.size() + initialOrganizationBeans.getTotalElements());
+
+		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
+		List<String> beanNames = organizationBeans.stream().map(OrganizationBean::getName).toList();
+		List<String> filteredNames = filteredOrganization.stream().map(OrganizationEntity::getName).toList();
+
+		assertThat(beanNames)
+				.as("Et ces élément supplémentaire doivent être ceux ajoutés lors du test.")
+				.containsExactlyElementsOf(filteredNames);
+	}
+
+
+	@Test
+	@DisplayName("Search public organization, statut forcé ne change rien")
+	void testSearcPublicOrganizationsForcedStatus() throws Exception {
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<OrganizationBean> initialOrganizationBeans = organizationBeanService.searchPublicOrganizationBeans(criteria, pageable);
+
+		List<OrganizationEntity> organizations = createOrganizations();
+		List<OrganizationEntity> filteredOrganization = organizations.stream().filter(o -> o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)).toList();
+
+		//On force une valeur à draft. Mais cette valeur doit être ignorée
+		criteria = OrganizationSearchCriteria.builder().organizationStatus(List.of(OrganizationStatus.DRAFT)).build();
+		Page<OrganizationBean> organizationBeans = organizationBeanService.searchPublicOrganizationBeans(criteria, pageable);
+
+
+		assertThat(organizationBeans)
+				.as("La liste ne doit pas être nulle, mais contenir les organizations créées au préalable.").isNotEmpty()
+				.as("La liste doit toujours contenir le même nombre d'organizations.") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
+				.allMatch(o -> filteredOrganization.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+
+		assertThat(organizationBeans.getTotalElements())
+				.as("La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				.isEqualTo(filteredOrganization.size() + initialOrganizationBeans.getTotalElements());
+
+		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
+		List<String> beanNames = organizationBeans.stream().map(OrganizationBean::getName).toList();
+		List<String> filteredNames = filteredOrganization.stream().map(OrganizationEntity::getName).toList();
+
+		assertThat(beanNames)
+				.as("Et ces élément supplémentaire doivent être ceux ajoutés lors du test.")
+				.containsExactlyElementsOf(filteredNames);
+	}
+
+	@Test
+	@DisplayName("search myOrganizationBeans - Jean")
+	void searchJeansOrganizationBeans() throws Exception {
+		User jean = userDataFactory.getOrCreateJean();
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.build();
+		Pageable pageable = PageRequest.of(0, 10);
+
+		mockAuthenticatedUser(jean);
+		Page<OrganizationBean> initialState = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
+
+		List<OrganizationEntity> organizations = createOrganizations();
+
+		List<String> jeansOrgaNames = List.of("IRISA", "Open", "Rennes Métropole", "Via Roma", "Cooking Pot");
+		List<OrganizationEntity> expectedOrganizations = organizations.stream().filter(o -> jeansOrgaNames.contains(o.getName())).toList();
+
+		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
+
+		assertThat(returnedOrganizations)
+				.as("La liste reçue ne dois pas être vide").isNotEmpty()
+				.as("La liste doit toujours contenir le même nombre d'organisations")
+				.allMatch(o -> expectedOrganizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+
+		assertThat(returnedOrganizations.getTotalElements())
+				.as("La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				.isEqualTo(initialState.getTotalElements() + expectedOrganizations.size());
+
+		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
+		List<String> beanNames = returnedOrganizations.stream().map(OrganizationBean::getName).toList();
+		List<String> filteredNames = expectedOrganizations.stream().map(OrganizationEntity::getName).toList();
+
+		assertThat(beanNames)
+				.as("Et ces élément supplémentaire doivent être ceux ajoutés lors du test.")
+				.containsExactlyElementsOf(filteredNames);
+	}
+
+	@Test
+	@DisplayName("search myOrganizationBeans - Jacques")
+	void searchJacquesOrganizationBeans() throws Exception {
+		User jacques = userDataFactory.getOrCreateJacques();
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = PageRequest.of(0, 10);
+
+		mockAuthenticatedUser(jacques);
+		Page<OrganizationBean> initialState = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
+
+
+		List<OrganizationEntity> organizations = createOrganizations();
+
+		List<String> jacquesOrgaNames = List.of("IRISA", "Open", "Rennes Métropole");
+		List<OrganizationEntity> expectedOrganizations = organizations.stream().filter(o -> jacquesOrgaNames.contains(o.getName())).toList();
+
+		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
+
+		assertThat(returnedOrganizations)
+				.as("La liste reçue ne dois pas être vide").isNotEmpty()
+				.as("La liste doit toujours contenir le même nombre d'organisations")
+				.allMatch(o -> expectedOrganizations.stream().anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
+
+		assertThat(returnedOrganizations.getTotalElements())
+				.as("La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				.isEqualTo(initialState.getTotalElements() + expectedOrganizations.size());
+
+		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
+		List<String> beanNames = returnedOrganizations.stream().map(OrganizationBean::getName).toList();
+		List<String> filteredNames = expectedOrganizations.stream().map(OrganizationEntity::getName).toList();
+
+		assertThat(beanNames)
+				.as("Et ces élément supplémentaire doivent être ceux ajoutés lors du test.")
+				.containsExactlyElementsOf(filteredNames);
 	}
 }

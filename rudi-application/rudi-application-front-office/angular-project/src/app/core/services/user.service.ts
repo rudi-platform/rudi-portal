@@ -36,9 +36,9 @@ export class UserService {
      * Demande au serveur un objet qui représente l'utilisateur "technique" actuellement connecté
      * comme le front peut être en mode anonymous et qu'on s'intéresse qu'à ceux "spécifiques"
      * la méthode renvoie "undefined" en cas d'appel anonymous
-     * @see getConnectedUserOrEmpty
+     * @see getAuthenticatedUserOrEmpty
      */
-    getConnectedUser(): Observable<User | undefined> {
+    getAuthenticatedUser(): Observable<User | undefined> {
         return this.aclService.getMe().pipe(
             switchMap((user: User) => this.getUserAsKnownUser(user)),
             // getUserAsKnownUser est un observable qui ne se complète jamais, donc pipe take(1) pour complete()
@@ -49,10 +49,10 @@ export class UserService {
     /**
      * @return l'utilisateur connecté ou l'Observable EMPTY si aucun utilisateur n'est connecté
      * mais jamais undefined contrairement à {@link #getConnectedUser getConnectedUser}.
-     * @see getConnectedUser
+     * @see getAuthenticatedUser
      */
-    getConnectedUserOrEmpty(): Observable<User> {
-        return this.getConnectedUser().pipe(
+    getAuthenticatedUserOrEmpty(): Observable<User> {
+        return this.getAuthenticatedUser().pipe(
             switchMap(connectedUser => {
                 if (connectedUser) {
                     return of(connectedUser);
@@ -83,4 +83,5 @@ export class UserService {
         }
         return result;
     }
+
 }

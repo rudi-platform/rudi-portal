@@ -40,7 +40,7 @@
     ></app-dataset-list>
 </ng-container>
 
-<ng-container>
+<ng-container *ngIf="!isMemberLoading else loaderMember">
     <!--résultats Réutilisations-->
     <div class="no-result" *ngIf="projectListTotal===0">
         {{ 'organization.noReuse'|translate }}
@@ -57,5 +57,10 @@
                       [producerUuid]="organization.uuid"
                       [disableScrollOnPageChange]="true"
                       [resultsPerRow]="3"
+                      [isMember]="isMember"
     ></app-project-list>
 </ng-container>
+
+<ng-template #loaderMember>
+    <app-loader [active]="true" [allPage]="false" [isTransparent]="true"></app-loader>
+</ng-template>

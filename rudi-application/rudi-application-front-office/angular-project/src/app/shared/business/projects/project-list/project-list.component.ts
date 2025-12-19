@@ -26,11 +26,12 @@ export class ProjectListComponent implements OnInit {
     @Input() resultsPerRow: number | undefined;
     @Input() disableScrollOnPageChange = false;
     @Input() linkedDatasetsGlobalIds: string[];
+    @Input() isMember = false;
     @Output() clickProject = new EventEmitter<ProjectCatalogItem>();
     @Output() runningSearch = new EventEmitter<boolean>();
     @Output() projectListChange = new EventEmitter<ProjectCatalogItemPage>();
-    @Output() reuseListTotal = new EventEmitter<number>();
 
+    @Output() reuseListTotal = new EventEmitter<number>();
     readonly maxPageDesktop = 9;
     orderValue: Order;
     /** minimum = 5 */
@@ -102,7 +103,7 @@ export class ProjectListComponent implements OnInit {
     searchProjects(order: Order = DEFAULT_PROJECT_ORDER): void {
         this.isLoading = true;
         setTimeout(() => this.runningSearch.emit(true)); // setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid)
+        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid, this.isMember)
             .subscribe({
                 next: (data: ProjectCatalogItemPage) => {
                     this.isLoading = false;

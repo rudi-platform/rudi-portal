@@ -79,19 +79,9 @@ export class OrganizationTabComponent implements OnInit, OnDestroy {
      * Méthode qui permet de récupérer les organisations du user connecté
      */
     public getMyOrganisations(): void {
-        this.utilisateurService.getConnectedUser()
-            .subscribe({
-                next: (user) => {
-                    this.searchOrganizationsService.initSubscriptions(user?.uuid, this.itemsPerPage);
-                    this.isLoading = false;
-                    this.errorLoading = false;
-                },
-                error: (e) => {
-                    console.error(e);
-                    this.isLoading = false;
-                    this.errorLoading = true;
-                }
-            });
+        this.searchOrganizationsService.initSubscriptions(true, this.itemsPerPage);
+        this.isLoading = false;
+        this.errorLoading = false;
     }
 
     /**

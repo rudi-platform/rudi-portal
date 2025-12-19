@@ -14,8 +14,9 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 export interface SearchOrganisationsRequest {
-    userUuid?: string;
+    isPersonalSpace?: boolean;
     orgnizationStatus?: OrganizationStatus;
+    active?: boolean;
     offset?: number;
     itemPerPage?: number;
     sortOrder?: Order;
@@ -57,12 +58,10 @@ export class SearchOrganizationsService {
         this.projectsCountLoading$ = new BehaviorSubject(false);
     }
 
-    initSubscriptions(userUuid?: string, itemPerPage?: number) {
-        this.currentRequest.userUuid = null;
+    initSubscriptions(isPersonalSpace: boolean = false, itemPerPage?: number) {
+        this.currentRequest.isPersonalSpace = isPersonalSpace;
         this.currentRequest.itemPerPage = searchDefaultPageSize;
-        if (userUuid) {
-            this.currentRequest.userUuid = userUuid;
-        }
+        
         if (itemPerPage) {
             this.currentRequest.itemPerPage = itemPerPage;
         }
@@ -84,7 +83,7 @@ export class SearchOrganizationsService {
                     sortOrder
                 }))
             )
-            .subscribe((request: SearchOrganisationsRequest) => this.searchOrganisations(request));
+            .subscribe((request: SearchOrganisationsRequest) => this.searchOrganisationBeans(request));
     }
 
     private initCurrentPageSubscription(): Subscription {
@@ -96,25 +95,41 @@ export class SearchOrganizationsService {
                     offset: (page - 1) * this.currentRequest.itemPerPage
                 }))
             )
-            .subscribe((request: SearchOrganisationsRequest) => this.searchOrganisations(request));
+            .subscribe((request: SearchOrganisationsRequest) => this.searchOrganisationBeans(request));
     }
 
 
-    private searchOrganisations(searchRequest: SearchOrganisationsRequest): void {
+    private searchOrganisationBeans(searchRequest: SearchOrganisationsRequest): void {
         this.isLoadingCatalogue$.next(true);
-        this.organizationService.searchOrganizationsBeans(
-            searchRequest.userUuid,
-            searchRequest.orgnizationStatus,
-            searchRequest.offset,
-            searchRequest.itemPerPage,
-            searchRequest.sortOrder
-        ).subscribe((data: PagedOrganizationBeanList) => {
-            this.totalOrganizations$.next(data.total);
-            this.organizations$.next(data.elements);
-            this.isLoadingCatalogue$.next(false);
-            this.updateOrganizationsProjectCount();
-            this.updateOrganizationDatasetCount();
-        });
+        if (searchRequest.isPersonalSpace) {
+            this.organizationService.searchMyOrganizationBeans(
+                null,
+                null,
+                searchRequest.active,
+                searchRequest.offset,
+                searchRequest.itemPerPage,
+                searchRequest.sortOrder
+            ).subscribe((data: PagedOrganizationBeanList) => {
+                this.totalOrganizations$.next(data.total);
+                this.organizations$.next(data.elements);
+                this.isLoadingCatalogue$.next(false);
+                this.updateOrganizationsProjectCount();
+                this.updateOrganizationDatasetCount();
+            });
+        } else {
+            this.organizationService.searchPublicOrganizationsBeans(
+                searchRequest.active,
+                searchRequest.offset,
+                searchRequest.itemPerPage,
+                searchRequest.sortOrder
+            ).subscribe((data: PagedOrganizationBeanList) => {
+                this.totalOrganizations$.next(data.total);
+                this.organizations$.next(data.elements);
+                this.isLoadingCatalogue$.next(false);
+                this.updateOrganizationsProjectCount();
+                this.updateOrganizationDatasetCount();
+            });
+        }
     }
 
     private updateOrganizationsProjectCount(): void {

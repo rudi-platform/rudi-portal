@@ -1584,7 +1584,7 @@
 						"name": "organization_status",
 						"required": false,
 						"schema": {
-							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationStatus"
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationStatusParam"
 						}
 					},
 					{
@@ -3801,6 +3801,170 @@
 					},
 					"500": {
 						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/my-organizations": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Collection d'organisations dont l'utilisateur connecté est membre.",
+				"description": "Une collection d'organisation liées à l'utilisateur connecté.",
+				"operationId": "searchMyOrganizations",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "uuid",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationNameParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "active",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationActiveParam"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-strukture-model.json#/components/schemas/PagedOrganizationList"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/my-organization-beans": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Collection d'organisation-beans donc l'utilisateur connecté est membre.",
+				"description": "Retourne une liste d'organisation-beans liées à l'utilisateur connecté",
+				"operationId": "searchMyOrganizationBeans",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "uuid",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationNameParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "active",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationActiveParam"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-strukture-model.json#/components/schemas/PagedOrganizationBeanList"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
+					}
+				}
+			}
+		},
+		"/public-organization-beans": {
+			"get": {
+				"tags": [
+					"organization"
+				],
+				"summary": "Collection d'organisations-beans accessible publiquement",
+				"description": "Retourne une liste d'organisations-beans dans des états permettant leur visibilité pour le grand publique.",
+				"operationId": "searchPublicOrganizationsBeans",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "active",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationActiveParam"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-strukture-model.json#/components/schemas/PagedOrganizationBeanList"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/ServiceUnavailable"
 					}
 				}
 			}

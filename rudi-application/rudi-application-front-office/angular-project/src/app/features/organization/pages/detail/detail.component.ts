@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {LogService} from '@core/services/log.service';
@@ -6,8 +6,7 @@ import {OrganizationMetierService} from '@core/services/organization/organizatio
 import {PageTitleService} from '@core/services/page-title.service';
 import {UserService} from '@core/services/user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {User} from 'micro_service_modules/acl/acl-api';
-import {Organization} from 'micro_service_modules/strukture/strukture-model';
+import {Organization, OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
 import {switchMap, tap} from 'rxjs/operators';
 
 
@@ -20,7 +19,6 @@ export class DetailComponent implements OnInit {
 
     public isLoading: boolean;
     public organization: Organization;
-    public user: User;
     public _displayAdministrationTab: boolean;
 
     constructor(private readonly route: ActivatedRoute,
@@ -88,4 +86,13 @@ export class DetailComponent implements OnInit {
                 }
             });
     }
+
+    protected getStatus(): string {
+        if (this.organization?.organizationStatus == OrganizationStatus.Disengaged) {
+            return this.translateService.instant('organization.status.disengaged');
+        }
+
+        return undefined;
+    }
+
 }

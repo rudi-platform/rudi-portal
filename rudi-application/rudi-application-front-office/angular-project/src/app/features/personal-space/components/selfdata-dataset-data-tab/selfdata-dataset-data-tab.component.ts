@@ -49,7 +49,7 @@ export class SelfdataDatasetDataTabComponent implements OnInit {
 
     ngOnInit(): void {
         this.initLoader = true;
-        this.userService.getConnectedUser().subscribe(
+        this.userService.getAuthenticatedUser().subscribe(
             {
                 next: connectedUser => {
                     this.ownerUuid = connectedUser.uuid;

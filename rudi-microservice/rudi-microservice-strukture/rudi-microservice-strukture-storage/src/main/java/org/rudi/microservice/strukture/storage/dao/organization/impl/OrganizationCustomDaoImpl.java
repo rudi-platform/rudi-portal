@@ -1,29 +1,8 @@
 package org.rudi.microservice.strukture.storage.dao.organization.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.rudi.bpmn.core.bean.Status;
-import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.common.storage.dao.PredicateListBuilder;
-import org.rudi.common.storage.dao.RepositoryConstants;
-import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
-import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
-import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
-import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
-import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
-import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.query.QueryUtils;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
@@ -35,6 +14,30 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.rudi.bpmn.core.bean.Status;
+import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
+import org.rudi.common.storage.dao.PredicateListBuilder;
+import org.rudi.common.storage.dao.RepositoryConstants;
+import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
+import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
+import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
+import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<OrganizationEntity, OrganizationSearchCriteria>
@@ -143,6 +146,34 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 
 	}
 
+	public Page<OrganizationEntity> searchMyOrganizations(OrganizationSearchCriteria searchCriteria, Pageable pageable) {
+		if (searchCriteria.getUserUuid() == null) {
+			return emptyPage(pageable);
+		}
+
+		final Long totalCount = getTotalCountMyOrganizations(searchCriteria);
+		if (totalCount == 0) {
+			return emptyPage(pageable);
+		}
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<OrganizationEntity> searchQuery = builder.createQuery(entitiesClass);
+		Root<OrganizationEntity> searchRoot = searchQuery.from(entitiesClass);
+
+		addWhereSearchMyOrganizations(builder, searchQuery, searchRoot, searchCriteria);
+
+		searchQuery.select(searchRoot).distinct(true)
+				.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
+
+		TypedQuery<OrganizationEntity> typedQuery = entityManager.createQuery(searchQuery);
+		if (pageable.isPaged()) {
+			typedQuery.setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize());
+		}
+		List<OrganizationEntity> organizationEntities = typedQuery.getResultList();
+
+		return new PageImpl<>(organizationEntities, pageable, totalCount.intValue());
+	}
+
 	@Nonnull
 	private Page<NodeOrganizationProjectionBean> emptyPageNodeOrganizationProjectionBean(Pageable pageable) {
 		return new PageImpl<>(new ArrayList<>(), pageable, 0);
@@ -180,4 +211,72 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		}
 	}
 
+	private Long getTotalCountMyOrganizations(OrganizationSearchCriteria searchCriteria) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+
+		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+		Root<OrganizationEntity> countRoot = countQuery.from(entitiesClass);
+
+		addWhereSearchMyOrganizations(builder, countQuery, countRoot, searchCriteria);
+
+		countQuery.select(builder.countDistinct(countRoot));
+		return entityManager.createQuery(countQuery).getSingleResult();
+	}
+
+	private void addWhereSearchMyOrganizations(CriteriaBuilder builder, CriteriaQuery<?> query, Root<OrganizationEntity> root, OrganizationSearchCriteria searchCriteria) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		// Assure le "my"
+		Join<OrganizationEntity, OrganizationMemberEntity> memberJoin = root.join(OrganizationEntity.FIELD_MEMBERS, JoinType.INNER);
+		// searchCriteria.getUserUuid() n'est pas sensé être null sinon la requête aurait déjà renvoyé [vide].
+		Predicate member = builder.equal(memberJoin.get(OrganizationMemberEntity.FIELD_USER_UUID), searchCriteria.getUserUuid());
+		predicates.add(member);
+
+		if (searchCriteria.getUuid() != null) {
+			predicates.add(builder.equal(root.get(RepositoryConstants.FIELD_UUID), searchCriteria.getUuid()));
+		}
+
+		if (StringUtils.isNotEmpty(searchCriteria.getName())) {
+			predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
+		}
+
+		if (searchCriteria.getStatus() != null) {
+			predicates.add(builder.equal(root.get(OrganizationEntity.FIELD_STATUS), searchCriteria.getStatus()));
+		}
+
+		if (BooleanUtils.isTrue(searchCriteria.getActive())) {
+			final LocalDateTime actualDate = LocalDateTime.now();
+			predicateDateCriteriaLessThan(actualDate, RepositoryConstants.FIELD_OPENING_DATE, predicates, builder, root);
+			predicateDateCriteriaGreaterThan(actualDate, RepositoryConstants.FIELD_CLOSING_DATE, predicates, builder, root);
+		}
+
+		// Pour s'assurer qu'on ait au moins un élement pour qu ele or puisse fonctionner correctement.
+		if (CollectionUtils.isNotEmpty(searchCriteria.getOrganizationStatus()) || CollectionUtils.isNotEmpty(searchCriteria.getAdminMemberAllowedStatus())) {
+			List<Predicate> organizationStatusPredicates = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(searchCriteria.getOrganizationStatus())) {
+				Predicate organizationStatusPredicate = builder.in(
+						root.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS)).value(
+						searchCriteria.getOrganizationStatus().stream().map(os -> OrganizationStatus.valueOf(os.getValue())).toList());
+
+				organizationStatusPredicates.add(organizationStatusPredicate);
+			}
+
+			// Cas particulier où un member admin peut voir d'autres status d'organization
+			if (CollectionUtils.isNotEmpty(searchCriteria.getAdminMemberAllowedStatus())) {
+				Predicate memberAdmin = builder.equal(memberJoin.get(OrganizationMemberEntity.FIELD_ROLE), OrganizationRole.ADMINISTRATOR);
+				Predicate adminMemberAllowedStatus = builder.in(root.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS))
+						.value(searchCriteria.getAdminMemberAllowedStatus().stream().map(s -> OrganizationStatus.valueOf(s.getValue())).toList());
+				Predicate memberAdminAndAllowedStatus = builder.and(memberAdmin, adminMemberAllowedStatus);
+
+				organizationStatusPredicates.add(memberAdminAndAllowedStatus);
+			}
+			// Si la liste ne contient qu'un seul élement, le "OR" n'apparait aps dans al requête.
+			predicates.add(builder.or(organizationStatusPredicates.toArray(new Predicate[0])));
+		}
+
+
+		if (CollectionUtils.isNotEmpty(predicates)) {
+			query.where(builder.and(predicates.toArray(new Predicate[0])));
+		}
+	}
 }

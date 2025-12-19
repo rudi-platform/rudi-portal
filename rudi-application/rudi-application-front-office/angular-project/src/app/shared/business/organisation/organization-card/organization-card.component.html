@@ -1,5 +1,5 @@
 <mat-card
-    class="organization-card">
+    class="organization-card" [ngClass]="{'archived': isArchived()}">
     <mat-card-content (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)" class="card-content">
         <div class="d-flex my-3">
             <div class="align-items-center">

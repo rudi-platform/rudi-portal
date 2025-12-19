@@ -1,6 +1,7 @@
 package org.rudi.microservice.strukture.facade.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,8 +12,6 @@ import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
-import org.rudi.common.service.exception.AppServiceNotFoundException;
-import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.bpmn.exception.FormConvertException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
@@ -31,6 +30,7 @@ import org.rudi.microservice.strukture.core.bean.PagedOrganizationUserMembers;
 import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
+import org.rudi.microservice.strukture.facade.controller.api.MyOrganizationsApi;
 import org.rudi.microservice.strukture.facade.controller.api.OrganizationsApi;
 import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
@@ -40,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
@@ -47,19 +48,31 @@ import lombok.val;
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSENT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KONSULT_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_STRUKTURE_ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
 import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
-public class OrganizationsController implements OrganizationsApi {
+public class OrganizationsController implements OrganizationsApi, MyOrganizationsApi {
 
 	private final OrganizationService organizationService;
 	private final UtilPageable utilPageable;
 	private final TaskService<Organization> organizationTaskService;
 	private final NodeOrganizationMapper nodeOrganizationMapper;
+
+	/**
+	 * @return
+	 */
+	@Override
+	public Optional<NativeWebRequest> getRequest() {
+		return OrganizationsApi.super.getRequest();
+	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ")")
@@ -68,7 +81,7 @@ public class OrganizationsController implements OrganizationsApi {
 	}
 
 	@Override
-	public ResponseEntity<Organization> getOrganization(UUID uuid) throws AppServiceNotFoundException, AppServiceUnauthorizedException {
+	public ResponseEntity<Organization> getOrganization(UUID uuid) throws AppServiceException {
 		return ResponseEntity.ok(organizationService.getOrganization(uuid));
 	}
 
@@ -78,11 +91,20 @@ public class OrganizationsController implements OrganizationsApi {
 		return ResponseEntity.ok(organizationService.getOrganizationUserFromOrganizationUuid(organizationUuid));
 	}
 
+	//	@Override
 	@Override
-	public ResponseEntity<PagedOrganizationList> searchOrganizations(UUID uuid, String name, Boolean active,
-			UUID userUuid, OrganizationStatus organizationStatus, Status status, Integer offset, Integer limit, String order) {
-		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria.builder().uuid(uuid).name(name).active(active).userUuid(userUuid)
-				.organizationStatus(organizationStatus).status(status).build();
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KALIM + ", " + MODULE_KONSULT + ", " + MODULE_PROJEKT + ", " + MODULE_KONSENT + ", " + MODULE_KONSULT_ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ")")
+	public ResponseEntity<PagedOrganizationList> searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws Exception {
+		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria
+				.builder()
+				.uuid(uuid)
+				.name(name)
+				.active(active)
+				.userUuid(userUuid)
+				.organizationStatus(organizationStatus)
+				.status(status)
+				.build();
+
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		Page<Organization> page = organizationService.searchOrganizations(searchCriteria, pageable);
 		return ResponseEntity
@@ -263,5 +285,18 @@ public class OrganizationsController implements OrganizationsApi {
 		Page<NodeOrganization> page = organizationService.searchNodeOrganizations(searchCriteria, pageable);
 		return ResponseEntity
 				.ok(new PagedNodeOrganizationList().total(page.getTotalElements()).elements(page.getContent()));
+	}
+
+	@Override
+	public ResponseEntity<PagedOrganizationList> searchMyOrganizations(UUID uuid, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria.builder()
+				.uuid(uuid)
+				.name(name)
+				.active(active)
+				.build();
+
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+		Page<Organization> page = organizationService.searchMyOrganizations(searchCriteria, pageable);
+		return ResponseEntity.ok(new PagedOrganizationList().total(page.getTotalElements()).elements(page.getContent()));
 	}
 }

@@ -1,17 +1,5 @@
 package org.rudi.microservice.strukture.service.organization;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -35,6 +23,7 @@ import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
+import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
@@ -52,6 +41,7 @@ import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearch
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.organizationmember.OrganizationMemberDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
@@ -71,6 +61,17 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationServiceUT {
@@ -105,6 +106,12 @@ class OrganizationServiceUT {
 	@Autowired
 	private OrganizationDataFactory organizationDataFactory;
 
+	@Autowired
+	private OrganizationMemberDataFactory organizationMemberDataFactory;
+
+	@Autowired
+	private UserDataFactory userDataFactory;
+
 	@MockitoBean
 	private ProviderMapper providerMapper;
 
@@ -116,6 +123,8 @@ class OrganizationServiceUT {
 
 	@Autowired
 	private LinkedProducerHelper linkedProducerHelper;
+
+	public static final String LOGIN = "login@mail.fr";
 
 	private Organization createOrganizationDto() {
 		Organization organization = new Organization();
@@ -137,7 +146,7 @@ class OrganizationServiceUT {
 
 		final List<Role> roles = List.of(userRole);
 		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin("login");
+		authenticatedUser.setLogin(LOGIN);
 		User user = new User().login(authenticatedUser.getLogin()).uuid(UUID.randomUUID());
 		user.setRoles(roles);
 		when(aclHelper.getUserByLogin(any())).thenReturn(user);
@@ -161,6 +170,18 @@ class OrganizationServiceUT {
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		when(organizationMembersHelper.isAuthenticatedUserOrganizationMember(any())).thenReturn(true);
 		return user;
+	}
+
+	void mockAuthenticationData(User user) throws AppServiceException {
+		AuthenticatedUser authenticatedUser = new AuthenticatedUser();
+		authenticatedUser.setLogin(user.getLogin());
+		authenticatedUser.setFirstname(user.getFirstname());
+		authenticatedUser.setLastname(user.getLastname());
+
+		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
+		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
+		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
+		when(aclHelper.getAuthenticatedUserUuid()).thenReturn(user.getUuid());
 
 	}
 
@@ -258,7 +279,7 @@ class OrganizationServiceUT {
 				.as("L'opening date ne doit pas être celle saisie, mais celle du jour")
 				.matches(o -> o.getOpeningDate() != organization.getOpeningDate()
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
 				.as("La date de cloture doit être égale à celle saisie")
 				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
 				.as("La description doit correspondre à celle saiaie")
@@ -311,7 +332,7 @@ class OrganizationServiceUT {
 				.as("Et la date ne doit pas être celle renseignée, mais celle du jour")
 				.matches(o -> !o.getOpeningDate().equals(openingDate)
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
@@ -882,8 +903,136 @@ class OrganizationServiceUT {
 		assertEquals(0, organizationsNode1.getTotalElements());
 	}
 
+	@Test
+	@DisplayName("MyOrganization - Search organizations liées au user connecté")
+	void searchMyOrganizations() throws AppServiceException {
+		User jean = userDataFactory.getOrCreateJean();
+		User jacques = userDataFactory.getOrCreateJacques();
+
+		mockAuthenticationData(jean);
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = Pageable.unpaged();
+		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		mockAuthenticationData(jacques);
+		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
+
+
+		mockAuthenticationData(jean);
+		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
+		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
+
+		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
+
+		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
+
+		Page<Organization> resultPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		assertThat(resultPage.getTotalElements())
+				.as("La liste des résultats retournés post création doit être plus longue que l'initiale")
+				.isGreaterThan(originPage.getTotalElements())
+				.as("La liste des résultat doit contenir exactement le même nombre de résultat supplémentaire que la list des résultat attendus.")
+				.isEqualTo(originPage.getTotalElements() + expectedOrganizations.size());
+		;
+		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
+				.as("Ne doit pas contenir l'organization non concernée")
+				.doesNotContain(organization.getUuid())
+				.as("Mais doit contenir les deux autres")
+				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
+		;
+	}
+
+
+	@Test
+	@DisplayName("MyOrganization - Search organizations liées au user connecté. Force userUuid")
+	void searchMyOrganizationsForceUserUuid() throws AppServiceException {
+		User jean = userDataFactory.getOrCreateJean();
+		User jacques = userDataFactory.getOrCreateJacques();
+
+		mockAuthenticationData(jean);
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = Pageable.unpaged();
+		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		mockAuthenticationData(jacques);
+		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
+
+
+		mockAuthenticationData(jean);
+		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
+		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
+
+		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
+
+		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
+
+		// On Force la veleur du user.
+		criteria = OrganizationSearchCriteria.builder().userUuid(jacques.getUuid()).build();
+		Page<Organization> resultPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
+				.as("Ne doit pas contenir l'organization dont jacques est membre, malgré le paramètre forcé")
+				.doesNotContain(organization.getUuid())
+				.as("Mais doit contenir les deux autres")
+				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
+		;
+	}
+
+	@Test
+	@DisplayName("MyOrganization - Search organizations liées au user connecté status forcé")
+	void searchMyOrganizationsForcedStatus() throws AppServiceException {
+		User jean = userDataFactory.getOrCreateJean();
+		User jacques = userDataFactory.getOrCreateJacques();
+
+		mockAuthenticationData(jean);
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().build();
+		Pageable pageable = Pageable.unpaged();
+		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		mockAuthenticationData(jacques);
+		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
+
+
+		mockAuthenticationData(jean);
+		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
+		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
+
+		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
+
+		// Organization en Draft qui ne doit pas être remontée
+		OrganizationEntity organization4 = organizationDataFactory.createBlockOrganization(LOGIN);
+		organization4 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization4);
+
+		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
+
+		OrganizationSearchCriteria.builder().organizationStatus(List.of(OrganizationStatus.DRAFT)).build();
+		Page<Organization> resultPage = organizationService.searchMyOrganizations(criteria, pageable);
+
+		assertThat(resultPage.getTotalElements())
+				.as("La liste des résultats retournés post création doit être plus longue que l'initiale")
+				.isGreaterThan(originPage.getTotalElements())
+				.as("La liste des résultat doit contenir exactement le même nombre de résultat supplémentaire que la list des résultat attendus.")
+				.isEqualTo(originPage.getTotalElements() + expectedOrganizations.size());
+		;
+		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
+				.as("Ne doit pas contenir l'organization non concernée")
+				.doesNotContain(organization.getUuid())
+				.as("Mais doit contenir les deux autres")
+				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
+		;
+	}
+
 	@Transactional
-	private void attachWithStatus(Organization organization, ProviderEntity provider, NodeProvider nodeProvider,
+	protected void attachWithStatus(Organization organization, ProviderEntity provider, NodeProvider nodeProvider,
 			final org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus expectedStatus)
 			throws AppServiceException {
 		LinkedProducer linkedProducer = linkedProducerHelper

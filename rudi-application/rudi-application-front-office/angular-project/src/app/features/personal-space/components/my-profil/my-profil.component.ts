@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
+import {UserService} from '@core/services/user.service';
 import {TranslateService} from '@ngx-translate/core';
 import {User} from 'micro_service_modules/acl/acl-model';
-import {UserService} from '@core/services/user.service';
 
 @Component({
     selector: 'app-my-profil',
@@ -17,12 +17,13 @@ export class MyProfilComponent implements OnInit {
     constructor(
         private readonly translateService: TranslateService,
         private readonly utilisateurService: UserService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.isLoading = true;
         // récupération de l'évènement d'authentification
-        this.utilisateurService.getConnectedUser()
+        this.utilisateurService.getAuthenticatedUser()
             .subscribe(
                 {
                     next: (user: User | undefined) => {

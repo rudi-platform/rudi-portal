@@ -201,6 +201,13 @@
 					"DISENGAGED"
 				]
 			},
+			"OrganizationStatusParam": {
+				"description": "Liste des statuts d'organisation",
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/OrganizationStatus"
+				}
+			},
 			"Organization": {
 				"description": "Organisation",
 				"type": "object",
@@ -620,6 +627,9 @@
 					},
 					"projectCount": {
 						"type": "integer"
+					},
+					"organizationStatus": {
+						"$ref": "#/components/schemas/OrganizationStatus"
 					}
 				}
 			},

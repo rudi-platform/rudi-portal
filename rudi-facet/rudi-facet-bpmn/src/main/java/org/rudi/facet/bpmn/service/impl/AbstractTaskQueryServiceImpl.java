@@ -286,17 +286,21 @@ public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria,
 				historicSearchCriteria.getMaxCompletionDate());
 		List<String> processInstanceIds = historicTaskInstances.stream().map(HistoricTaskInstance::getProcessInstanceId)
 				.distinct().toList();
-		// Conversion des tâches en ProcessHistoricInformation
-		List<HistoricProcessInstance> historicProcessInstances = historicHelper
-				.collectHistoricProcess(processInstanceIds);
-		List<ProcessHistoricInformation> processHistoricInformations = historicHelper
-				.convertHistoricProcessInstance(historicProcessInstances);
 
-		// On associe les ProcessHistoricInformation aux HistoricTaskInstance
-		if (CollectionUtils.isNotEmpty(processHistoricInformations)) {
-			for (int i = 0; i < processHistoricInformations.size(); i++) {
-				ProcessHistoricInformation processHistoricInformation = processHistoricInformations.get(i);
-				historicHelper.enhancedProcessHistoricInformation(processHistoricInformation);
+		List<ProcessHistoricInformation> processHistoricInformations = List.of();
+		if (CollectionUtils.isNotEmpty(processInstanceIds)) {
+			// Conversion des tâches en ProcessHistoricInformation
+			List<HistoricProcessInstance> historicProcessInstances = historicHelper
+					.collectHistoricProcess(processInstanceIds, historicSearchCriteria.isFinished());
+			processHistoricInformations = historicHelper
+					.convertHistoricProcessInstance(historicProcessInstances);
+
+			// On associe les ProcessHistoricInformation aux HistoricTaskInstance
+			if (CollectionUtils.isNotEmpty(processHistoricInformations)) {
+				for (int i = 0; i < processHistoricInformations.size(); i++) {
+					ProcessHistoricInformation processHistoricInformation = processHistoricInformations.get(i);
+					historicHelper.enhancedProcessHistoricInformation(processHistoricInformation);
+				}
 			}
 		}
 

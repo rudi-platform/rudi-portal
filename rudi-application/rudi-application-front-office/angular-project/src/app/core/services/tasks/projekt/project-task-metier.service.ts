@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Task} from 'micro_service_modules/api-bpmn';
+import {ProcessHistoricInformation, Task} from 'micro_service_modules/api-bpmn';
 import {TaskService as ProjektTaskService} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
@@ -40,4 +40,10 @@ export class ProjectTaskMetierService extends MicroserviceProjektTaskMetierServi
     startTask(task: Task): Observable<Task> {
         return this.projektTaskService.startProjectTask(task);
     }
+
+    getMyHistoricInformations(): Observable<ProcessHistoricInformation[]> {
+        return this.projektTaskService.getMyHistoricInformations();
+    }
+
+
 }

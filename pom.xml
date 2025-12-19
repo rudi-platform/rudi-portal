@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.3.5</version>
+	<version>3.3.6</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -31,7 +31,7 @@
 		<commons.collections4.version>4.5.0</commons.collections4.version>
 
 		<commons.lang3.version>3.20.0</commons.lang3.version>
-		<commons.text.version>1.14.0</commons.text.version>
+		<commons.text.version>1.15.0</commons.text.version>
 		<common.validator.version>1.10.1</common.validator.version>
 		
 		<awaitibility.version>4.3.0</awaitibility.version>
@@ -67,7 +67,7 @@
 		<activiti.version>7.1.0.M6</activiti.version>
 		<graalvm.version>23.0.8</graalvm.version>
 		<nashorn.version>15.7</nashorn.version>
-		<log4j.version>2.25.2</log4j.version>
+		<log4j.version>2.25.3</log4j.version>
 		<jaxb-impl.version>2.3.1</jaxb-impl.version>
 		<jaxb-api.version>4.0.4</jaxb-api.version>
 		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
@@ -76,7 +76,7 @@
 		<s3.version>2.7.0</s3.version>
 		<gson.version>2.13.1</gson.version>
 		<xdocreport.version>2.1.0</xdocreport.version>
-		<apache.poi.version>5.5.0</apache.poi.version>
+		<apache.poi.version>5.5.1</apache.poi.version>
 		<pdf.box.version>3.0.6</pdf.box.version>
 		<xmpbox.version>3.0.6</xmpbox.version>
 		<ghost4j.version>1.0.1</ghost4j.version>
@@ -85,19 +85,19 @@
 		<javax.javax.servlet.api.version>4.0.1</javax.javax.servlet.api.version>
 		<google-findbugs.version>3.0.2</google-findbugs.version>
 		<jsonassert.version>1.5.3</jsonassert.version>
-		<boucycastle.version>1.82</boucycastle.version>
+		<boucycastle.version>1.83</boucycastle.version>
 		<activation.version>1.1.1</activation.version>
-		<reactor-test.version>3.8.0</reactor-test.version>
+		<reactor-test.version>3.8.1</reactor-test.version>
 		<h2.version>2.4.240</h2.version>
 		<json-smart.version>2.6.0</json-smart.version>
 		<proj4j.version>1.4.1</proj4j.version>
 
 		<maven-replacer-plugin.version>1.4.1</maven-replacer-plugin.version>
-		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
 		<compiler.plugin.version>3.14.1</compiler.plugin.version>
-		<version-maven-plugin.version>2.19.1</version-maven-plugin.version>
+		<version-maven-plugin.version>2.20.1</version-maven-plugin.version>
 		<maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
 		<frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
@@ -115,8 +115,12 @@
 		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 
+		<sonar.test.exclusions>**/*Test*.java, **/test/**/*Factory.java, **/*UT.java, **/*TU.java, **/IT.java, **/*.spec.ts</sonar.test.exclusions>
+		<sonar.exclusions>**/*Test*.java, **/test/**/*Factory.java, **/*UT.java, **/*TU.java, **/IT.java, **/*.spec.ts</sonar.exclusions>
 		<sonar.coverage.exclusions>
 			**/*Entity.java,
+			**/*Exception.java,
+			**/*Mapper.java
 			**/*Controller.java
 		</sonar.coverage.exclusions>
 		<sonar.cpd.exclusions>

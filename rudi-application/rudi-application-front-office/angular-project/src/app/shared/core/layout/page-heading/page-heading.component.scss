@@ -65,6 +65,19 @@
     display: flex;
 }
 
+.resource-description {
+    margin-bottom: 0.1em;
+}
+
+.fake-btn {
+    display: inline-block;
+    border-radius: 14px;
+    background-color: var(--banner-solid-color);
+    text-align: center;
+    border: none;
+    padding: 0.5em;
+}
+
 .p-small {
     padding-top: 0 !important;
 }

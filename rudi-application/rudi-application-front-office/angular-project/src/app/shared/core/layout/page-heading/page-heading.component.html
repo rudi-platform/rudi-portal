@@ -19,13 +19,13 @@
         <div class="header-ressource">
             <div class="producer-name">{{organizationName}}</div>
             <div class="resource-description d-flex mx-auto">
-
                 <h1 class="blue-theme resource-title my-auto">
                     <mat-icon class="d-inline-flex dataset-icon picto" [svgIcon]="icon"
                               *ngIf="icon != null && icon !== ''"></mat-icon>
                     {{resourceTitle}}
                 </h1>
             </div>
+            <div *ngIf="!mediaSize.isXs && status" class="fake-btn">{{ status }}</div>
         </div>
     </div>
 </div>

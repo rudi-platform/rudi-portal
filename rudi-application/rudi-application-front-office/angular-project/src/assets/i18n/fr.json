@@ -1128,9 +1128,8 @@
             "errorPassword": "Le mot de passe saisi est invalide. Veuillez le ressaisir."
         },
         "myNotifications": {
-            "title1": "Mes notifications",
-            "tab1": "À traiter",
-            "tab2": "Toutes les demandes",
+            "title": "Mes notifications",
+            "tabTitle": "Mes notifications",
             "noResult": " Vous n'avez pas de nouvelle demande. Vous pouvez consulter l'historique de vos demandes depuis votre espace  \"Mon activité\" dans l'onglet  \"Mes demandes\".",
             "receivedDate": "Reçue le",
             "description": "Description",
@@ -1145,6 +1144,36 @@
             "project": "Réutilisation",
             "organization": "Organisation",
             "linkedProducer": "Organisation"
+        },
+        "myTasksHistories": {
+            "tabTitle": "Mes demandes traitées",
+            "noTasksHistories": "Vous n'avez pas traité de demande.",
+            "organization": {
+                "singular": "demande de création ou d'archivage d'organisation",
+                "plural": "demandes de création ou d'archivage d'organisation"
+            },
+            "linkedProducer": {
+                "singular": "demande de rattachement ou de détachement d'organisation",
+                "plural": "demandes de rattachement ou de détachement d'organisation"
+            },
+            "linkedDataset": {
+                "singular": "demande d'accès à des jeux de données à accès restreint",
+                "plural": "demandes d'accès à des jeux de données à accès restreint"
+            },
+            "project": {
+                "singular": "demande de publication de réutilisation",
+                "plural": "demandes de publication de réutilisation"
+            },
+            "selfdata": {
+                "singular": "demande liée à des données personnelles",
+                "plural": " demandes liées à des données personnelles"
+            },
+            "newDatasetRequest": {
+                "singular": "demande de nouvelles données (hors catalogue)",
+                "plural": "demandes de nouvelles données (hors catalogue)"
+            },
+            "noDate": "Inconnue",
+            "noInitiator": "Non renseigné"
         },
         "organizationDetails": {
             "declaration": "Déclaration d'organisation",
@@ -1582,6 +1611,9 @@
                 "single": "{number} jeu de données",
                 "plural": "{number} jeux de données"
             }
+        },
+        "status": {
+            "disengaged": "Archivé - Non accessible au grand public"
         }
     },
     "datasetUpdateFrequency": {

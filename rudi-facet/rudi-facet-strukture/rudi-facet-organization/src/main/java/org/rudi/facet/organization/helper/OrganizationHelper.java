@@ -126,7 +126,7 @@ public class OrganizationHelper {
 	}
 
 	@Nonnull
-	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid,OrganizationStatus organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
+	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
 						.queryParamIfPresent("uuid", Optional.ofNullable(uuid))

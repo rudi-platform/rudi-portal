@@ -1,0 +1,50 @@
+<div *ngIf="hasData else noData">
+
+    <app-my-tasks-histories-table
+        *ngIf="organizationTasksHistories?.length > 0 && !isStruktureLoading else loading"
+        [entries]="organizationTasksHistories"
+        [icon]="organizationTasksIcon"
+        [backPaginatorId]="'organizationTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.organization'">
+    </app-my-tasks-histories-table>
+    <app-my-tasks-histories-table
+        *ngIf="linkedProducerTasksHistories?.length > 0 && !isStruktureLoading else loading"
+        [entries]="linkedProducerTasksHistories" [icon]="linkedProducerTasksIcon"
+        [backPaginatorId]="'linkedProducerTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.linkedProducer'">
+    </app-my-tasks-histories-table>
+    <app-my-tasks-histories-table
+        *ngIf="linkedDatasetTasksHistories?.length > 0 && !isProjektLoading else loading"
+        [entries]="linkedDatasetTasksHistories" [icon]="linkedDatasetTasksIcon"
+        [backPaginatorId]="'linkedDatasetTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.linkedDataset'">
+    </app-my-tasks-histories-table>
+    <app-my-tasks-histories-table
+        *ngIf="projectTasksHistories?.length > 0 &&!isProjektLoading else loading" [entries]="projectTasksHistories"
+        [icon]="projectTasksIcon"
+        [backPaginatorId]="'projectTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.project'">
+    </app-my-tasks-histories-table>
+    <app-my-tasks-histories-table
+        *ngIf="selfdataTasksHistories?.length > 0 && !isSelfdataLoading else loading" [entries]="selfdataTasksHistories"
+        [icon]="selfdataTasksIcon"
+        [backPaginatorId]="'selfdataTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.selfdata'">
+    </app-my-tasks-histories-table>
+    <app-my-tasks-histories-table
+        *ngIf="newDatasetRequestTasksHistories?.length > 0 && !isProjektLoading else loading"
+        [entries]="newDatasetRequestTasksHistories" [icon]="newDatasetRequestTasksIcon"
+        [backPaginatorId]="'newDatasetRequestTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.newDatasetRequest'">
+    </app-my-tasks-histories-table>
+</div>
+
+<ng-template #noData>
+    <div class="noData">{{ 'personalSpace.myTasksHistories.noTasksHistories' | translate }}</div>
+</ng-template>
+
+<ng-template #loading>
+    <app-loader *ngIf="isStruktureLoading || isProjektLoading || isSelfdataLoading" [allPage]="false" [isLight]="true"
+                [noText]="true" [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+</ng-template>
+
