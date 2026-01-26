@@ -10,7 +10,7 @@ describe('DeletionConfirmationPopinComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [DeletionConfirmationPopinComponent]
+            imports: [DeletionConfirmationPopinComponent]
         })
             .compileComponents();
     });

@@ -35,7 +35,8 @@
                 </app-tab>
                 <app-tab [label]="'personalSpace.project.tabs.datasets.title' | translate" [icon]="'jdd_icon'">
                     <ng-template>
-                        <app-project-datasets-tab [project]="project" (onProjectIsUpdate)="loadProject()"></app-project-datasets-tab>
+                        <app-project-datasets-tab [project]="project"
+                                                  (projectIsUpdate)="loadProject()"></app-project-datasets-tab>
                     </ng-template>
                 </app-tab>
                 <app-tab *ngIf="displayApiTab" [label]="'personalSpace.project.tabs.api.title' | translate"

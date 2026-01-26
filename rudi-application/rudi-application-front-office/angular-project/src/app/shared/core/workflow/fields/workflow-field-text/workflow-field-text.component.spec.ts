@@ -8,7 +8,7 @@ describe('WorkflowFieldTextComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WorkflowFieldTextComponent]
+            imports: [WorkflowFieldTextComponent]
         })
             .compileComponents();
     });

@@ -1,18 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {NavigationEnd, Router} from '@angular/router';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {PageTitleService} from '@core/services/page-title.service';
+import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {TranslateService} from '@ngx-translate/core';
+import {FooterComponent} from '@shared/core/layout/footer/footer.component';
+import {HeaderComponent} from '@shared/core/layout/header/header.component';
 import {filter, map} from 'rxjs/operators';
-import { PropertiesMetierService } from './core/services/properties-metier.service';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: false
+    imports: [HeaderComponent, RouterOutlet, FooterComponent]
 })
 export class AppComponent implements OnInit {
 
@@ -52,7 +54,7 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
         // appel aux properties back + passer le résultat au loadscript
-        this.propertiesService.getStrings('scripts').subscribe(scriptUrls => scriptUrls?.forEach(scriptUrl => 
+        this.propertiesService.getStrings('scripts').subscribe(scriptUrls => scriptUrls?.forEach(scriptUrl =>
             AppComponent.loadScript(scriptUrl)
         ));
     }

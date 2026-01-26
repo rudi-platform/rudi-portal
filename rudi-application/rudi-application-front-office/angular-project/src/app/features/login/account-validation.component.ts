@@ -6,10 +6,12 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
+import {NgIf} from '@angular/common';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
     templateUrl: 'account-validation.component.html',
-    standalone: false
+    imports: [NgIf, MatProgressSpinner]
 })
 export class AccountValidationComponent implements OnInit {
     /**

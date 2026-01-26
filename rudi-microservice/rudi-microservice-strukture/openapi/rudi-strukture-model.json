@@ -685,6 +685,13 @@
 					"DETACH"
 				]
 			},
+			"ObjectType": {
+				"type": "string",
+				"enum": [
+					"ORGANIZATION",
+					"LINKED_PRODUCER"
+				]
+			},
 			"ReportError": {
 				"type": "object",
 				"properties": {
@@ -735,6 +742,9 @@
 						"items": {
 							"$ref": "#/components/schemas/ReportError"
 						}
+					},
+					"object_type": {
+						"$ref": "#/components/schemas/ObjectType"
 					}
 				}
 			},

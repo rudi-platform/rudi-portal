@@ -1,22 +1,31 @@
+import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {GdataDataInterface} from '@core/services/selfdata-dataset/gdataData.interface';
 import {SelfdataDatasetService} from '@core/services/selfdata-dataset/selfdata-dataset.service';
 import {BarChartData} from '@core/services/selfdata-dataset/tpbcData.interface';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {UserService} from '@core/services/user.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {CardComponent} from '@shared/core/common/card/card.component';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {PasswordComponent} from '@shared/core/form/password/password.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {forkJoin, Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
+import {GenericDataComponent} from '../generic-data/generic-data.component';
+import {TemporalBarchartDataComponent} from '../temporal-barchart-data/temporal-barchart-data.component';
 
 @Component({
     selector: 'app-selfdata-dataset-data-tab',
     templateUrl: './selfdata-dataset-data-tab.component.html',
     styleUrls: ['./selfdata-dataset-data-tab.component.scss'],
-    standalone: false
+    imports: [NgIf, LoaderComponent, CardComponent, FormsModule, PasswordComponent, ErrorBoxComponent, MatButton, GenericDataComponent, TemporalBarchartDataComponent, TranslatePipe]
 })
 export class SelfdataDatasetDataTabComponent implements OnInit {
 

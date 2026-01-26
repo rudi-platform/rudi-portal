@@ -1,5 +1,23 @@
+import {DatePipe, NgClass, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {Sort} from '@angular/material/sort';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FormsModule} from '@angular/forms';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable
+} from '@angular/material/table';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
 import {LogService} from '@core/services/log.service';
 import {DialogMemberOrganizationService} from '@core/services/organization/dialog-member-organization.service';
@@ -7,12 +25,17 @@ import {OrganizationMetierService} from '@core/services/organization/organizatio
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {BackPaginationComponent} from '@shared/core/common/back-pagination/back-pagination.component';
 import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
 import {OrganizationRole, OrganizationUserMember} from 'micro_service_modules/strukture/api-strukture';
 import {Organization, OrganizationMember, PagedOrganizationUserMembers} from 'micro_service_modules/strukture/strukture-model';
+import {NgxPaginationModule} from 'ngx-pagination';
 import {BehaviorSubject, combineLatest, EMPTY, merge, Observable, of} from 'rxjs';
 import {debounceTime, filter, map, switchMap, tap} from 'rxjs/operators';
 import {OrganizationMemberDialogData} from './organization-member-dialog-data';
@@ -21,7 +44,7 @@ import {OrganizationMemberDialogData} from './organization-member-dialog-data';
     selector: 'app-organization-members-table',
     templateUrl: './organization-members-table.component.html',
     styleUrls: ['./organization-members-table.component.scss'],
-    standalone: false
+    imports: [FormsModule, MatIcon, NgIf, NgClass, ExtendedModule, MatButton, ErrorBoxComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe]
 })
 export class OrganizationMembersTableComponent implements OnInit {
 

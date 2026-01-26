@@ -27,6 +27,12 @@
                         </ng-container>
                         <ng-container *ngSwitchCase="fieldType.Hidden">
                         </ng-container>
+                        <ng-container *ngSwitchCase="fieldType.Richtext">
+                            <app-worklfow-expansion-rich-label
+                                [label]="field.definition.label"
+                                [value]="field.values[0]"
+                            ></app-worklfow-expansion-rich-label>
+                        </ng-container>
                         <ng-container *ngSwitchDefault>
                             <app-workflow-expansion-label
                                 [label]="field.definition.label"

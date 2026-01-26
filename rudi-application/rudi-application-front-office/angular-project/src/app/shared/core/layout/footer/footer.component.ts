@@ -1,17 +1,22 @@
+import {AsyncPipe, NgClass, NgFor, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatDivider} from '@angular/material/divider';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CustomizationService} from '@core/services/customization.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
 import {RedirectService} from '@core/services/redirect.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {FooterUtils} from '@shared/utils/footer-utils';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {AppInfo} from 'micro_service_modules/acl/acl-api/model/models';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CustomizationDescription, KonsultService, MiscellaneousService} from 'micro_service_modules/konsult/konsult-api';
 import {CmsTermsDescription} from 'micro_service_modules/konsult/konsult-model';
 import {switchMap} from 'rxjs';
+import {SocialMediaSectionComponent} from '../../../business/home/social-media-section/social-media-section.component';
 
 const OFFSET: number = 0;
 const LIMIT: number = 3;
@@ -21,7 +26,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.scss'],
-    standalone: false
+    imports: [NgClass, ExtendedModule, NgIf, SocialMediaSectionComponent, MatDivider, NgFor, AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
 })
 export class FooterComponent implements OnInit {
 

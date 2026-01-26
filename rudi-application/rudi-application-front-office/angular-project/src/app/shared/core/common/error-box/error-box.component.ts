@@ -1,4 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
+import {NgIf} from '@angular/common';
 
 /**
  * Le error-box est une div générique capable d'afficher un message d'erreur et collé un message cliquable qui fait quelque-chose
@@ -7,7 +9,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
     selector: 'app-error-box',
     templateUrl: './error-box.component.html',
     styleUrls: ['./error-box.component.scss'],
-    standalone: false
+    imports: [MatIcon, NgIf]
 })
 export class ErrorBoxComponent {
 

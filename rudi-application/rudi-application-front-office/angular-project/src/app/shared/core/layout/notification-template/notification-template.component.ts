@@ -1,4 +1,7 @@
+import {NgClass} from '@angular/common';
 import {Component, Inject, OnInit, SecurityContext} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatLabel} from '@angular/material/form-field';
 import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Event, Router} from '@angular/router';
@@ -45,7 +48,7 @@ function eventUrlComparator(e1: Event, e2: Event): boolean {
     selector: 'app-notification-template',
     templateUrl: './notification-template.component.html',
     styleUrls: ['./notification-template.component.scss'],
-    standalone: false
+    imports: [MatLabel, NgClass, ExtendedModule]
 })
 export class NotificationTemplateComponent implements OnInit {
     /**

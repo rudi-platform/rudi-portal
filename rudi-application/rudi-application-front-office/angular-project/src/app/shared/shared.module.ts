@@ -113,6 +113,9 @@ import {
     WorkflowExpansionLabelComponent
 } from '@shared/core/workflow/workflow-expansion/workflow-expansion-label/workflow-expansion-label.component';
 import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
+import {
+    WorklfowExpansionRichLabelComponent
+} from '@shared/core/workflow/workflow-expansion/worklfow-expansion-rich-label/worklfow-expansion-rich-label.component';
 import {MaterialModules} from '@shared/shared.constant';
 import {CustomRouterlinkDirective} from '@shared/utils/directives/custom-routerlink-directive/custom-routerlink.directive';
 import {TabContentDirective} from '@shared/utils/directives/tab-content-directive/tab-content.directive';
@@ -131,7 +134,17 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
 
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        CaptchetatAngularModule,
+        ...MaterialModules,
+        CoreModule,
+        FilePickerModule,
+        MatAutocompleteModule,
+        MatTableModule,
+        NgbPopoverModule,
         // ========== PIPES ==========
         SplitPipe,
         TruncateTextPipe,
@@ -144,12 +157,10 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         SelfdataProcessDefinitionKeyTranslatePipe,
         IsSectionDisplayedPipe,
         IsSectionOnlyHelpPipe,
-
         // ========== DIRECTIVES ==========
         TabsLayoutDirective,
         TabContentDirective,
         CustomRouterlinkDirective,
-
         // ========== COMMON UTILS ==========
         CardComponent,
         TabsComponent,
@@ -164,16 +175,13 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         LabelSeparatorComponent,
         CopiedButtonComponent,
         ClipboardFieldComponent,
-
         // ========== COMMON BANNER ==========
         BannerComponent,
         BannerButtonComponent,
-
         // ========== COMMON SEARCH ==========
         SearchCountComponent,
         SearchBoxComponent,
         SearchAutocompleteComponent,
-
         // ========== COMMON LAYOUT ==========
         PageComponent,
         PageTitleComponent,
@@ -183,53 +191,43 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         HeaderComponent,
         NotificationTemplateComponent,
         PopoverComponent,
-
         // ========== HOME ==========
         RudiSwiperComponent,
         SocialMediaSectionComponent,
-
         // ========== SELFDATA ==========
         DocumentationButtonComponent,
-
         // ========== ORGANISATION ==========
         OrganizationLogoComponent,
         OrganizationCardComponent,
         ListOrganizationCardComponent,
         MemberPopinComponent,
-
         // ========== FORMS COMMON==========
         MonthYearDatepickerComponent,
         RadioListComponent,
         UploaderComponent,
-
         // ========== FORMS UTILS ==========
         PasswordStrengthComponent,
         PasswordComponent,
         ResetPasswordErrorBoxComponent,
         RudiCaptchaComponent,
-
         // ========== PROJECTS ==========
         ProjectCardComponent,
         ProjectListComponent,
         ProjectHeadingComponent,
-
         // ========== PROJECT DATASETS TABLES ==========
         OpenDatasetTableComponent,
         NewDatasetRequestTableComponent,
         RestrictedDatasetTableComponent,
         DeletionConfirmationPopinComponent,
         DatasetTableComponent,
-
         // ========== CONTACTS ==========
         ContactButtonComponent,
         ContactCardComponent,
-
         // ========== DATASETS COMMON ==========
         DatasetsInfosComponent,
         DataSetCardComponent,
         DatasetListComponent,
         DatasetListBannerComponent,
-
         // ========== DATASET FILTER ==========
         DatesFilterFormComponent,
         OrderFilterFormComponent,
@@ -241,19 +239,16 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         OrderComponent,
         ListContainerComponent,
         FilterSidenavContainerComponent,
-
         // ========== MAPS ==========
         MapComponent,
         MapPopupComponent,
-
         // ========== WORKFLOW COMMON ==========
         TaskDetailHeaderComponent,
-
         // ========== WORKFLOW EXPANSION ==========
         WorkflowExpansionComponent,
         WorkflowExpansionLabelComponent,
         WorkflowExpansionDateComponent,
-
+        WorklfowExpansionRichLabelComponent,
         // ========== WORKFLOW FIELDS ==========
         WorkflowFieldComponent,
         WorkflowFieldTextComponent,
@@ -265,25 +260,10 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         WorkflowFieldAttachmentComponent,
         WorkflowFieldAttachmentPopinComponent,
         WorkflowFieldTemplateComponent,
-
         // ========== WORKFLOW FORMS ==========
         WorkflowFormComponent,
         WorkflowFormDialogComponent,
         WorkflowFormSubmitSuccessComponent,
-
-
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        CaptchetatAngularModule,
-        ...MaterialModules,
-        CoreModule,
-        FilePickerModule,
-        MatAutocompleteModule,
-        MatTableModule,
-        NgbPopoverModule,
     ],
     exports: [
         CommonModule,
@@ -291,7 +271,6 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         ReactiveFormsModule,
         ...MaterialModules,
         CoreModule,
-
         // ========== PIPES ==========
         SplitPipe,
         TruncateTextPipe,
@@ -301,11 +280,9 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         FileSizePipe,
         ProcessDefinitionKeyTranslatePipe,
         SelfdataProcessDefinitionKeyTranslatePipe,
-
         // ========== DIRECTIVES ==========
         TabsLayoutDirective,
         TabContentDirective,
-
         // ========== COMMON UTILS ==========
         CardComponent,
         TabsComponent,
@@ -320,15 +297,12 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         LabelSeparatorComponent,
         CopiedButtonComponent,
         ClipboardFieldComponent,
-
         // ========== COMMON BANNER ==========
         BannerComponent,
         BannerButtonComponent,
-
         // ========== COMMON SEARCH ==========
         SearchCountComponent,
         SearchBoxComponent,
-
         // ========== COMMON LAYOUT ==========
         PageComponent,
         PageTitleComponent,
@@ -338,52 +312,42 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         HeaderComponent,
         NotificationTemplateComponent,
         PopoverComponent,
-
         // ========== HOME ==========
         RudiSwiperComponent,
         SocialMediaSectionComponent,
-
         // ========== SELFDATA ==========
         DocumentationButtonComponent,
-
         // ========== ORGANISATION ==========
         OrganizationLogoComponent,
         OrganizationCardComponent,
         ListOrganizationCardComponent,
         MemberPopinComponent,
-
         // ========== FORMS COMMON==========
         MonthYearDatepickerComponent,
         RadioListComponent,
         UploaderComponent,
-
         // ========== FORMS UTILS ==========
         PasswordStrengthComponent,
         PasswordComponent,
         ResetPasswordErrorBoxComponent,
         RudiCaptchaComponent,
-
         // ========== PROJECTS ==========
         ProjectCardComponent,
         ProjectListComponent,
         ProjectHeadingComponent,
-
         // ========== PROJECT DATASETS TABLES ==========
         OpenDatasetTableComponent,
         NewDatasetRequestTableComponent,
         RestrictedDatasetTableComponent,
         DeletionConfirmationPopinComponent,
-
         // ========== CONTACTS ==========
         ContactButtonComponent,
         ContactCardComponent,
-
         // ========== DATASETS COMMON ==========
         DatasetsInfosComponent,
         DataSetCardComponent,
         DatasetListComponent,
         DatasetListBannerComponent,
-
         // ========== DATASET FILTER ==========
         DatesFilterFormComponent,
         OrderFilterFormComponent,
@@ -395,23 +359,19 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         OrderComponent,
         ListContainerComponent,
         FilterSidenavContainerComponent,
-
         // ========== MAPS ==========
         MapComponent,
-
         // ========== WORKFLOW COMMON ==========
         TaskDetailHeaderComponent,
-
         // ========== WORKFLOW EXPANSION ==========
         WorkflowExpansionComponent,
         WorkflowExpansionLabelComponent,
         WorkflowExpansionDateComponent,
-
+        WorklfowExpansionRichLabelComponent,
         // ========== WORKFLOW FIELDS ==========
         WorkflowFieldComponent,
         WorkflowFieldTemplateComponent,
         WorkflowFieldAddressComponent,
-
         // ========== WORKFLOW FORMS (utilise le template ci-dessus) ==========
         WorkflowFormComponent,
         WorkflowFormDialogComponent,

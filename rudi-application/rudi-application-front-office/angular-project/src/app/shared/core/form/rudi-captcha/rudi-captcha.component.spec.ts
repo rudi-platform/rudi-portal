@@ -8,7 +8,7 @@ describe('RudiCaptchaComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [RudiCaptchaComponent]
+            imports: [RudiCaptchaComponent]
         })
             .compileComponents();
     });

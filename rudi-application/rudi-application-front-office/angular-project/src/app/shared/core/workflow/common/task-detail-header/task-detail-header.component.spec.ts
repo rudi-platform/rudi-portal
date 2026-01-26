@@ -8,7 +8,7 @@ describe('RequestDetailHeaderComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [TaskDetailHeaderComponent]
+            imports: [TaskDetailHeaderComponent]
         })
             .compileComponents();
     });

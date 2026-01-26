@@ -1,15 +1,20 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {Theme} from '@features/home/types';
+import {TranslatePipe} from '@ngx-translate/core';
+import {RudiSwiperComponent} from '@shared/business/home/rudi-swiper/rudi-swiper.component';
 import {SwiperBreakpoint} from '@shared/business/home/rudi-swiper/types';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 
 @Component({
     selector: 'app-themes-section',
     templateUrl: './themes-section.component.html',
     styleUrls: ['./themes-section.component.scss'],
-    standalone: false
+    imports: [NgIf, LoaderComponent, RudiSwiperComponent, NgFor, MatIcon, TranslatePipe]
 })
 export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];

@@ -1,8 +1,15 @@
+import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ContactCardComponent} from '@shared/business/contacts/contact-card/contact-card.component';
+import {DatasetListComponent} from '@shared/business/dataset/common/dataset-list/dataset-list.component';
+import {ProjectListComponent} from '@shared/business/projects/project-list/project-list.component';
+import {CardComponent} from '@shared/core/common/card/card.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
 
 
@@ -10,7 +17,7 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
     selector: 'app-organization-informations',
     templateUrl: './organization-informations.component.html',
     styleUrls: ['./organization-informations.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, CardComponent, ContactCardComponent, DatasetListComponent, ProjectListComponent, TranslatePipe]
 })
 export class OrganizationInformationsComponent implements OnInit {
     @Input() isLoading: boolean;

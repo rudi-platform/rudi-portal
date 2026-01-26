@@ -1,6 +1,6 @@
 package org.rudi.microservice.apigateway.service.api.validator;
 
-import java.net.URL;
+import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.service.exception.AppServiceException;
@@ -29,7 +29,7 @@ class FullApiValidator implements ApiValidator {
 			throw new IllegalArgumentException("URL required");
 		}
 		try {
-			new URL(api.getUrl());
+			new URI(api.getUrl()).toURL();
 		} catch (Exception e) {
 			throw new IllegalArgumentException("URL invalid " + api.getUrl());
 		}

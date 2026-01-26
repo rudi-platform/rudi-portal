@@ -3,18 +3,18 @@
  */
 package org.rudi.common.service.geo;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 
+import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.rudi.common.service.CommonServiceSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import net.minidev.json.JSONObject;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author FNI18300
@@ -27,7 +27,7 @@ class GeometryHelperUT {
 	private GeometryHelper geometryHelper;
 
 	@Test
-	void testGeoJson1() throws IOException {
+	void testGeoJson1() throws IOException, URISyntaxException {
 		String file = loadFile("geojson-multipoint.json");
 
 		Geometry geometry = geometryHelper.convertGeometryFromGeoJson(file, 4326, false);
@@ -39,7 +39,7 @@ class GeometryHelperUT {
 	}
 
 	@Test
-	void testGeoJson2() throws IOException {
+	void testGeoJson2() throws IOException, URISyntaxException {
 		String file = loadFile("geojson-point.json");
 
 		Geometry geometry = geometryHelper.convertGeometryFromGeoJson(file, 4326, false);

@@ -1,7 +1,5 @@
 package org.rudi.microservice.apigateway.service.encryption.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +23,11 @@ import org.rudi.microservice.apigateway.service.helper.KeyStoreHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.RequiredArgsConstructor;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ApigatewaySpringBootTest
 @ActiveProfiles(profiles = { "test", "${spring.profiles.test:test-env}", "encryption" })

@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -36,12 +38,15 @@ public class InMemoryURLFactory {
 		return instance;
 	}
 
-	public URL build(String path, String data) throws MalformedURLException {
+	public URL build(String path, String data) throws MalformedURLException, URISyntaxException {
 		return build(path, data.getBytes(StandardCharsets.UTF_8));
 	}
 
-	public URL build(String path, byte[] data) throws MalformedURLException {
-		URL url = new URL("memory", "", -1, path, handler);
+	public URL build(String path, byte[] data) throws MalformedURLException, URISyntaxException {
+		URL url;
+		String absolutePath = path.startsWith("/") ? path : "/" + path;
+		URI uri = new URI("memory", "", absolutePath, null);
+		url = URL.of(uri, handler);
 		contents.put(url, data);
 		return url;
 	}

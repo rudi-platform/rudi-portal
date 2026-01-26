@@ -1,8 +1,26 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material/icon';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {
+    AbstractControl,
+    AbstractControlOptions,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators
+} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatDivider} from '@angular/material/divider';
+import {MatError, MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import {CustomizationService} from '@app/core/services/customization.service';
 import {LogService} from '@app/core/services/log.service';
 import {PASSWORD_REGEX} from '@core/const';
@@ -12,8 +30,10 @@ import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/capt
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
-import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {PasswordStrengthComponent} from '@shared/core/form/password-strength/password-strength.component';
+import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {RudiValidators} from '@shared/utils/validators/rudi-validators';
@@ -27,7 +47,7 @@ const ICON_INFO: string = '../assets/icons/icon_info.svg';
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.scss'],
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatLabel, MatFormField, MatInput, MatHint, NgIf, MatError, MatIconButton, MatSuffix, MatIcon, PasswordStrengthComponent, MatCheckbox, RudiCaptchaComponent_1, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, MatDivider, TranslatePipe]
 })
 export class SignUpComponent implements OnInit {
 

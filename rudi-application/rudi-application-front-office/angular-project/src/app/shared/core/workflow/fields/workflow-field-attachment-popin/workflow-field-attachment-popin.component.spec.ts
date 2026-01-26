@@ -10,7 +10,7 @@ describe('WorkflowFieldAttachmentPopinComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WorkflowFieldAttachmentPopinComponent]
+            imports: [WorkflowFieldAttachmentPopinComponent]
         })
             .compileComponents();
     });

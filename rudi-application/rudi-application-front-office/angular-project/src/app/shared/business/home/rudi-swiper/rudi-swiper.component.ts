@@ -6,8 +6,7 @@ import {Autoplay, Controller, Grid, Keyboard, Navigation, Pagination} from 'swip
 @Component({
     selector: 'app-rudi-swiper',
     templateUrl: './rudi-swiper.component.html',
-    styleUrls: ['./rudi-swiper.component.scss'],
-    standalone: false
+    styleUrls: ['./rudi-swiper.component.scss']
 })
 export class RudiSwiperComponent implements AfterViewInit {
     private swiper: Swiper;

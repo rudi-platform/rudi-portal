@@ -10,12 +10,15 @@ import {
     TpbcDataInterface
 } from '@core/services/selfdata-dataset/tpbcData.interface';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
+import {NgFor, NgIf} from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-d3-line-and-plot-chart',
     templateUrl: './d3-line-and-plot-chart.component.html',
     styleUrls: ['./d3-line-and-plot-chart.component.scss'],
-    standalone: false
+    imports: [NgFor, NgIf, MatIcon, TranslatePipe]
 })
 export class D3LineAndPlotChartComponent implements OnInit {
     @Input() graphBar: TpbcDataInterface;

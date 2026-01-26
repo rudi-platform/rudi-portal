@@ -1,3 +1,4 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -13,17 +14,27 @@ import {
 import {NewDatasetRequestTaskMetierService} from '@core/services/tasks/projekt/new-dataset-request-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
 import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
+import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {ALL_TYPES, PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
+import {TabContentDirective} from '@shared/utils/directives/tab-content-directive/tab-content.directive';
+import {TabsLayoutDirective} from '@shared/utils/directives/tab-layout-directive/tabs-layout.directive';
 import {LinkedDataset} from 'micro_service_modules/projekt/projekt-model';
 import {map, tap} from 'rxjs/operators';
+import {ProjectDetailComponent} from '../../components/project-detail/project-detail.component';
+import {ProjectOwnerDetailComponent} from '../../components/project-owner-detail/project-owner-detail.component';
+import {TaskDetailComponent as TaskDetailComponent_1} from '../../components/task-detail/task-detail.component';
 
 @Component({
     selector: 'app-new-request-task-detail',
     templateUrl: './new-request-task-detail.component.html',
     styleUrls: ['./new-request-task-detail.component.scss'],
-    standalone: false
+    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, TaskDetailComponent_1, ProjectDetailComponent, NgFor, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectOwnerDetailComponent, TranslatePipe]
 })
 export class NewRequestTaskDetailComponent
     extends TaskDetailComponent<LinkedDataset, LinkedDatasetDependencies, LinkedDatasetTask, ProjektTaskSearchCriteria>

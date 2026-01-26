@@ -1,12 +1,15 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FiltersService} from '@core/services/filters.service';
 import {OrderFilter, OrderValue} from '@core/services/filters/order-filter';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {FilterFormComponent} from '@shared/business/dataset/filters/filter-forms/filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {forkJoin, Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import {NgIf, NgFor} from '@angular/common';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {MatButton} from '@angular/material/button';
 
 export interface OrderItem extends Item {
     name: string;
@@ -19,7 +22,7 @@ const DEFAULT_ORDER: OrderValue = '-dataset_dates.created';
     selector: 'app-order-filter-form',
     templateUrl: './order-filter-form.component.html',
     styleUrls: ['./order-filter-form.component.scss'],
-    standalone: false
+    imports: [NgIf, FormsModule, ReactiveFormsModule, MatRadioGroup, NgFor, MatRadioButton, MatButton, TranslatePipe]
 })
 export class OrderFilterFormComponent extends FilterFormComponent<string, OrderFilter, OrderItem> implements OnInit {
 

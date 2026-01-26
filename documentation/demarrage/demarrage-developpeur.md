@@ -8,7 +8,7 @@ Ce guide est destiné aux nouveaux développeurs qui souhaitent configurer leur 
 
 Les logiciels suivants doivent être installés avant de démarrer :
 
-- **JDK 17** - Environment Java Development Kit
+- **JDK 21** - Environment Java Development Kit
 - **Maven 3.9+** - Gestionnaire de dépendances et outil de build
 - **Git** - Gestionnaire de versions
 - **PostgreSQL** - Base de données relationnelle pour les microservices
@@ -68,7 +68,7 @@ Si vous souhaitez omettre les tests, ajoutez le flag `-DskipTests`.
 5. Configuration supplémentaire :
    - Installer le plugin Lombok si ce n'est pas déjà fait : Settings > Plugins > "Lombok"
    - Activer le traitement des annotations Lombok : Settings > Build, Execution, Deployment > Compiler > Annotation Processors > "Enable annotation processing"
-   - Configurer l'utilisation de JDK 17 : File > Project Structure > Project Settings > Project > SDK
+   - Configurer l'utilisation de JDK 21 : File > Project Structure > Project Settings > Project > SDK
    - Recommandé : installer un plugin Angular/TypeScript (pour le développement frontend)
 
 ### Eclipse
@@ -83,7 +83,7 @@ Si vous souhaitez omettre les tests, ajoutez le flag `-DskipTests`.
       - Lombok
       - Eclipse BPMN2 Modeler 1.5.0
       - Recommandé : installer un plugin Angular/TypeScript (pour le développement frontend)
-   - Vérifier que le JDK 17 est configuré : Window > Preferences > Java > Installed JREs
+   - Vérifier que le JDK 21 est configuré : Window > Preferences > Java > Installed JREs
 
 ## Exécution locale - partie Backend
 

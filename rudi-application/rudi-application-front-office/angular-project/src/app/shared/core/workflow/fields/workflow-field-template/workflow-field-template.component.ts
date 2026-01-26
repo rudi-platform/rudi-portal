@@ -6,6 +6,7 @@ import {WorkflowFieldBooleanComponent} from '@shared/core/workflow/fields/workfl
 import {WorkflowFieldDateComponent} from '@shared/core/workflow/fields/workflow-field-date/workflow-field-date.component';
 import {WorkflowFieldHiddenComponent} from '@shared/core/workflow/fields/workflow-field-hidden/workflow-field-hidden.component';
 import {WorkflowFieldListComponent} from '@shared/core/workflow/fields/workflow-field-list/workflow-field-list.component';
+import {WorkflowFieldRichTextComponent} from '@shared/core/workflow/fields/workflow-field-rich-text/workflow-field-rich-text.component';
 import {WorkflowFieldTextComponent} from '@shared/core/workflow/fields/workflow-field-text/workflow-field-text.component';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
@@ -14,8 +15,7 @@ import {Observable, of} from 'rxjs';
 
 @Component({
     selector: 'app-workflow-field-template',
-    template: '',
-    standalone: false
+    template: ''
 })
 export class WorkflowFieldTemplateComponent implements OnInit {
 
@@ -38,7 +38,7 @@ export class WorkflowFieldTemplateComponent implements OnInit {
     properties: WorkflowProperties;
 
     @Output()
-    submit: EventEmitter<void> = new EventEmitter<void>();
+    submitForm: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(
         public viewContainerRef: ViewContainerRef
@@ -60,7 +60,7 @@ export class WorkflowFieldTemplateComponent implements OnInit {
                 formControlNamePrefix: this.section.name,
                 field: this.field,
                 properties: this.properties,
-                submit: this.submit,
+                submit: this.submitForm,
             });
             componentRef.instance.addOtherControls();
         });
@@ -120,6 +120,8 @@ export class WorkflowFieldTemplateComponent implements OnInit {
                 return WorkflowFieldHiddenComponent;
             case 'LIST':
                 return WorkflowFieldListComponent;
+            case 'RICHTEXT':
+                return WorkflowFieldRichTextComponent;
             default:
                 console.warn(`WorkFlow FieldType "${type}" not handled. Using default component : WorkflowFieldComponent`);
                 return WorkflowFieldComponent;

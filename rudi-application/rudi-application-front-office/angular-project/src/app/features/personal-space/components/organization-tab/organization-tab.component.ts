@@ -1,4 +1,7 @@
+import {AsyncPipe, NgIf} from '@angular/common';
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
 import {BreakpointObserverService, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
@@ -9,8 +12,11 @@ import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {
     OrganizationFormDialogComponent
 } from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ListOrganizationCardComponent} from '@shared/business/organisation/list-organization-card/list-organization-card.component';
 import {SearchOrganizationsService} from '@shared/business/organisation/list-organization-card/search-organizations.service';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {Form, Organization, OrganizationBean, OrganizationService, Task, TaskService} from 'micro_service_modules/strukture/api-strukture';
 import {Observable, switchMap} from 'rxjs';
@@ -23,7 +29,7 @@ export const FIELD_NAME_IMAGE_ORGANIZATION = 'organizationImage';
     selector: 'app-organization-tab',
     templateUrl: './organization-tab.component.html',
     styleUrls: ['./organization-tab.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, ErrorBoxComponent, MatButton, MatCard, MatCardContent, ListOrganizationCardComponent, AsyncPipe, TranslatePipe]
 })
 export class OrganizationTabComponent implements OnInit, OnDestroy {
     isLoading: boolean;

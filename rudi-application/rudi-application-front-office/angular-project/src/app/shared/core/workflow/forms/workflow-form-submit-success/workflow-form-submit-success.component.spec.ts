@@ -10,7 +10,7 @@ describe('WorkflowFormSubmitSuccessComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WorkflowFormSubmitSuccessComponent]
+            imports: [WorkflowFormSubmitSuccessComponent]
         })
             .compileComponents();
     });

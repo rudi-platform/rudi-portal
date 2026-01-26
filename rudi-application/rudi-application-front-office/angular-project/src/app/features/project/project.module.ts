@@ -11,12 +11,14 @@ import {
 import {ProjectMainInformationsComponent} from '@features/project/components/project-main-informations/project-main-informations.component';
 import {SharedModule} from '@shared/shared.module';
 import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
-import {AddDataSetDialogComponent} from './components/add-data-set-dialog/add-data-set-dialog.component';
 import {BannerComponent} from './components/banner/banner.component';
 import {DataSetButtonComponent} from './components/data-set-button/data-set-button.component';
 import {EditNewDataSetDialogComponent} from './components/edit-new-data-set-dialog/edit-new-data-set-dialog.component';
 import {OrderComponent} from './components/order/order.component';
 import {ProjectDatasetListComponent} from './components/project-dataset-list/project-dataset-list.component';
+import {
+    ProjectMainInformationRichLabelComponent
+} from './components/project-main-informations/project-main-information-rich-label/project-main-information-rich-label.component';
 import {RequestDetailsDialogComponent} from './components/request-details-dialog/request-details-dialog.component';
 import {ReuseProjectCommonComponent} from './components/reuse-project-common/reuse-project-common.component';
 import {Step1ProjectComponent} from './components/step1-project/step1-project.component';
@@ -32,10 +34,15 @@ import {SubmissionProjectComponent} from './pages/submission-project/submission-
 import {ProjectRoutingModule} from './project-routing.module';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        SharedModule,
+        CoreModule,
+        FilePickerModule,
+        ProjectRoutingModule,
+        MatStepperModule,
         ListComponent,
         BannerComponent,
-        AddDataSetDialogComponent,
         DetailComponent,
         OrderComponent,
         SubmissionProjectComponent,
@@ -53,22 +60,12 @@ import {ProjectRoutingModule} from './project-routing.module';
         ProjectMainInformationsComponent,
         ProjectMainInformationDateComponent,
         ProjectMainInformationLabelComponent,
-    ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        CoreModule,
-        FilePickerModule,
-        ProjectRoutingModule,
-        MatStepperModule
+        ProjectMainInformationRichLabelComponent
     ],
     exports: [ProjectMainInformationsComponent, ProjectMainInformationLabelComponent, ProjectMainInformationDateComponent,],
-    providers:
-        [
-            {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}
-
-        ],
-    bootstrap: [AddDataSetDialogComponent],
+    providers: [
+        {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 

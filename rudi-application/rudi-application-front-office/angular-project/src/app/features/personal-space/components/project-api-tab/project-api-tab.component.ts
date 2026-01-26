@@ -1,13 +1,31 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {NgIf} from '@angular/common';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {MatIcon} from '@angular/material/icon';
 import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatTableDataSource
+} from '@angular/material/table';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {GenerateKeysDialogComponent} from '@features/personal-space/components/generate-keys-dialog/generate-keys-dialog.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
+import {TranslatePipe} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {ProjectKey} from 'micro_service_modules/acl/acl-model';
 import {ProjectKeyPageResult, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
@@ -27,9 +45,9 @@ export interface ProjectKeyTableData {
     selector: 'app-project-api-tab',
     templateUrl: './project-api-tab.component.html',
     styleUrls: ['./project-api-tab.component.scss'],
-    standalone: false
+    imports: [MatCard, LoaderComponent, NgIf, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
 })
-export class ProjectApiTabComponent implements OnInit {
+export class ProjectApiTabComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatSort) sort: MatSort;
 
@@ -69,6 +87,7 @@ export class ProjectApiTabComponent implements OnInit {
 
     ngAfterViewInit() {
         this.dataSource.sort = this.sort;
+        console.log(this.dataSource);
     }
 
     set projectUuid(uuid: string) {

@@ -1,7 +1,14 @@
+import {NgClass, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 import {Component, EventEmitter, Output} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FlexModule} from '@angular/flex-layout/flex';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {Order, OrderItem} from '@features/organization/components/order/type';
+import {TranslatePipe} from '@ngx-translate/core';
 
-const LIST_ORDER: OrderItem[]  = [
+const LIST_ORDER: OrderItem[] = [
     {libelle: 'sortBox.producer.organization_name', order: 'name'},
     {libelle: 'sortBox.-producer.organization_name', order: '-name'},
     {libelle: 'sortBox.dataset_dates.updated', order: 'openingDate'},
@@ -9,12 +16,12 @@ const LIST_ORDER: OrderItem[]  = [
 ];
 
 @Component({
-    selector: 'app-order',
-    templateUrl: './order.component.html',
-    styleUrls: ['./order.component.scss'],
-    standalone: false
+    selector: 'app-organization-order',
+    templateUrl: './organization-order.component.html',
+    styleUrls: ['./organization-order.component.scss'],
+    imports: [MatButton, MatMenuTrigger, NgIf, MatIcon, MatMenu, FlexModule, NgFor, MatMenuItem, NgClass, ExtendedModule, UpperCasePipe, TranslatePipe]
 })
-export class OrderComponent {
+export class OrganizationOrderComponent {
     listOrder: OrderItem[];
     menuIsOpened: boolean;
     selectedItem: OrderItem;
@@ -27,10 +34,12 @@ export class OrderComponent {
         this.listOrder = LIST_ORDER;
         this.selectedItem = this.listOrder[3];
     }
-    onSelectedItemChange($event: OrderItem){
+
+    onSelectedItemChange($event: OrderItem) {
         this.selectedItem = $event;
         this.orderChangeEvent.emit($event.order);
     }
+
     toggleMenu(): void {
         this.menuIsOpened = !this.menuIsOpened;
     }

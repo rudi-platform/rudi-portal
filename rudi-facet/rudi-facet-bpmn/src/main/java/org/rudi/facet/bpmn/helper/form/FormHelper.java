@@ -13,10 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +23,7 @@ import org.rudi.bpmn.core.bean.FieldType;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Section;
 import org.rudi.common.service.util.ApplicationContext;
+import org.rudi.common.service.util.SanitizerUtils;
 import org.rudi.facet.bpmn.bean.form.ProcessFormDefinitionSearchCriteria;
 import org.rudi.facet.bpmn.dao.form.ProcessFormDefinitionCustomDao;
 import org.rudi.facet.bpmn.entity.form.ProcessFormDefinitionEntity;
@@ -35,13 +32,18 @@ import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.mapper.form.FormMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,21 +51,21 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class FormHelper {
 
 	public static final String DRAFT_USER_TASK_ID = "DRAFT";
 	public static final String DRAFT_ARCHIVE_USER_TASK_ID = "DRAFT_ARCHIVE";
 
-	@Autowired
-	private FormMapper formMapper;
+	private final FormMapper formMapper;
+
+	private final SanitizerUtils sanitizerUtils;
+
+	private final ObjectMapper objectMapper;
+
+	private final ProcessFormDefinitionCustomDao processFormDefinitionCustomDao;
 
 	private BpmnHelper bpmnHelper;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private ProcessFormDefinitionCustomDao processFormDefinitionCustomDao;
 
 	/**
 	 * Parse une définition de formulaire
@@ -185,25 +187,38 @@ public class FormHelper {
 	public void copyFormData(Form source, Form target) {
 		if (source != null && target != null && CollectionUtils.isNotEmpty(target.getSections())) {
 			for (Section section : target.getSections()) {
-				copySectionData(source, section);
+				if (CollectionUtils.isNotEmpty(section.getFields())) {
+					copyFieldsData(source, section.getFields());
+				}
 			}
 		}
 	}
 
-	private void copySectionData(Form source, Section section) {
-		if (CollectionUtils.isNotEmpty(section.getFields())) {
-			for (Field targetField : section.getFields()) {
-				Field sourceField = lookupField(source, targetField.getDefinition().getName());
-				if (sourceField != null) {
-					targetField.setValues(sourceField.getValues());
+	private void copyFieldsData(Form source, List<Field> fields) {
+		for (Field targetField : fields) {
+			Field sourceField = lookupField(source, targetField.getDefinition().getName());
 
-					// copy extended type pour la gestion des champs de type HIDDEN
-					if (sourceField.getDefinition() != null
-							&& sourceField.getDefinition().getType() == FieldType.HIDDEN) {
-						targetField.getDefinition().setExtendedType(sourceField.getDefinition().getExtendedType());
-					}
-				}
+			if (sourceField != null) {
+				copyFieldValues(targetField, sourceField);
+				copyFieldExtendedType(targetField, sourceField);
 			}
+		}
+	}
+
+	private void copyFieldExtendedType(Field targetField, Field sourceField) {
+		if (sourceField.getDefinition() != null && sourceField.getDefinition().getType() == FieldType.HIDDEN) {
+			// copy extended type pour la gestion des champs de type HIDDEN
+			targetField.getDefinition().setExtendedType(sourceField.getDefinition().getExtendedType());
+		}
+	}
+
+	private void copyFieldValues(Field targetField, Field sourceField) {
+		targetField.setValues(sourceField.getValues());
+		if (sourceField.getDefinition() != null && sourceField.getDefinition().getType() == FieldType.RICHTEXT
+				&& sourceField.getValues() != null) {
+			// sanitize des champs richtext
+			targetField.setValues(
+					sourceField.getValues().stream().map(value -> sanitizerUtils.cleanupHtml(value)).toList());
 		}
 	}
 
@@ -333,30 +348,30 @@ public class FormHelper {
 		Object result = null;
 		try {
 			switch (fieldDefinition.getType()) {
-				case BOOLEAN:
-					result = Boolean.valueOf(value);
-					break;
-				case DATE:
-					if (StringUtils.isNotEmpty(fieldDefinition.getExtendedType())) {
-						SimpleDateFormat dataFormat = new SimpleDateFormat(fieldDefinition.getExtendedType());
-						result = dataFormat.parse(value);
-					} else {
-						result = ZonedDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-					}
-					break;
-				case DOUBLE:
-					result = Double.valueOf(value);
-					break;
-				case LONG:
-					result = Long.valueOf(value);
-					break;
-				case HIDDEN:
-					// pas de value pour le type HIDDEN, c'est l'extendedType qui contient la valeur interessante dans ce cas
-					result = fieldDefinition.getExtendedType();
-					break;
-				default:
-					result = value;
-					break;
+			case BOOLEAN:
+				result = Boolean.valueOf(value);
+				break;
+			case DATE:
+				if (StringUtils.isNotEmpty(fieldDefinition.getExtendedType())) {
+					SimpleDateFormat dataFormat = new SimpleDateFormat(fieldDefinition.getExtendedType());
+					result = dataFormat.parse(value);
+				} else {
+					result = ZonedDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+				}
+				break;
+			case DOUBLE:
+				result = Double.valueOf(value);
+				break;
+			case LONG:
+				result = Long.valueOf(value);
+				break;
+			case HIDDEN:
+				// pas de value pour le type HIDDEN, c'est l'extendedType qui contient la valeur interessante dans ce cas
+				result = fieldDefinition.getExtendedType();
+				break;
+			default:
+				result = value;
+				break;
 			}
 		} catch (ParseException e) {
 			throw new FormConvertException("Failed to convert value:" + value + " for field:" + fieldDefinition, e);

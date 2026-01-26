@@ -2,7 +2,8 @@
 @import "responsive";
 
 ::ng-deep.cdk-overlay-pane {
-    margin: 14px 0 14px -18px;
+    margin: 0;
+    //margin: 14px 0 14px 0; si l'écart avec l'input est à garder.
 }
 
 

@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {MatCard} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
 import {KonsultApiAccessService} from '@core/services/api-access/konsult/konsult-api-access.service';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
@@ -16,6 +17,16 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {TranslateService} from '@ngx-translate/core';
 import {RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
+import {
+    NewDatasetRequestTableComponent
+} from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
+import {
+    OpenDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/open-dataset-table/open-dataset-table.component';
+import {
+    RestrictedDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/restricted-dataset-table/restricted-dataset-table.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
@@ -30,7 +41,7 @@ import {switchMap, tap} from 'rxjs/operators';
     selector: 'app-project-datasets-tab',
     templateUrl: './project-datasets-tab.component.html',
     styleUrls: ['./project-datasets-tab.component.scss'],
-    standalone: false
+    imports: [MatCard, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, LoaderComponent]
 })
 export class ProjectDatasetsTabComponent implements OnInit {
 
@@ -107,7 +118,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
      * event emitter qui emit lorsqu'on rajoute un JDD à une réutilisation
      */
     @Output()
-    onProjectIsUpdate: EventEmitter<void>;
+    projectIsUpdate: EventEmitter<void>;
 
     @Input()
     set project(value: Project) {
@@ -170,7 +181,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
         iconRegistryService: IconRegistryService,
     ) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
-        this.onProjectIsUpdate = new EventEmitter<void>;
+        this.projectIsUpdate = new EventEmitter<void>;
         this.loadingCommentData = false;
     }
 
@@ -221,7 +232,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
             }),
         ).subscribe({
             next: res => {
-                this.onProjectIsUpdate.emit();
+                this.projectIsUpdate.emit();
             },
             error: err => {
                 console.error(err);
@@ -250,7 +261,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
             })
         ).subscribe({
             next: res => {
-                this.onProjectIsUpdate.emit();
+                this.projectIsUpdate.emit();
             },
             error: err => {
                 console.error(err);

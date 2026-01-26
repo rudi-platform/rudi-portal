@@ -1,6 +1,9 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, OnInit, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
+import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -22,21 +25,39 @@ import {
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {
+    NewDatasetRequestTableComponent
+} from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
+import {
+    OpenDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/open-dataset-table/open-dataset-table.component';
+import {
+    RestrictedDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/restricted-dataset-table/restricted-dataset-table.component';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
+import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
+import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import {forkJoin, of} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
+import {ProjectMainInformationsComponent} from '../../../project/components/project-main-informations/project-main-informations.component';
+import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
+import {ProjectTaskHistoricComponent} from '../../components/project-task-historic/project-task-historic.component';
 
 @Component({
     selector: 'app-project-task-detail',
     templateUrl: './project-task-detail.component.html',
     styleUrls: ['./project-task-detail.component.scss'],
-    standalone: false
+    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, NgFor, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, ProjectMainInformationsComponent, MatCard, MatCardContent, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, OwnerInformationComponent, ProjectTaskHistoricComponent, BannerButtonComponent, TranslatePipe]
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>

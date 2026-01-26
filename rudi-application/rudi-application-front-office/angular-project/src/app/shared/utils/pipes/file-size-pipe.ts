@@ -14,10 +14,7 @@ const MEGA = 1024 * 1024;
  *           15728640 Byte = 15360 Ko
  *           1073741824 Byte = 1048576 Ko = 1024 Mo
  */
-@Pipe({
-    name: 'fileSize',
-    standalone: false
-})
+@Pipe({name: 'fileSize'})
 export class FileSizePipe implements PipeTransform {
     transform(size: number) {
         let extension: string;

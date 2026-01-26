@@ -1,5 +1,8 @@
+import {DecimalPipe, NgFor, NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {KeyFiguresDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {switchMap} from 'rxjs/operators';
 
@@ -7,7 +10,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-key-figures-section',
     templateUrl: 'key-figures-section.component.html',
     styleUrls: ['./key-figures-section.component.scss'],
-    standalone: false
+    imports: [NgFor, NgTemplateOutlet, LoaderComponent, DecimalPipe, TranslatePipe]
 })
 export class KeyFiguresSectionComponent implements OnInit {
 

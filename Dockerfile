@@ -1,5 +1,5 @@
-ARG FROM_TAG=17.0.2-jdk-slim-bullseye
-FROM openjdk:${FROM_TAG} as rudi_base
+ARG FROM_TAG=21
+FROM eclipse-temurin:${FROM_TAG} as rudi_base
 USER root
 LABEL org.opencontainers.image.authors=rudi@rennes-metropole.fr
 ENV TZ=Europe/Paris

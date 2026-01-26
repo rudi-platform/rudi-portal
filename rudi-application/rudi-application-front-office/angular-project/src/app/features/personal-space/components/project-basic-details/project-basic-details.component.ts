@@ -1,10 +1,13 @@
 import {Component, Input} from '@angular/core';
+import {MatCard} from '@angular/material/card';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
 
 @Component({
     selector: 'app-project-basic-details',
     templateUrl: './project-basic-details.component.html',
     styleUrls: ['./project-basic-details.component.scss'],
-    standalone: false
+    imports: [MatCard, TranslatePipe, ReplaceIfNullPipe]
 })
 export class ProjectBasicDetailsComponent {
 

@@ -1,12 +1,18 @@
+import {NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
+import {MatButton} from '@angular/material/button';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
+import {CardComponent} from '../../../common/card/card.component';
+import {LoaderComponent} from '../../../common/loader/loader.component';
+import {PageTitleComponent} from '../../../layout/page-title/page-title.component';
+import {PageComponent} from '../../../layout/page/page.component';
 
 @Component({
     selector: 'app-workflow-form-submit-success',
     templateUrl: './workflow-form-submit-success.component.html',
     styleUrls: ['./workflow-form-submit-success.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, PageComponent, PageTitleComponent, NgIf, CardComponent, MatButton]
 })
 export class WorkflowFormSubmitSuccessComponent {
     @Input()

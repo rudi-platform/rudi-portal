@@ -8,7 +8,7 @@ describe('ResetPasswordErrorBoxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ResetPasswordErrorBoxComponent]
+            imports: [ResetPasswordErrorBoxComponent]
         })
             .compileComponents();
     });

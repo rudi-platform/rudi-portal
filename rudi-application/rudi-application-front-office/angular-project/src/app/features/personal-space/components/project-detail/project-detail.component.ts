@@ -1,11 +1,8 @@
+import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {MatCard} from '@angular/material/card';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {Observable} from 'rxjs';
-
-import {map, switchMap} from 'rxjs/operators';
-import {AclService} from 'micro_service_modules/acl/acl-api';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {Base64EncodedLogo} from '@core/services/image-logo.service';
@@ -19,9 +16,19 @@ import {
     NewDatasetRequestTaskDepenciesService,
     NewDatasetRequestTaskDependencyFetchers
 } from '@core/services/tasks/projekt/new-dataset-request-task-depencies.service';
+import {TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {AclService} from 'micro_service_modules/acl/acl-api';
 import {Indicators, NewDatasetRequest, Task} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
-import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {Observable} from 'rxjs';
+
+import {map, switchMap} from 'rxjs/operators';
+import {ProjectMainInformationsComponent} from '../../../project/components/project-main-informations/project-main-informations.component';
+import {AccesDetailsTable1Component} from './acces-details-table1/acces-details-table1.component';
+import {AccesDetailsTable2Component} from './acces-details-table2/acces-details-table2.component';
+import {AccesDetailsTable3Component} from './acces-details-table3/acces-details-table3.component';
 
 /**
  * Les dépendances qu'on doit afficher dans cet onglet
@@ -64,7 +71,7 @@ export interface ProjectDependencies {
     selector: 'app-project-detail',
     templateUrl: './project-detail.component.html',
     styleUrls: ['./project-detail.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, MatCard, ProjectMainInformationsComponent, AccesDetailsTable1Component, AccesDetailsTable2Component, AccesDetailsTable3Component]
 })
 export class ProjectDetailComponent implements OnInit {
 

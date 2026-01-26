@@ -1,3 +1,4 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 
 import {MatDialog} from '@angular/material/dialog';
@@ -15,15 +16,26 @@ import {
 import {SelfdataInformationRequestTaskMetierService} from '@core/services/tasks/selfdata/selfdata-information-request-task-metier.service';
 import {SelfdataTaskSearchCriteria} from '@core/services/tasks/selfdata/selfdata-task-search-criteria.interface';
 import {RequestDetailDependencies} from '@features/personal-space/pages/request-detail-dependencies';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ContactCardComponent} from '@shared/business/contacts/contact-card/contact-card.component';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {CardComponent} from '@shared/core/common/card/card.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
+import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {TabContentDirective} from '@shared/utils/directives/tab-content-directive/tab-content.directive';
+import {TabsLayoutDirective} from '@shared/utils/directives/tab-layout-directive/tabs-layout.directive';
 import {Period} from 'micro_service_modules/api-kaccess';
 import {Form, SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-api';
 import moment from 'moment';
 import {map, tap} from 'rxjs/operators';
+import {SelfdataMainInformationComponent} from '../../components/selfdata-main-information/selfdata-main-information.component';
 import UnitEnum = Period.UnitEnum;
 
 
@@ -31,7 +43,7 @@ import UnitEnum = Period.UnitEnum;
     selector: 'app-selfdata-information-request-task-detail',
     templateUrl: './selfdata-information-request-task-detail.component.html',
     styleUrls: ['./selfdata-information-request-task-detail.component.scss'],
-    standalone: false
+    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, SelfdataMainInformationComponent, NgFor, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, CardComponent, LoaderComponent, TranslateDirective, ContactCardComponent, TranslatePipe]
 })
 export class SelfdataInformationRequestTaskDetailComponent
     extends TaskDetailComponent<SelfdataInformationRequest, SelfdataInformationRequestDependencies,

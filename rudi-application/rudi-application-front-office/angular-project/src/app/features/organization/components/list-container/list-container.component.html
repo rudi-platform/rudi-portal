@@ -20,9 +20,9 @@
                     </div>
             </div>
 
-            <app-order *ngIf="mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl"
+            <app-organization-order *ngIf="mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl"
                        (orderChangeEvent)="onOrderChange($event)">
-            </app-order>
+            </app-organization-order>
         </div>
 
         <app-list-organization-card

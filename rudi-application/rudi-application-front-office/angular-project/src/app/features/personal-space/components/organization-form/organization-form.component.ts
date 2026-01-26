@@ -1,8 +1,12 @@
+import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 import {ObjectType} from '@core/services/tasks/object-type.enum';
 import {ORGANIZATION_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
@@ -17,7 +21,7 @@ const MAX_ADDRESS_LENGTH = 255;
     selector: 'app-organization-form',
     templateUrl: './organization-form.component.html',
     styleUrls: ['./organization-form.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, NgIf, MatError, WorkflowFormComponent, TranslatePipe]
 })
 export class OrganizationFormComponent implements OnInit {
     @Input() draftForm: Form;

@@ -1,6 +1,8 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+import {OrganizationLogoComponent} from '@shared/business/organisation/organization-logo/organization-logo.component';
 import {ALL_TYPES as ALL_TITLE_ICON_TYPES, TitleIconType} from '@shared/models/title-icon-type';
 import {ProjectDatasetItem} from '../../model/project-dataset-item';
 import {ProjectDatasetPictoType} from '../../model/project-dataset-picto-type';
@@ -9,7 +11,7 @@ import {ProjectDatasetPictoType} from '../../model/project-dataset-picto-type';
     selector: 'app-project-dataset-list',
     templateUrl: './project-dataset-list.component.html',
     styleUrls: ['./project-dataset-list.component.scss'],
-    standalone: false
+    imports: [NgFor, OrganizationLogoComponent, NgIf, MatIcon]
 })
 export class ProjectDatasetListComponent {
 

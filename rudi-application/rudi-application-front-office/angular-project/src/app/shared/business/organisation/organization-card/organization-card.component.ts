@@ -3,12 +3,20 @@ import {Router} from '@angular/router';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
+import {MatCard, MatCardContent} from '@angular/material/card';
+import {NgClass, NgIf} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {OrganizationLogoComponent} from '../organization-logo/organization-logo.component';
+import {MatButton} from '@angular/material/button';
+import {LoaderComponent} from '../../../core/common/loader/loader.component';
+import {TranslatePipe} from '@ngx-translate/core';
+import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
 
 @Component({
     selector: 'app-organization-card',
     templateUrl: './organization-card.component.html',
     styleUrls: ['./organization-card.component.scss'],
-    standalone: false
+    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, NgIf, MatButton, LoaderComponent, TranslatePipe, TruncateTextPipe]
 })
 export class OrganizationCardComponent {
     @Input() organizationBean: OrganizationBean;

@@ -1,7 +1,10 @@
+import {NgFor} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {RudiSwiperComponent} from '@shared/business/home/rudi-swiper/rudi-swiper.component';
+import {ProjectCardComponent} from '@shared/business/projects/project-card/project-card.component';
 import {ProjectsDescription} from 'micro_service_modules/konsult/konsult-api';
 import {from, Observable} from 'rxjs';
 
@@ -9,7 +12,7 @@ import {from, Observable} from 'rxjs';
     selector: 'app-projects-section',
     templateUrl: './projects-section.component.html',
     styleUrls: ['./projects-section.component.scss'],
-    standalone: false
+    imports: [NgFor, ProjectCardComponent, RudiSwiperComponent, TranslatePipe]
 })
 export class ProjectsSectionComponent implements OnInit {
     @Input() projects: ProjectCatalogItem[];

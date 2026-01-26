@@ -12,7 +12,10 @@ import {HomeComponent} from '@features/home/pages/home/home.component';
 import {SharedModule} from '@shared/shared.module';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        MatSidenavModule,
+        SharedModule,
         HomeComponent,
         HeroSectionComponent,
         ThemesSectionComponent,
@@ -21,12 +24,7 @@ import {SharedModule} from '@shared/shared.module';
         ProjectsSectionComponent,
         JddSectionComponent,
         CmsNewsSectionComponent,
-        CmsProjectValuesSectionComponent
-    ],
-    imports: [
-        CommonModule,
-        MatSidenavModule,
-        SharedModule,
+        CmsProjectValuesSectionComponent,
     ],
     exports: [
         HomeComponent,

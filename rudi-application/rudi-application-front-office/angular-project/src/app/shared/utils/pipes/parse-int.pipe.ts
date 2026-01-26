@@ -1,9 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({
-    name: 'parseInt',
-    standalone: false
-})
+@Pipe({name: 'parseInt'})
 export class ParseIntPipe implements PipeTransform {
 
     transform(stringValue: unknown, defaultValue = 0): number {

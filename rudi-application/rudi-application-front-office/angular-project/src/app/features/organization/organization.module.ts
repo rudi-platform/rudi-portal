@@ -6,7 +6,7 @@ import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
 import {DataSetModule} from '@features/data-set/data-set.module';
 import {ListContainerComponent} from '@features/organization/components/list-container/list-container.component';
-import {OrderComponent} from '@features/organization/components/order/order.component';
+import {OrganizationOrderComponent} from '@features/organization/components/order/organization-order.component';
 import {ListComponent} from '@features/organization/pages/list/list.component';
 import {SharedModule} from '@shared/shared.module';
 import {AdministrationTabComponent} from './components/administration-tab/administration-tab.component';
@@ -23,18 +23,6 @@ import {DetailComponent} from './pages/detail/detail.component';
 
 
 @NgModule({
-    declarations: [
-        OrderComponent,
-        ListContainerComponent,
-        DetailComponent,
-        ListComponent,
-        OrganizationInformationsComponent,
-        AdministrationTabComponent,
-        OrganizationMembersTableComponent,
-        OrganizationTableComponent,
-        DeletionMemberConfirmationPopinComponent,
-        DeletionMemberConfirmationPopinComponent
-    ],
     imports: [
         CommonModule,
         SharedModule,
@@ -44,14 +32,29 @@ import {DetailComponent} from './pages/detail/detail.component';
         MatPaginatorModule,
         MatSortModule,
         DataSetModule,
+        OrganizationOrderComponent,
+        ListContainerComponent,
+        DetailComponent,
+        ListComponent,
+        OrganizationInformationsComponent,
+        AdministrationTabComponent,
+        OrganizationMembersTableComponent,
+        OrganizationTableComponent,
+        DeletionMemberConfirmationPopinComponent,
+        DeletionMemberConfirmationPopinComponent,
     ],
     providers: [
-        {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}
+        {
+            provide: 'DEFAULT_LANGUAGE',
+            useValue: 'fr'
+        }
     ],
     exports: [
-        OrderComponent
+        OrganizationOrderComponent
     ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
+    ]
 })
 export class OrganizationModule {
 }

@@ -3,6 +3,13 @@ import {DEFAULT_PROJECT_ORDER, Order} from '@core/services/asset/project/projekt
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {ProjectListService} from '@core/services/project-list.service';
 import {ProjectCatalogItem, ProjectCatalogItemPage} from '@features/project/model/project-catalog-item';
+import {LoaderComponent} from '../../../core/common/loader/loader.component';
+import {NgIf, NgClass, NgFor} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FlexModule} from '@angular/flex-layout/flex';
+import {ProjectCardComponent} from '../project-card/project-card.component';
+import {NgxPaginationModule} from 'ngx-pagination';
+import {TranslatePipe} from '@ngx-translate/core';
 
 const FIRST_PAGE = 1;
 
@@ -10,7 +17,7 @@ const FIRST_PAGE = 1;
     selector: 'app-project-list',
     templateUrl: './project-list.component.html',
     styleUrls: ['./project-list.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, NgClass, ExtendedModule, FlexModule, NgFor, ProjectCardComponent, NgxPaginationModule, TranslatePipe]
 })
 export class ProjectListComponent implements OnInit {
     mediaSize: MediaSize;

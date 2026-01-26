@@ -1,13 +1,18 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatCard} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
 import {NgClassObject} from '@core/services/breakpoint-observer.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
-    standalone: false
+    imports: [MatCard, NgClass, ExtendedModule, NgIf, MatIcon, TranslatePipe]
 })
 export class CardComponent {
 
@@ -15,7 +20,7 @@ export class CardComponent {
      * Centrer tout le contenu de la card ?
      * Par défaut : false.
      */
-    @Input('text-center')
+    @Input()
     textCenter = false;
 
     /**

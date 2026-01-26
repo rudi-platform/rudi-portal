@@ -1,10 +1,23 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
-import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {
+    MatTableDataSource,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow
+} from '@angular/material/table';
 import {DomSanitizer} from '@angular/platform-browser';
 import {NewDatasetRequest} from 'micro_service_modules/projekt/projekt-api';
 import moment from 'moment';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 
 export interface Table2Data {
     date: string;
@@ -16,7 +29,7 @@ export interface Table2Data {
     selector: 'app-acces-details-table2',
     templateUrl: './acces-details-table2.component.html',
     styleUrls: ['./acces-details-table2.component.scss'],
-    standalone: false
+    imports: [TranslateDirective, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
 export class AccesDetailsTable2Component implements AfterViewInit {
     jdds: Table2Data[] = [];

@@ -68,7 +68,16 @@ import {
 import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CommonModule,
+        SharedModule,
+        CoreModule,
+        PersonalSpaceRoutingModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        ProjectModule,
+        MyTasksHistoriesTabComponent,
         OrganizationFormComponent,
         OrganizationFormDialogComponent,
         LinkedProducerTaskDetailComponent,
@@ -118,24 +127,11 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         ProjectTaskDetailComponent,
         OrganizationTaskDetailComponent,
         GenerateKeysDialogComponent,
-        ProjectTaskHistoricComponent
+        ProjectTaskHistoricComponent,
     ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        CoreModule,
-        PersonalSpaceRoutingModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
-        ProjectModule,
-        MyTasksHistoriesTabComponent,
-    ]
-    ,
-    providers:
-        [
-            {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}
-        ],
+    providers: [
+        {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class PersonalSpaceModule {

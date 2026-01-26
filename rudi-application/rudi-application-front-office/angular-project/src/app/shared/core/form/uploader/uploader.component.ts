@@ -1,12 +1,14 @@
+import {KeyValuePipe, NgFor, NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatError} from '@angular/material/form-field';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {AdapterProxy} from '@shared/core/form/uploader/adapter-proxy';
 import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
-import {FilePreviewModel, ValidationError} from '@sleiss/ngx-awesome-uploader';
+import {FilePickerComponent, FilePreviewModel, ValidationError} from '@sleiss/ngx-awesome-uploader';
 import {UploaderCaptions} from '@sleiss/ngx-awesome-uploader/lib/uploader-captions';
 import saveAs from 'file-saver';
 
@@ -14,7 +16,7 @@ import saveAs from 'file-saver';
     selector: 'app-uploader',
     templateUrl: './uploader.component.html',
     styleUrls: ['./uploader.component.scss'],
-    standalone: false
+    imports: [FilePickerComponent, MatIcon, NgIf, MatError, NgFor, KeyValuePipe, TranslatePipe]
 })
 export class UploaderComponent<T> {
 

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {CaptchetatAngularComponent} from 'captchetat-angular';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaptchetatAngularComponent, CaptchetatAngularModule} from 'captchetat-angular';
 import {CaptchaModel, CaptchaService} from 'micro_service_modules/acl/acl-api';
 import {Observable} from 'rxjs';
 
@@ -11,7 +11,7 @@ const CAPTCHA_NAMESPACE = '/kaptcha';
     selector: 'app-rudi-captcha',
     templateUrl: './rudi-captcha.component.html',
     styleUrls: ['./rudi-captcha.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, CaptchetatAngularModule]
 })
 export class RudiCaptchaComponent implements OnInit {
 

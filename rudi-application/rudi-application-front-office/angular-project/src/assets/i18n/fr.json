@@ -1148,29 +1148,38 @@
         "myTasksHistories": {
             "tabTitle": "Mes demandes traitées",
             "noTasksHistories": "Vous n'avez pas traité de demande.",
+            "date": "Date",
+            "initiator": "Initiateur",
+            "status": "Statut",
             "organization": {
                 "singular": "demande de création ou d'archivage d'organisation",
-                "plural": "demandes de création ou d'archivage d'organisation"
+                "plural": "demandes de création ou d'archivage d'organisation",
+                "header": "Organisation"
             },
             "linkedProducer": {
                 "singular": "demande de rattachement ou de détachement d'organisation",
-                "plural": "demandes de rattachement ou de détachement d'organisation"
+                "plural": "demandes de rattachement ou de détachement d'organisation",
+                "header": "Organisation"
             },
             "linkedDataset": {
                 "singular": "demande d'accès à des jeux de données à accès restreint",
-                "plural": "demandes d'accès à des jeux de données à accès restreint"
+                "plural": "demandes d'accès à des jeux de données à accès restreint",
+                "header": "Jeu de donnée"
             },
             "project": {
                 "singular": "demande de publication de réutilisation",
-                "plural": "demandes de publication de réutilisation"
+                "plural": "demandes de publication de réutilisation",
+                "header": "Réutilisation"
             },
             "selfdata": {
                 "singular": "demande liée à des données personnelles",
-                "plural": " demandes liées à des données personnelles"
+                "plural": "demandes liées à des données personnelles",
+                "header": "Données personnelles"
             },
             "newDatasetRequest": {
                 "singular": "demande de nouvelles données (hors catalogue)",
-                "plural": "demandes de nouvelles données (hors catalogue)"
+                "plural": "demandes de nouvelles données (hors catalogue)",
+                "header": "Nouvelles données"
             },
             "noDate": "Inconnue",
             "noInitiator": "Non renseigné"
@@ -1410,7 +1419,7 @@
                 "receive": "Reçue le",
                 "title": "Titre du jeu de données",
                 "status": "Statut",
-                "new-data": "Demandes de nouvelles données",
+                "new-data": "Demande de nouvelles données",
                 "submited": "Soumis le",
                 "name": "Titre de la demande",
                 "projectDatas": "Jeux de données ajoutés à la réutilisation ",

@@ -1,6 +1,7 @@
+import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs/operators';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {
     LinkedDatasetTaskDependenciesService,
@@ -10,7 +11,11 @@ import {
     NewDatasetRequestTaskDepenciesService,
     NewDatasetRequestTaskDependencyFetchers
 } from '@core/services/tasks/projekt/new-dataset-request-task-depencies.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {map} from 'rxjs/operators';
 
 export interface ProjectOwnerDependencies {
     ownerName: string;
@@ -21,7 +26,7 @@ export interface ProjectOwnerDependencies {
     selector: 'app-project-owner-detail',
     templateUrl: './project-owner-detail.component.html',
     styleUrls: ['./project-owner-detail.component.scss'],
-    standalone: false
+    imports: [MatCard, MatCardTitle, LoaderComponent, NgIf, MatCardContent, ContactButtonComponent, TranslatePipe]
 })
 export class ProjectOwnerDetailComponent implements OnInit {
 
@@ -35,7 +40,7 @@ export class ProjectOwnerDetailComponent implements OnInit {
                 private readonly linkedDatasetTaskDependenciesService: LinkedDatasetTaskDependenciesService,
                 private readonly linkedDatasetDependencyFetchers: LinkedDatasetTaskDependencyFetchers,
                 private readonly newDatasetRequestTaskDepenciesService: NewDatasetRequestTaskDepenciesService,
-                private readonly newDatasetRequestTaskDependencyFetchers: NewDatasetRequestTaskDependencyFetchers, ) {
+                private readonly newDatasetRequestTaskDependencyFetchers: NewDatasetRequestTaskDependencyFetchers,) {
     }
 
     ngOnInit(): void {

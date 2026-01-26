@@ -14,7 +14,7 @@
 		{
 			"name": "description",
 			"label": "Description",
-			"type": "TEXT",
+			"type": "RICHTEXT",
 			"readonly": false,
 			"required": false
 		},

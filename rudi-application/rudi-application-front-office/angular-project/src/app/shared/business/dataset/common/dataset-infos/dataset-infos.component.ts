@@ -4,12 +4,17 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
+import {NgClass, NgIf} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
+import {MatIcon} from '@angular/material/icon';
+import {MatDivider} from '@angular/material/divider';
 
 @Component({
     selector: 'app-dataset-infos',
     templateUrl: './dataset-infos.component.html',
     styleUrls: ['./dataset-infos.component.scss'],
-    standalone: false
+    imports: [NgClass, ExtendedModule, NgIf, OrganizationLogoComponent, MatIcon, MatDivider]
 })
 export class DatasetsInfosComponent {
     /**

@@ -1,10 +1,13 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {ActivatedRoute, Params} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {LogService} from '@core/services/log.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {CmsAsset} from 'micro_service_modules/api-cms';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {throwError} from 'rxjs';
@@ -20,7 +23,7 @@ const NEWS_TITLE: string = 'titre';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    standalone: false
+    imports: [NgClass, ExtendedModule, LoaderComponent, NgIf]
 })
 export class DetailComponent implements OnInit {
 

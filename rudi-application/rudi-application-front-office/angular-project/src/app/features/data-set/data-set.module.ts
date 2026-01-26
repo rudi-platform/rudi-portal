@@ -25,26 +25,23 @@ import {
 
 
 @NgModule({
-    declarations:
-        [
-            DataSetInfosComponent,
-            DetailComponent,
-            ListComponent,
-            SelectProjectDialogComponent,
-            SuccessRestrictedRequestDialogComponent,
-            SelfdataInformationRequestCreationComponent,
-            SelfdataInformationRequestCreationSuccessComponent,
-            SpreadsheetComponent,
-            DatasetInformationsComponent,
-            SpreadsheetTabComponent,
-            MapTabComponent
-        ],
     imports: [
         CommonModule,
         CoreModule,
         SharedModule,
         DataSetRoutingModule,
-        AgGridModule
+        AgGridModule,
+        DataSetInfosComponent,
+        DetailComponent,
+        ListComponent,
+        SelectProjectDialogComponent,
+        SuccessRestrictedRequestDialogComponent,
+        SelfdataInformationRequestCreationComponent,
+        SelfdataInformationRequestCreationSuccessComponent,
+        SpreadsheetComponent,
+        DatasetInformationsComponent,
+        SpreadsheetTabComponent,
+        MapTabComponent
     ],
     exports: [
         SelectProjectDialogComponent

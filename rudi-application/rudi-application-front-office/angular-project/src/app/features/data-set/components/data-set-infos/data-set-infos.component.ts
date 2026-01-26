@@ -1,6 +1,13 @@
 import {Clipboard} from '@angular/cdk/clipboard';
+import {AsyncPipe, DatePipe, NgClass, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 import {HttpResponse} from '@angular/common/http';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatButton} from '@angular/material/button';
+import {MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
+import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
+import {MatError} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
 import {LanguageService} from '@core/i18n/language.service';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService} from '@core/services/data-set/display-map.service';
@@ -9,10 +16,16 @@ import {KosMetierService} from '@core/services/kos-metier.service';
 import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {OrganizationLogoComponent} from '@shared/business/organisation/organization-logo/organization-logo.component';
+import {BooleanDataBlockComponent} from '@shared/core/common/boolean-data-block/boolean-data-block.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {MapComponent} from '@shared/core/maps/map/map.component';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
+import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
 import saveAs from 'file-saver';
 import {
     DictionaryEntry2,
@@ -47,7 +60,7 @@ import SelfdataCatagoriesEnum = SelfdataContent.SelfdataCategoriesEnum;
     selector: 'app-data-sets-infos',
     templateUrl: './data-set-infos.component.html',
     styleUrls: ['./data-set-infos.component.scss'],
-    standalone: false
+    imports: [MatCardHeader, MatCardTitle, MatCardContent, LoaderComponent, MatExpansionPanel, MatExpansionPanelHeader, NgClass, ExtendedModule, MatExpansionPanelTitle, NgIf, BooleanDataBlockComponent, MatError, NgFor, MatIcon, MatButton, MapComponent, OrganizationLogoComponent, ContactButtonComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe, ReplaceIfNullPipe]
 })
 export class DataSetInfosComponent implements OnInit {
 

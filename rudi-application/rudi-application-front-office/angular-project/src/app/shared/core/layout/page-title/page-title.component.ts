@@ -1,11 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {RouterLinkActive} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 
 @Component({
     selector: 'app-page-title',
     templateUrl: './page-title.component.html',
     styleUrls: ['./page-title.component.scss'],
-    standalone: false
+    imports: [RouterLinkActive]
 })
 export class PageTitleComponent implements OnInit {
     mediaSize: MediaSize;

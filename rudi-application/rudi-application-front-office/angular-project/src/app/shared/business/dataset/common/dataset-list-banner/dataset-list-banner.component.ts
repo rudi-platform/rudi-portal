@@ -6,12 +6,29 @@ import {
 } from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
+import {MatToolbar} from '@angular/material/toolbar';
+import {NgClass} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FilterMenuComponent} from '../../filters/filter-menu/filter-menu.component';
+import {ThemesFilterFormComponent} from '../../filters/filter-forms/themes-filter-form/themes-filter-form.component';
+import {ProducerNamesFilterFormComponent} from '../../filters/filter-forms/producer-names-filter-form/producer-names-filter-form.component';
+import {DatesFilterFormComponent} from '../../filters/filter-forms/dates-filter-form/dates-filter-form.component';
+import {AccessStatusFilterFormComponent} from '../../filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
 
 @Component({
     selector: 'app-dataset-list-banner',
     templateUrl: './dataset-list-banner.component.html',
     styleUrl: './dataset-list-banner.component.scss',
-    standalone: false,
+    imports: [
+        MatToolbar,
+        NgClass,
+        ExtendedModule,
+        FilterMenuComponent,
+        ThemesFilterFormComponent,
+        ProducerNamesFilterFormComponent,
+        DatesFilterFormComponent,
+        AccessStatusFilterFormComponent,
+    ],
 })
 export class DatasetListBannerComponent {
     @Input() mediaSize: MediaSize;

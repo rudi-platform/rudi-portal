@@ -1,5 +1,9 @@
+import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {AbstractControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {TranslatePipe} from '@ngx-translate/core';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Field} from 'micro_service_modules/api-bpmn';
 
@@ -11,7 +15,7 @@ import {Field} from 'micro_service_modules/api-bpmn';
     selector: 'app-workflow-field',
     templateUrl: './workflow-field.component.html',
     styleUrls: ['./workflow-field.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, NgIf, MatFormField, MatInput, MatError, TranslatePipe]
 })
 export class WorkflowFieldComponent {
     /**
@@ -30,7 +34,7 @@ export class WorkflowFieldComponent {
     properties: WorkflowProperties;
 
     @Output()
-    submit: EventEmitter<void> = new EventEmitter<void>();
+    submitForm: EventEmitter<void> = new EventEmitter<void>();
 
     /**
      * Getters

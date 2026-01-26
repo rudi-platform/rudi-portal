@@ -5,10 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 /**
  *
  */
-@Pipe({
-    name: 'selfdataProcessDefinitionKeyTranslate',
-    standalone: false
-})
+@Pipe({name: 'selfdataProcessDefinitionKeyTranslate'})
 export class SelfdataProcessDefinitionKeyTranslatePipe implements PipeTransform {
 
     constructor(

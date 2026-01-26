@@ -12,7 +12,7 @@
         [fileMaxSize]="properties.fileMaxSize.toMegabytes()"
         [fileFormControl]="formControl"
         [fileExtensions]="allowedFileExtensions"
-        (fileChanged)="submit.emit()"
+        (fileChanged)="submitForm.emit()"
         imageText="metaData.selfdataInformationRequest.imageUploader"
         imageFormat="metaData.selfdataInformationRequest.formatImage"
         errorText="metaData.selfdataInformationRequest.creation.error.errorUpload"

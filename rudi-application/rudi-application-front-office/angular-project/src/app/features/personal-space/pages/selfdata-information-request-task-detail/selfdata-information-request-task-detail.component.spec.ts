@@ -8,7 +8,7 @@ describe('SelfdataDetailComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SelfdataInformationRequestTaskDetailComponent]
+            imports: [SelfdataInformationRequestTaskDetailComponent]
         })
             .compileComponents();
     });

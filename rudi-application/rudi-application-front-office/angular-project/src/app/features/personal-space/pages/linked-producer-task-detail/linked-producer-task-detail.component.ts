@@ -1,3 +1,4 @@
+import {AsyncPipe, NgFor, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -15,7 +16,12 @@ import {LinkedProducerTaskMetierService} from '@core/services/tasks/strukture/li
 import {
     LinkedProducerTaskSearchCriteria
 } from '@core/services/tasks/strukture/linked-producer/linked-producer-task-search-criteria.interface';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
+import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
@@ -24,12 +30,14 @@ import {LinkedProducer, LinkedProducersService} from 'micro_service_modules/stru
 import {LinkedProducerStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
+import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
 
 @Component({
     selector: 'app-producer-link-task-detail',
     templateUrl: './linked-producer-task-detail.component.html',
     styleUrls: ['./linked-producer-task-detail.component.scss'],
-    standalone: false
+    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, OrganizationInformationComponent, OwnerInformationComponent, NgFor, BannerButtonComponent, AsyncPipe, TranslatePipe]
 })
 export class LinkedProducerTaskDetailComponent
     extends TaskDetailComponent<LinkedProducer, LinkedProducerDependencies, LinkedProducerTask, LinkedProducerTaskSearchCriteria>

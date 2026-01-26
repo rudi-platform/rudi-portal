@@ -1,7 +1,11 @@
+import {NgClass, NgFor, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 import {SafeHtml} from '@angular/platform-browser';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 
 const FIRST_PAGE = 1;
@@ -10,7 +14,7 @@ const FIRST_PAGE = 1;
     selector: 'cms-news-list',
     templateUrl: './news-list.component.html',
     styleUrl: './news-list.component.scss',
-    standalone: false
+    imports: [LoaderComponent, NgIf, NgFor, NgClass, ExtendedModule, NgxPaginationModule]
 })
 export class NewsListComponent implements OnInit {
 

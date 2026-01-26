@@ -26,6 +26,7 @@ import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
 import org.rudi.microservice.strukture.core.bean.Method;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
+import org.rudi.microservice.strukture.core.bean.ObjectType;
 import org.rudi.microservice.strukture.core.bean.Report;
 import org.rudi.microservice.strukture.core.bean.ReportError;
 import org.rudi.microservice.strukture.service.helper.NodeProviderUserHelper;
@@ -182,7 +183,8 @@ public class LinkedProducerWorkflowContext
 				.treatmentDate(LocalDateTime.now()).method(Method.ATTACH).version(version)
 				.resourceId(assetDescription.getOrganization().getUuid())
 				.resourceTitle(assetDescription.getOrganization().getName()).integrationStatus(status)
-				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment);
+				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment)
+				.objectType(ObjectType.LINKED_PRODUCER);
 
 	}
 
@@ -208,7 +210,8 @@ public class LinkedProducerWorkflowContext
 				.treatmentDate(LocalDateTime.now()).method(Method.DETACH).version(version)
 				.resourceId(assetDescription.getOrganization().getUuid())
 				.resourceTitle(assetDescription.getOrganization().getName()).integrationStatus(status)
-				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment);
+				.integrationErrors(getErrorsFromIntegrationError(integrationErrors)).comment(comment)
+				.objectType(ObjectType.LINKED_PRODUCER);
 	}
 
 	private List<ReportError> getErrorsFromIntegrationError(List<IntegrationError> integrationErrors) {

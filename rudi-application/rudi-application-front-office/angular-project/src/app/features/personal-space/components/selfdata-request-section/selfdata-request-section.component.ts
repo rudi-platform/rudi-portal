@@ -1,11 +1,15 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
+import {NgIf, NgFor} from '@angular/common';
+import {MatButton} from '@angular/material/button';
+import {TranslateDirective} from '@ngx-translate/core';
 
 
 @Component({
     selector: 'app-selfdata-request-section',
     templateUrl: './selfdata-request-section.component.html',
     styleUrls: ['./selfdata-request-section.component.scss'],
-    standalone: false
+    imports: [MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, NgIf, NgFor, MatButton, TranslateDirective]
 })
 export class SelfdataRequestSectionComponent {
     @Input() title: string;

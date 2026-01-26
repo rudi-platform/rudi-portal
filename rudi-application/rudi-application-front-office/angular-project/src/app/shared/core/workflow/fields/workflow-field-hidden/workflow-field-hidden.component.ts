@@ -4,8 +4,7 @@ import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-fiel
 @Component({
     selector: 'app-workflow-field-hidden',
     templateUrl: './workflow-field-hidden.component.html',
-    styleUrls: ['./workflow-field-hidden.component.scss'],
-    standalone: false
+    styleUrls: ['./workflow-field-hidden.component.scss']
 })
 export class WorkflowFieldHiddenComponent extends WorkflowFieldComponent {
 }

@@ -5,13 +5,15 @@ import {LogService} from '@core/services/log.service';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {FooterDescription} from 'micro_service_modules/konsult/konsult-model';
 import {Observable, of, switchMap} from 'rxjs';
+import {NgIf, NgFor} from '@angular/common';
+import {LoaderComponent} from '../../../core/common/loader/loader.component';
 
 @Component({
     selector: 'app-social-media-section',
     templateUrl: './social-media-section.component.html',
     styleUrl: './social-media-section.component.scss',
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    imports: [NgIf, LoaderComponent, NgFor]
 })
 export class SocialMediaSectionComponent implements OnInit {
 

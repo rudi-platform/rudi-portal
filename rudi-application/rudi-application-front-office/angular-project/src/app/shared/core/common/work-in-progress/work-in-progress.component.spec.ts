@@ -8,7 +8,7 @@ describe('WorkInProgressComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WorkInProgressComponent]
+            imports: [WorkInProgressComponent]
         })
             .compileComponents();
     });

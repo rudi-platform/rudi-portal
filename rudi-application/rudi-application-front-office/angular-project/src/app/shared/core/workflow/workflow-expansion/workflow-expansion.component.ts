@@ -1,11 +1,17 @@
+import {NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {Component, Input, signal} from '@angular/core';
+import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {FieldType, Section} from 'micro_service_modules/projekt/projekt-api';
+import {WorkflowExpansionDateComponent} from './workflow-expansion-date/workflow-expansion-date.component';
+import {WorkflowExpansionLabelComponent} from './workflow-expansion-label/workflow-expansion-label.component';
+import { WorklfowExpansionRichLabelComponent } from './worklfow-expansion-rich-label/worklfow-expansion-rich-label.component';
 
 @Component({
     selector: 'app-workflow-expansion',
     templateUrl: './workflow-expansion.component.html',
     styleUrl: './workflow-expansion.component.scss',
-    standalone: false
+    imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, NgFor, NgIf, NgSwitch, NgSwitchCase, 
+        WorkflowExpansionLabelComponent, WorkflowExpansionDateComponent, WorklfowExpansionRichLabelComponent, NgSwitchDefault]
 })
 export class WorkflowExpansionComponent {
 
@@ -28,4 +34,5 @@ export class WorkflowExpansionComponent {
     }
 
 
+    protected readonly Text = Text;
 }

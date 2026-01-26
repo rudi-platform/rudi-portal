@@ -1,4 +1,8 @@
+import {NgIf} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
+import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
@@ -6,8 +10,16 @@ import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.serv
 import {SelfdataInformationRequestSubmissionService} from '@core/services/selfdata-information-request-submission.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {SELFDATA_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
-import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
-import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {PageSubtitleComponent} from '@shared/core/layout/page-subtitle/page-subtitle.component';
+import {PageTitleComponent} from '@shared/core/layout/page-title/page-title.component';
+import {
+    WorkflowFormComponent,
+    WorkflowFormComponent as WorkflowFormComponent_1
+} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {DataSize} from '@shared/models/data-size';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
@@ -21,7 +33,7 @@ const ERROR_DURATION = 10000;
     selector: 'app-selfdata-information-request-creation',
     templateUrl: './selfdata-information-request-creation.component.html',
     styleUrls: ['./selfdata-information-request-creation.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, MatSidenavContainer, MatSidenavContent, PageTitleComponent, PageSubtitleComponent, MatCard, NgIf, ErrorBoxComponent, TranslateDirective, WorkflowFormComponent_1, RudiCaptchaComponent_1, MatButton, TranslatePipe]
 })
 export class SelfdataInformationRequestCreationComponent implements OnInit {
 

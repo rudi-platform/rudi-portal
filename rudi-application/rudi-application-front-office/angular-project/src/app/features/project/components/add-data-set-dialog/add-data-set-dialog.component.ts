@@ -7,6 +7,8 @@ import {AccessStatusFiltersType} from '@core/services/filters/access-status-filt
 import {OrderValue} from '@core/services/filters/order-filter';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
+import {ListContainerComponent} from '@shared/business/dataset/filters/list-container/list-container.component';
+import {MaterialModules} from '@shared/shared.constant';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {of} from 'rxjs';
@@ -17,7 +19,10 @@ import {AddDataSetDialogData} from './add-data-set-dialog-data';
     selector: 'app-add-data-set-dialog',
     templateUrl: './add-data-set-dialog.component.html',
     styleUrls: ['./add-data-set-dialog.component.scss'],
-    standalone: false
+    imports: [
+        MaterialModules,
+        ListContainerComponent
+    ],
 })
 export class AddDataSetDialogComponent implements OnInit {
 

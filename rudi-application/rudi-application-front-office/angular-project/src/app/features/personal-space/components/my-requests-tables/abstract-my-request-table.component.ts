@@ -13,7 +13,6 @@ import {RequestItem} from './request-item';
 
 @Component({
     template: '',
-    standalone: false
 })
 export abstract class AbstractMyRequestTableComponent {
 

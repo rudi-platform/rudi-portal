@@ -1,15 +1,18 @@
 import {Component} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatDialogRef, MatDialogContent} from '@angular/material/dialog';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {CloseEvent, DialogClosedData} from '../../models/dialog-closed-data';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatIconButton} from '@angular/material/button';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-success-restricted-request-dialog',
     templateUrl: './success-restricted-request-dialog.component.html',
     styleUrls: ['./success-restricted-request-dialog.component.scss'],
-    standalone: false
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, TranslatePipe]
 })
 export class SuccessRestrictedRequestDialogComponent {
 
@@ -24,9 +27,9 @@ export class SuccessRestrictedRequestDialogComponent {
         );
     }
 
-    goToMyReuses(): Promise<boolean>  {
+    goToMyReuses(): Promise<boolean> {
         this.handleClose();
-        return  this.router.navigate(['/personal-space/my-activity']);
+        return this.router.navigate(['/personal-space/my-activity']);
     }
 
     /**

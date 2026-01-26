@@ -9,7 +9,7 @@
             type="date"
             [formControlName]="formControlName"
             [readonly]="readonly"
-            (keydown.control.enter)="submit.emit()"
+            (keydown.control.enter)="submitForm.emit()"
         />
         <mat-error>
             <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}

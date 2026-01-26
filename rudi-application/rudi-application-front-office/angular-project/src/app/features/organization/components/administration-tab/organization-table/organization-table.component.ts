@@ -1,11 +1,27 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {MatMiniFabButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatIcon} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatTableDataSource
+} from '@angular/material/table';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
@@ -27,7 +43,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-organization-table',
     templateUrl: './organization-table.component.html',
     styleUrls: ['./organization-table.component.scss'],
-    standalone: false
+    imports: [TranslateDirective, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
 export class OrganizationTableComponent implements OnInit {
     @Input() isLoading: boolean;

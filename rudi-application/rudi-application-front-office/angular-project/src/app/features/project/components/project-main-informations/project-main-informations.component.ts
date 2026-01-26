@@ -1,13 +1,21 @@
+import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
+import {MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 import {FormProjectDependencies, ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-datasets.service';
 import {FiltersService} from '@core/services/filters.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {UpdateAction} from '@features/project/model/upate-action';
+import {TranslatePipe} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
+import {ToStringPipe} from '@shared/utils/pipes/to-string.pipe';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Project, ProjektService, ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {
@@ -20,12 +28,18 @@ import {
 } from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
 import {switchMap} from 'rxjs/operators';
+import {Step1ProjectComponent} from '../step1-project/step1-project.component';
+import {ProjectMainInformationDateComponent} from './project-main-information-date/project-main-information-date.component';
+import {ProjectMainInformationLabelComponent} from './project-main-information-label/project-main-information-label.component';
+import { ProjectMainInformationRichLabelComponent } from './project-main-information-rich-label/project-main-information-rich-label.component';
 
 @Component({
     selector: 'app-project-main-informations',
     templateUrl: './project-main-informations.component.html',
     styleUrls: ['./project-main-informations.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, MatCardTitle, MatButton, MatCardContent, ProjectMainInformationLabelComponent,
+    ProjectMainInformationDateComponent, FormsModule, ReactiveFormsModule, MatFormField, MatInput,
+    Step1ProjectComponent, TranslatePipe, ToStringPipe, ProjectMainInformationRichLabelComponent]
 })
 export class ProjectMainInformationsComponent implements OnInit {
     @Input() project: Project;

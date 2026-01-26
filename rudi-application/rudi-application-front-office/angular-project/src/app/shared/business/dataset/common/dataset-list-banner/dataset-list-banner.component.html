@@ -9,7 +9,7 @@
         <app-themes-filter-form
             #themesForm
             (selectedItemsChange)="selectedThemeItemsChange.emit($event)"
-            (submit)="themesMenu.close()"
+            (submitFormEvent)="themesMenu.close()"
             [values]="themes"
             ulClass="ps-0">
         </app-themes-filter-form>
@@ -23,7 +23,7 @@
         <app-producer-names-filter-form
             #producerNamesForm
             (selectedItemsChange)="selectedProducerItemsChange.emit($event)"
-            (submit)="producerNamesMenu.close()"
+            (submitFormEvent)="producerNamesMenu.close()"
             [values]="producerNames"
             ulClass="ps-0">
         </app-producer-names-filter-form>
@@ -37,7 +37,7 @@
         <app-dates-filter-form
             #datesForm
             (selectedItemsChange)="selectedDatesItemsChange.emit($event)"
-            (submit)="datesMenu.close()"
+            (submitFormEvent)="datesMenu.close()"
             debutDivClass="d-flex me-3"
             finDivClass="d-flex mt-2 me-3">
         </app-dates-filter-form>
@@ -52,7 +52,7 @@
         <app-access-status-filter-form
             #AccessStatusForm
             (selectedItemsChange)="selectedAccessStatusItemsChange.emit($event);"
-            (submit)="accessStatusMenu.close()"
+            (submitFormEvent)="accessStatusMenu.close()"
             [forcedValue]="accessStatusForcedValue"
             [hiddenValues]="accessStatusHiddenValues"
             ulClass="ps-0">

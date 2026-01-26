@@ -1,14 +1,33 @@
+import {NgClass, NgIf} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {
+    AbstractControl,
+    AbstractControlOptions,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators
+} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatError, MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {PASSWORD_REGEX} from '@core/const';
 import {AccountService} from '@core/services/account.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {PasswordStrengthComponent} from '@shared/core/form/password-strength/password-strength.component';
 import {ResetPasswordErrorBoxComponent} from '@shared/core/form/reset-password-error-box/reset-password-error-box.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
@@ -18,7 +37,7 @@ import {ConfirmedValidator} from '../sign-up/confirmed-validator';
     selector: 'app-reset-password-page',
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIconButton, MatSuffix, MatIcon, NgIf, MatError, PasswordStrengthComponent, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, TranslatePipe]
 })
 export class ResetPasswordComponent implements OnInit {
 

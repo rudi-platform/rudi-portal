@@ -3,23 +3,23 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {RequestDetailsDialogComponent} from './request-details-dialog.component';
 
 describe('RequestDetailsDialogComponent', () => {
-  let component: RequestDetailsDialogComponent;
-  let fixture: ComponentFixture<RequestDetailsDialogComponent>;
+    let component: RequestDetailsDialogComponent;
+    let fixture: ComponentFixture<RequestDetailsDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ RequestDetailsDialogComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [RequestDetailsDialogComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RequestDetailsDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RequestDetailsDialogComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

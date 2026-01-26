@@ -39,6 +39,7 @@ import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.Method;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
+import org.rudi.microservice.strukture.core.bean.ObjectType;
 import org.rudi.microservice.strukture.core.bean.Report;
 import org.rudi.microservice.strukture.core.bean.ReportError;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
@@ -399,7 +400,7 @@ public class OrganizationWorkflowContext
 				.treatmentDate(LocalDateTime.now()).method(method).version(version).method(method)
 				.resourceId(assetDescription.getUuid()).resourceTitle(assetDescription.getName())
 				.integrationStatus(status).integrationErrors(getErrorsFromIntegrationError(integrationErrors))
-				.comment(fullComment);
+				.comment(fullComment).objectType(ObjectType.ORGANIZATION);
 	}
 
 	private void sendReportToLinkedProviders(OrganizationEntity assetDescription, Report report) {

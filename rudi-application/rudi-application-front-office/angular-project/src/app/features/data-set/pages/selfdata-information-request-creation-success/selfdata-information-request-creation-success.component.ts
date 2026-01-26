@@ -1,7 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {LogService} from '@core/services/log.service';
+import {
+    WorkflowFormSubmitSuccessComponent
+} from '@shared/core/workflow/forms/workflow-form-submit-success/workflow-form-submit-success.component';
 import {DateTimeUtils} from '@shared/utils/date-time-utils';
 import {Metadata, Period} from 'micro_service_modules/api-kaccess';
 import {switchMap} from 'rxjs/operators';
@@ -9,9 +12,9 @@ import {switchMap} from 'rxjs/operators';
 @Component({
     selector: 'app-selfdata-information-request-creation-success',
     templateUrl: './selfdata-information-request-creation-success.component.html',
-    standalone: false
+    imports: [WorkflowFormSubmitSuccessComponent]
 })
-export class SelfdataInformationRequestCreationSuccessComponent {
+export class SelfdataInformationRequestCreationSuccessComponent implements OnInit {
     metadata: Metadata;
     treatmentPeriod: Period;
     treatmentPeriodToMonths: number;
@@ -19,11 +22,12 @@ export class SelfdataInformationRequestCreationSuccessComponent {
 
     constructor(private readonly route: ActivatedRoute,
                 private readonly konsultMetierService: KonsultMetierService,
-                private readonly logService: LogService, ) {
+                private readonly logService: LogService,) {
+        console.log('SelfdataInformationRequestCreationSuccessComponent');
     }
-
-    // tslint:disable-next-line:use-lifecycle-interface
+    
     ngOnInit(): void {
+        console.log('Initializing SelfdataInformationRequestCreationSuccessComponent');
         this.route.params.pipe(
             switchMap((params: Params) => {
                 // Si uuid, on charge le JDD

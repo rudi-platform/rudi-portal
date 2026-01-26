@@ -175,5 +175,9 @@ export class MyTasksHistoriesTableComponent implements OnInit {
         return undefined;
     }
 
+    get header(): string {
+        return this.translateService.instant(this.tableTitleKey + '.header');
+    }
+
 
 }

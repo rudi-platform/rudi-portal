@@ -1,6 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {DatePipe, NgClass, NgFor, NgIf} from '@angular/common';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FlexModule} from '@angular/flex-layout/flex';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardTitle} from '@angular/material/card';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
+import {MatToolbar} from '@angular/material/toolbar';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
@@ -13,13 +20,18 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
 import {PageTitleService} from '@core/services/page-title.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
+import {ProjectHeadingComponent} from '@shared/business/projects/project-heading/project-heading.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {AclService} from 'micro_service_modules/acl/acl-api';
 import {LinkedDatasetStatus, OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Project, ProjectStatus} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ProjectMainInformationsComponent} from '../../components/project-main-informations/project-main-informations.component';
 
 const ICON_INFO = '../assets/icons/icon_tab_infos.svg';
 const PROJECT_LOGO = '/assets/images/logo_projet_par_defaut.png';
@@ -38,7 +50,7 @@ interface Dependencies {
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, NgClass, ExtendedModule, ProjectHeadingComponent, MatToolbar, MatButton, MatIcon, MatCard, ProjectMainInformationsComponent, ContactButtonComponent, FlexModule, MatCardTitle, NgFor, DatasetsInfosComponent, DatePipe, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     project: Project;

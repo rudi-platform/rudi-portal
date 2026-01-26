@@ -3,10 +3,7 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-@Pipe({
-    name: 'getBackendProperty',
-    standalone: false
-})
+@Pipe({name: 'getBackendProperty'})
 export class GetBackendPropertyPipe implements PipeTransform {
 
     constructor(

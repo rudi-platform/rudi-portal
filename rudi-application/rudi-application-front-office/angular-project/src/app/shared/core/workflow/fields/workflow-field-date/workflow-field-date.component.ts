@@ -1,4 +1,9 @@
+import {NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {TranslatePipe} from '@ngx-translate/core';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
 import {DateTimeUtils} from '@shared/utils/date-time-utils';
 
@@ -6,7 +11,7 @@ import {DateTimeUtils} from '@shared/utils/date-time-utils';
     selector: 'app-workflow-field-date',
     templateUrl: './workflow-field-date.component.html',
     styleUrls: ['./workflow-field-date.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, NgIf, MatHint, MatFormField, MatInput, MatError, TranslatePipe]
 })
 export class WorkflowFieldDateComponent extends WorkflowFieldComponent implements OnInit {
     ngOnInit(): void {

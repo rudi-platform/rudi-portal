@@ -1,8 +1,21 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
-import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {
+    MatTableDataSource,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow
+} from '@angular/material/table';
 import {OpenLinkedDatasetAccessRequest} from '@core/services/tasks/projekt/linked-dataset-task-dependencies.service';
 import moment from 'moment';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 
 export interface Table3Data {
     titre: string;
@@ -14,7 +27,7 @@ export interface Table3Data {
     selector: 'app-acces-details-table3',
     templateUrl: './acces-details-table3.component.html',
     styleUrls: ['./acces-details-table3.component.scss'],
-    standalone: false
+    imports: [TranslateDirective, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
 export class AccesDetailsTable3Component implements AfterViewInit {
     jdds: Table3Data[] = [];

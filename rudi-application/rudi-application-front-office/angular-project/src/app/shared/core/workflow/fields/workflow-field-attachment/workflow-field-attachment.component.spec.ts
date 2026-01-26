@@ -8,7 +8,7 @@ describe('WorkflowFieldAttachementComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [WorkflowFieldAttachmentComponent]
+            imports: [WorkflowFieldAttachmentComponent]
         })
             .compileComponents();
     });

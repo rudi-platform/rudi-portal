@@ -1,16 +1,21 @@
+import {NgIf} from '@angular/common';
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatIcon} from '@angular/material/icon';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
+import {TranslatePipe} from '@ngx-translate/core';
 import {WorkflowFormDialogInputData, WorkflowFormDialogOutputData} from '@shared/core/workflow/forms/workflow-form-dialog/types';
 import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
 import {getSectionWithFields} from '@shared/utils/workflow-form-utils';
 import {Field, Section} from 'micro_service_modules/projekt/projekt-api';
+import {WorkflowFormComponent as WorkflowFormComponent_1} from '../workflow-form/workflow-form.component';
 
 @Component({
     selector: 'app-workflow-form-dialog',
     templateUrl: './workflow-form-dialog.component.html',
     styleUrls: ['./workflow-form-dialog.component.scss'],
-    standalone: false
+    imports: [MatDialogContent, MatIconButton, MatIcon, NgIf, WorkflowFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class WorkflowFormDialogComponent {
     @ViewChild('workflowForm', {static: true})

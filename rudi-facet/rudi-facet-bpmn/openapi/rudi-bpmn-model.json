@@ -66,6 +66,7 @@
 					"DATE",
 					"LIST",
 					"TEXT",
+					"RICHTEXT",
 					"ADDRESS",
 					"ATTACHMENT",
 					"HIDDEN"

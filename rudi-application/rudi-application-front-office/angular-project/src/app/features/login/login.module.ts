@@ -11,20 +11,17 @@ import {ResetPasswordComponent} from './pages/reset-password/reset-password.comp
 import {SignUpComponent} from './pages/sign-up/sign-up.component';
 
 @NgModule({
-    declarations:
-        [
-            LoginComponent,
-            NotAuthorizedComponent,
-            SignUpComponent,
-            AccountValidationComponent,
-            ForgotPasswordComponent,
-            ResetPasswordComponent,
-        ],
     imports: [
         CommonModule,
         CoreModule,
         SharedModule,
-        LoginRoutingModule
+        LoginRoutingModule,
+        LoginComponent,
+        NotAuthorizedComponent,
+        SignUpComponent,
+        AccountValidationComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent
     ],
     exports: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

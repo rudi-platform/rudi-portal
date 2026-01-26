@@ -1,14 +1,19 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {OrganizationFormComponent} from '@features/personal-space/components/organization-form/organization-form.component';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {OrganizationFormComponent as OrganizationFormComponent_1} from '../organization-form/organization-form.component';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-organization-form-dialog',
     templateUrl: './organization-form-dialog.component.html',
     styleUrls: ['./organization-form-dialog.component.scss'],
-    standalone: false
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, OrganizationFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class OrganizationFormDialogComponent implements OnInit {
     @ViewChild('OrganizationForm', {static: true})

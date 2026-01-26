@@ -23,6 +23,7 @@ import org.rudi.microservice.kalim.core.bean.IntegrationRequest;
 import org.rudi.microservice.kalim.core.bean.IntegrationRequestSearchCriteria;
 import org.rudi.microservice.kalim.core.bean.IntegrationStatus;
 import org.rudi.microservice.kalim.core.bean.Method;
+import org.rudi.microservice.kalim.core.bean.ObjectType;
 import org.rudi.microservice.kalim.core.bean.ProgressStatus;
 import org.rudi.microservice.kalim.core.bean.Report;
 import org.rudi.microservice.kalim.core.bean.ReportError;
@@ -284,6 +285,7 @@ public class IntegrationRequestServiceImpl implements IntegrationRequestService 
 		report.setComment(comment);
 		report.setSubmissionDate(integrationRequest.getSubmissionDate());
 		report.setSubmittedByHarvesting(integrationRequest.isSubmittedByHarvesting());
+		report.setObjectType(ObjectType.DATASET);
 		return report;
 	}
 

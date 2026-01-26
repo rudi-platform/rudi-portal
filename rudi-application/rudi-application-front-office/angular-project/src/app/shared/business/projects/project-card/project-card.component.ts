@@ -1,8 +1,12 @@
+import {NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatCard, MatCardContent, MatCardImage} from '@angular/material/card';
 import {Router} from '@angular/router';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
+import {HtmlService} from '@core/services/html/html.service';
 import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
 
@@ -10,7 +14,7 @@ import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
     selector: 'app-project-card',
     templateUrl: './project-card.component.html',
     styleUrls: ['./project-card.component.scss'],
-    standalone: false
+    imports: [MatCard, NgClass, ExtendedModule, MatCardImage, MatCardContent]
 })
 export class ProjectCardComponent implements OnInit {
     @Input() projectCatalogItem: ProjectCatalogItem;
@@ -22,6 +26,7 @@ export class ProjectCardComponent implements OnInit {
         private readonly uriComponentCodec: URIComponentCodec,
         private readonly router: Router,
         private readonly projektMetierService: ProjektMetierService,
+        private readonly htmlService: HtmlService,
     ) {
         this.defaultLogo = '/assets/images/logo_projet_par_defaut.png';
     }
@@ -63,7 +68,7 @@ export class ProjectCardComponent implements OnInit {
 
     get projectDescription(): string {
         if (this.projectIsNotNull()) {
-            return this.projectCatalogItem.project.description;
+            return this.htmlService.stripHtml(this.projectCatalogItem.project.description);
         }
         return '';
     }

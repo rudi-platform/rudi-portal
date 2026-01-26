@@ -1,11 +1,14 @@
 import {Component, Input} from '@angular/core';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import {MatCardImage} from '@angular/material/card';
+import {NgIf} from '@angular/common';
+import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
 
 @Component({
     selector: 'app-project-heading',
     templateUrl: './project-heading.component.html',
     styleUrls: ['./project-heading.component.scss'],
-    standalone: false
+    imports: [MatCardImage, NgIf, ReplaceIfNullPipe]
 })
 export class ProjectHeadingComponent {
 

@@ -1,16 +1,19 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {OrganizationMember} from 'micro_service_modules/strukture/strukture-model';
 import {OrganizationMemberDialogData} from '../organization-members-table/organization-member-dialog-data';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-deletion-member-confirmation-popin',
     templateUrl: './deletion-member-confirmation-popin.component.html',
     styleUrls: ['./deletion-member-confirmation-popin.component.scss'],
-    standalone: false
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class DeletionMemberConfirmationPopinComponent {
 

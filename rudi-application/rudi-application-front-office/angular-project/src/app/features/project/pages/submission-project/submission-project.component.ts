@@ -1,7 +1,10 @@
 import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
+import {NgIf} from '@angular/common';
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {MatStepper} from '@angular/material/stepper';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatStep, MatStepper, MatStepperIcon, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
 import {Router} from '@angular/router';
 import {FormProjectDependencies, ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -13,7 +16,8 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {RequestDetails} from '@shared/models/request-details';
@@ -25,6 +29,9 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
 import {forkJoin, Observable, throwError} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
 import {ReuseProjectCommonComponent} from '../../components/reuse-project-common/reuse-project-common.component';
+import {Step1ProjectComponent} from '../../components/step1-project/step1-project.component';
+import {Step2ProjectComponent} from '../../components/step2-project/step2-project.component';
+import {Step3ProjectComponent} from '../../components/step3-project/step3-project.component';
 import {DataRequestItem} from '../../model/data-request-item';
 import {ProjectDatasetItem} from '../../model/project-dataset-item';
 import {UpdateAction} from '../../model/upate-action';
@@ -36,7 +43,7 @@ import {UpdateAction} from '../../model/upate-action';
     providers: [{
         provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
     }],
-    standalone: false
+    imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent, MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, NgIf, TranslatePipe]
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
 

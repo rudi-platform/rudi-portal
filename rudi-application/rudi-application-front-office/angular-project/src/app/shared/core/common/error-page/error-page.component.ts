@@ -1,12 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
+import {AsyncPipe} from '@angular/common';
+import {TranslatePipe} from '@ngx-translate/core';
+import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 
 @Component({
     selector: 'app-error-page',
     templateUrl: './error-page.component.html',
     styleUrls: ['./error-page.component.scss'],
-    standalone: false
+    imports: [AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
 })
 export class ErrorPageComponent implements OnInit {
     statusError: number;

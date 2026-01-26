@@ -4,15 +4,16 @@
 package org.rudi.common.service.swagger;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import io.swagger.v3.oas.models.OpenAPI;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,13 +42,13 @@ public class SwaggerHelper {
 		}
 	}
 
-	public OpenAPI getSwaggerContractFromURL(String contractUrl) throws IOException {
+	public OpenAPI getSwaggerContractFromURL(String contractUrl) throws IOException, URISyntaxException {
 		try {
-			return objectMapper.reader().forType(OpenAPI.class).readValue(new URL(contractUrl));
+			return objectMapper.reader().forType(OpenAPI.class).readValue(new URI(contractUrl).toURL());
 		} catch (Exception e) {
 			log.warn("Failed to read json contract from " + contractUrl + ".try to read yaml...", e);
 			try {
-				return objectMapperYaml.reader().forType(OpenAPI.class).readValue(new URL(contractUrl));
+				return objectMapperYaml.reader().forType(OpenAPI.class).readValue(new URI(contractUrl).toURL());
 			} catch (Exception e2) {
 				log.warn("Failed to read yaml contract from " + contractUrl + ".try to read yaml...", e);
 				throw e2;

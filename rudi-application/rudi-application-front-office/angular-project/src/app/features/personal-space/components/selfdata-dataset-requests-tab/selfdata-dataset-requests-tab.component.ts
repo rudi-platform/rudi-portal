@@ -1,14 +1,20 @@
+import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SelfdataDatasetLatestRequests} from '@core/services/selfdata-dataset/selfdata-dataset-latest-requests';
+import {TranslatePipe} from '@ngx-translate/core';
+import {CardComponent} from '@shared/core/common/card/card.component';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-model';
+import {SelfdataRequestSectionComponent} from '../selfdata-request-section/selfdata-request-section.component';
 
 @Component({
     selector: 'app-selfdata-dataset-requests-tab',
     templateUrl: './selfdata-dataset-requests-tab.component.html',
-    standalone: false
+    imports: [CardComponent, NgIf, LoaderComponent, SelfdataRequestSectionComponent, ErrorBoxComponent, TranslatePipe]
 })
 export class SelfdataDatasetRequestsTabComponent implements OnInit {
 

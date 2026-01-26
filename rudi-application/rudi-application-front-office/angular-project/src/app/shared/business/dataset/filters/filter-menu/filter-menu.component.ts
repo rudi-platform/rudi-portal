@@ -1,12 +1,19 @@
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from '@angular/material/menu';
+import {MatMenuTrigger, MatMenu} from '@angular/material/menu';
 import {Observable} from 'rxjs';
+import {NgIf, NgClass, AsyncPipe} from '@angular/common';
+import {MatButton} from '@angular/material/button';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatBadge} from '@angular/material/badge';
+import {MatIcon} from '@angular/material/icon';
+import {FlexModule} from '@angular/flex-layout/flex';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-filter-menu',
     templateUrl: './filter-menu.component.html',
     styleUrls: ['./filter-menu.component.scss'],
-    standalone: false
+    imports: [NgIf, MatButton, MatMenuTrigger, NgClass, ExtendedModule, MatBadge, MatIcon, MatMenu, FlexModule, AsyncPipe, TranslatePipe]
 })
 export class FilterMenuComponent {
     @Input() buttonTextKey: string;

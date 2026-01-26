@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {LanguageService} from '@core/i18n/language.service';
@@ -8,12 +8,20 @@ import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
+import {MatCard, MatCardContent} from '@angular/material/card';
+import {NgClass, NgIf, NgFor, SlicePipe} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {SplitPipe} from '@shared/utils/pipes/split.pipe';
+import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
 
 @Component({
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
-    standalone: false
+    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, NgIf, MatIcon, MatButton, MatTooltip, NgFor, SlicePipe, SplitPipe, TruncateTextPipe]
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;

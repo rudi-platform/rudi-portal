@@ -1,9 +1,12 @@
+import {AsyncPipe} from '@angular/common';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FiltersService} from '@core/services/filters.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
 import {TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.component';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {HeroDescription} from 'micro_service_modules/konsult/konsult-model';
 import {Observable, of, Subject} from 'rxjs';
@@ -15,7 +18,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/hero_section_default_pi
     selector: 'app-hero-section',
     templateUrl: './hero-section.component.html',
     styleUrls: ['./hero-section.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, SearchBoxComponent, AsyncPipe]
 })
 export class HeroSectionComponent implements OnInit, OnDestroy {
     private destroy$: Subject<boolean>;

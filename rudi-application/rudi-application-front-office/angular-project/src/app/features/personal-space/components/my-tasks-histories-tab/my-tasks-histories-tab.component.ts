@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+import {HtmlService} from '@core/services/html/html.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {SelfdataInformationRequestTaskMetierService} from '@core/services/tasks/selfdata/selfdata-information-request-task-metier.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
@@ -47,6 +48,7 @@ export class MyTasksHistoriesTabComponent implements OnInit {
         public readonly selfdataTaskMetierService: SelfdataInformationRequestTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
         private readonly iconRegistry: MatIconRegistry,
         private readonly sanitizer: DomSanitizer,
+        private readonly htmlService: HtmlService,
     ) {
         iconRegistry.addSvgIcon(this.organizationTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
         iconRegistry.addSvgIcon(this.linkedProducerTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
@@ -79,7 +81,12 @@ export class MyTasksHistoriesTabComponent implements OnInit {
                 if (values.length > 0) {
                     this.hasData = true;
                 }
-                this.projectTasksHistories = values.filter(value => value.processDefinitionKey === 'project-process');
+                this.projectTasksHistories = values.filter(value => value.processDefinitionKey === 'project-process').map(value => {
+                    if (value.description) {
+                        value.description = this.htmlService.stripHtml(value.description);
+                    }
+                    return value;
+                });
                 this.linkedDatasetTasksHistories = values.filter(value => value.processDefinitionKey === 'linked-dataset-process');
                 this.newDatasetRequestTasksHistories = values.filter(value => value.processDefinitionKey === 'new-dataset-request-process');
             },

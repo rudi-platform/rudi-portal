@@ -16,7 +16,11 @@ mat-label {
 // Empêche la collapse de marge et garantit l'écart de 7px au-dessus du select
 .wf-list-field-wrapper {
     margin-top: 5px;
-    //display: block; // évite certaines interactions avec des layouts flex/inline
+
+    // Ajoute la marge uniquement si mat-error est visible
+    &:has(mat-error) {
+        margin-bottom: 20px;
+    }
 }
 
 // Panneau d’options du select

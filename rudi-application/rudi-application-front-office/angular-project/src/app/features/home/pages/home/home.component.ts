@@ -1,3 +1,4 @@
+import {NgIf} from '@angular/common';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Meta} from '@angular/platform-browser';
 import {Order, ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -9,12 +10,20 @@ import {ThemeCacheService} from '@core/services/theme-cache.service';
 import {CustomTranslateService} from '@core/services/translate.service';
 import {Theme} from '@features/home/types';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Metadata, MetadataList} from 'micro_service_modules/api-kaccess';
 import {CustomizationDescription} from 'micro_service_modules/konsult/konsult-api';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-api';
 import {PagedProjectList, ProjectStatus} from 'micro_service_modules/projekt/projekt-api';
 import {Subject} from 'rxjs';
 import {distinctUntilChanged, filter, map, takeUntil} from 'rxjs/operators';
+import {CmsNewsSectionComponent} from '../../components/cms-news-section/cms-news-section.component';
+import {CmsProjectValuesSectionComponent} from '../../components/cms-project-values-section/cms-project-values-section.component';
+import {HeroSectionComponent} from '../../components/hero-section/hero-section.component';
+import {JddSectionComponent} from '../../components/jdd-section/jdd-section.component';
+import {KeyFiguresSectionComponent} from '../../components/key-figures-section/key-figures-section.component';
+import {ProjectsSectionComponent} from '../../components/projects-section/projects-section.component';
+import {ThemesSectionComponent} from '../../components/themes-section/themes-section.component';
 
 const DEFAULT_PROJECT_ORDER: Order = '-updatedDate';
 const PROJECT_STATUS: ProjectStatus[] = [ProjectStatus.Validated];
@@ -23,7 +32,7 @@ const PROJECT_STATUS: ProjectStatus[] = [ProjectStatus.Validated];
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, HeroSectionComponent, ThemesSectionComponent, CmsNewsSectionComponent, CmsProjectValuesSectionComponent, JddSectionComponent, ProjectsSectionComponent, KeyFiguresSectionComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
     private destroyed$: Subject<boolean>;

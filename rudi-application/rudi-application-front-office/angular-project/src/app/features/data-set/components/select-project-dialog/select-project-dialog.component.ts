@@ -1,13 +1,21 @@
+import {NgFor, NgIf} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
-import {MatSelectChange} from '@angular/material/select';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
+import {MatOption} from '@angular/material/core';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
 import {UserService} from '@core/services/user.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
 import {filterEach} from '@shared/utils/rxjs-pipes';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {LinkedDataset, Project} from 'micro_service_modules/projekt/projekt-model';
@@ -28,7 +36,7 @@ export interface SelectProjectDialogData {
     selector: 'app-restricted-dataset-request-dialog',
     templateUrl: './select-project-dialog.component.html',
     styleUrls: ['./select-project-dialog.component.scss'],
-    standalone: false
+    imports: [MatDialogContent, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatCard, MatLabel, NgIf, MatProgressSpinner, MatFormField, MatSelect, NgFor, MatOption, MatError, ErrorBoxComponent, MatDialogActions, MatButton, TranslatePipe]
 })
 export class SelectProjectDialogComponent implements OnInit {
 

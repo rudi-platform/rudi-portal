@@ -1,12 +1,31 @@
+import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatTableDataSource
+} from '@angular/material/table';
+import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
+import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
 import {RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 
 @Component({
     selector: 'app-dataset-table',
     templateUrl: './dataset-table.component.html',
     styleUrls: ['./dataset-table.component.scss'],
-    standalone: false
+    imports: [NgIf, TranslateDirective, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, DatasetsInfosComponent, NgbPopover, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
 })
 export class DatasetTableComponent {
     displayedColumns: string[] = ['addedDate', 'title', 'status', 'comment-action', 'delete-action'];

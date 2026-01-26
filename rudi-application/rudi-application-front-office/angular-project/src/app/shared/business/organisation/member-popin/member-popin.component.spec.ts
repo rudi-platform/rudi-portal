@@ -8,7 +8,7 @@ describe('MemberPopinComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [MemberPopinComponent]
+            imports: [MemberPopinComponent]
         })
             .compileComponents();
     });

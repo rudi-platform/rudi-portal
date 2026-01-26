@@ -1,8 +1,12 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FormsModule} from '@angular/forms';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
+import {TranslatePipe} from '@ngx-translate/core';
 
 const EMPTY_SEARCH = '';
 
@@ -10,7 +14,7 @@ const EMPTY_SEARCH = '';
     selector: 'app-search-box',
     templateUrl: './search-box.component.html',
     styleUrls: ['./search-box.component.scss'],
-    standalone: false
+    imports: [FormsModule, NgClass, ExtendedModule, MatIcon, NgIf, TranslatePipe]
 })
 export class SearchBoxComponent implements OnInit {
     @Input() mediaSize: MediaSize;

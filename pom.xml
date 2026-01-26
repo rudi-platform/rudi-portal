@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.3.6</version>
+	<version>3.3.7</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -17,7 +17,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jdk.cible>17</jdk.cible>
+		<jdk.cible>21</jdk.cible>
 		<java.version>${jdk.cible}</java.version>
 		<maven.compiler.source>${jdk.cible}</maven.compiler.source>
 		<maven.compiler.target>${jdk.cible}</maven.compiler.target>
@@ -54,7 +54,7 @@
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
-		<lombok.version>1.18.26</lombok.version>
+		<lombok.version>1.18.42</lombok.version>
 		<swagger.codegen.version>3.0.21</swagger.codegen.version>
 		<swagger.version>2.2.40</swagger.version>
 		<flyway.version>9.19.4</flyway.version>
@@ -1139,6 +1139,8 @@
 					<version>${maven-surefire-plugin.version}</version>
 					<configuration>
 						<argLine>--add-opens java.base/java.util=ALL-UNNAMED
+							-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/${byte-buddy.version}/byte-buddy-agent-${byte-buddy.version}.jar
+							-XX:+EnableDynamicAgentLoading
 							-Dfile.encoding=UTF-8</argLine>
 					</configuration>
 				</plugin>

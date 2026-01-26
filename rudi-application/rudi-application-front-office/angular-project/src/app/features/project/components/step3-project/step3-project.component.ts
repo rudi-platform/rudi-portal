@@ -1,13 +1,21 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ProjectDatasetItem} from '../../model/project-dataset-item';
+import {NgClass, NgIf} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {DataSetButtonComponent} from '../data-set-button/data-set-button.component';
+import {MatError} from '@angular/material/form-field';
+import {ProjectDatasetListComponent} from '../project-dataset-list/project-dataset-list.component';
+import {SuccessStep3TemplateComponent} from '../success-step3-template/success-step3-template.component';
+import {RouterLink} from '@angular/router';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-step3-project',
     templateUrl: './step3-project.component.html',
     styleUrls: ['./step3-project.component.scss'],
-    standalone: false
+    imports: [NgClass, ExtendedModule, NgIf, FormsModule, ReactiveFormsModule, DataSetButtonComponent, MatError, ProjectDatasetListComponent, SuccessStep3TemplateComponent, RouterLink, TranslatePipe]
 })
 export class Step3ProjectComponent {
 

@@ -1,14 +1,33 @@
+import {DatePipe, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {Sort, SortDirection} from '@angular/material/sort';
+import {MatSort, MatSortHeader, Sort, SortDirection} from '@angular/material/sort';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable
+} from '@angular/material/table';
+import {RouterLink} from '@angular/router';
 import {ProjectDependenciesFetchers, ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {UserService} from '@core/services/user.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {BackPaginationComponent} from '@shared/core/common/back-pagination/back-pagination.component';
 import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
 import {mapEach} from '@shared/utils/observable-utils';
 import {PagedProjectList} from 'micro_service_modules/projekt/projekt-model';
+import {NgxPaginationModule} from 'ngx-pagination';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -28,7 +47,7 @@ const DEFAULT_SORT_DIRECTION: SortDirection = 'desc';
     selector: 'app-reuses',
     templateUrl: './reuses.component.html',
     styleUrls: ['./reuses.component.scss'],
-    standalone: false
+    imports: [SearchCountComponent, RouterLink, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgIf, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
 })
 export class ReusesComponent implements OnInit {
 

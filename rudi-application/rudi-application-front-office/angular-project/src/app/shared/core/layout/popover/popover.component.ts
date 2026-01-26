@@ -1,12 +1,14 @@
 import {Component, Input} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-popover',
     templateUrl: './popover.component.html',
     styleUrls: ['./popover.component.scss'],
-    standalone: false
+    imports: [MatIcon, MatButton, NgbPopover]
 })
 export class PopoverComponent {
     @Input()

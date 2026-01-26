@@ -1,15 +1,23 @@
-import {Component} from '@angular/core';
+import {NgClass, NgIf} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {CustomizationService} from '@core/services/customization.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {Order} from '@core/services/konsult-metier.service';
 import {LogService} from '@core/services/log.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {PageTitleComponent} from '@shared/core/layout/page-title/page-title.component';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
+import {NgxPaginationModule} from 'ngx-pagination';
 import {Subject, switchMap} from 'rxjs';
+import {NewsListComponent} from '../../components/news-list/news-list.component';
+import {CmsOrderComponent} from '../../components/order/order.component';
 
 
 const DEFAULT_NEWS_ORDER = '-publishdate';
@@ -25,9 +33,9 @@ interface OrderItem extends Item {
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, PageTitleComponent, NgClass, ExtendedModule, CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
 })
-export class ListComponent {
+export class ListComponent implements OnInit {
     isLoading: boolean = false;
     mediaSize: MediaSize;
     order = DEFAULT_NEWS_ORDER;

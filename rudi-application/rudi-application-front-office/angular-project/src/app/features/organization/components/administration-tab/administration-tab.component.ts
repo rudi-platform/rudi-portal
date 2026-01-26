@@ -4,11 +4,13 @@ import {FiltersService} from '@core/services/filters.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
+import {OrganizationTableComponent} from './organization-table/organization-table.component';
+import {OrganizationMembersTableComponent} from './organization-members-table/organization-members-table.component';
 
 @Component({
     selector: 'app-administration-tab',
     templateUrl: './administration-tab.component.html',
-    standalone: false
+    imports: [OrganizationTableComponent, OrganizationMembersTableComponent]
 })
 export class AdministrationTabComponent implements OnInit {
 

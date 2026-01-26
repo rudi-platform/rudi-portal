@@ -8,7 +8,7 @@ describe('CopiedButtonComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [CopiedButtonComponent]
+            imports: [CopiedButtonComponent]
         })
             .compileComponents();
     });

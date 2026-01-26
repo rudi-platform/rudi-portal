@@ -1,14 +1,24 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatIcon} from '@angular/material/icon';
 import {DataSetAccessService} from '@core/services/data-set/data-set-access.service';
 import {DisplayTableDataInterface} from '@core/services/data-set/display-table-data.interface';
 import {DisplayTableService} from '@core/services/data-set/display-table.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {LogService} from '@core/services/log.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {Media, Metadata} from 'micro_service_modules/api-kaccess';
 import {catchError, switchMap} from 'rxjs/operators';
 import {WorkBook} from 'xlsx';
+import {SpreadsheetComponent} from '../spreadsheet/spreadsheet.component';
 
 const EMPTY_SEARCH = '';
 
@@ -16,7 +26,7 @@ const EMPTY_SEARCH = '';
     selector: 'app-spreadsheet-tab',
     templateUrl: './spreadsheet-tab.component.html',
     styleUrls: ['./spreadsheet-tab.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, FormsModule, MatIcon, NgClass, ExtendedModule, MatButton, MatCheckbox, ErrorBoxComponent, SpreadsheetComponent, TranslatePipe]
 })
 export class SpreadsheetTabComponent implements OnInit {
 

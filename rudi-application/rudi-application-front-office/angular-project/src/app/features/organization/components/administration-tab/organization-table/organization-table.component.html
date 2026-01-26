@@ -1,5 +1,5 @@
 <!-- Robot table-->
-<div class="table-robot" xmlns:button="http://www.w3.org/1999/html">
+<div class="table-robot">
 
     <div class="table-title-container">
         <span class="table-title-style" [translate]="'metaData.administrationTab.organizationTitle'"> </span>
@@ -37,7 +37,7 @@
                 <button type="button" class="action-fab-btn-icon" mat-mini-fab [matMenuTriggerFor]="menu">
                     <mat-icon class="little-icon-size" aria-hidden="true" [svgIcon]="'dashes'"></mat-icon>
                 </button>
-                <mat-menu #menu="matMenu" role="menu" xPosition="before">
+                <mat-menu #menu="matMenu" xPosition="before" class="no-padding-menu">
                     <button mat-menu-item (click)="openPopinArchive()">{{'metaData.administrationTab.robotTable.archive'|translate}}</button>
                 </mat-menu>
             </td>

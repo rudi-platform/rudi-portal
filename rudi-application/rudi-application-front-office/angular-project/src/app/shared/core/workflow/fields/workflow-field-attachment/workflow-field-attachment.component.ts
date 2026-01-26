@@ -1,10 +1,16 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {MatHint, MatLabel} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
 import {AttachmentService} from '@core/services/attachment.service';
 import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {TaskDependencyFetchers} from '@core/services/tasks/task-with-dependencies-service';
 import {SELFDATA_PROCESS_KEY_DEFINITION, TaskDependencyFetcherFactory} from '@core/services/tasks/TaskDependencyFetcherFactory';
+import {TranslateDirective} from '@ngx-translate/core';
 import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
 import {AttachmentPopinData} from '@shared/core/workflow/fields/workflow-field-attachment-popin/attachment-popin-data';
 import {
@@ -13,14 +19,17 @@ import {
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
 import {DataSize} from '@shared/models/data-size';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
+import {FileSizePipe} from '@shared/utils/pipes/file-size-pipe';
 import {DocumentMetadata} from 'micro_service_modules/selfdata/selfdata-api';
 import {Observable} from 'rxjs';
+import {LoaderComponent} from '../../../common/loader/loader.component';
+import {UploaderComponent} from '../../../form/uploader/uploader.component';
 
 @Component({
     selector: 'app-workflow-field-attachment',
     templateUrl: './workflow-field-attachment.component.html',
     styleUrls: ['./workflow-field-attachment.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, NgIf, MatHint, UploaderComponent, LoaderComponent, NgClass, ExtendedModule, MatIcon, TranslateDirective, FileSizePipe]
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
     attachmentLoading: boolean = false;

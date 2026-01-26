@@ -498,3 +498,12 @@ a {
         --mat-fab-small-foreground-color: var(--secondary-color) !important;
     }
 }
+
+.mat-mdc-menu-panel.no-padding-menu {
+    min-height: auto !important;
+
+    .mat-mdc-menu-content {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+}

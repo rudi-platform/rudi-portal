@@ -33,6 +33,12 @@
 					"REPORT_ERROR"
 				]
 			},
+			"ObjectType": {
+				"type": "string",
+				"enum": [
+					"DATASET"
+				]
+			},
 			"Method": {
 				"type": "string",
 				"enum": [
@@ -98,6 +104,9 @@
 						"items": {
 							"$ref": "#/components/schemas/ReportError"
 						}
+					},
+					"object_type": {
+						"$ref": "#/components/schemas/ObjectType"
 					}
 				}
 			},

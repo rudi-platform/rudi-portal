@@ -3,7 +3,9 @@ import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {ProducersMetierService} from '@core/services/producers-metier.service';
 import {ProvidersMetierService} from '@core/services/providers-metier.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateService, TranslatePipe} from '@ngx-translate/core';
+import {LoaderComponent} from '../../../core/common/loader/loader.component';
+import {NgIf} from '@angular/common';
 
 const PRODUCER = 'producer';
 const PROVIDER = 'provider';
@@ -13,7 +15,7 @@ export type OrganizationType = 'producer' | 'provider';
     selector: 'app-organization-logo',
     templateUrl: './organization-logo.component.html',
     styleUrls: ['./organization-logo.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, TranslatePipe]
 })
 export class OrganizationLogoComponent implements OnInit {
     @Input() organizationType: OrganizationType;
@@ -30,7 +32,7 @@ export class OrganizationLogoComponent implements OnInit {
         private readonly providersMetierService: ProvidersMetierService,
         private readonly translteService: TranslateService,
     ) {
-        this.defaultLogo  = '/assets/images/rudi_default_picto_organization.png';
+        this.defaultLogo = '/assets/images/rudi_default_picto_organization.png';
     }
 
     ngOnInit(): void {

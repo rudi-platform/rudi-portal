@@ -1,19 +1,23 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AttachmentService} from '@core/services/attachment.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {AttachmentPopinData} from '@shared/core/workflow/fields/workflow-field-attachment-popin/attachment-popin-data';
+import {LoaderComponent} from '../../../common/loader/loader.component';
 
 @Component({
     selector: 'app-workflow-field-attachment-popin',
     templateUrl: './workflow-field-attachment-popin.component.html',
     styleUrls: ['./workflow-field-attachment-popin.component.scss'],
-    standalone: false
+    imports: [MatDialogContent, MatIconButton, MatIcon, MatCheckbox, FormsModule, LoaderComponent, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class WorkflowFieldAttachmentPopinComponent {
 

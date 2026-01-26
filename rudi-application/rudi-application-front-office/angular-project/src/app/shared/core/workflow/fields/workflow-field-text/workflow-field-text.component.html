@@ -9,7 +9,7 @@
             rows="15"
             [formControlName]="formControlName"
             [readonly]="readonly"
-            (keydown.control.enter)="submit.emit()"
+            (keydown.control.enter)="submitForm.emit()"
         ></textarea>
         <mat-error>
             <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}

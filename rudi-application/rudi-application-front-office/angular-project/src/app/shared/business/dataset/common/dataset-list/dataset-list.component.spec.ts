@@ -8,7 +8,7 @@ describe('DatasetListComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [DatasetListComponent]
+            imports: [DatasetListComponent]
         })
             .compileComponents();
     });

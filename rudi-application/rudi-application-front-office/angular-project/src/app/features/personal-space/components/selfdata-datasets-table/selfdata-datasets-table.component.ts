@@ -1,12 +1,35 @@
+import {DatePipe, NgClass, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {Sort} from '@angular/material/sort';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatIcon} from '@angular/material/icon';
+import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable
+} from '@angular/material/table';
+import {RouterLink} from '@angular/router';
 import {Order} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {SelfdataDatasetService} from '@core/services/selfdata-dataset/selfdata-dataset.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
+import {BackPaginationComponent} from '@shared/core/common/back-pagination/back-pagination.component';
 import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
+import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
+import {SelfdataProcessDefinitionKeyTranslatePipe} from '@shared/utils/pipes/selfdata-process-definition-key-translate.pipe';
+import {NgxPaginationModule} from 'ngx-pagination';
 import {SelfdataDataset} from './selfdata-dataset.interface';
 
 
@@ -17,7 +40,7 @@ const ITEMS_PER_PAGE = 10;
     selector: 'app-selfdata-datasets-table',
     templateUrl: './selfdata-datasets-table.component.html',
     styleUrls: ['./selfdata-datasets-table.component.scss'],
-    standalone: false
+    imports: [SearchCountComponent, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, NgIf, MatIcon, NgClass, ExtendedModule, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, RouterLink, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe, SelfdataProcessDefinitionKeyTranslatePipe]
 })
 export class SelfdataDatasetsTableComponent implements OnInit {
     displayedColumns: string[] = ['title', 'processDefinitionKey', 'updatedDate', 'functionalStatus'];

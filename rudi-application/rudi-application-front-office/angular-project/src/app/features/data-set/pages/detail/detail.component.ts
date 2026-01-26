@@ -1,9 +1,16 @@
+import {CommonModule, NgClass, NgFor, NgIf} from '@angular/common';
 import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {FlexModule} from '@angular/flex-layout/flex';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
-import {MatMenuTrigger} from '@angular/material/menu';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {MatIcon} from '@angular/material/icon';
+import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
+import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
+import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
+import {ActivatedRoute, Params, Router, RouterOutlet} from '@angular/router';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {AuthenticationService} from '@core/services/authentication.service';
@@ -27,8 +34,16 @@ import {
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
 import {DetailFunctions} from '@features/data-set/pages/detail/detail-functions';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ProjectListComponent} from '@shared/business/projects/project-list/project-list.component';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {PageHeadingComponent} from '@shared/core/layout/page-heading/page-heading.component';
+import {PopoverComponent} from '@shared/core/layout/popover/popover.component';
 import {RequestDetails} from '@shared/models/request-details';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
@@ -48,6 +63,9 @@ import {Project} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
 import {BehaviorSubject, combineLatest, from, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {DatasetInformationsComponent} from '../../components/dataset-informations/dataset-informations.component';
+import {MapTabComponent} from '../../components/map-tab/map-tab.component';
+import {SpreadsheetTabComponent} from '../../components/spreadsheet-tab/spreadsheet-tab.component';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import MediaTypeEnum = Media.MediaTypeEnum;
 
@@ -57,7 +75,7 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    standalone: false
+    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, NgClass, ExtendedModule, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup, NgFor, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;

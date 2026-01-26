@@ -1,4 +1,8 @@
+import {AsyncPipe, NgClass, NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -7,15 +11,21 @@ import {OrderValue} from '@core/services/filters/order-filter';
 import {KonsultMetierService, MAX_RESULTS_PER_PAGE} from '@core/services/konsult-metier.service';
 import {SidenavOpeningsService} from '@core/services/sidenav-openings.service';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {
     AccessStatusFilterItem
 } from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.component';
 import {Metadata, MetadataList} from 'micro_service_modules/api-kaccess';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {DatasetListBannerComponent} from '../../common/dataset-list-banner/dataset-list-banner.component';
+import {DatasetListComponent} from '../../common/dataset-list/dataset-list.component';
+import {FiltersItemsListComponent} from '../filters-items-list/filters-items-list.component';
+import {OrderComponent} from '../order/order.component';
 
 
 const FIRST_PAGE = 1;
@@ -28,7 +38,21 @@ const EMPTY_METADATA_LIST: MetadataList = {
     selector: 'app-list-container',
     templateUrl: './list-container.component.html',
     styleUrl: './list-container.component.scss',
-    standalone: false,
+    imports: [
+        SearchBoxComponent,
+        DatasetListBannerComponent,
+        FiltersItemsListComponent,
+        NgClass,
+        ExtendedModule,
+        LoaderComponent,
+        NgIf,
+        OrderComponent,
+        MatButton,
+        MatIcon,
+        DatasetListComponent,
+        AsyncPipe,
+        TranslatePipe,
+    ],
 })
 export class ListContainerComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;

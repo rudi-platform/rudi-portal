@@ -15,7 +15,7 @@ export const SPREADSHEET_COLDEF_INDEX: ColDef = {
     selector: 'app-spreadsheet',
     templateUrl: './spreadsheet.component.html',
     styleUrls: ['./spreadsheet.component.scss'],
-    standalone: false
+    imports: [AgGridAngular]
 })
 export class SpreadsheetComponent {
 

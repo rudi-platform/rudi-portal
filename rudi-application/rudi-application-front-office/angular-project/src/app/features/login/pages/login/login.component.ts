@@ -1,6 +1,15 @@
+import {NgClass, NgIf} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatError, MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -8,8 +17,9 @@ import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/capt
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
-import {RudiCaptchaComponent} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
+import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
+import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Observable, of} from 'rxjs';
@@ -19,7 +29,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, NgIf, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class LoginComponent implements OnInit {
 

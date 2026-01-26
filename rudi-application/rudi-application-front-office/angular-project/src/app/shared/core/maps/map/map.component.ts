@@ -1,12 +1,15 @@
+import {NgFor, NgIf} from '@angular/common';
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {DomSanitizer} from '@angular/platform-browser';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService, GPS_PROJECTION} from '@core/services/data-set/display-map.service';
 import {LogService} from '@core/services/log.service';
 import {MAP_PROTOCOLS} from '@core/services/map/map-protocols';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {createWmtsBaseLayer, MapLayerFunction} from '@shared/core/maps/map/map.layer.function';
 import {getDefaultCrs} from '@shared/core/maps/map/map.media.layer.function';
@@ -31,13 +34,15 @@ import View from 'ol/View';
 import proj4 from 'proj4';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {SearchAutocompleteComponent} from '../../search/search-autocomplete/search-autocomplete.component';
+import {MapPopupComponent} from '../map-popup/map-popup.component';
 import MediaTypeEnum = Media.MediaTypeEnum;
 
 @Component({
     selector: 'app-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
-    standalone: false
+    imports: [NgIf, SearchAutocompleteComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, NgFor, MatMenuItem, MapPopupComponent, TranslatePipe]
 })
 export class MapComponent implements AfterViewInit, OnInit {
 

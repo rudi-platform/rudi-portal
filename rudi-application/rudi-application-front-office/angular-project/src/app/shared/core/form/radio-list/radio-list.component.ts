@@ -1,6 +1,9 @@
 import {Component, Input} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {NgClass, NgFor} from '@angular/common';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 
 /**
  * Composant générique de listes de suggestions radio bindées sur FormControl
@@ -9,7 +12,7 @@ import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
     selector: 'app-radio-list',
     templateUrl: './radio-list.component.html',
     styleUrls: ['./radio-list.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, NgClass, ExtendedModule, NgFor, MatRadioButton]
 })
 export class RadioListComponent {
 

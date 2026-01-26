@@ -10,12 +10,14 @@ import {DataRequestItem} from '@features/project/model/data-request-item';
 import {NewDatasetRequestTableData, RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
 import {NewDatasetRequest, NewDatasetRequestStatus} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
+import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
+import {TranslatePipe} from '@ngx-translate/core';
 
 
 @Component({
     selector: 'app-new-dataset-request-table',
     templateUrl: './new-dataset-request-table.component.html',
-    standalone: false
+    imports: [DatasetTableComponent, TranslatePipe]
 })
 export class NewDatasetRequestTableComponent {
     newDatasetsRequest: NewDatasetRequestTableData[] = [];

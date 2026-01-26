@@ -1,6 +1,9 @@
+import {NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {MatCard} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
+import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectDependenciesFetchers, ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
 import {LogService} from '@core/services/log.service';
@@ -9,13 +12,18 @@ import {PageTitleService} from '@core/services/page-title.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
-import {TranslateService} from '@ngx-translate/core';
-import {TabComponent} from '@shared/core/common/tab/tab.component';
-import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ProjectHeadingComponent} from '@shared/business/projects/project-heading/project-heading.component';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {TabComponent, TabComponent as TabComponent_1} from '@shared/core/common/tab/tab.component';
+import {TabsComponent, TabsComponent as TabsComponent_1} from '@shared/core/common/tabs/tabs.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {WorkflowFormDialogOutputData} from '@shared/core/workflow/forms/workflow-form-dialog/types';
 import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
+import {TabContentDirective} from '@shared/utils/directives/tab-content-directive/tab-content.directive';
+import {TabsLayoutDirective} from '@shared/utils/directives/tab-layout-directive/tabs-layout.directive';
 import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {Form, Status} from 'micro_service_modules/api-bpmn';
 import {OwnerType} from 'micro_service_modules/konsent/konsent-api';
@@ -35,12 +43,16 @@ import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_serv
 import moment from 'moment';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
+import {ProjectMainInformationsComponent} from '../../../project/components/project-main-informations/project-main-informations.component';
+import {ProjectApiTabComponent} from '../../components/project-api-tab/project-api-tab.component';
+import {ProjectBasicDetailsComponent} from '../../components/project-basic-details/project-basic-details.component';
+import {ProjectDatasetsTabComponent} from '../../components/project-datasets-tab/project-datasets-tab.component';
 
 @Component({
     selector: 'app-my-project-details',
     templateUrl: './my-project-details.component.html',
     styleUrls: ['./my-project-details.component.scss'],
-    standalone: false
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, ProjectHeadingComponent, TabsComponent_1, TabComponent_1, MatCard, ProjectMainInformationsComponent, ProjectDatasetsTabComponent, NgIf, ProjectApiTabComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectBasicDetailsComponent, TranslatePipe]
 })
 export class MyProjectDetailsComponent implements OnInit {
     public childrenIsLoading: boolean;

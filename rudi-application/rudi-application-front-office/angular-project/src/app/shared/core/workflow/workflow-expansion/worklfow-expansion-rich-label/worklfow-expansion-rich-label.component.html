@@ -1,0 +1,8 @@
+<p class="workflow-label" *ngIf="value">
+    <mat-label class="workflow-label-title">
+        {{ label }}
+    </mat-label>
+    <mat-label class="workflow-label-subtitle">
+        <span [innerHTML]="safeValue"></span>
+    </mat-label>
+</p>

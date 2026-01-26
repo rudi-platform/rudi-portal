@@ -1,11 +1,17 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialogActions} from '@angular/material/dialog';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {ProjectDatasetPictoType} from '@features/project/model/project-dataset-picto-type';
 import {DataRequestItem} from '../../model/data-request-item';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatLabel, MatHint, MatFormField, MatError} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {NgIf} from '@angular/common';
+import {TranslatePipe} from '@ngx-translate/core';
 
 /**
  * Les données que peuvent accepter la Dialog
@@ -21,7 +27,7 @@ export interface NewDataSetDialogData {
     selector: 'app-edit-new-data-set-dialog',
     templateUrl: './edit-new-data-set-dialog.component.html',
     styleUrls: ['./edit-new-data-set-dialog.component.scss'],
-    standalone: false
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatDialogClose, MatIcon, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, NgIf, MatError, MatDialogActions, MatButton, TranslatePipe]
 })
 export class EditNewDataSetDialogComponent implements OnInit {
 

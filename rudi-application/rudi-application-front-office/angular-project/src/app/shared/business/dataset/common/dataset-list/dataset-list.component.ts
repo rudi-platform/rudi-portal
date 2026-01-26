@@ -1,13 +1,19 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {NgClass, NgFor, NgIf} from '@angular/common';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 import {SafeResourceUrl} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {KonsultMetierService, MAX_RESULTS_PER_PAGE} from '@core/services/konsult-metier.service';
 import {LogService} from '@core/services/log.service';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Metadata, MetadataList} from 'micro_service_modules/api-kaccess';
+import {NgxPaginationModule} from 'ngx-pagination';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {debounceTime, takeUntil, tap} from 'rxjs/operators';
+import {DataSetCardComponent} from '../data-set-card/data-set-card.component';
 
 const FIRST_PAGE = 1;
 const EMPTY_METADATA_LIST: MetadataList = {
@@ -19,9 +25,9 @@ const EMPTY_METADATA_LIST: MetadataList = {
     selector: 'app-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, NgClass, ExtendedModule, NgFor, DataSetCardComponent, NgxPaginationModule, TranslatePipe],
 })
-export class DatasetListComponent implements OnInit {
+export class DatasetListComponent implements OnInit, OnDestroy {
     // Indique si on affiche le loader pendant le chargement es JDD
     public isLoading = false;
     metadataList = EMPTY_METADATA_LIST;

@@ -1,16 +1,20 @@
+import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
+import {IsSectionDisplayedPipe} from '@shared/core/workflow/forms/workflow-form/pipes/is-section-displayed.pipe';
+import {IsSectionOnlyHelpPipe} from '@shared/core/workflow/forms/workflow-form/pipes/is-section-only-help.pipe';
 import {WorkflowFormUtils} from '@shared/core/workflow/forms/workflow-form/workflow-form.utils';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {getSectionWithFields} from '@shared/utils/workflow-form-utils';
 import {Form, Section} from 'micro_service_modules/api-bpmn';
+import {WorkflowFieldTemplateComponent} from '../../fields/workflow-field-template/workflow-field-template.component';
 
 @Component({
     selector: 'app-workflow-form',
     templateUrl: './workflow-form.component.html',
     styleUrls: ['./workflow-form.component.scss'],
-    standalone: false
+    imports: [NgIf, FormsModule, ReactiveFormsModule, NgFor, NgTemplateOutlet, WorkflowFieldTemplateComponent, IsSectionDisplayedPipe, IsSectionOnlyHelpPipe]
 })
 export class WorkflowFormComponent implements OnInit {
     formGroup: FormGroup;

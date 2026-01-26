@@ -1,5 +1,10 @@
 import {Clipboard} from '@angular/cdk/clipboard';
 import {Component, Input, OnInit} from '@angular/core';
+import {MatButton} from '@angular/material/button';
+import {MatInput} from '@angular/material/input';
+import {NgIf} from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
+import {MatSuffix} from '@angular/material/form-field';
 
 /**
  * Composant génerique du boutton copy avec/sans icon visibilité
@@ -8,7 +13,7 @@ import {Component, Input, OnInit} from '@angular/core';
     selector: 'app-copied-button',
     templateUrl: './copied-button.component.html',
     styleUrls: ['./copied-button.component.scss'],
-    standalone: false
+    imports: [MatButton, MatInput, NgIf, MatIcon, MatSuffix]
 })
 export class CopiedButtonComponent implements OnInit {
 

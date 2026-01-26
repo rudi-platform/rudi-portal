@@ -1,12 +1,13 @@
 import {Component, Input} from '@angular/core';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'app-boolean-data-block',
     templateUrl: './boolean-data-block.component.html',
     styleUrls: ['./boolean-data-block.component.scss'],
-    standalone: false
+    imports: [MatIcon]
 })
 export class BooleanDataBlockComponent {
 

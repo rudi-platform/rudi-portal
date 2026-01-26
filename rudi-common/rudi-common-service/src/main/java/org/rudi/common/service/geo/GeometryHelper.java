@@ -4,6 +4,7 @@
 package org.rudi.common.service.geo;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.geojson.GeoJSONDataStoreFactory;
@@ -42,8 +45,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 /**
  * @author FNI18300
@@ -94,7 +95,7 @@ public class GeometryHelper {
 		}
 	}
 
-	public Geometry convertGeometryFromGeoJson(String geojson, int srid, boolean makeValid) throws IOException {
+	public Geometry convertGeometryFromGeoJson(String geojson, int srid, boolean makeValid) throws IOException, URISyntaxException {
 		if (geojson == null) {
 			return null;
 		}

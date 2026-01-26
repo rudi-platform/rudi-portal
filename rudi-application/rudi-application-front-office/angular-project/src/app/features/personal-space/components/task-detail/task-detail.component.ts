@@ -1,5 +1,6 @@
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -10,7 +11,8 @@ import {
     LinkedDatasetTaskDependencyFetchers
 } from '@core/services/tasks/projekt/linked-dataset-task-dependencies.service';
 import {NewDatasetRequestTaskDepenciesService} from '@core/services/tasks/projekt/new-dataset-request-task-depencies.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {map} from 'rxjs/operators';
@@ -20,7 +22,7 @@ import {RequestDisplayData} from './request-display-data';
     selector: 'app-task-detail',
     templateUrl: './task-detail.component.html',
     styleUrls: ['./task-detail.component.scss'],
-    standalone: false
+    imports: [MatCard, MatCardTitle, LoaderComponent, NgIf, MatCardContent, TranslatePipe]
 })
 export class TaskDetailComponent implements OnInit {
     loading = false;

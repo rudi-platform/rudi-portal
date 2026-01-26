@@ -13,7 +13,10 @@
         <app-tab [label]="'personalSpace.myNotifications.tabTitle'|translate"
                  [icon]="'icon-demands'">
             <ng-template>
-                <app-tasks [loading]="searchIsRunning" [requestsToStudy]="requestsToStudy"></app-tasks>
+                <!-- reload est appelé par TasksComponent à chaque fois que l'onglet est affiché -->
+                <app-tasks [loading]="searchIsRunning"
+                           [requestsToStudy]="requestsToStudy"
+                           (reload)="loadTasks()"></app-tasks>
             </ng-template>
         </app-tab>
         <app-tab [label]="'personalSpace.myTasksHistories.tabTitle'|translate"

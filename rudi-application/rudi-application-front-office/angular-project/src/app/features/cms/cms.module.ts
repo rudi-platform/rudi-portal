@@ -11,14 +11,14 @@ import {ProjectModule} from '@features/project/project.module';
 import {SharedModule} from '@shared/shared.module';
 
 @NgModule({
-    declarations: [DetailComponent, ListComponent, NewsListComponent, CmsOrderComponent],
     imports: [
         CommonModule,
         SharedModule,
         CoreModule,
         CmsRoutingModule,
         ProjectModule,
-        OrganizationModule
+        OrganizationModule,
+        DetailComponent, ListComponent, NewsListComponent, CmsOrderComponent
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}

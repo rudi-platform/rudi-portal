@@ -20,7 +20,7 @@ Le frontend RUDI offre les fonctionnalités suivantes :
 
 L'application est développée avec :
 
-- **Angular 17** : Framework frontend
+- **Angular 19** : Framework frontend
 - **TypeScript** : Langage de programmation
 - **SCSS** : Préprocesseur CSS
 - **NgRx** : Gestion d'état (pattern Redux)

@@ -1,14 +1,26 @@
+import {AsyncPipe, DatePipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 import {Component, Input, SecurityContext} from '@angular/core';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatDivider} from '@angular/material/divider';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {LanguageService} from '@core/i18n/language.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
+import {OrganizationLogoComponent} from '@shared/business/organisation/organization-logo/organization-logo.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {Licence, LicenceCustom, Media, Metadata} from 'micro_service_modules/api-kaccess';
 import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
 import {DetailFunctions} from '../../pages/detail/detail-functions';
+import {DataSetInfosComponent} from '../data-set-infos/data-set-infos.component';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import MediaTypeEnum = Media.MediaTypeEnum;
 
@@ -16,7 +28,7 @@ import MediaTypeEnum = Media.MediaTypeEnum;
     selector: 'app-dataset-informations',
     templateUrl: './dataset-informations.component.html',
     styleUrls: ['./dataset-informations.component.scss'],
-    standalone: false
+    imports: [LoaderComponent, NgIf, MatCard, MatCardTitle, MatCardContent, MatButton, MatTooltip, MatIcon, NgFor, DataSetInfosComponent, OrganizationLogoComponent, MatDivider, ContactButtonComponent, DatasetsInfosComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe]
 })
 export class DatasetInformationsComponent {
     @Input() mediaType = mediaType.Media.MediaTypeEnum;
@@ -98,7 +110,6 @@ export class DatasetInformationsComponent {
 
 
     sanitize(html: string): SafeHtml {
-
         return this.domSanitizer.sanitize(SecurityContext.HTML, html);
     }
 }

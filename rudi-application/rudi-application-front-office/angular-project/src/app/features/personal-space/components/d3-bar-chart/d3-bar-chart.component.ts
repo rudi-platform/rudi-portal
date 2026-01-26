@@ -1,17 +1,20 @@
-import {Component, ElementRef, Input} from '@angular/core';
-import * as d3 from 'd3';
+import {NgFor} from '@angular/common';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {MARGIN, WINDOWS_HEIGHT, WINDOWS_WIDTH} from '@core/services/selfdata-dataset/barchart.service';
 import {DEFAULT_HEIGHT, TpbcDataInterface} from '@core/services/selfdata-dataset/tpbcData.interface';
+import {TranslatePipe} from '@ngx-translate/core';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
+import * as d3 from 'd3';
 
 @Component({
     selector: 'app-d3-bar-chart',
     templateUrl: './d3-bar-chart.component.html',
     styleUrls: ['./d3-bar-chart.component.scss'],
-    standalone: false
+    imports: [NgFor, MatIcon, TranslatePipe]
 })
-export class D3BarChartComponent {
+export class D3BarChartComponent implements OnInit {
     @Input() graphBar: TpbcDataInterface;
 
     private margin = MARGIN;

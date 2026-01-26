@@ -1,3 +1,4 @@
+import {NgIf} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -5,15 +6,21 @@ import {LogService} from '@core/services/log.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {UserService} from '@core/services/user.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {PageHeadingComponent} from '@shared/core/layout/page-heading/page-heading.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
 import {Organization, OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
 import {switchMap, tap} from 'rxjs/operators';
+import {AdministrationTabComponent} from '../../components/administration-tab/administration-tab.component';
+import {OrganizationInformationsComponent} from '../../components/organization-informations/organization-informations.component';
 
 
 @Component({
     selector: 'app-detail',
     templateUrl: './detail.component.html',
-    standalone: false
+    imports: [PageComponent, PageHeadingComponent, TabsComponent, TabComponent, NgIf, OrganizationInformationsComponent, AdministrationTabComponent, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
 

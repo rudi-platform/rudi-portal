@@ -8,7 +8,7 @@ describe('BooleanDataBlockComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BooleanDataBlockComponent]
+            imports: [BooleanDataBlockComponent]
         })
             .compileComponents();
     });

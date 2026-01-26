@@ -14,12 +14,13 @@ import {TranslateService} from '@ngx-translate/core';
 import {DatasetsTableData, RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import moment from 'moment';
+import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
 
 
 @Component({
     selector: 'app-open-dataset-table',
     templateUrl: './open-dataset-table.component.html',
-    standalone: false
+    imports: [DatasetTableComponent]
 })
 export class OpenDatasetTableComponent {
     openDatasets: DatasetsTableData[] = [];

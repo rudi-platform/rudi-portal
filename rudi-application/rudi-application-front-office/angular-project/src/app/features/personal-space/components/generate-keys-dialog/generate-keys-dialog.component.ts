@@ -1,10 +1,19 @@
+import {NgIf} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatError, MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
+import {TranslatePipe} from '@ngx-translate/core';
+import {CopiedButtonComponent} from '@shared/core/common/copied-button/copied-button.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {MonthYearDatepickerComponent} from '@shared/core/form/month-year-datepicker/month-year-datepicker.component';
 import {ProjectKey} from 'micro_service_modules/acl/acl-model';
 import {ProjectKeyCredential, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
@@ -21,7 +30,7 @@ export interface GenerateKeysDialogData {
     selector: 'app-generate-keys-dialog',
     templateUrl: './generate-keys-dialog.component.html',
     styleUrl: './generate-keys-dialog.component.scss',
-    standalone: false
+    imports: [MatDialogContent, NgIf, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MonthYearDatepickerComponent, MatIconButton, MatSuffix, MatIcon, LoaderComponent, CopiedButtonComponent, MatCheckbox, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class GenerateKeysDialogComponent implements OnInit {
 

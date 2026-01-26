@@ -8,7 +8,7 @@ describe('BackPaginationComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BackPaginationComponent]
+            imports: [BackPaginationComponent]
         })
             .compileComponents();
     });

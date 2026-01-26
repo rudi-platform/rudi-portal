@@ -8,7 +8,7 @@ describe('DataSetCardComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [DataSetCardComponent]
+            imports: [DataSetCardComponent]
         })
             .compileComponents();
     });

@@ -10,7 +10,6 @@ import {switchMap} from 'rxjs/operators';
 @Component({
     template: '' // required by Angular
     ,
-    standalone: false
 })
 export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item> implements OnInit, OnDestroy {
     @Input() ulClass?: string;
@@ -28,7 +27,7 @@ export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item
     @Input() hiddenValues?: T[];
 
     readonly counter$: Observable<number>;
-    @Output() submit = new EventEmitter<void>();
+    @Output() submitFormEvent = new EventEmitter<void>();
     @Output() selectedItemsChange = new EventEmitter<I[]>();
     private valueSubscription?: Subscription;
 
@@ -71,7 +70,7 @@ export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item
 
     submitForm(): void {
         this.filter.value = this.getValueFromFormGroup();
-        this.submit.emit();
+        this.submitFormEvent.emit();
     }
 
     protected abstract get selectedItems(): I[];

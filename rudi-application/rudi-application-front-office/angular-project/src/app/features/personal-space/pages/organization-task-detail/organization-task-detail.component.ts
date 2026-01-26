@@ -1,5 +1,7 @@
+import {AsyncPipe, NgFor, NgIf} from '@angular/common';
 import {Component, OnInit, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LogService} from '@core/services/log.service';
 import {PageTitleService} from '@core/services/page-title.service';
@@ -13,8 +15,14 @@ import {
 } from '@core/services/tasks/strukture/organization/organization-task-dependencies.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {OrganizationTaskSearchCriteria} from '@core/services/tasks/strukture/organization/organization-task-search-criteria.interface';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
+import {PageComponent} from '@shared/core/layout/page/page.component';
+import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
+import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Task} from 'micro_service_modules/projekt/projekt-api';
@@ -22,12 +30,14 @@ import {OrganizationService} from 'micro_service_modules/strukture/api-strukture
 import {Organization, OrganizationStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
+import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
 
 @Component({
     selector: 'app-organization-task-detail',
     templateUrl: './organization-task-detail.component.html',
     styleUrls: ['./organization-task-detail.component.scss'],
-    standalone: false
+    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, NgFor, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
 })
 export class OrganizationTaskDetailComponent
     extends TaskDetailComponent<Organization, OrganizationDependencies, OrganizationTask, OrganizationTaskSearchCriteria>

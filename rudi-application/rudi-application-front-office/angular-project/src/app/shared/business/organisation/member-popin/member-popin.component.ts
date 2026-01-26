@@ -1,20 +1,28 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {
     OrganizationMemberDialogData
 } from '@features/organization/components/administration-tab/organization-members-table/organization-member-dialog-data';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {OrganizationRole} from 'micro_service_modules/strukture/api-strukture';
 import {OrganizationMember} from 'micro_service_modules/strukture/strukture-model';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {MatFormField} from '@angular/material/form-field';
+import {MatSelect} from '@angular/material/select';
+import {NgFor} from '@angular/common';
+import {MatOption} from '@angular/material/core';
 
 @Component({
     selector: 'app-member-popin',
     templateUrl: './member-popin.component.html',
     styleUrls: ['./member-popin.component.scss'],
-    standalone: false
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatInput, FormsModule, MatFormField, MatSelect, NgFor, MatOption, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class MemberPopinComponent {
 

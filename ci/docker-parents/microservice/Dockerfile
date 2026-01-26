@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM openjdk:17.0.2-jdk-slim-bullseye
+FROM eclipse-temurin:21
 USER root
 LABEL org.opencontainers.image.authors="rudi@rennes-metropole.fr"
 ENV TZ=Europe/Paris

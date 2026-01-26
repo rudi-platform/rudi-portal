@@ -1,9 +1,12 @@
-import {Location} from '@angular/common';
+import {Location, NgClass, NgIf, NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatButton, MatMiniFabAnchor, MatMiniFabButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {AuthenticationState} from '@core/services/authentication/authentication-method';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
@@ -12,10 +15,11 @@ import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.ser
 import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {forkJoin, switchMap} from 'rxjs';
+import {CustomRouterlinkDirective} from '../../../utils/directives/custom-routerlink-directive/custom-routerlink.directive';
 
 
 const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
@@ -24,7 +28,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    standalone: false
+    imports: [RouterLink, CustomRouterlinkDirective, NgIf, NgClass, ExtendedModule, NgTemplateOutlet, MatButton, MatMenuTrigger, MatMiniFabAnchor, MatIcon, MatMiniFabButton, RouterLinkActive, MatMenu, MatMenuItem, TranslatePipe]
 })
 export class HeaderComponent implements OnInit {
 

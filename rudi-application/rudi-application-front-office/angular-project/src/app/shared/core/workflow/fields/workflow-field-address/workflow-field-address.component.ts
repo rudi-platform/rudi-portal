@@ -1,19 +1,25 @@
+import {AsyncPipe, KeyValuePipe, NgFor, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatOption} from '@angular/material/core';
+import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 import {RvaService} from '@core/services/rva/rva.service';
 import {SelfdataRvaService} from '@core/services/rva/selfdata/selfdata-rva.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
 import {Address} from 'micro_service_modules/api-rva';
 import {Observable, of} from 'rxjs';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {LoaderComponent} from '../../../common/loader/loader.component';
 
 @Component({
     selector: 'app-workflow-field-address',
     templateUrl: './workflow-field-address.component.html',
     styleUrls: ['./workflow-field-address.component.scss'],
-    standalone: false
+    imports: [FormsModule, ReactiveFormsModule, NgIf, MatFormField, MatInput, MatAutocompleteTrigger, MatAutocomplete, NgFor, MatOption, MatError, LoaderComponent, AsyncPipe, KeyValuePipe, TranslatePipe]
 })
 export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implements OnInit {
     private selectedAddress: Address = null;

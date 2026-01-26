@@ -1,13 +1,16 @@
+import {NgClass} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-reset-password-error-box',
     templateUrl: './reset-password-error-box.component.html',
     styleUrls: ['./reset-password-error-box.component.scss'],
-    standalone: false
+    imports: [NgClass, ExtendedModule, TranslatePipe]
 })
 export class ResetPasswordErrorBoxComponent implements OnInit {
     /**

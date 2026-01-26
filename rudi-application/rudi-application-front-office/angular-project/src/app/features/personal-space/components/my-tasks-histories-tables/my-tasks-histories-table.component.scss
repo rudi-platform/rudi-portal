@@ -60,7 +60,7 @@
 }
 
 // Centrer le contenu de la colonne "status"
-::ng-deep .status-header .mat-sort-header-container {
+::ng-deep .functionalStatus-header .mat-sort-header-container {
     justify-content: center;
 }
 
@@ -104,6 +104,7 @@
 
 .table-and-loader-container {
     position: relative;
+    overflow-x: auto;
 }
 
 .table-loader {

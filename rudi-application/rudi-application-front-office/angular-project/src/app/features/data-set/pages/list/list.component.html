@@ -1,7 +1,7 @@
 <mat-sidenav-container>
     <!--  Liste des filtres-->
     <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (close)="sidenav.close()" titleKey="filterBox.filtres">
+        <app-filter-sidenav-container (closeSidenav)="sidenav.close()" titleKey="filterBox.filtres">
 
             <div (click)="sidenavOrder.open(); sidenav.close()" class="rudi-sidenav-container-filter">
                 {{'sortBox.sort'|translate}}
@@ -62,24 +62,24 @@
     </mat-sidenav>
 
     <mat-sidenav #sidenavOrder (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (close)="orderForm.revert(); sidenavOrder.close(); sidenav.open()"
+        <app-filter-sidenav-container (closeSidenav)="orderForm.revert(); sidenavOrder.close(); sidenav.open()"
                                       titleKey="sortBox.sort">
             <app-order-filter-form
                 #orderForm
                 [values]="orders"
-                (submit)="sidenavOrder.close()"
+                (submitFormEvent)="sidenavOrder.close()"
                 ulClass="ps-5">
             </app-order-filter-form>
         </app-filter-sidenav-container>
     </mat-sidenav>
 
     <mat-sidenav #sidenavThemes (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (close)="themesForm.revert(); sidenavThemes.close(); sidenav.open()"
+        <app-filter-sidenav-container (closeSidenav)="themesForm.revert(); sidenavThemes.close(); sidenav.open()"
                                       titleKey="filterBox.thematique">
             <app-themes-filter-form
                 #themesForm
                 (selectedItemsChange)="selectedThemeItems = $event"
-                (submit)="sidenavThemes.close()"
+                (submitFormEvent)="sidenavThemes.close()"
                 [values]="themes"
                 ulClass="ps-5">
             </app-themes-filter-form>
@@ -87,12 +87,13 @@
     </mat-sidenav>
 
     <mat-sidenav #sidenavProducerNames (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (close)="producerNamesForm.revert(); sidenavProducerNames.close(); sidenav.open()"
+        <app-filter-sidenav-container
+            (closeSidenav)="producerNamesForm.revert(); sidenavProducerNames.close(); sidenav.open()"
                                       titleKey="filterBox.producteur">
             <app-producer-names-filter-form
                 #producerNamesForm
                 (selectedItemsChange)="selectedProducerItems = $event"
-                (submit)="sidenavProducerNames.close()"
+                (submitFormEvent)="sidenavProducerNames.close()"
                 [values]="producerNames"
                 ulClass="ps-5">
             </app-producer-names-filter-form>
@@ -100,12 +101,12 @@
     </mat-sidenav>
 
     <mat-sidenav #sidenavDates (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (close)="datesForm.revert(); sidenavDates.close(); sidenav.open()"
+        <app-filter-sidenav-container (closeSidenav)="datesForm.revert(); sidenavDates.close(); sidenav.open()"
                                       titleKey="filterBox.couvertureTemporelle">
             <app-dates-filter-form
                 #datesForm
                 (selectedItemsChange)="selectedDatesItems = $event"
-                (submit)="sidenavDates.close()"
+                (submitFormEvent)="sidenavDates.close()"
                 debutDivClass="d-flex"
                 finDivClass="d-flex mt-3"
                 formClass="d-flex flex-column justify-content-center"
@@ -117,12 +118,12 @@
 
     <mat-sidenav #sidenavRestrictedAccess (keydown.escape)="sidenav.close()" disableClose>
         <app-filter-sidenav-container
-            (close)="restrictedAccessForm.revert(); sidenavRestrictedAccess.close(); sidenav.open()"
+            (closeSidenav)="restrictedAccessForm.revert(); sidenavRestrictedAccess.close(); sidenav.open()"
             titleKey="filterBox.restrictedAccess.statut">
             <app-access-status-filter-form
                 #restrictedAccessForm
                 (selectedItemsChange)="selectedAccessStatusFilterItems = $event"
-                (submit)="sidenavRestrictedAccess.close()"
+                (submitFormEvent)="sidenavRestrictedAccess.close()"
                 [forcedValue]="accessStatusfilterForcedValue"
                 ulClass="ps-5">
             </app-access-status-filter-form>
