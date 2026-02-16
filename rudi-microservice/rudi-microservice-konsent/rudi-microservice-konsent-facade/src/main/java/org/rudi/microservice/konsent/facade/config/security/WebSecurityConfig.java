@@ -2,8 +2,6 @@ package org.rudi.microservice.konsent.facade.config.security;
 
 import java.util.Arrays;
 
-import jakarta.servlet.Filter;
-import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -24,6 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,7 +71,6 @@ public class WebSecurityConfig {
 					}).exceptionHandling(exception -> exception.configure(http))
 					// installation du filtre de type header
 					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 					// configuring the session on the server
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -109,11 +107,6 @@ public class WebSecurityConfig {
 	GrantedAuthorityDefaults grantedAuthorityDefaults() {
 		// Remove the ROLE_ prefix
 		return new GrantedAuthorityDefaults("");
-	}
-
-	@Bean
-	public JwtRequestFilter createJwtRequestFilter() {
-		return new JwtRequestFilter(SB_PERMIT_ALL_URL, utilContextHelper, oAuth2RestTemplate);
 	}
 
 	private Filter createOAuth2Filter() {

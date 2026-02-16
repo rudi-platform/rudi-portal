@@ -83,7 +83,7 @@ public abstract class AbstractAuthenticationWebFilter implements WebFilter {
 				.getFirst(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY);
 
 		if (log.isDebugEnabled()) {
-			log.debug("Header: {}", requestAuthentTokenHeader);
+			log.debug("Header: {}", requestAuthentTokenHeader.substring(25));
 		}
 		if (requestAuthentTokenHeader == null) {
 			return Mono.empty();

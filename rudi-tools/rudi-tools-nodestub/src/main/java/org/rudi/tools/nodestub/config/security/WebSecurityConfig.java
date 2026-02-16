@@ -2,8 +2,6 @@ package org.rudi.tools.nodestub.config.security;
 
 import java.util.Arrays;
 
-import jakarta.servlet.Filter;
-import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -23,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,8 +56,7 @@ public class WebSecurityConfig {
 					.authorizeHttpRequests(
 							authorizeHttpReq -> authorizeHttpReq.requestMatchers(SB_PERMIT_ALL_URL).permitAll())
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class);
 			if (!disablePreAuthentification) {
 				log.warn("Nodestub pre-authentication is enabled");
 				http.addFilterAfter(createPreAuthenticationFilter(), BasicAuthenticationFilter.class);
@@ -86,11 +84,6 @@ public class WebSecurityConfig {
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
-	}
-
-	@Bean
-	public JwtRequestFilter createJwtRequestFilter() {
-		return new JwtRequestFilter(SB_PERMIT_ALL_URL, utilContextHelper, oAuth2RestTemplate);
 	}
 
 	private Filter createOAuth2Filter() {

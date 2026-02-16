@@ -4,21 +4,20 @@ import org.rudi.microservice.acl.core.bean.AppInfo;
 import org.rudi.microservice.acl.facade.controller.api.ApplicationInformationApi;
 import org.rudi.microservice.acl.service.config.ACLConfigurationServiceImpl;
 import org.rudi.microservice.acl.service.mapper.AppInfoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @RestController
+@RequiredArgsConstructor
 public class ApplicationInformationController implements ApplicationInformationApi {
 
-	@Autowired
-	private ACLConfigurationServiceImpl configurationService;
+	private final ACLConfigurationServiceImpl configurationService;
 
-	@Autowired
-	private AppInfoMapper appInfoMapper;
+	private final AppInfoMapper appInfoMapper;
 
 	@Override
 	@ResponseBody

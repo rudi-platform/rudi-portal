@@ -11,7 +11,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
 import org.rudi.microservice.acl.service.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@RequiredArgsConstructor
 public class RudiRegisteredClientRepository implements RegisteredClientRepository {
 
 	@Value("${rudi.access_token.live_duration:5}")
@@ -36,8 +37,7 @@ public class RudiRegisteredClientRepository implements RegisteredClientRepositor
 	@Value("${rudi.refresh_token.live_duration:60}")
 	private int refreshTokenLiveDuration;
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
 	@Override
 	public RegisteredClient findById(String id) {
@@ -71,7 +71,9 @@ public class RudiRegisteredClientRepository implements RegisteredClientRepositor
 				}
 			});
 			builder.tokenSettings(createTokenSettings());
-			builder.redirectUris(uris -> uris.addAll(List.of("/oauth2")));
+			builder.redirectUris(uris -> uris
+					.addAll(List.of("http://localhost:8085/oauth2/authorize", "http://localhost:4200/oauth2/authorize",
+							"http://localhost:4200/login/oauth2/code/rudi-client-oidc")));
 			result = builder.build();
 		}
 		return result;

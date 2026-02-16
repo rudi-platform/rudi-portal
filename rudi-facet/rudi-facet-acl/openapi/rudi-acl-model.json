@@ -78,7 +78,8 @@
 					"PERSON",
 					"ROBOT",
 					"MICROSERVICE",
-					"API"
+					"API",
+					"CAS"
 				]
 			},
 			"AddressType": {

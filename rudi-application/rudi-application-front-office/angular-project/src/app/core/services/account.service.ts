@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {AclService, PasswordChange} from 'micro_service_modules/acl/acl-api';
-import {Account, User} from 'micro_service_modules/acl/acl-model';
+import {Account, Tokens, User} from 'micro_service_modules/acl/acl-model';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 
@@ -124,5 +124,9 @@ export class AccountService {
 
     mustValidateCaptcha(login: string): Observable<boolean> {
         return this.aclService.mustValidateCaptcha(login);
+    }
+
+    authenticate(token: string): Observable<Tokens> {   
+        return this.aclService.authenticate1(token);
     }
 }

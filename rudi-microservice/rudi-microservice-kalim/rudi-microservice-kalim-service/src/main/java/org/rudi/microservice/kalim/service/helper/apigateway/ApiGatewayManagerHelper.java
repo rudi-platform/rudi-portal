@@ -69,6 +69,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	@Override
 	public void createApis(IntegrationRequestEntity integrationRequest, Metadata metadata)
 			throws ApiGatewayApiException {
+		ensureMedias(metadata);
 
 		final List<Media> medias = getValidMedias(metadata);
 		for (Media media : medias) {
@@ -80,6 +81,8 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 	@Override
 	public void updateApis(IntegrationRequestEntity integrationRequest, Metadata metadata, Metadata actualMetadata)
 			throws ApiGatewayApiException {
+		ensureMedias(metadata);
+		ensureMedias(actualMetadata);
 		// On récupère les média valides dans les JDDs
 		List<Media> nextMedias = getValidMedias(metadata);
 		List<Media> previousMedias = getValidMedias(actualMetadata);
@@ -114,7 +117,6 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 		ApiSearchCriteria searchCriteria = new ApiSearchCriteria();
 		searchCriteria.setGlobalId(integrationRequest.getGlobalId());
 		deleteApi(searchCriteria);
-
 	}
 
 	/**
@@ -190,7 +192,7 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 		// Pour tous les médias du JDD
 		return metadata.getAvailableFormats().stream()
 				// On regarde s'ils sont valide d'un point de vue OpenAPI -> on a un template de swagger pour ce format
-				.filter(this::hasOpenApiTemplate).collect(Collectors.toList());
+				.filter(this::hasOpenApiTemplate).toList();
 	}
 
 	@Override
@@ -412,11 +414,11 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 		Map<String, Media> nameMediaMapFirst = first.stream()
 				.collect(Collectors.toMap(this::buildAPIName, Function.identity()));
 
-		List<String> apiNamesFirst = first.stream().map(this::buildAPIName).collect(Collectors.toList());
-		List<String> apiNamesSecond = second.stream().map(this::buildAPIName).collect(Collectors.toList());
+		List<String> apiNamesFirst = first.stream().map(this::buildAPIName).toList();
+		List<String> apiNamesSecond = second.stream().map(this::buildAPIName).toList();
 
 		Collection<String> apiNamesInFirstNotInSecond = CollectionUtils.subtract(apiNamesFirst, apiNamesSecond);
-		return apiNamesInFirstNotInSecond.stream().map(nameMediaMapFirst::get).collect(Collectors.toList());
+		return apiNamesInFirstNotInSecond.stream().map(nameMediaMapFirst::get).toList();
 	}
 
 	/**
@@ -430,11 +432,11 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 		Map<String, Media> nameMediaMapFirst = first.stream()
 				.collect(Collectors.toMap(this::buildAPIName, Function.identity()));
 
-		List<String> apiNamesFirst = first.stream().map(this::buildAPIName).collect(Collectors.toList());
-		List<String> apiNamesSecond = second.stream().map(this::buildAPIName).collect(Collectors.toList());
+		List<String> apiNamesFirst = first.stream().map(this::buildAPIName).toList();
+		List<String> apiNamesSecond = second.stream().map(this::buildAPIName).toList();
 
 		Collection<String> apiNamesInFirstNotInSecond = CollectionUtils.intersection(apiNamesFirst, apiNamesSecond);
-		return apiNamesInFirstNotInSecond.stream().map(nameMediaMapFirst::get).collect(Collectors.toList());
+		return apiNamesInFirstNotInSecond.stream().map(nameMediaMapFirst::get).toList();
 	}
 
 	/**
@@ -471,6 +473,12 @@ public class ApiGatewayManagerHelper implements ApiManagerHelper {
 			}
 		} catch (Exception e) {
 			throw new DeleteApiException(e);
+		}
+	}
+
+	private void ensureMedias(Metadata metadata) {
+		if (CollectionUtils.isEmpty(metadata.getAvailableFormats())) {
+			metadata.setAvailableFormats(new ArrayList<>());
 		}
 	}
 }

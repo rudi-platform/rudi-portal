@@ -21,7 +21,7 @@
 #
 
 # Make the Java base image and version configurable (useful for trying newer Java versions and flavors)
-ARG BASE_IMAGE="gdcc/base:6.6-noble-p6.2024.6-j17"
+ARG BASE_IMAGE="gdcc/base:6.10-noble-p6.2025.10-j17"
 FROM $BASE_IMAGE
 
 # Make Payara use the "ct" profile for MicroProfile Config. Will switch various defaults for the application
@@ -33,9 +33,6 @@ ENV MP_CONFIG_PROFILE=ct
 # defaults for glassfish-web.xml and other places.
 ENV DATAVERSE_FILES_UPLOADS="${STORAGE_DIR}/uploads"
 ENV DATAVERSE_FILES_DOCROOT="${STORAGE_DIR}/docroot"
-
-#USER root
-#RUN apt-get update && apt-get upgrade -y
 
 # Copy app and deps from assembly in proper layers
 COPY --chown=payara:payara maven/deps ${DEPLOY_DIR}/dataverse/WEB-INF/lib/
@@ -49,16 +46,20 @@ RUN ln -s "${DEPLOY_DIR}/dataverse/supplements/jhove.conf" "${PAYARA_DIR}/glassf
     ln -s "${DEPLOY_DIR}/dataverse/supplements/jhoveConfig.xsd" "${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/config/jhoveConfig.xsd" && \
     sed -i "${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/config/jhove.conf" -e "s:/usr/local/payara./glassfish/domains/domain1:${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}:g"
 
-LABEL org.opencontainers.image.created="2025-01-22T15:58:05+0000" \
+# Workaround for fabric8io/docker-maven-plugin#1865 (both arg lines)
+ARG APP_IMAGE_VERSION
+ARG BASE_IMAGE
+LABEL org.opencontainers.image.created="@git.build.time@" \
       org.opencontainers.image.authors="Research Data Management at FZJ <forschungsdaten@fz-juelich.de>" \
       org.opencontainers.image.url="https://guides.dataverse.org/en/latest/container/" \
       org.opencontainers.image.documentation="https://guides.dataverse.org/en/latest/container/" \
       org.opencontainers.image.source="https://github.com/IQSS/dataverse" \
-      org.opencontainers.image.version="6.5" \
-      org.opencontainers.image.revision="69ebed23" \
+      org.opencontainers.image.version="$APP_IMAGE_VERSION" \
+      org.opencontainers.image.revision="@git.commit.id.abbrev@" \
       org.opencontainers.image.vendor="Global Dataverse Community Consortium" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.title="Dataverse Application Image" \
       org.opencontainers.image.description="This container image provides the research data repository software Dataverse in a box." \
-      org.dataverse.deps.postgresql.version="15" \
-      org.dataverse.deps.solr.version="9.4.1"
+      org.opencontainers.image.base.name="$BASE_IMAGE" \
+      org.dataverse.deps.postgresql.version="17" \
+      org.dataverse.deps.solr.version="9.8.0"

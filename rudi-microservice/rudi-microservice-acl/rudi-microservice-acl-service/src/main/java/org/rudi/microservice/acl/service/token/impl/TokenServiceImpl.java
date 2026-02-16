@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.rudi.common.core.util.AnonymizerUtils;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceExceptionsStatus;
 import org.rudi.microservice.acl.core.bean.Token;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Component
 @Transactional(readOnly = true)
+@Slf4j
 public class TokenServiceImpl implements TokenService {
 
 	private final TokenDao tokenRepository;
@@ -53,6 +56,7 @@ public class TokenServiceImpl implements TokenService {
 		} else {
 			throw new AppServiceException("Invalid token", AppServiceExceptionsStatus.BAD_REQUEST);
 		}
+		log.info("=====>Saving token for user {} {}", user.getLogin(), AnonymizerUtils.anonymize(token.getValue()));
 		return tokenMapper.entityToDto(tokenRepository.save(entity));
 	}
 
@@ -74,12 +78,16 @@ public class TokenServiceImpl implements TokenService {
 	@Override
 	@Transactional(readOnly = false)
 	public void removeTokenByUserId(String userId) {
-		removeTokenByUserId(userId, null);
+		removeToken(userId, null);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	public void removeTokenByUserId(String userId, String value) {
+		removeToken(userId, value);
+	}
+
+	private void removeToken(String userId, String value) {
 		TokenSearchCritera searchCritera = TokenSearchCritera.builder().userId(userId).token(value).build();
 		Page<TokenEntity> tokens = tokenCustomRepository.searchTokens(searchCritera, Pageable.unpaged());
 		if (!tokens.isEmpty()) {

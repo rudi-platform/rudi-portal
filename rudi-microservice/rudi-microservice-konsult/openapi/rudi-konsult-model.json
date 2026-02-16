@@ -432,6 +432,18 @@
                 },
                 "description": "Correspondance entre un label et un lien vers une page d'aide"
             },
+            "Script": {
+                "description": "Correspondance entre un lien vers un script et un booléen indiquant si le script doit être rechargé",
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    },
+                    "reload": {
+                        "type": "boolean"
+                    }
+                }
+            },
             "FrontOfficeProperties": {
                 "type": "object",
                 "properties": {
@@ -502,7 +514,7 @@
                     "scripts": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/Script"
                         }
                     }
                 }

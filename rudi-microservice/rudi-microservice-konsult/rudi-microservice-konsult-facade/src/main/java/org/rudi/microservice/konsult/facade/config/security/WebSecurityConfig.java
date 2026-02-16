@@ -2,8 +2,6 @@ package org.rudi.microservice.konsult.facade.config.security;
 
 import java.util.Arrays;
 
-import jakarta.servlet.Filter;
-import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -25,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +44,8 @@ public class WebSecurityConfig {
 			// swagger ui / openapi
 			"/konsult/v3/api-docs/**", "/konsult/swagger-ui/**", "/konsult/swagger-ui.html",
 			"/konsult/swagger-resources/**", "/configuration/ui", "/configuration/security", "/webjars/**",
-			//Url pour le harvester
-			"/konsult/v1/datasets/metadatas/dcat"
-	};
+			// Url pour le harvester
+			"/konsult/v1/datasets/metadatas/dcat" };
 
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;
@@ -79,7 +77,6 @@ public class WebSecurityConfig {
 					}).exceptionHandling(exception -> exception.configure(http))
 					// installation du filtre de type header
 					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterBefore(createJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 					.addFilterAfter(defaultAnonymousAuthenticationFilter, BasicAuthenticationFilter.class)
 					// configuring the session on the server
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -126,10 +123,4 @@ public class WebSecurityConfig {
 	private Filter createOAuth2Filter() {
 		return new OAuth2RequestFilter(SB_PERMIT_ALL_URL, checkTokenUri, utilContextHelper, oAuth2RestTemplate);
 	}
-
-	@Bean
-	public JwtRequestFilter createJwtRequestFilter() {
-		return new JwtRequestFilter(SB_PERMIT_ALL_URL, utilContextHelper, oAuth2RestTemplate);
-	}
-
 }

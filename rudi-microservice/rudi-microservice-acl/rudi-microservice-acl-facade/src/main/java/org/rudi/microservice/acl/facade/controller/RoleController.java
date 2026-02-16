@@ -11,10 +11,11 @@ import org.rudi.microservice.acl.core.bean.Role;
 import org.rudi.microservice.acl.core.bean.RoleSearchCriteria;
 import org.rudi.microservice.acl.facade.controller.api.RolesApi;
 import org.rudi.microservice.acl.service.role.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Controleur pour la gestion des roles des utilisateurs
@@ -22,14 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MCY12700
  */
 @RestController
+@RequiredArgsConstructor
 public class RoleController implements RolesApi {
 
-	@Autowired
-	private RoleService roleService;
-
-	public RoleController() {
-		super();
-	}
+	private final RoleService roleService;
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_ACL_ADMINISTRATOR + ")")

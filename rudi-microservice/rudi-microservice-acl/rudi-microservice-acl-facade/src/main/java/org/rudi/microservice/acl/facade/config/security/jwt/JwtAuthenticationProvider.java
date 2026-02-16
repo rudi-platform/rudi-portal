@@ -6,6 +6,8 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
+import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.JwtTokenData;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
 import org.rudi.microservice.acl.core.bean.AddressType;
 import org.rudi.microservice.acl.core.bean.EmailAddress;
@@ -13,13 +15,23 @@ import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.facade.config.security.AbstractDetailServiceImpl;
 import org.rudi.microservice.acl.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -32,17 +44,59 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProvider extends AbstractDetailServiceImpl implements AuthenticationProvider {
+	@Value("${security.anonymous.login:anonymous}")
+	private String anonymousUsername;
 
 	private final UserService userService;
 
 	private final PasswordEncoder passwordEncoder;
 
-	@Value("${security.anonymous.login:anonymous}")
-	private String anonymousUsername;
+	private final JwtDecoder jwtDecoder;
+
+	private final JwtTokenUtil jwtTokenUtil;
+
+	private final JwtAuthenticationConverter jwtAuthenticationConverter;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) {
-		return checkCredential(authentication);
+		if (authentication instanceof UsernamePasswordAuthenticationToken) {
+			return checkCredential(authentication);
+		} else if (authentication instanceof BearerTokenAuthenticationToken bearer) {
+			Jwt jwt = getJwt(bearer);
+			String iss = jwt.getClaim(JwtClaimNames.ISS);
+			if (AbstractJwtTokenUtil.ISSUER_RUDI.equals(iss)) {
+				return authenticateRudiToken(bearer, jwt);
+			} else {
+				return authenticateCasToken(bearer, jwt);
+			}
+
+		} else {
+			throw new IllegalArgumentException(
+					"Only UsernamePasswordAuthenticationToken and BearerTokenAuthenticationToken are supported");
+		}
+
+	}
+
+	private Authentication authenticateCasToken(BearerTokenAuthenticationToken bearer, Jwt jwt) {
+		log.debug("Token with unknown issuer: {}", jwt.getIssuer());
+
+		return null;
+	}
+
+	protected Authentication authenticateRudiToken(BearerTokenAuthenticationToken bearer, Jwt jwt) {
+		log.debug("Token with RUDI issuer");
+		String token = bearer.getToken();
+		JwtTokenData jwtTokenData = jwtTokenUtil.validateToken(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX + token);
+
+		if (jwtTokenData != null && !jwtTokenData.isHasError() && !jwtTokenData.isExpired()) {
+			return convertToken(jwtTokenData);
+		} else {
+			AbstractAuthenticationToken authenticationToken = jwtAuthenticationConverter.convert(jwt);
+			if (authenticationToken != null && authenticationToken.getDetails() == null) {
+				authenticationToken.setDetails(bearer.getDetails());
+			}
+			return authenticationToken;
+		}
 	}
 
 	/**
@@ -67,9 +121,28 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 		return usernamePasswordAuthenticationToken;
 	}
 
+	public Authentication convertToken(JwtTokenData jwtTokenData) {
+		try {
+			String login = ((AuthenticatedUser) jwtTokenData.getAccount()).getLogin();
+
+			User user = userService.getUserByLogin(login, true);
+			checkUser(user, login);
+
+			AuthenticatedUser authenticatedUser = createAuthenticatedUser(user);
+
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+					login, null, computeGrantedAuthorities(user));
+			usernamePasswordAuthenticationToken.setDetails(authenticatedUser);
+			return usernamePasswordAuthenticationToken;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Invalid token", e);
+		}
+	}
+
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+		return authentication.equals(UsernamePasswordAuthenticationToken.class)
+				|| authentication.equals(BearerTokenAuthenticationToken.class);
 	}
 
 	private void checkUser(User user, String login) {
@@ -126,6 +199,17 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 			return user.getRoles().stream().anyMatch(role -> role.getCode().equalsIgnoreCase(anonymousUsername));
 		} else {
 			return false;
+		}
+	}
+
+	private Jwt getJwt(BearerTokenAuthenticationToken bearer) {
+		try {
+			return jwtDecoder.decode(bearer.getToken());
+		} catch (BadJwtException failed) {
+			log.debug("Failed to authenticate since the JWT was invalid");
+			throw new InvalidBearerTokenException(failed.getMessage(), failed);
+		} catch (JwtException failed) {
+			throw new AuthenticationServiceException(failed.getMessage(), failed);
 		}
 	}
 

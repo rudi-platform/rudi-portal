@@ -32,6 +32,9 @@ export class MyProfilComponent implements OnInit {
                     next: (user: User | undefined) => {
                         this.user = user;
                         this.email = this.getEmail();
+                        if (!this.user?.firstname && !this.user?.lastname) {
+                            this.user.lastname = user?.login;
+                        }
                         this.isLoading = false;
                     },
                     error: (e) => {

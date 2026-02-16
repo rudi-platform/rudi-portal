@@ -140,7 +140,8 @@
 					"PERSON",
 					"API",
 					"MICROSERVICE",
-					"ROBOT"
+					"ROBOT",
+					"CAS"
 				]
 			},
 			"AddressType": {
@@ -523,7 +524,8 @@
 					"AUTHORIZATION_TOKEN",
 					"REFRESH_TOKEN",
 					"ACCESS_TOKEN",
-					"USER_CODE"
+					"USER_CODE",
+					"CODE"
 				]
 			},
 			"Token": {
@@ -564,6 +566,156 @@
 					},
 					"userId": {
 						"type": "string"
+					}
+				}
+			},
+			"Tokens": {
+				"type": "object",
+				"properties": {
+					"jwtToken": {
+						"type": "string"
+					},
+					"refreshToken": {
+						"type": "string"
+					}
+				}
+			},
+			"TokenManagement": {
+				"type": "string",
+				"enum": [
+					"ALWAYS_PROVIDER",
+					"ALWAYS_RUDI",
+					"IF_POSSIBLE_PROVIDER"
+				]
+			},
+			"UserAttribute": {
+				"type": "string",
+				"enum": [
+					"LASTNAME",
+					"FIRSTNAME",
+					"EMAIL"]
+			},
+			"OAuth2AttributeMapping": {
+				"type": "object",
+				"properties": {
+					"userAttribute": {
+						"$ref": "#/components/schemas/UserAttribute"
+					},
+					"oauth2Attribute": {
+						"type": "string"
+					}
+				}
+			},
+			"OAuth2Provider": {
+				"type": "object",
+				"properties": {
+					"authorizationUri": {
+						"type": "string"
+					},
+					"tokenUri": {
+						"type": "string"
+					},
+					"userInfoUri": {
+						"type": "string"
+					},
+					"userInfoAuthenticationMethod": {
+						"type": "string"
+					},
+					"userNameAttribute": {
+						"type": "string"
+					},
+					"jwkSetUri": {
+						"type": "string"
+					},
+					"issuerUri": {
+						"type": "string"
+					},
+					"attributeMappings": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/OAuth2AttributeMapping"
+						}
+					},
+					"tokenManagement": {
+						"$ref": "#/components/schemas/TokenManagement"
+					},
+					"roleConvertExpression": {
+						"type": "string"
+					}
+				}
+			},
+			"ViewSettings": {
+				"type": "object",
+				"properties": {
+					"isolated": {
+						"type": "boolean",
+						"description": "Indique si le serveur d'identité doit être affiché dans un bloc séparé dans la documentation et les interfaces utilisateur"
+					},
+					"cssClass": {
+						"type": "string",
+						"description": "Classe CSS à appliquer au bloc du serveur d'identité dans la documentation et les interfaces utilisateur"
+					},
+					"iconUrl": {
+						"type": "string",
+						"description": "URL de l'icône de l'authentification OAuth2"
+					}
+				}
+			},
+			"OAuth2AuthenticatorDescription": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Nom de l'authentification OAuth2 utilisé comme clé"
+					},
+					"label": {
+						"type": "string",
+						"description": "Libellé de l'authentification OAuth2, utilisé dans la documentation et les interfaces utilisateur"
+					},
+					"description": {
+						"type": "string"
+					},
+					"serverUrl": {
+						"type": "string",
+						"description": "URL du serveur d'autorisation"
+					},
+					"redirectUrl": {
+						"type": "string",
+						"description": "URL du serveur de retour"
+					},
+					"clientId": {
+						"type": "string",
+						"description": "Identifiant du client OAuth2"
+					},
+					"clientSecret": {
+						"type": "string",
+						"description": "Secret du client OAuth2"
+					},
+					"clientAuthenticationMethod": {
+						"type": "string",
+						"description": "Méthode d'authentification du client OAuth2. Peut être laissée vide lors de l'utilisation d'un fournisseur pré-défini."
+					},
+					"scope": {
+						"type": "string",
+						"description": "Liste des scopes séparés par des espaces"
+					},
+					"authorizationGrantType": {
+						"type": "string",
+						"description": "Type de la méthode d'autorisation OAuth2",
+						"enum": [
+							"authorization_code",
+							"client_credentials",
+							"password",
+							"refresh_token"
+						]
+					},
+					"provider": {
+						"description": "Détails du fournisseur OAuth2",
+						"$ref": "#/components/schemas/OAuth2Provider"
+					},
+					"viewSettings": {
+						"description": "Paramètres d'affichage du serveur d'identité dans la documentation et les interfaces utilisateur",
+						"$ref": "#/components/schemas/ViewSettings"
 					}
 				}
 			}

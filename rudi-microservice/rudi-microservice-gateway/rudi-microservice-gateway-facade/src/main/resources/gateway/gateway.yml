@@ -56,6 +56,10 @@ spring:
           uri: lb://RUDI-KONSENT/
           predicates:
             - Path=/konsent/**
+        - id: apigateway_service
+          uri: lb://RUDI-APIGATEWAY/
+          predicates:
+            - Path=/apigateway/**			
         - id: template_service
           uri: lb://RUDI-TEMPLATE/
           predicates:

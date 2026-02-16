@@ -38,7 +38,13 @@
         "defaultZoom": 13
     },
     "scripts": [
-        "https://tarteaucitron.dummy.io/load.js?domain=rudi.rennesmetropole.fr&uuid=a3f8b2a7fa074f263a2843fcc069679d92167c5d",
-        "/konsult/v1/properties/scripts/matomo.js"
+        {
+            "url": "https://tarteaucitron.dummy.io/load.js?domain=rudi.rennesmetropole.fr&uuid=a3f8b2a7fa074f263a2843fcc069679d92167c5d",
+            "reload": false
+        },
+        {
+            "url": "/konsult/v1/properties/scripts/matomo.js",
+            "reload": true
+        }
     ]
 }

@@ -29,6 +29,11 @@ export const SESSION_TOKEN = '_jwt';
  */
 export const X_TOKEN = '_xtoken';
 
+/**
+ * La clé dans le storage qui va contenir la route avant authentification
+ */
+export const ROUTE = "_route";
+
 const AUTHENTICATION_STATE_SESSION_STORAGE_KEY = 'authenticationState';
 
 
@@ -215,6 +220,10 @@ export class AuthenticationService {
         );
     }
 
+    authnenticateAsCas(): void {
+        this.authenticationState = AuthenticationState.USER_CAS;
+    }
+
     /**
      * Méthode qui fait l'authentification
      * @param authenticationMethod authent anonyme ou utilisateur
@@ -308,4 +317,17 @@ export class AuthenticationService {
                 tap(() => this.authenticationState = this.anonymousAuthenticationService.getTargetState()),
             );
     }
+
+    /**
+   * sauvegarde la route pour y rediriger une fois connecté
+   * @param route
+   */
+  public saveRoute(route: string): void {
+    localStorage.setItem(ROUTE, route);
+  }
+
+  public getRoute(): string {
+    return localStorage.getItem(ROUTE) ?? "/";
+  }
+
 }

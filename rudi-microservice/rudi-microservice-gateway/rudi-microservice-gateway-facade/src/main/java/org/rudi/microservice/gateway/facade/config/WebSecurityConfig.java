@@ -6,9 +6,7 @@ package org.rudi.microservice.gateway.facade.config;
 import java.util.Arrays;
 import java.util.List;
 
-import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
-import org.rudi.common.facade.config.filter.AnonymousWebFilter;
-import org.rudi.microservice.gateway.facade.config.jwt.JwtWebFilter;
+import org.rudi.common.facade.config.filter.AnonymousRemoteWebFilter;
 import org.rudi.microservice.gateway.facade.config.oauth2.OAuth2WebFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
@@ -42,7 +40,8 @@ public class WebSecurityConfig {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
 			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token", "/oauth2/**", "/acl/v1/kaptcha",
 			"/*/v1/healthCheck", "/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
-			"/konsult/v1/robots/{resource}", "/apigateway/v1/encryption-key",
+			"/acl/v1/oauth2-authenticators/icons/**", "/acl/v1/oauth2-authenticators",
+			"/acl/v1/oauth2-authenticators/**", "/konsult/v1/robots/{resource}", "/apigateway/v1/encryption-key",
 			// Url pour le harvester
 			"/konsult/v1/datasets/metadatas/dcat" };
 
@@ -55,13 +54,14 @@ public class WebSecurityConfig {
 	@Value("${module.oauth2.check-token-uri}")
 	private String checkTokenUri;
 
+	@Value("${module.anonymous}")
+	private String anonymousAuthenticateUrl;
+
 	@Value("${rudi.gateway.security.authentication.disabled:false}")
 	private boolean disableAuthentification = false;
 
 	@Value("${rudi.gateway.security.anonymous.disabled:false}")
 	private boolean disableAnonymous = false;
-
-	private final AbstractJwtTokenUtil jwtTokenUtil;
 
 	private final RestTemplate internalRestTemplate;
 
@@ -84,13 +84,13 @@ public class WebSecurityConfig {
 				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
 
 		if (!disableAnonymous) {
-			http.anonymous(anonymous -> anonymous
-					.authenticationFilter(new AnonymousWebFilter(jwtTokenUtil, null, SB_INCLUDE_URLS)));
+			http.anonymous(
+					anonymous -> anonymous.authenticationFilter(new AnonymousRemoteWebFilter(internalRestTemplate,
+							anonymousAuthenticateUrl, null, SB_INCLUDE_URLS)));
 		}
 
 		if (!disableAuthentification) {
-			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
-					.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION);
 		}
 		return http.build();
 	}
@@ -121,10 +121,6 @@ public class WebSecurityConfig {
 
 	protected WebFilter createOAuth2Filter() {
 		return new OAuth2WebFilter(SB_PERMIT_ALL_URL, checkTokenUri, internalRestTemplate);
-	}
-
-	protected WebFilter createJwtRequestFilter() {
-		return new JwtWebFilter(SB_PERMIT_ALL_URL, jwtTokenUtil);
 	}
 
 }

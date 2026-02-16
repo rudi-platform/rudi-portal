@@ -72,7 +72,7 @@ services:
   solr:
     networks:
       - traefik
-    image: rudi/dataverse-solr-65
+    image: rudi/dataverse-solr-69
     container_name: solr
     privileged: true
     ports:
@@ -109,7 +109,7 @@ services:
   dataverse:
     networks:
       - traefik
-    image: rudi/dataverse-65
+    image: rudi/dataverse-69
     container_name: dataverse
     privileged: true
     user:

@@ -8,12 +8,14 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
+import org.rudi.common.core.security.UserType;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
 import lombok.val;
@@ -41,11 +43,16 @@ public class UtilContextHelper {
 			log.error("Null authentification");
 		} else {
 			final Object detail = auth.getDetails();
+			final Object principal = auth.getPrincipal();
 			if (detail == null) {
 				log.error("User detail is null");
 			} else {
 				if (detail instanceof AuthenticatedUser authenticatedUser) {
 					result = authenticatedUser;
+				} else if (principal instanceof Jwt jwt) {
+					result = new AuthenticatedUser(auth.getName(), UserType.CAS);
+					result.setFirstname(jwt.getClaim("name"));
+					result.setLastname(jwt.getClaim("given_name"));
 				} else {
 					log.error("Unknown authenticated user {}", auth.getPrincipal());
 				}

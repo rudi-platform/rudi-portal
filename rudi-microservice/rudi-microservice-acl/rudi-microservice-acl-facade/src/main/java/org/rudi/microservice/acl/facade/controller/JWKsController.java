@@ -7,21 +7,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.jwk.JWKSet;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author FNI18300
  *
  */
 @RestController
+@RequiredArgsConstructor
 public class JWKsController {
 
-	@Autowired
-	private JWKSet jwkSet;
+	private final JWKSet jwkSet;
 
 	@GetMapping("/oauth2/jwks")
 	public Map<String, Object> keys() {

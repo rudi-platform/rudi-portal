@@ -5,7 +5,8 @@ import {FormGroup} from '@angular/forms';
  */
 export enum AuthenticationState {
     ANONYMOUS = 'ANONYMOUS',
-    USER = 'USER'
+    USER = 'USER',
+    USER_CAS = 'USER_CAS'
 }
 
 export abstract class AuthenticationMethod {

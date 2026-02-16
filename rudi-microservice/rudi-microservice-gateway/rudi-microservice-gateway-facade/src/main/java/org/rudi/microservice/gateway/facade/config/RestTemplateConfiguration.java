@@ -51,8 +51,12 @@ public class RestTemplateConfiguration {
 		RestTemplate result = null;
 		CloseableHttpClient httpClient = null;
 		if (trustAllCerts) {
-			final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial((chain, authType) -> true).build();
-			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, new NoopHostnameVerifier());
+			final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial((chain, authType) -> {
+				return true;
+			}).build();
+
+			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext,
+					NoopHostnameVerifier.INSTANCE);
 			final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
 					.setTlsSocketStrategy(tlsStrategy).setDefaultTlsConfig(TlsConfig.custom().build()).build();
 

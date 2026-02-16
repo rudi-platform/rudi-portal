@@ -39,8 +39,7 @@
             [tableTitleKey]="'personalSpace.myTasksHistories.newDatasetRequest'">
         </app-my-tasks-histories-table>
     } @else if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
-        <app-loader [allPage]="true" [isLight]="false"
-                    [noText]="true" [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+        <app-loader [allPage]="true" [isLight]="false" [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
     } @else {
         <div class="noData">{{ 'personalSpace.myTasksHistories.noTasksHistories' | translate }}</div>
     }
@@ -48,6 +47,6 @@
 
 <ng-template #loading>
     <app-loader *ngIf="isStruktureLoading || isProjektLoading || isSelfdataLoading" [allPage]="false" [isLight]="true"
-                [noText]="true" [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+    [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
 </ng-template>
 

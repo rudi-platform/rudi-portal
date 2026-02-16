@@ -470,7 +470,7 @@ export class DetailComponent implements OnInit {
     handleClickRequestAccess(): void {
         this.authenticationService.authenticationChanged$.pipe(take(1)).pipe(
             switchMap((state: AuthenticationState) => {
-                if (state === AuthenticationState.USER) {
+                if (state === AuthenticationState.USER || state === AuthenticationState.USER_CAS) {
                     return this.openDialogsToCreateLinkedDataset();
                 } else {
                     return this.goToLoginPage({

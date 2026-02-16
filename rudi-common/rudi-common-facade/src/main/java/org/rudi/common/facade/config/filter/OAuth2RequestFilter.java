@@ -106,7 +106,7 @@ public class OAuth2RequestFilter extends BearerTokenFilter {
 			setTokenIsValid(authenticatedUser, response);
 		} else {
 			// On considère que le token est invalide
-			log.warn("Le token OAuth2 pour {} est inactif", tokenData);
+			log.warn("Le token OAuth2 pour {} est inactif", tokenData.getUserName());
 			setTokenIsInvalid(response);
 		}
 	}

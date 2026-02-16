@@ -73,6 +73,15 @@ mat-error {
 
 .bouton-login {
     @include card-main-button;
+    
+}
+
+.bouton-external-login {
+    margin-bottom: 1em;
+
+    .oauth2-icon {
+        max-height: 40px;
+    }
 }
 
 .login-btn-desktop {
@@ -82,3 +91,5 @@ mat-error {
 .login-btn-mobile {
     @include card-main-button-mobile;
 }
+
+

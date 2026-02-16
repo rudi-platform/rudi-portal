@@ -120,6 +120,24 @@
                         </mat-card-actions>
                     </mat-card>
                 </form>
+                <div *ngIf="oauth2Authenticators.length">
+                    <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
+                        <!-- Titre du bloc -->
+                        <mat-card-title class="d-flex justify-content-center">
+                            <p class="login-text-title" [translate]="'authentification.authenticators'"></p>
+                        </mat-card-title>
+                        <mat-card-content>
+                            <div *ngFor="let authenticator of oauth2Authenticators" class="authenticator-item">
+                                <div [ngClass]="authenticator?.viewSettings?.cssClass ? authenticator.viewSettings.cssClass : ''">
+                                    <button mat-raised-button class="bouton-login bouton-external-login" (click)="handleClickOAuth2Login(authenticator)">                                     
+                                        <img *ngIf="authenticator?.viewSettings?.iconUrl" src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.name}} icon" class="oauth2-icon">
+                                        <span class="oauth2-name">{{authenticator.label}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
             </div>
         </div>
     </mat-sidenav-content>

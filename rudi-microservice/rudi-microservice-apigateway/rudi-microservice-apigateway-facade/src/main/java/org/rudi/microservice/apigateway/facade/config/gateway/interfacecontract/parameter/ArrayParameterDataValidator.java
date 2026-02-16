@@ -33,7 +33,7 @@ public class ArrayParameterDataValidator extends AbstractParameterDataValidator 
 	@Override
 	protected boolean internalValidate(OpenAPI openAPI, Parameter parameter, String arrayValue) {
 		boolean result = false;
-		Schema property = parameter.getSchema().getItems();
+		Schema<?> property = parameter.getSchema().getItems();
 		String[] values = arrayValue.split(",");
 		SwaggerType type = SwaggerType.lookupType(property.getType());
 		PropertyDataValidator parameterDataValidator = DATA_VALIDATORS.get(type);

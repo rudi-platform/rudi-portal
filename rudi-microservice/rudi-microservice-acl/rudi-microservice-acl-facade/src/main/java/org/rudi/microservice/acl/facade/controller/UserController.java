@@ -134,4 +134,5 @@ public class UserController implements UsersApi {
 	public ResponseEntity<Long> countUsers() throws Exception {
 		return ResponseEntity.ok(userService.countUsers());
 	}
+
 }

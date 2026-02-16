@@ -1,0 +1,12 @@
+[
+	{
+		"name": "rudi",
+		"label": "OAuth2 Rudi",
+		"description": "Internal OAuth2 authenticator",
+		"serverUrl": "${localServerUrl}",
+		"clientId": "66044585-0bbc-49fd-837e-ce6f22d8824b",
+		"clientSecret": "9d9d0b6a-310a-46c8-9fbb-402d41e4a93a",
+		"authorizationGrantType": "client_credentials",
+		"scope": "read,write"
+	}
+]

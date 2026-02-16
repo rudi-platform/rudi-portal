@@ -3,21 +3,20 @@ package org.rudi.common.facade.config.filter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.rudi.common.core.util.SecretKeyUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -44,22 +43,14 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 
 	public static final String CONNECTED_USER = "connectedUser";
 
-	@Value("${security.jwt.access.tokenKey}")
-	private String secret;
-
-	@Value("${security.jwt.access.jti:Rudi2021}")
-	private String jwtId;
-
-	private String secretKey;
-
 	/**
-	 * Validité du token par défaut low : 10 minutes
+	 * Validité du token par défaut. Valeur par défaut : 10 minutes
 	 */
 	@Value("${security.jwt.validity:600}")
 	private int tokenValidity;
 
 	/**
-	 * Validité du refresh + haut par défaut : 30 minutes
+	 * Validité du refresh. Valeur par défaut : 30 minutes
 	 */
 	@Value("${security.jwt.refresh.validity:1800}")
 	private int refreshTokenValidity;
@@ -80,6 +71,10 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		return (T) getAllClaimsFromToken(token).getClaim(propertyName);
 	}
 
+	public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(final String token) throws ParseException {
+		return getTokenProperty(token, "authorities");
+	}
+
 	/**
 	 * Retourne sujet associé au token
 	 *
@@ -96,6 +91,10 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	 */
 	public Date getExpirationDateFromToken(final String token) throws ParseException {
 		return getClaimFromToken(token, getExpirationFunction());
+	}
+
+	public Date getIssuedAtDateFromToken(final String token) throws ParseException {
+		return getClaimFromToken(token, getIssuedAtFunction());
 	}
 
 	/**
@@ -134,6 +133,14 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		} else {
 			// Exception car le tocken de refresh n'est pas valide
 			throw new RefreshTokenExpiredException("Refresh token invalide");
+		}
+	}
+
+	public String removePrefix(String tokenValue) {
+		if (tokenValue != null && tokenValue.startsWith(HEADER_TOKEN_JWT_PREFIX)) {
+			return tokenValue.substring(HEADER_TOKEN_JWT_PREFIX.length());
+		} else {
+			return tokenValue;
 		}
 	}
 
@@ -185,12 +192,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		}
 	}
 
-	protected abstract void handleExternalAccount(JwtTokenData token, JWTClaimsSet claims)
-			throws JsonProcessingException;
-
-	protected abstract void handlePortailAccount(JwtTokenData token, JWTClaimsSet claims)
-			throws JsonProcessingException;
-
 	protected void handleExpired(JwtTokenData token, JWTClaimsSet claims) {
 		token.setExpired(isTokenExpired(claims));
 	}
@@ -228,26 +229,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		String serialiedConnectedUser = mapper.writeValueAsString(connectedUser);
 		claims.put(CONNECTED_USER, serialiedConnectedUser);
 		return claims;
-	}
-
-	/**
-	 * https://connect2id.com/products/nimbus-jose-jwt/examples/jwt-with-rsa-signature
-	 *
-	 * @param token
-	 * @param jwt
-	 * @throws JOSEException
-	 * @throws MalformedURLException
-	 * @throws BadJOSEException
-	 */
-	protected void verify(JwtTokenData token, SignedJWT jwt) throws JOSEException, MalformedURLException {
-		if (isPortailIssuer(token)) {
-			JWSVerifier signer = new MACVerifier(getSecretKey());
-			token.setHasError(!jwt.verify(signer));
-			log.debug("Verify Rudi issuer {}", token.isHasError());
-		} else {
-			token.setHasError(true);
-			log.error("Unexpected issuer {} in provided token.", token.getIssuer());
-		}
 	}
 
 	/**
@@ -333,7 +314,7 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	 * @return
 	 * @throws ParseException
 	 */
-	protected SignedJWT getJWS(final String token) throws ParseException {
+	public SignedJWT getJWS(final String token) throws ParseException {
 		return SignedJWT.parse(token);
 	}
 
@@ -405,23 +386,8 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		return JWTClaimsSet::getExpirationTime;
 	}
 
-	/**
-	 * Generation d'un token
-	 *
-	 * @param claims   Issuer, Expiration, Subject, and the ID
-	 * @param validity validity in seconde
-	 */
-	protected abstract String doGenerateToken(final Map<String, Object> claims, final String subject,
-			final int validity) throws JOSEException;
-
-	/**
-	 * @return la clef de signature
-	 */
-	protected String getSecretKey() {
-		if (secretKey == null) {
-			secretKey = SecretKeyUtils.computeKeyFromPropery(secret);
-		}
-		return secretKey;
+	protected Function<JWTClaimsSet, Date> getIssuedAtFunction() {
+		return JWTClaimsSet::getIssueTime;
 	}
 
 	/**
@@ -435,13 +401,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	}
 
 	/**
-	 * @return le JWTId
-	 */
-	protected String getJWTId() {
-		return jwtId;
-	}
-
-	/**
 	 * Supprime le refreshToken en vue d'une déconnexion
 	 *
 	 * @param token le refreshToken à supprimer
@@ -449,4 +408,45 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	public void deleteRefreshToken(String token) {
 		refreshTokens.remove(token);
 	}
+
+	/**
+	 * Generation d'un token
+	 *
+	 * @param claims   Issuer, Expiration, Subject, and the ID
+	 * @param validity validity in seconde
+	 */
+	protected abstract String doGenerateToken(final Map<String, Object> claims, final String subject,
+			final int validity) throws JOSEException;
+
+	/**
+	 * https://connect2id.com/products/nimbus-jose-jwt/examples/jwt-with-rsa-signature
+	 *
+	 * @param token
+	 * @param jwt
+	 * @throws JOSEException
+	 * @throws MalformedURLException
+	 * @throws BadJOSEException
+	 */
+	protected abstract void verify(JwtTokenData token, SignedJWT jwt) throws JOSEException, MalformedURLException;
+
+	/**
+	 * Traite un compte externe au portail
+	 *
+	 * @param token
+	 * @param claims
+	 * @throws JsonProcessingException
+	 */
+	protected abstract void handleExternalAccount(JwtTokenData token, JWTClaimsSet claims)
+			throws JsonProcessingException;
+
+	/**
+	 * Traite un compte portail
+	 * 
+	 * @param token
+	 * @param claims
+	 * @throws JsonProcessingException
+	 */
+	protected abstract void handlePortailAccount(JwtTokenData token, JWTClaimsSet claims)
+			throws JsonProcessingException;
+
 }

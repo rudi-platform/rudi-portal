@@ -75,7 +75,7 @@ public class RudiAuthorizationService implements OAuth2AuthorizationService {
 	@Override
 	public OAuth2Authorization findByToken(String tokenValue, OAuth2TokenType tokenType) {
 		TokenSearchCritera searchCritera = TokenSearchCritera.builder().token(tokenValue)
-				.types(List.of(TokenType.valueOf(tokenType.getValue().toUpperCase()))).build();
+				.types(convertTokenType(tokenType)).build();
 		List<Token> initialTokens = tokenService.searchTokens(searchCritera);
 		if (!initialTokens.isEmpty()) {
 			Token token = initialTokens.get(0);
@@ -90,6 +90,15 @@ public class RudiAuthorizationService implements OAuth2AuthorizationService {
 			return builder.build();
 		}
 		return null;
+	}
+
+	protected List<TokenType> convertTokenType(OAuth2TokenType type) {
+		try {
+			return List.of(TokenType.fromValue(type.getValue()));
+		} catch (IllegalArgumentException e) {
+			log.warn("Unknown token type: {}", type.getValue());
+			return List.of();
+		}
 	}
 
 	/**

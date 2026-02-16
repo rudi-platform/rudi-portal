@@ -78,7 +78,7 @@ export class HeaderComponent implements OnInit {
         // Quand l'utilisateur connecté change (on se connecte ou autre)
         this.authenticationService.authenticationChanged$.subscribe((state) => {
             // On est connecté si on est pas anonymous
-            this.isConnectedAsUser = state === AuthenticationState.USER;
+            this.isConnectedAsUser = state === AuthenticationState.USER || state === AuthenticationState.USER_CAS;
         });
         iconRegistry.addSvgIcon(
             'logo-bleu-orange',

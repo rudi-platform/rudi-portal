@@ -14,12 +14,6 @@ RUN mkdir -p /opt/rudi/data
 RUN mkdir /tmp/jetty
 RUN chmod 777 -R /tmp && chmod o+t -R /tmp
 
-# ansible/roles/rudi/tasks/tool.yml : {{tool}} : Copy id_rsa
-ADD id_rsa /etc/rudi/config/key/id_rsa
-
-# ansible/roles/rudi/tasks/tool.yml : {{tool}} : Copy id_rsa.pub
-ADD id_rsa.pub /etc/rudi/config/key/id_rsa.pub
-
 # ansible/roles/rudi/tasks/microservice.yml : {{microservice}} : Copy log4j2.xml
 ADD log4j2.xml /etc/rudi/config/microservice/log4j2.xml
 

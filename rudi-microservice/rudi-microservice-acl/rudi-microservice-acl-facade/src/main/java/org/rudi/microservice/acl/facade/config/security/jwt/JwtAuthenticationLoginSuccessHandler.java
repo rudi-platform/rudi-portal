@@ -6,19 +6,17 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 import java.io.IOException;
 
 import org.rudi.common.core.security.AuthenticatedUser;
-import org.rudi.common.facade.config.filter.JwtTokenUtil;
 import org.rudi.common.facade.config.filter.Tokens;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.rudi.microservice.acl.core.bean.TokenType;
+import org.rudi.microservice.acl.facade.config.security.AbstractAuthenticationSuccessHandler;
+import org.rudi.microservice.acl.service.token.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,16 +28,18 @@ import jakarta.servlet.http.HttpSession;
  *
  */
 @Component
-public class JwtAuthenticationLoginSuccessHandler implements AuthenticationSuccessHandler {
+public class JwtAuthenticationLoginSuccessHandler extends AbstractAuthenticationSuccessHandler {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	private static final String X_TOKEN_HEADER = "X-TOKEN";
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final TokenService tokenService;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	public JwtAuthenticationLoginSuccessHandler(TokenService tokenService) {
+		super();
+		this.tokenService = tokenService;
+	}
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -55,7 +55,7 @@ public class JwtAuthenticationLoginSuccessHandler implements AuthenticationSucce
 		response.setHeader(X_TOKEN_HEADER, tokens.getRefreshToken());
 		response.setStatus(HttpStatus.OK.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		objectMapper.writeValue(response.getWriter(), tokens);
+		getObjectMapper().writeValue(response.getWriter(), tokens);
 
 		clearAuthenticationAttributes(request);
 	}
@@ -63,7 +63,9 @@ public class JwtAuthenticationLoginSuccessHandler implements AuthenticationSucce
 	private Tokens generateTokens(AuthenticatedUser user) throws IOException {
 		Tokens tokens = null;
 		try {
-			tokens = jwtTokenUtil.generateTokens(user.getLogin(), user);
+			tokens = getJwtTokenUtil().generateTokens(user.getLogin(), user);
+			tokenService.saveToken(buildToken(TokenType.USER_CODE, user, tokens.getJwtToken()));
+			tokenService.saveToken(buildToken(TokenType.REFRESH_TOKEN, user, tokens.getRefreshToken()));
 		} catch (Exception e) {
 			throw new IOException("Failed to generate tokens", e);
 		}

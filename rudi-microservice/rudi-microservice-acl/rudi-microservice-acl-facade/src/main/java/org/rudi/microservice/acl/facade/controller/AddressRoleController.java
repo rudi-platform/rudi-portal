@@ -11,10 +11,11 @@ import org.rudi.microservice.acl.core.bean.AddressRoleSearchCriteria;
 import org.rudi.microservice.acl.core.bean.AddressType;
 import org.rudi.microservice.acl.facade.controller.api.AddressRolesApi;
 import org.rudi.microservice.acl.service.address.AddressRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Controleur pour la gestion des roles d'adresses
@@ -22,14 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MCY12700
  */
 @RestController
+@RequiredArgsConstructor
 public class AddressRoleController implements AddressRolesApi {
 
-	@Autowired
-	private AddressRoleService addressRoleService;
-
-	public AddressRoleController() {
-		super();
-	}
+	private final AddressRoleService addressRoleService;
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_ACL_ADMINISTRATOR + ")")

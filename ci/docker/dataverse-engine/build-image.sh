@@ -1,3 +1,3 @@
 #/bin/bash
 
-docker image build -t "rudi/dataverse-65" .
+docker image build -t "rudi/dataverse-69" .

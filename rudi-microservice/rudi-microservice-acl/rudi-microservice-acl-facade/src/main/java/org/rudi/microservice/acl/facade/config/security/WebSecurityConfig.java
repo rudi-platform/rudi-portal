@@ -4,20 +4,94 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.rudi.common.facade.config.filter.JwtRequestFilter;
+import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
+import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
+import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.microservice.acl.facade.config.security.anonymous.AnonymousAuthenticationProcessingFilter;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLoginFailureHandler;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLoginSuccessHandler;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProcessingFilter;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProvider;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtTokenUtil;
+import org.rudi.microservice.acl.facade.config.security.oauth2.RudiAuthorizationService;
+import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClient;
+import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClientRepository;
+import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasBearerTokenAuthenticationFilter;
+import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AccessTokenResponseClient;
+import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AuthenticationSuccessHandler;
+import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AuthorizationCodeTokenResponseClient;
+import org.rudi.microservice.acl.facade.config.security.oauth2.configurer.ClientSecretBasicAuthenticationConverter;
+import org.rudi.microservice.acl.service.user.UserService;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -29,53 +103,9 @@ import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import jakarta.servlet.Filter;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.rudi.common.facade.config.filter.JwtRequestFilter;
-import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
-import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
-import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.microservice.acl.facade.config.security.anonymous.AnonymousAuthenticationProcessingFilter;
-import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationEntryPoint;
-import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLoginFailureHandler;
-import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLoginSuccessHandler;
-import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProcessingFilter;
-import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProvider;
-import org.rudi.microservice.acl.facade.config.security.oauth2.RudiAuthorizationService;
-import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClient;
-import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClientRepository;
-import org.rudi.microservice.acl.facade.config.security.oauth2.configurer.ClientSecretBasicAuthenticationConverter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,57 +116,89 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebSecurityConfig {
 
+	/** OAuth2 check token URL */
 	@Value("${module.oauth2.check-token-uri}")
 	private String checkTokenUri;
 
+	/** Code du rôle administrateur */
 	@Value("${application.role.administrateur.code}")
 	private String administrateurRoleCode;
 
+	/** Désactive l'authentification */
 	@Value("${rudi.acl.security.authentication.disabled:false}")
 	private boolean disableAuthentification = false;
 
+	/** Désactive la pré-authentification */
 	@Value("${rudi.acl.security.pre-authentication.disabled:true}")
 	private boolean disablePreAuthentification = true;
 
+	/** Login utilisé pour l'authentification anonyme */
 	@Value("${security.anonymous.login:anonymous}")
 	private String loginAnonymous;
 
+	/** Nom du paramètre login dans les requêtes d'authentification */
 	@Value("${security.jwt.parameter.login:login}")
 	private String loginParameter;
 
+	/** Nom du paramètre password dans les requêtes d'authentification */
 	@Value("${security.jwt.parameter.password:password}")
 	private String passwordParameter;
 
-	@Value("${security.jwt.access.tokenKey:}")
-	private String jwtAccessTokenKey;
-
+	/** Key identiuantant (kid) pour les tokens JWT **/
 	@Value("${security.jwt.kid:52702736-ceb9-4544-a37d-56e981877899}")
 	private String jwtKid;
 
+	/** Chemin du keystore contenant la clé RSA pour la signature des JWT */
 	@Value("${security.jwt.keystore:}")
 	private String jwtKeystore;
 
+	/** Mot de passe du keystore contenant la clé RSA pour la signature des JWT */
 	@Value("${security.jwt.keystore.password:}")
 	private String jwtKeystorePassword;
 
-	@Value("${security.jwt.keystore.alias:rudi}")
+	/** Alias de la clé RSA dans le keystore pour la signature des JWT */
+	@Value("${security.jwt.keystore.alias:rudi-jwt}")
 	private String jwtKeystoreAlias;
 
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	/** Désactive la vérification SSL pour les appels OAuth2 */
+	@Value("${security.authentication.oauth2.sslVerifier:true}")
+	private boolean disableOAuth2SslVerifier = true;
 
-	private final JwtAuthenticationProvider userAuthenticationProvider;
+	/** Active l'authentification OAuth2 externe pour les applications web */
+	@Value("${security.web.external-oauth2:true}")
+	private boolean webExternalOAuth2 = false;
+
+	/** Active le mode debug de la sécurité web */
+	@Value("${security.web.debug:true}")
+	private boolean webSecurityDebug = true;
+
+	/** Méthode OAuth2 utilisée pour les applications web (authorization_code ou access_token) */
+	@Value("${security.authentication.oauth2.method:authorization_code}")
+	private String oAuth2Method;
+
+	private final RudiDelegatorEntryPoint authenticationEntryPoint;
 
 	private final JwtAuthenticationLoginSuccessHandler loginSuccessHandler;
 
+	private final CasOAuth2AuthenticationSuccessHandler casSuccessHandler;
+
 	private final JwtAuthenticationLoginFailureHandler loginFailureHandler;
+
+	private final AuthenticationManagerResolver<HttpServletRequest> trustedIssuerJwtAuthenticationManagerResolver;
 
 	private final UtilContextHelper utilContextHelper;
 
 	private final RestTemplate oAuth2RestTemplate;
 
 	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.debug(webSecurityDebug);
+	}
+
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager,
-			RegisteredClientRepository registeredClientRepository) throws Exception {
+			RegisteredClientRepository registeredClientRepository, JwtAuthenticationProvider jwtAuthenticationProvider)
+			throws Exception {
 		log.debug("RudiAcl-filterChain...");
 		if (!disableAuthentification) {
 
@@ -145,18 +207,24 @@ public class WebSecurityConfig {
 			 */
 			OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer
 					.authorizationServer();
-			http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher()).with(
-					authorizationServerConfigurer,
-					authorizationServer -> authorizationServer
-							.clientAuthentication(clientAuthentication -> clientAuthentication
-									.authenticationConverter(new ClientSecretBasicAuthenticationConverter())));
+			RequestMatcher requestMatcher = new OrRequestMatcher(
+					Arrays.asList(authorizationServerConfigurer.getEndpointsMatcher(),
+							new NegatedRequestMatcher(permitAllRequestMatcher())));
+			http.securityMatcher(requestMatcher).with(authorizationServerConfigurer,
+					authorizationServer -> authorizationServer.clientAuthentication(clientAuthentication -> {
+						clientAuthentication.authenticationConverter(new ClientSecretBasicAuthenticationConverter());
+						clientAuthentication.authenticationProvider(jwtAuthenticationProvider);
+					}));
 
 			http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 					.registeredClientRepository(registeredClientRepository).authorizationService(authorizationService())
 					.oidc(Customizer.withDefaults()).tokenIntrospectionEndpoint(Customizer.withDefaults());
 
-			http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
-					.authorizeHttpRequests(authorizeHttpReq -> {
+			http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+					.csrf(csrf -> csrf.ignoringRequestMatchers(csrfRequestMatcher())).exceptionHandling(exception -> {
+						exception.configure(http);
+						exception.authenticationEntryPoint(authenticationEntryPoint);// -->
+					}).authorizeHttpRequests(authorizeHttpReq -> {
 						// starts authorizing configurations
 						authorizeHttpReq.requestMatchers(SecurityConstants.SB_PERMIT_ALL_URL).permitAll();
 						// autorisatio des actuators aux seuls role admin
@@ -164,12 +232,34 @@ public class WebSecurityConfig {
 								.hasRole(administrateurRoleCode);
 						// authenticate all remaining URLS
 						authorizeHttpReq.anyRequest().fullyAuthenticated();
-					}).exceptionHandling(exception -> {
-						exception.configure(http);
-						exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 					}).sessionManagement(
 							httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
 									.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+			if (webExternalOAuth2) {
+				http.oauth2Login(oauth2Login -> oauth2Login.tokenEndpoint(tokenEndpoint -> {
+					try {
+						tokenEndpoint.accessTokenResponseClient(accessTokenResponseClient());
+					} catch (Exception e) {
+						log.error("Failed to configure", e);
+					}
+				}).successHandler(casSuccessHandler)).addFilterAfter(createOAuth2Filter(), LogoutFilter.class)
+						.addFilterAfter(createAnonymousFilter(authenticationManager), LogoutFilter.class)
+						.addFilterAfter(createJwtAuthenticationFilter(authenticationManager, jwtAuthenticationProvider),
+								LogoutFilter.class)
+						.addFilterAfter(createJwtRequestFilter(), LogoutFilter.class);
+
+				http.oauth2ResourceServer(oauth2 -> oauth2// .authenticationManagerResolver(trustedIssuerJwtAuthenticationManagerResolver)
+						.withObjectPostProcessor(new ObjectPostProcessor<BearerTokenAuthenticationFilter>() {
+							@SuppressWarnings("unchecked")
+							@Override
+							public BearerTokenAuthenticationFilter postProcess(BearerTokenAuthenticationFilter object) {
+								log.debug("postProcess CasBearerTokenAuthenticationFilter in case of");
+								return new CasBearerTokenAuthenticationFilter(
+										trustedIssuerJwtAuthenticationManagerResolver);
+							}
+						}));
+			}
 		} else {
 			log.warn("Acl authentication disabled");
 			http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
@@ -178,14 +268,50 @@ public class WebSecurityConfig {
 		return http.build();
 	}
 
+	protected RequestMatcher permitAllRequestMatcher() {
+		List<RequestMatcher> permitAllRequestMatchers = new ArrayList<>();
+		Arrays.asList(SecurityConstants.SB_PERMIT_ALL_URL)
+				.forEach(url -> permitAllRequestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(url)));
+		return new OrRequestMatcher(permitAllRequestMatchers);
+	}
+
+	protected RequestMatcher csrfRequestMatcher() {
+		return PathPatternRequestMatcher.withDefaults().matcher("/**");
+	}
+
+	protected OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient()
+			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		if ("authorization_code".equalsIgnoreCase(oAuth2Method)) {
+			return new CasOAuth2AuthorizationCodeTokenResponseClient(disableOAuth2SslVerifier);
+		} else {
+			// access_token
+			return new CasOAuth2AccessTokenResponseClient(disableOAuth2SslVerifier);
+		}
+	}
+
 	@Bean
-	public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+	public AuthenticationManager authenticationManager(HttpSecurity http,
+			JwtAuthenticationProvider jwtAuthenticationProvider, UserDetailsService userDetailsService)
+			throws Exception {
 		AuthenticationManagerBuilder authenticationManagerBuilder = http
 				.getSharedObject(AuthenticationManagerBuilder.class);
+
 		authenticationManagerBuilder.userDetailsService(userDetailsServiceBean());
-		authenticationManagerBuilder.authenticationProvider(userAuthenticationProvider);
-		authenticationManagerBuilder.parentAuthenticationManager(null); // Permet d'éviter le double appel au userAuthenticationProvider lors d'une demande d'authentification
+		authenticationManagerBuilder.authenticationProvider(jwtAuthenticationProvider);
+		// Permet d'éviter le double appel au userAuthenticationProvider lors d'une demande d'authentification
+		authenticationManagerBuilder.parentAuthenticationManager(null);
+
 		return authenticationManagerBuilder.build();
+	}
+
+	@Bean
+	public JwtAuthenticationConverter jwtAuthenticationConverter() {
+		JwtGrantedAuthoritiesConverter rudiJwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+		rudiJwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+		rudiJwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(rudiJwtGrantedAuthoritiesConverter);
+		return jwtAuthenticationConverter;
 	}
 
 	@Bean
@@ -225,8 +351,8 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public RegisteredClientRepository registeredClientRepository() {
-		return new RudiRegisteredClientRepository();
+	public RegisteredClientRepository registeredClientRepository(UserService userService) {
+		return new RudiRegisteredClientRepository(userService);
 	}
 
 	@Bean
@@ -314,20 +440,28 @@ public class WebSecurityConfig {
 	@Bean
 	public JwtRequestFilter createJwtRequestFilter() {
 		return new JwtRequestFilter(
-				ArrayUtils.addAll(SecurityConstants.SB_PERMIT_ALL_URL, SecurityConstants.AUTHENTICATION_PERMIT_URL),
+				ArrayUtils.addAll(SecurityConstants.SB_PERMIT_ALL_URL2, SecurityConstants.AUTHENTICATION_PERMIT_URL),
 				SecurityConstants.LOGOUT_URL, utilContextHelper, oAuth2RestTemplate);
 	}
 
 	@Bean
 	public Filter createOAuth2Filter() {
-		return new OAuth2RequestFilter(SecurityConstants.SB_PERMIT_ALL_URL, checkTokenUri, utilContextHelper,
+		return new OAuth2RequestFilter(SecurityConstants.SB_PERMIT_ALL_URL2, checkTokenUri, utilContextHelper,
 				oAuth2RestTemplate);
 	}
 
 	@Bean
-	public Filter createJwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+	public JwtAuthenticationProvider jwtAuthenticationProvider(UserService userService, PasswordEncoder passwordEncoder,
+			JwtDecoder jwtDecoder, JwtTokenUtil jwtTokenUtil, JwtAuthenticationConverter jwtAuthenticationConverter) {
+		return new JwtAuthenticationProvider(userService, passwordEncoder, jwtDecoder, jwtTokenUtil,
+				jwtAuthenticationConverter);
+	}
+
+	@Bean
+	public Filter createJwtAuthenticationFilter(AuthenticationManager authenticationManager,
+			JwtAuthenticationProvider jwtAuthenticationProvider) {
 		return new JwtAuthenticationProcessingFilter(SecurityConstants.AUTHENTICATE_URL, loginParameter,
-				passwordParameter, SecurityConstants.CHECK_CREDENTIAL_URL, userAuthenticationProvider,
+				passwordParameter, SecurityConstants.CHECK_CREDENTIAL_URL, jwtAuthenticationProvider,
 				loginSuccessHandler, loginFailureHandler, authenticationManager);
 	}
 
@@ -351,6 +485,7 @@ public class WebSecurityConfig {
 		jwsAlgs.addAll(JWSAlgorithm.Family.RSA);
 		jwsAlgs.addAll(JWSAlgorithm.Family.EC);
 		jwsAlgs.addAll(JWSAlgorithm.Family.HMAC_SHA);
+
 		ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 		JWSKeySelector<SecurityContext> jwsKeySelector = new JWSVerificationKeySelector<>(jwsAlgs, jwkSource);
 		jwtProcessor.setJWSKeySelector(jwsKeySelector);
@@ -359,5 +494,28 @@ public class WebSecurityConfig {
 		jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
 		});
 		return new NimbusJwtDecoder(jwtProcessor);
+	}
+
+	@Bean
+	public JwtEncoder getJwtEncoder(HttpSecurity httpSecurity, JWKSource<SecurityContext> jwkSource) {
+		JwtEncoder jwtEncoder = httpSecurity.getSharedObject(JwtEncoder.class);
+		if (jwtEncoder == null) {
+			jwtEncoder = getOptionalBean(httpSecurity, JwtEncoder.class);
+			if (jwtEncoder == null) {
+				jwtEncoder = new NimbusJwtEncoder(jwkSource);
+				httpSecurity.setSharedObject(JwtEncoder.class, jwtEncoder);
+			}
+		}
+		return jwtEncoder;
+	}
+
+	static <T> T getOptionalBean(HttpSecurity httpSecurity, Class<T> type) {
+		Map<String, T> beansMap = BeanFactoryUtils
+				.beansOfTypeIncludingAncestors(httpSecurity.getSharedObject(ApplicationContext.class), type);
+		if (beansMap.size() > 1) {
+			throw new NoUniqueBeanDefinitionException(type, beansMap.size(), "Expected single matching bean of type '"
+					+ type.getName() + "' but found " + beansMap.size() + ": " + StringUtils.join(beansMap.keySet()));
+		}
+		return (!beansMap.isEmpty() ? beansMap.values().iterator().next() : null);
 	}
 }

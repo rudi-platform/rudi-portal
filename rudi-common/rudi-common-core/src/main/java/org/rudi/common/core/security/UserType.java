@@ -16,5 +16,7 @@ public enum UserType {
 	/** utilisateur de type µservice */
 	MICROSERVICE,
 	/** utilisateur robot autre que les précédents */
-	ROBOT;
+	ROBOT,
+	/** utilisateur CAS */
+	CAS;
 }

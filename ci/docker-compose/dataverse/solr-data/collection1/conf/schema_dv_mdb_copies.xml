@@ -1,4 +1,19 @@
 <schema>
+    <copyField source="3d3DTechnique" dest="_text_" maxChars="3000"/>
+    <copyField source="3dAltText" dest="_text_" maxChars="3000"/>
+    <copyField source="3dEquipment" dest="_text_" maxChars="3000"/>
+    <copyField source="3dExportedFileFormat" dest="_text_" maxChars="3000"/>
+    <copyField source="3dExportedFilePolygonCount" dest="_text_" maxChars="3000"/>
+    <copyField source="3dHandling" dest="_text_" maxChars="3000"/>
+    <copyField source="3dHeight" dest="_text_" maxChars="3000"/>
+    <copyField source="3dLength" dest="_text_" maxChars="3000"/>
+    <copyField source="3dLightingSetup" dest="_text_" maxChars="3000"/>
+    <copyField source="3dMasterFilePolygonCount" dest="_text_" maxChars="3000"/>
+    <copyField source="3dMaterialComposition" dest="_text_" maxChars="3000"/>
+    <copyField source="3dObjectDimensions" dest="_text_" maxChars="3000"/>
+    <copyField source="3dUnit" dest="_text_" maxChars="3000"/>
+    <copyField source="3dWeight" dest="_text_" maxChars="3000"/>
+    <copyField source="3dWidth" dest="_text_" maxChars="3000"/>
     <copyField source="accessToSources" dest="_text_" maxChars="3000"/>
     <copyField source="actionsToMinimizeLoss" dest="_text_" maxChars="3000"/>
     <copyField source="alternativeTitle" dest="_text_" maxChars="3000"/>
@@ -113,7 +128,7 @@
     <copyField source="resolution.Spectral" dest="_text_" maxChars="3000"/>
     <copyField source="resolution.Temporal" dest="_text_" maxChars="3000"/>
     <copyField source="responseRate" dest="_text_" maxChars="3000"/>
-    
+
     <copyField source="cmm-actionsToMinimizeLoss" dest="_text_" maxChars="3000"/>
     <copyField source="cmm-city" dest="_text_" maxChars="3000"/>
     <copyField source="cmm-cleaningOperations" dest="_text_" maxChars="3000"/>
@@ -158,8 +173,8 @@
     <copyField source="cmm-unitOfAnalysis-vocabulary" dest="_text_" maxChars="3000"/>
     <copyField source="cmm-universe" dest="_text_" maxChars="3000"/>
     <copyField source="cmm-weighting" dest="_text_" maxChars="3000"/>
-    <copyField source="cmm-westLongitude" dest="_text_" maxChars="3000"/>    
-    
+    <copyField source="cmm-westLongitude" dest="_text_" maxChars="3000"/>
+
     <copyField source="rudi_abstract" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_abstract_language" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_abstract_text" dest="_text_" maxChars="3000"/>
@@ -204,7 +219,7 @@
     <copyField source="rudi_dataset_size" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_dataset_size_number_of_fields" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_dataset_size_numbers_of_records" dest="_text_" maxChars="3000"/>
-	<copyField source="rudi_dataset_update_frequency" dest="_text_" maxChars="3000"/>
+    <copyField source="rudi_dataset_update_frequency" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_doi" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_ext_metadata_ext_selfdata_ext_selfdata_content" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_ext_metadata_ext_selfdata_ext_selfdata_content_deletable_data" dest="_text_" maxChars="3000"/>
@@ -292,7 +307,7 @@
     <copyField source="rudi_summary" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_summary_language" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_summary_text" dest="_text_" maxChars="3000"/>
-	<copyField source="rudi_summary_html" dest="_text_" maxChars="3000"/>
+    <copyField source="rudi_summary_html" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread_end_date" dest="_text_" maxChars="3000"/>
     <copyField source="rudi_temporal_spread_start_date" dest="_text_" maxChars="3000"/>

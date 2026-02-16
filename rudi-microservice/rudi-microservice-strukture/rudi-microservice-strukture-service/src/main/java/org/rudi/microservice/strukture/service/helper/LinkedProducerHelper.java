@@ -74,7 +74,7 @@ public class LinkedProducerHelper {
 		// Création de l'objet LinkedProducer
 		LinkedProducerEntity linkedProducerEntity = new LinkedProducerEntity();
 		linkedProducerEntity.setUuid(UUID.randomUUID());
-		linkedProducerEntity.setDescription(String.format("Rattachement de l'organsiation %s au provider %s",
+		linkedProducerEntity.setDescription(String.format("Rattachement de l'organisation %s au provider %s",
 				organization.getName(), provider.getLabel()));
 		linkedProducerEntity.setFunctionalStatus(INITIAL_FUNCTIONNAL_STATUS);
 		linkedProducerEntity.setProcessDefinitionKey("linked-producer-process");

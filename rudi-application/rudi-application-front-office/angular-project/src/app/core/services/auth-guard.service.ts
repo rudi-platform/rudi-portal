@@ -4,7 +4,8 @@ import {AuthenticationService} from '@core/services/authentication.service';
 import {LogService} from '@core/services/log.service';
 import {UserService} from '@core/services/user.service';
 import {Observable, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, map, switchMap, take} from 'rxjs/operators';
+import { AccountService } from './account.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,7 @@ export class AuthGuardService {
     constructor(
         public readonly authenticationService: AuthenticationService,
         private readonly userService: UserService,
+        private readonly accountService: AccountService,
         private readonly router: Router,
         private readonly logService: LogService) {
     }
@@ -56,6 +58,19 @@ export class AuthGuardService {
      */
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
         Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+
+        if (route.queryParamMap.has("token")) {
+            // pas de token en localstorage, mais on l'a dans l'url
+            const token = route.queryParamMap.get("token") ?? "";
+            return this.accountService.authenticate(token).pipe(
+                take(1),
+                map(() => {
+                    this.authenticationService.authnenticateAsCas();
+                    return this.router.parseUrl(this.authenticationService.getRoute());
+                }),
+            );
+        }
+
         return this.userService.getAuthenticatedUser().pipe(
             // ça marche : je peux accéder normalement à la page en restant authentifié
             map(() => true),

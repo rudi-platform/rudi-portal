@@ -40,6 +40,10 @@
 		{
 			"name": "miscellaneous",
 			"description": "Services divers"
+		},
+		{
+			"name": "authenticator",
+			"description": "Services authenticators"
 		}
 	],
 	"paths": {
@@ -76,6 +80,208 @@
 				"responses": {
 					"200": {
 						"description": "OK"
+					}
+				}
+			}
+		},
+		"/oauth2-authenticators": {
+			"get": {
+				"tags": [
+					"authenticator"
+				],
+				"summary": "Retoure la configuration des authenticators",
+				"description": "Retoure la configuration des authenticators",
+				"operationId": "getOAuth2Authenticators",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "rudi-acl-model.json#/components/schemas/OAuth2AuthenticatorDescription"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/oauth2-authenticators/icons/{authenticator-name}": {
+			"get": {
+				"tags": [
+					"authenticator"
+				],
+				"summary": "Retoure l'icone associé à l'authenticator",
+				"description": "Retoure l'icone associé à l'authenticator",
+				"operationId": "getOAuth2AuthenticatorIcon",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "authenticator-name",
+						"description": "La clé de l'authenticator",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/oauth2-authenticators/{authenticator-name}": {
+			"get": {
+				"tags": [
+					"authenticator"
+				],
+				"summary": "Retoure la configuration des authenticators",
+				"description": "Retoure la configuration des authenticators",
+				"operationId": "authenticateThroughAuthenticator",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "authenticator-name",
+						"description": "La clé de l'authenticator",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/account/authenticate": {
+			"get": {
+				"tags": [
+					"acl"
+				],
+				"summary": "Demande d'authentification de l'utilisateur",
+				"description": "Demande d'authentification de l'utilisateur",
+				"operationId": "authenticate1",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"description": "L'access token reçu lors de la redirection"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-acl-model.json#/components/schemas/Tokens"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"acl"
+				],
+				"summary": "Demande d'authentification de l'utilisateur",
+				"description": "Demande d'authentification de l'utilisateur",
+				"operationId": "authenticate2",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"description": "L'access token reçu lors de la redirection"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-acl-model.json#/components/schemas/Tokens"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -712,8 +918,8 @@
 						"content": {
 							"application/json": {
 								"schema": {
-						          "type": "integer",
-						          "format": "int64"
+									"type": "integer",
+									"format": "int64"
 								}
 							}
 						}

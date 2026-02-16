@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass, NgIf, NgFor} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -11,6 +11,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
+import { LogService } from '@app/core/services/log.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
@@ -24,12 +25,13 @@ import {Level} from '@shared/core/layout/notification-template/notification-temp
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import { AclService, AuthenticatorService, OAuth2AuthenticatorDescription } from 'micro_service_modules/acl/acl-api';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, NgIf, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, NgIf, NgFor, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class LoginComponent implements OnInit {
 
@@ -93,6 +95,11 @@ export class LoginComponent implements OnInit {
      */
     isCaptchaNeeded = false;
 
+	/**
+     * Authenticators
+     */
+    oauth2Authenticators: OAuth2AuthenticatorDescription[] = [];
+
     @ViewChild(RudiCaptchaComponent) rudiCaptcha: RudiCaptchaComponent;
 
     /**
@@ -134,8 +141,9 @@ export class LoginComponent implements OnInit {
                 private readonly translateService: TranslateService,
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly captchaCheckerService: CaptchaCheckerService,
+                private readonly authenticatorService: AuthenticatorService,
                 private readonly accountService: AccountService,
-    ) {
+                private readonly logService: LogService) {
     }
 
     ngOnInit(): void {
@@ -154,6 +162,10 @@ export class LoginComponent implements OnInit {
             password: ['', Validators.required],
         });
 
+        this.authenticatorService.getOAuth2Authenticators().subscribe(authenticators => {
+            this.oauth2Authenticators = authenticators.filter(authenticator => authenticator.name != 'rudi');
+        });
+
         const snackBarParam = this.snackBarParam;
         if (snackBarParam) {
             this.snackBarService.openSnackBar({
@@ -164,6 +176,9 @@ export class LoginComponent implements OnInit {
         }
     }
 
+    handleClickOAuth2Login(authenticator: OAuth2AuthenticatorDescription): void {
+        window.location.href = '/acl/v1/oauth2-authenticators/' + authenticator.name + '?action=login' ;
+    }
     /**
      * Quand l'utilisateur clique sur s'inscrire
      */

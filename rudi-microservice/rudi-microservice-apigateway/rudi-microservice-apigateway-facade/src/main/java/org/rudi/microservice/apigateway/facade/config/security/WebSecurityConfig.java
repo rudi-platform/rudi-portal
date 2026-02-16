@@ -9,13 +9,10 @@ import java.util.List;
 import javax.net.ssl.SSLException;
 
 import org.rudi.common.core.webclient.HttpClientHelper;
-import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
-import org.rudi.common.facade.config.filter.AnonymousWebFilter;
+import org.rudi.common.facade.config.filter.AnonymousRemoteWebFilter;
 import org.rudi.microservice.apigateway.facade.config.gateway.exception.GenericErrorWebExceptionHandler;
-import org.rudi.microservice.apigateway.facade.config.security.jwt.JwtWebFilter;
 import org.rudi.microservice.apigateway.facade.config.security.oauth2.OAuth2WebFilter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
@@ -85,16 +82,15 @@ public class WebSecurityConfig {
 	@Value("${module.oauth2.scope}")
 	private String[] scopes;
 
+	@Value("${module.anonymous}")
+	private String anonymousAuthenticateUrl;
+
 	@Value("${rudi.apigateway.security.authentication.disabled:false}")
 	private boolean disableAuthentification = false;
 
 	private final RestTemplate internalRestTemplate;
 
 	private final HttpClientHelper httpClientHelper;
-
-	@Qualifier("JwtTokenUtilApiGateway")
-	@Autowired
-	private AbstractJwtTokenUtil jwtTokenUtil;
 
 	@Bean
 	public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
@@ -113,13 +109,13 @@ public class WebSecurityConfig {
 		http.httpBasic(Customizer.withDefaults()).formLogin(Customizer.withDefaults())
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.anonymous(anonymous -> anonymous
-						.authenticationFilter(new AnonymousWebFilter(jwtTokenUtil, null, SB_INCLUDE_URLS)))
+				.anonymous(
+						anonymous -> anonymous.authenticationFilter(new AnonymousRemoteWebFilter(internalRestTemplate,
+								anonymousAuthenticateUrl, null, SB_INCLUDE_URLS)))
 				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
 
 		if (!disableAuthentification) {
-			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION)
-					.addFilterBefore(createJwtRequestFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+			http.addFilterBefore(createOAuth2Filter(), SecurityWebFiltersOrder.AUTHENTICATION);
 		}
 		return http.build();
 	}
@@ -171,10 +167,6 @@ public class WebSecurityConfig {
 	protected GrantedAuthorityDefaults grantedAuthorityDefaults() {
 		// Remove the ROLE_ prefix
 		return new GrantedAuthorityDefaults("");
-	}
-
-	public WebFilter createJwtRequestFilter() {
-		return new JwtWebFilter(SecurityConstants.SB_PERMIT_ALL_URL, jwtTokenUtil);
 	}
 
 	private WebFilter createOAuth2Filter() {

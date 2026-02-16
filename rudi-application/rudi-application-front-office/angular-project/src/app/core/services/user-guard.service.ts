@@ -28,7 +28,7 @@ export class UserGuardService {
                 map((stateAuth: AuthenticationState) => {
 
                         // Je suis un utilisateur réel : j'accède
-                        if (stateAuth === AuthenticationState.USER) {
+                        if (stateAuth === AuthenticationState.USER || stateAuth === AuthenticationState.USER_CAS) {
                             return true;
                         }
 

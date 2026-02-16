@@ -27,7 +27,7 @@ export class UserService {
     private getUserAsKnownUser(user: User | undefined): Observable<User> {
         return this.authenticationService.authenticationChanged$.pipe(
             map((state: AuthenticationState) => {
-                return state === AuthenticationState.USER ? user : undefined;
+                return state === AuthenticationState.USER || state === AuthenticationState.USER_CAS ? user : undefined;
             })
         );
     }
