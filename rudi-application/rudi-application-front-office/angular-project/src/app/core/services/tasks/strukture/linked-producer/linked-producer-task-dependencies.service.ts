@@ -69,6 +69,6 @@ export class LinkedProducerTaskDependencyFetcher extends TaskDependencyFetchers<
      * @private
      */
     private static hasLinkedProducerUuid(input: LinkedProducerTask): boolean {
-        return input != null && input.task != null && input.task.asset != null && input.task.asset.uuid != null;
+        return input?.task?.asset?.uuid != null;
     }
 }

@@ -1,17 +1,17 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
+
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {first} from 'rxjs/operators';
-import {NgIf} from '@angular/common';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
     templateUrl: 'account-validation.component.html',
-    imports: [NgIf, MatProgressSpinner]
+    imports: [MatProgressSpinner]
 })
 export class AccountValidationComponent implements OnInit {
     /**
@@ -20,11 +20,11 @@ export class AccountValidationComponent implements OnInit {
     loading = false;
 
     constructor(
-        private route: ActivatedRoute,
-        private snackBarService: SnackBarService,
-        private router: Router,
-        private accountService: AccountService,
-        private translateService: TranslateService
+        private readonly route: ActivatedRoute,
+        private readonly snackBarService: SnackBarService,
+        private readonly router: Router,
+        private readonly accountService: AccountService,
+        private readonly translateService: TranslateService
     ) {
     }
 
@@ -32,29 +32,32 @@ export class AccountValidationComponent implements OnInit {
         // Recuperation du token dans la route
         this.loading = true;
         const token = this.route.snapshot.queryParams.token;
+        const url = this.route.snapshot.url[0].path;
         const badRequestStatus = 400;
 
-        this.accountService.validateAccount(token)
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.loading = false;
-                },
-                error: (err: HttpErrorResponse) => {
-                    this.loading = false;
-                    // Si l'utilisateur a dépassé le délai de 24 heures ou Si l'utilisateur a déjà cliqué sur le lien d'activation
-                    if (err.status === badRequestStatus) {
-                        this.snackBarService.openSnackBar({
-                            message: `${this.translateService.instant('snackbarTemplate.errorAccountValidationStart')} <a href="${'/login/sign-up'}">${this.translateService.instant('common.ici')}</a> ${this.translateService.instant('snackbarTemplate.errorAccountValidationEnd')}`,
-                            level: Level.ERROR
-                        });
-                    }
+        if (token && url === 'accountValidation') {
+            this.accountService.validateAccount(token)
+                .pipe(first())
+                .subscribe({
+                    next: () => {
+                        this.loading = false;
+                    },
+                    error: (err: HttpErrorResponse) => {
+                        this.loading = false;
+                        // Si l'utilisateur a dépassé le délai de 24 heures ou Si l'utilisateur a déjà cliqué sur le lien d'activation
+                        if (err.status === badRequestStatus) {
+                            this.snackBarService.openSnackBar({
+                                message: `${this.translateService.instant('snackbarTemplate.errorAccountValidationStart')} <a href="${'/login/sign-up'}">${this.translateService.instant('common.ici')}</a> ${this.translateService.instant('snackbarTemplate.errorAccountValidationEnd')}`,
+                                level: Level.ERROR
+                            });
+                        }
 
-                },
-                complete: () => {
-                    this.goToLogin();
-                },
-            });
+                    },
+                    complete: () => {
+                        this.goToLogin();
+                    },
+                });
+        }
     }
 
     goToLogin(): Promise<boolean> {

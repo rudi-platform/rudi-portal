@@ -15,14 +15,14 @@ import {MatInput} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {MatFormField} from '@angular/material/form-field';
 import {MatSelect} from '@angular/material/select';
-import {NgFor} from '@angular/common';
+
 import {MatOption} from '@angular/material/core';
 
 @Component({
     selector: 'app-member-popin',
     templateUrl: './member-popin.component.html',
     styleUrls: ['./member-popin.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatInput, FormsModule, MatFormField, MatSelect, NgFor, MatOption, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
+    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatInput, FormsModule, MatFormField, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class MemberPopinComponent {
 

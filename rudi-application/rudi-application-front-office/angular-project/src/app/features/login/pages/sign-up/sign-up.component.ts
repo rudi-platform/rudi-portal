@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {
@@ -47,7 +47,7 @@ const ICON_INFO: string = '../assets/icons/icon_info.svg';
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatLabel, MatFormField, MatInput, MatHint, NgIf, MatError, MatIconButton, MatSuffix, MatIcon, PasswordStrengthComponent, MatCheckbox, RudiCaptchaComponent_1, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, MatDivider, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatLabel, MatFormField, MatInput, MatHint, MatError, MatIconButton, MatSuffix, MatIcon, PasswordStrengthComponent, MatCheckbox, RudiCaptchaComponent_1, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, MatDivider, TranslatePipe]
 })
 export class SignUpComponent implements OnInit {
 
@@ -100,13 +100,13 @@ export class SignUpComponent implements OnInit {
     customizationDescriptionIsLoading: boolean;
     displayComponent: boolean;
 
-    constructor(private formBuilder: FormBuilder,
-                private routeHistoryService: RouteHistoryService,
-                private snackBarService: SnackBarService,
-                private translateService: TranslateService,
-                private breakpointObserver: BreakpointObserverService,
-                private accountService: AccountService,
-                private propertiesService: PropertiesMetierService,
+    constructor(private readonly formBuilder: FormBuilder,
+                private readonly routeHistoryService: RouteHistoryService,
+                private readonly snackBarService: SnackBarService,
+                private readonly translateService: TranslateService,
+                private readonly breakpointObserver: BreakpointObserverService,
+                private readonly accountService: AccountService,
+                private readonly propertiesService: PropertiesMetierService,
                 private readonly matIconRegistry: MatIconRegistry,
                 private readonly domSanitizer: DomSanitizer,
                 private readonly captchaCheckerService: CaptchaCheckerService,

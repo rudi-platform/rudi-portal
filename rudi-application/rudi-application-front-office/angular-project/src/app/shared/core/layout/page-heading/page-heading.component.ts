@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatIcon} from '@angular/material/icon';
@@ -9,7 +9,7 @@ import {OrganizationLogoComponent} from '../../../business/organisation/organiza
     selector: 'app-page-heading',
     templateUrl: './page-heading.component.html',
     styleUrls: ['./page-heading.component.scss'],
-    imports: [NgClass, ExtendedModule, OrganizationLogoComponent, NgIf, MatIcon]
+    imports: [NgClass, ExtendedModule, OrganizationLogoComponent, MatIcon]
 })
 export class PageHeadingComponent {
 

@@ -1,0 +1,39 @@
+<app-page>
+  <app-task-detail-header
+    [headingLoading]="loading"
+    [pageTitle]="pageTitle"
+    [pageSubTitle]="((processHistoricInformation$ | async)?.description ?? '')"
+    [status]="'personalSpace.projectTaskHistoric.archive' | translate"
+    [icon]="icon"
+  ></app-task-detail-header>
+
+  <app-loader
+    [allPage]="false"
+    [isTransparent]="true"
+    [noText]="true"
+    [active]="loading"
+  ></app-loader>
+
+  @if (!loading) {
+    @if (processHistoricInformation$ | async; as processHistoricInformation) {
+      <app-tabs>
+        <app-tab [icon]="'icon-historique'" [label]="'personalSpace.projectDetails.projectHistorique' | translate">
+          <ng-template>
+            <div class="task-history-detail-container">
+              <div class="task-history-detail-main">
+                <app-project-task-historic [processHistoricInformation]="processHistoricInformation"></app-project-task-historic>
+              </div>
+
+              <app-owner-information
+                class="task-history-detail-side"
+                [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
+                [name]="(bearer$ | async)?.name"
+                [email]="(bearer$ | async)?.email"
+              ></app-owner-information>
+            </div>
+          </ng-template>
+        </app-tab>
+      </app-tabs>
+    }
+}
+</app-page>

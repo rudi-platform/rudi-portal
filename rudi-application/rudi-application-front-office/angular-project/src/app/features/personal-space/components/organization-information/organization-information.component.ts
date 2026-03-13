@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input} from '@angular/core';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -9,7 +9,7 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
     selector: 'app-organization-information',
     templateUrl: './organization-information.component.html',
     styleUrls: ['./organization-information.component.scss'],
-    imports: [MatCard, MatCardTitle, LoaderComponent, NgIf, MatCardContent, TranslatePipe]
+    imports: [MatCard, MatCardTitle, LoaderComponent, MatCardContent, TranslatePipe]
 })
 export class OrganizationInformationComponent {
     @Input()

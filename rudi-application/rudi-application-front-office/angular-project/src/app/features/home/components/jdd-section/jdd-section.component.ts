@@ -1,4 +1,4 @@
-import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -12,7 +12,7 @@ import {Metadata} from 'micro_service_modules/api-kaccess';
     selector: 'app-jdd-section',
     templateUrl: './jdd-section.component.html',
     styleUrls: ['./jdd-section.component.scss'],
-    imports: [LoaderComponent, NgIf, NgFor, NgTemplateOutlet, RudiSwiperComponent, RouterLink, DatasetsInfosComponent, TranslatePipe]
+    imports: [LoaderComponent, NgTemplateOutlet, RudiSwiperComponent, RouterLink, DatasetsInfosComponent, TranslatePipe]
 })
 export class JddSectionComponent {
     @Input()

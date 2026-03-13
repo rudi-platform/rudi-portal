@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {IconRegistryService} from '@core/services/icon-registry.service';
@@ -32,7 +32,7 @@ import {SelfdataDatasetRequestsTabComponent} from '../../components/selfdata-dat
     selector: 'app-selfdata-dataset-details',
     templateUrl: './selfdata-dataset-details.component.html',
     styleUrls: ['./selfdata-dataset-details.component.scss'],
-    imports: [PageComponent, LoaderComponent, NgIf, PageHeadingComponent, TabsComponent, TabComponent, SelfdataDatasetRequestsTabComponent, SelfdataDatasetDataTabComponent, TabsLayoutDirective, TabContentDirective, MatchingDataCardComponent, SelfdataDatasetBasicDetailsComponent, TranslatePipe]
+    imports: [PageComponent, LoaderComponent, PageHeadingComponent, TabsComponent, TabComponent, SelfdataDatasetRequestsTabComponent, SelfdataDatasetDataTabComponent, TabsLayoutDirective, TabContentDirective, MatchingDataCardComponent, SelfdataDatasetBasicDetailsComponent, TranslatePipe]
 })
 export class SelfdataDatasetDetailsComponent implements OnInit {
 

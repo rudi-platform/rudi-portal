@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 .card-title {
     display: flex;
@@ -34,7 +34,7 @@
     }
 
     .button-contact {
-        @include button-blue;
+        @include common-style.button-blue;
     }
 }
 

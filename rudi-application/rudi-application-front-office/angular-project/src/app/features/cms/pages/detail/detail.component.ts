@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
@@ -23,7 +23,7 @@ const NEWS_TITLE: string = 'titre';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [NgClass, ExtendedModule, LoaderComponent, NgIf]
+    imports: [NgClass, ExtendedModule, LoaderComponent]
 })
 export class DetailComponent implements OnInit {
 

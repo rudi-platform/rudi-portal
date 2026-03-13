@@ -1,23 +1,29 @@
 <ng-container [formGroup]="formGroup">
-    <div class="d-flex">
-        <mat-label>{{ label }}<span *ngIf="required" class="required-symbol">*</span></mat-label>
-    </div>
-    <mat-hint class="title-hint">{{ help }}</mat-hint>
-    <div class="wf-list-field-wrapper">
-        <mat-form-field appearance="outline" class="wf-list-form-field" *ngIf="options">
-            <mat-select
-                [formControlName]="formControlName"
-                [placeholder]="'common.select.oneOptionPlaceHolder'|translate"
-                [multiple]="field.definition.multiple"
-                panelClass="wf-list-panel">
-                <mat-option *ngFor="let option of options"
-                            [value]="option.code">
-                    {{ option.label }}
-                </mat-option>
-            </mat-select>
-            <mat-error>
-                <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'common.requiredInformationError'|translate }}
-            </mat-error>
-        </mat-form-field>
-    </div>
+  <div class="d-flex">
+    <mat-label>{{ label }}@if (required) {
+      <span class="required-symbol">*</span>
+    }</mat-label>
+  </div>
+  <mat-hint class="title-hint">{{ help }}</mat-hint>
+  <div class="wf-list-field-wrapper">
+    @if (options) {
+      <mat-form-field appearance="outline" class="wf-list-form-field">
+        <mat-select
+          [formControlName]="formControlName"
+          [placeholder]="'common.select.oneOptionPlaceHolder'|translate"
+          [multiple]="field.definition.multiple"
+          panelClass="wf-list-panel">
+          @for (option of options; track option) {
+            <mat-option
+              [value]="option.code">
+              {{ option.label }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-error>
+          <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'common.requiredInformationError'|translate }}
+        </mat-error>
+      </mat-form-field>
+    }
+  </div>
 </ng-container>

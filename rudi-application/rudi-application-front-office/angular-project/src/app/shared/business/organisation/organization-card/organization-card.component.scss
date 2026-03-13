@@ -1,4 +1,4 @@
-@import "app/styles/common-style";
+@use "app/styles/common-style";
 
 .archived {
     background-color: var(--banner-solid-color-60);
@@ -30,7 +30,7 @@
         margin-left: 1em;
         overflow: hidden;
         text-overflow: ellipsis;
-        @include max-2-lignes;
+        @include common-style.max-2-lignes;
     }
 
     .ressource-description {

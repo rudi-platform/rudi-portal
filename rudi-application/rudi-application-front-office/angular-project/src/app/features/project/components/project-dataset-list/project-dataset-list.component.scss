@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 .dataset-card {
 
@@ -43,11 +43,11 @@
             font-size: 16px;
             color: var(--primary-color);
             font-weight: 600;
-            @include max-3-lignes;
+            @include common-style.max-3-lignes;
         }
 
         &-title-icon {
-            @include mat-icon-size(18px);
+            @include common-style.mat-icon-size(18px);
             margin-right: 2px;
         }
     }

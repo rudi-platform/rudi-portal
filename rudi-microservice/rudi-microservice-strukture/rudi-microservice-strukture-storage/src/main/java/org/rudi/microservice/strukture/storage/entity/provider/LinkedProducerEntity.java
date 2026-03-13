@@ -2,6 +2,10 @@ package org.rudi.microservice.strukture.storage.entity.provider;
 
 import java.util.Objects;
 
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,24 +14,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "linked_producer", schema = SchemaConstants.DATA_SCHEMA, uniqueConstraints = {
-		@UniqueConstraint(columnNames = {
-			LinkedProducerEntity.ORGANIZATION_FK,
-			LinkedProducerEntity.PROVIDER_FK
-		})
-})
+		@UniqueConstraint(columnNames = { LinkedProducerEntity.ORGANIZATION_FK, LinkedProducerEntity.PROVIDER_FK }) })
 @Getter
 @Setter
 public class LinkedProducerEntity extends AbstractAssetDescriptionEntity {
 
+	private static final long serialVersionUID = -6347275197530688873L;
 	public static final String FIELD_ID = "id";
 	public static final String FIELD_UUID = "uuid";
 	public static final String FIELD_ORGANIZATION = "organization";

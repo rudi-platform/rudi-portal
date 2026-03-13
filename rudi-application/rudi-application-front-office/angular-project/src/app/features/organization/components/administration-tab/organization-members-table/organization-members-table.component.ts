@@ -1,4 +1,4 @@
-import {DatePipe, NgClass, NgIf} from '@angular/common';
+import {DatePipe, NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormsModule} from '@angular/forms';
@@ -44,7 +44,7 @@ import {OrganizationMemberDialogData} from './organization-member-dialog-data';
     selector: 'app-organization-members-table',
     templateUrl: './organization-members-table.component.html',
     styleUrls: ['./organization-members-table.component.scss'],
-    imports: [FormsModule, MatIcon, NgIf, NgClass, ExtendedModule, MatButton, ErrorBoxComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe]
+    imports: [FormsModule, MatIcon, NgClass, ExtendedModule, MatButton, ErrorBoxComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe]
 })
 export class OrganizationMembersTableComponent implements OnInit {
 
@@ -138,7 +138,7 @@ export class OrganizationMembersTableComponent implements OnInit {
     }
 
     onUserTyped(event): void {
-        if (event != null && event.target != null) {
+        if (event?.target != null) {
             this.userTypedEvent.next(event.target.value);
         }
     }
@@ -366,7 +366,7 @@ export class OrganizationMembersTableComponent implements OnInit {
                           organizationUuid: string): Observable<OrganizationMember> {
         return organizationMember$.pipe(
             switchMap((organizationMember: DialogClosedData<OrganizationMember>) => {
-                if (organizationMember == null || organizationMember.closeEvent == null ||
+                if (organizationMember?.closeEvent == null ||
                     organizationMember.closeEvent !== CloseEvent.VALIDATION) {
                     return EMPTY;
                 }
@@ -379,7 +379,7 @@ export class OrganizationMembersTableComponent implements OnInit {
                              organizationUuid: string): Observable<OrganizationMember> {
         return organizationMember$.pipe(
             switchMap((organizationMember: DialogClosedData<OrganizationMember>) => {
-                if (organizationMember == null || organizationMember.closeEvent == null ||
+                if (organizationMember?.closeEvent == null ||
                     organizationMember.closeEvent !== CloseEvent.VALIDATION) {
                     return EMPTY;
                 }
@@ -393,7 +393,7 @@ export class OrganizationMembersTableComponent implements OnInit {
                              organizationUuid: string): Observable<OrganizationMember> {
         return organizationMember$.pipe(
             switchMap((organizationMember: DialogClosedData<OrganizationMember>) => {
-                if (organizationMember == null || organizationMember.closeEvent == null ||
+                if (organizationMember?.closeEvent == null ||
                     organizationMember.closeEvent !== CloseEvent.VALIDATION) {
                     return EMPTY;
                 }

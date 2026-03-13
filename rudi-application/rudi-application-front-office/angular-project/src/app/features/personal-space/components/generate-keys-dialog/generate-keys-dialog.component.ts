@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -30,7 +29,7 @@ export interface GenerateKeysDialogData {
     selector: 'app-generate-keys-dialog',
     templateUrl: './generate-keys-dialog.component.html',
     styleUrl: './generate-keys-dialog.component.scss',
-    imports: [MatDialogContent, NgIf, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MonthYearDatepickerComponent, MatIconButton, MatSuffix, MatIcon, LoaderComponent, CopiedButtonComponent, MatCheckbox, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
+    imports: [MatDialogContent, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MonthYearDatepickerComponent, MatIconButton, MatSuffix, MatIcon, LoaderComponent, CopiedButtonComponent, MatCheckbox, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class GenerateKeysDialogComponent implements OnInit {
 

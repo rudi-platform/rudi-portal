@@ -64,8 +64,8 @@ export class RequestDetailsDialogComponent implements OnInit {
     constructor(
         public dialogRef: MatDialogRef<RequestDetailsDialogComponent, DialogClosedData<RequestDetails>>,
         @Inject(MAT_DIALOG_DATA) public dialogData: RequestDetailsDialogData,
-        private matIconRegistry: MatIconRegistry,
-        private domSanitizer: DomSanitizer,
+        private readonly matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
         private readonly formBuilder: FormBuilder,
     ) {
         this.matIconRegistry.addSvgIcon('icon-close', this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-close.svg'));
@@ -127,8 +127,8 @@ export class RequestDetailsDialogComponent implements OnInit {
         const date: Moment = this.formGroup.get('date').value;
         const returned: DialogClosedData<RequestDetails> = {
             data: {
-                comment: comment ? comment : null,
-                endDate: date ? date : null
+                comment: comment || null,
+                endDate: date || null
             },
             closeEvent: CloseEvent.VALIDATION
         };

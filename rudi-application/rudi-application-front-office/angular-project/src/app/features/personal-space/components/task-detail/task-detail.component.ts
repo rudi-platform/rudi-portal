@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -22,7 +22,7 @@ import {RequestDisplayData} from './request-display-data';
     selector: 'app-task-detail',
     templateUrl: './task-detail.component.html',
     styleUrls: ['./task-detail.component.scss'],
-    imports: [MatCard, MatCardTitle, LoaderComponent, NgIf, MatCardContent, TranslatePipe]
+    imports: [MatCard, MatCardTitle, LoaderComponent, MatCardContent, TranslatePipe]
 })
 export class TaskDetailComponent implements OnInit {
     loading = false;

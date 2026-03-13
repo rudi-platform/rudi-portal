@@ -64,6 +64,7 @@ import {SelfdataDatasetsComponent} from './pages/selfdata-datasets/selfdata-data
 import {
     SelfdataInformationRequestTaskDetailComponent
 } from './pages/selfdata-information-request-task-detail/selfdata-information-request-task-detail.component';
+import {MyTaskHistoryDetailComponent} from './pages/my-task-history-detail/my-task-history-detail.component';
 
 import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
 
@@ -128,6 +129,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         OrganizationTaskDetailComponent,
         GenerateKeysDialogComponent,
         ProjectTaskHistoricComponent,
+        MyTaskHistoryDetailComponent,
     ],
     providers: [
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'}

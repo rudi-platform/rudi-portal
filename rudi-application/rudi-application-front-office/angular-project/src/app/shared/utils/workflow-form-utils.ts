@@ -5,7 +5,7 @@ import {Form, Section} from 'micro_service_modules/api-bpmn';
  * @param form le formulaire testé
  */
 export function getSectionWithFields(form: Form): Section[] {
-    if (form == null || form.sections == null || form.sections.length === 0) {
+    if (form?.sections == null || form.sections.length === 0) {
         return [];
     }
     return form.sections.filter((section: Section) => section.fields != null && section.fields.length > 0);

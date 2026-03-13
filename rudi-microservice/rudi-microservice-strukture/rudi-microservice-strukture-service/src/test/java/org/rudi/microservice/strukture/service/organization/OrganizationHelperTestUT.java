@@ -1,5 +1,10 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,13 +31,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationR
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @StruktureSpringBootTest
-public class OrganizationHelperTestUT {
+class OrganizationHelperTestUT {
 
 	private final List<OrganizationEntity> createdOrganizations = new ArrayList<>();
 
@@ -40,20 +40,21 @@ public class OrganizationHelperTestUT {
 	private OrganizationDataFactory organizationDataFactory;
 
 	@Autowired
-	OrganizationDao organizationDao;
+	private OrganizationDao organizationDao;
 
 	@Autowired
-	OrganizationHelper organizationHelper;
+	private OrganizationHelper organizationHelper;
 
 	@MockitoBean
-	OrganizationMembersHelper organizationMembersHelper;
+	private OrganizationMembersHelper organizationMembersHelper;
 
 	@MockitoBean
-	DatasetService datasetService;
+	private DatasetService datasetService;
 
 	@AfterEach
-	public void cleanData() {
-		for(OrganizationEntity o : createdOrganizations) {
+	void cleanData() {
+		for (OrganizationEntity o : createdOrganizations) {
+			organizationDataFactory.deleteOrganizationMembers(o.getUuid());
 			organizationDao.delete(o);
 		}
 	}
@@ -92,7 +93,7 @@ public class OrganizationHelperTestUT {
 		Long numberOfMember1 = users.stream().filter(user -> member1Uuid.equals(user.getUuid())).count();
 		Long numberOfMember2 = users.stream().filter(user -> member2Uuid.equals(user.getUuid())).count();
 		assertThat(numberOfMember1).isEqualTo(1);
-		assertThat(numberOfMember2).isEqualTo(0);
+		assertThat(numberOfMember2).isZero();
 	}
 
 	@Test

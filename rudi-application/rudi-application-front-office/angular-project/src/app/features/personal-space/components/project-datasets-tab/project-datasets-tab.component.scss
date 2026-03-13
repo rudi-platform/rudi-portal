@@ -1,11 +1,11 @@
-@import "common-style";
+@use "common-style";
 
 .main-container {
     padding: 2em;
 }
 
 .subscribe-button {
-    @include card-main-button;
+    @include common-style.card-main-button;
     width: 20em;
 }
 .div-container{

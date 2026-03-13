@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {Router} from '@angular/router';
@@ -14,7 +13,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
     selector: 'app-themes-section',
     templateUrl: './themes-section.component.html',
     styleUrls: ['./themes-section.component.scss'],
-    imports: [NgIf, LoaderComponent, RudiSwiperComponent, NgFor, MatIcon, TranslatePipe]
+    imports: [LoaderComponent, RudiSwiperComponent, MatIcon, TranslatePipe]
 })
 export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];

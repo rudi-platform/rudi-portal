@@ -1,70 +1,63 @@
 <div>
-    <mat-card class="card-api">
-        <span class="identification-title">{{ 'personalSpace.projectApi.identificationKey' | translate }}</span>
-        <p class="explanation-text">{{ 'personalSpace.projectApi.explainationText' | translate }}
-            <a [href]="rudiDocLink"> {{ 'personalSpace.projectApi.explainationTextLink' | translate }} </a></p>
-        <app-loader [active]="isKeysLoading" [allPage]="false" [isLight]="true" [isTransparent]="false"
-                    [noText]="true"></app-loader>
-        <ng-container *ngIf="projectKeysTotal">
-            <div class="mt-3">
-                <b>{{ projectKeysTotal }} {{ 'personalSpace.project.tabs.api.projectKeys.results'|translate }}</b></div>
-            <table
-                [dataSource]="dataSource"
-                aria-describedby="table-description"
-                class="mat-table-project-keys"
-                mat-table
+  <mat-card class="card-api">
+    <span class="identification-title">{{ 'personalSpace.projectApi.identificationKey' | translate }}</span>
+    <p class="explanation-text">{{ 'personalSpace.projectApi.explainationText' | translate }}
+      <a [href]="rudiDocLink"> {{ 'personalSpace.projectApi.explainationTextLink' | translate }} </a></p>
+      <app-loader [active]="isKeysLoading" [allPage]="false" [isLight]="true" [isTransparent]="false"
+      [noText]="true"></app-loader>
+      @if (projectKeysTotal) {
+        <div class="mt-3">
+          <b>{{ projectKeysTotal }} {{ 'personalSpace.project.tabs.api.projectKeys.results'|translate }}</b></div>
+          <table
+            [dataSource]="dataSource"
+            aria-describedby="table-description"
+            class="mat-table-project-keys"
+            mat-table
             >
-
-                <!-- Creation Date Column -->
-                <ng-container matColumnDef="creationDate">
-                    <th *matHeaderCellDef class="table-header first-row" mat-header-cell>
-                        {{ 'personalSpace.project.tabs.api.projectKeys.table.columnCreationDate'|translate }}
-                    </th>
-                    <td *matCellDef="let element" mat-cell> {{ element.creationDate }}</td>
-                </ng-container>
-
-                <!-- Name Column -->
-                <ng-container matColumnDef="name">
-                    <th *matHeaderCellDef class="table-header second-row" mat-header-cell>
-                        {{ 'personalSpace.project.tabs.api.projectKeys.table.columnName'|translate }}
-                    </th>
-                    <td *matCellDef="let element" class="nom-key" mat-cell> {{ element.name }}</td>
-                </ng-container>
-
-                <!-- Status Column -->
-                <ng-container matColumnDef="expirationDate">
-                    <th *matHeaderCellDef class="table-header third-row" mat-header-cell>
-                        {{ 'personalSpace.project.tabs.api.projectKeys.table.columnExpirationDate'|translate }}
-                    </th>
-                    <td *matCellDef="let element" class="text-center" mat-cell> {{ element.expirationDate }}</td>
-                </ng-container>
-
-                <!-- Action Column -->
-                <ng-container matColumnDef="action">
-                    <th *matHeaderCellDef class="table-header fourth-row" mat-header-cell>
-
-                    </th>
-
-                    <td *matCellDef="let element" mat-cell>
-                        <button (click)="openDialogDeleteKey(element.uuid)" class="action-btn-icon" mat-mini-fab>
-                            <mat-icon>delete</mat-icon>
-                        </button>
-                    </td>
-                </ng-container>
-
-                <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-                <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-            </table>
-        </ng-container>
+            <!-- Creation Date Column -->
+            <ng-container matColumnDef="creationDate">
+              <th *matHeaderCellDef class="table-header first-row" mat-header-cell>
+                {{ 'personalSpace.project.tabs.api.projectKeys.table.columnCreationDate'|translate }}
+              </th>
+              <td *matCellDef="let element" mat-cell> {{ element.creationDate }}</td>
+            </ng-container>
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th *matHeaderCellDef class="table-header second-row" mat-header-cell>
+                {{ 'personalSpace.project.tabs.api.projectKeys.table.columnName'|translate }}
+              </th>
+              <td *matCellDef="let element" class="nom-key" mat-cell> {{ element.name }}</td>
+            </ng-container>
+            <!-- Status Column -->
+            <ng-container matColumnDef="expirationDate">
+              <th *matHeaderCellDef class="table-header third-row" mat-header-cell>
+                {{ 'personalSpace.project.tabs.api.projectKeys.table.columnExpirationDate'|translate }}
+              </th>
+              <td *matCellDef="let element" class="text-center" mat-cell> {{ element.expirationDate }}</td>
+            </ng-container>
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+              <th *matHeaderCellDef class="table-header fourth-row" mat-header-cell>
+              </th>
+              <td *matCellDef="let element" mat-cell>
+                <button (click)="openDialogDeleteKey(element.uuid)" class="action-btn-icon" mat-mini-fab>
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+            <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+          </table>
+        }
 
         <!-- Table -->
-        <ng-container *ngIf="!projectKeysTotal">
-            <p class="my-3 mx-auto">{{ 'personalSpace.projectApi.noKeysFound' | translate }}</p>
-        </ng-container>
+        @if (!projectKeysTotal) {
+          <p class="my-3 mx-auto">{{ 'personalSpace.projectApi.noKeysFound' | translate }}</p>
+        }
         <div class="d-flex align-content-end w-100 flex-row-reverse mt-4">
-            <button (click)="generateKey()" class="action-button generate-button"
-                    mat-raised-button>{{ 'personalSpace.projectApi.generateKey' | translate }}
-            </button>
+          <button (click)="generateKey()" class="action-button generate-button"
+            mat-raised-button>{{ 'personalSpace.projectApi.generateKey' | translate }}
+          </button>
         </div>
-    </mat-card>
-</div>
+      </mat-card>
+    </div>

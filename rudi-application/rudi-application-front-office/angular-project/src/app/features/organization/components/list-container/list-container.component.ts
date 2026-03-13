@@ -1,4 +1,4 @@
-import {AsyncPipe, NgIf} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
@@ -12,15 +12,12 @@ import {
 } from '@shared/business/organisation/list-organization-card/search-organizations.service';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {Observable} from 'rxjs';
-import {types} from 'sass';
-import Error = types.Error;
 
 @Component({
     selector: 'app-list-container-organization',
     templateUrl: './list-container.component.html',
     styleUrls: ['./list-container.component.scss'],
     imports: [
-        NgIf,
         MatToolbar,
         OrganizationOrderComponent,
         ListOrganizationCardComponent,
@@ -41,7 +38,7 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     @Input() mediaSize: MediaSize;
 
     constructor(
-        private searchOrganizationsService: SearchOrganizationsService,
+        private readonly searchOrganizationsService: SearchOrganizationsService,
     ) {
         this.itemsPerPage = searchDefaultPageSize;
         this.organizations$ = searchOrganizationsService.organizations$;

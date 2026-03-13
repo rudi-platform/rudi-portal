@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
@@ -33,7 +33,7 @@ interface OrderItem extends Item {
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, PageTitleComponent, NgClass, ExtendedModule, CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, PageTitleComponent, NgClass, ExtendedModule, CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
 })
 export class ListComponent implements OnInit {
     isLoading: boolean = false;
@@ -48,7 +48,7 @@ export class ListComponent implements OnInit {
     searchIsRunning = true;
     newsListTotal = 0;
 
-    private destroy$: Subject<boolean>;
+    private readonly destroy$: Subject<boolean>;
 
 
     customizationDescription: CustomizationDescription;
@@ -79,9 +79,9 @@ export class ListComponent implements OnInit {
         private readonly translateService: TranslateService,
         private readonly domSanitizer: DomSanitizer,
         private readonly breakpointObserver: BreakpointObserverService,
-        private imageLogoService: ImageLogoService,
-        private logService: LogService,
-        private customizationService: CustomizationService,
+        private readonly imageLogoService: ImageLogoService,
+        private readonly logService: LogService,
+        private readonly customizationService: CustomizationService,
     ) {
         this.destroy$ = new Subject<boolean>();
         this.mediaSize = this.breakpointObserver.getMediaSize();

@@ -1,5 +1,5 @@
-@import "responsive";
-@import "swiper/css";
+@use "responsive";
+@import url("swiper/css");
 
 .themes-section-container {
     width: 90%;
@@ -24,7 +24,7 @@
         justify-items: center;
         justify-content: center;
         cursor: pointer;
-        @include xs() {
+        @include responsive.xs() {
             width: 90%;
             margin: auto;
         }

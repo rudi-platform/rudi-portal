@@ -15,13 +15,14 @@
       <bpmn:outgoing>SequenceFlow_1</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>
     </bpmn:startEvent>
-    <bpmn:endEvent id="EndEvent_13bsqqd" name="Canceled">
+    <bpmn:endEvent id="EndEvent_13bsqqd" name="Demande annulée">
       <bpmn:incoming>SequenceFlow_6</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="EndEvent_1ogwwp9" name="Done">
+    <bpmn:endEvent id="EndEvent_1ogwwp9" name="Demande traitée">
       <bpmn:incoming>SequenceFlow_2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="UserTask_1" name="Demande en cours d'étude producteur" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_1" name="Traitement de la demande d'accès à un jeu de données"
+            implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_5">
@@ -40,7 +41,7 @@
       <bpmn:documentation id="Documentation_13"><![CDATA[Accepter la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;validated&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_4" name="canceled" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_3">
+    <bpmn:sequenceFlow id="SequenceFlow_4" name="Demande annulée" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_3">
       <bpmn:documentation id="Documentation_11"><![CDATA[Refuser la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_6" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;canceled&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -53,7 +54,8 @@
       <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="UserTask_1" targetRef="ExclusiveGateway_1"/>
-    <bpmn:scriptTask id="ScriptTask_1" name="Prise en compte" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande d'accès à un jeu de données"
+            scriptFormat="javascript">
       <bpmn:documentation id="Documentation_4"><![CDATA[Positionne le workflow dans l'état "en attente" (pending)]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
@@ -62,7 +64,7 @@
       linkedDatasetWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En cours&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="StartEvent_1" targetRef="ScriptTask_1"/>
-    <bpmn:scriptTask id="ScriptTask_2" name="Demande acceptée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_2" name="Demande d'accès à un jeu de données acceptée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_5"><![CDATA[Positionne le workflow dans l'état "terminé" (completed)]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_3</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_7</bpmn:outgoing>
@@ -74,7 +76,7 @@ var localEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:
 linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailData);
       </bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:scriptTask id="ScriptTask_3" name="Demande refusée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_3" name="Demande d'accès à un jeu de données refusée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_7"><![CDATA[Positionne le workflow dans l'état "abandonné" (Canceled)]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_4</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_6</bpmn:outgoing>
@@ -87,7 +89,8 @@ linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailDa
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_6" sourceRef="ScriptTask_3" targetRef="EndEvent_13bsqqd"/>
     <bpmn:sequenceFlow id="SequenceFlow_8" sourceRef="ScriptTask_1" targetRef="UserTask_1"/>
-    <bpmn:scriptTask id="ScriptTask_4" name="Demande cloturée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_4" name="Clôture de la demande d'accès à un jeu de données"
+            scriptFormat="javascript">
       <bpmn:documentation id="Documentation_12"><![CDATA[Positionne le workflow dans l'état "abandonné" (Canceled)]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_2</bpmn:outgoing>
@@ -119,19 +122,19 @@ linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailDa
       <bpmndi:BPMNShape id="EndEvent_13bsqqd_di" bpmnElement="EndEvent_13bsqqd">
         <dc:Bounds height="36.0" width="36.0" x="1038.0" y="380.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_6" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="62.0" x="1025.0" y="416.0"/>
+          <dc:Bounds height="30.0" width="58.0" x="1027.0" y="416.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1ogwwp9_di" bpmnElement="EndEvent_1ogwwp9">
         <dc:Bounds height="36.0" width="36.0" x="1072.0" y="112.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_7" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="35.0" x="1072.0" y="148.0"/>
+          <dc:Bounds height="30.0" width="58.0" x="1061.0" y="148.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="UserTask_1" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="411.0" y="91.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_9" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="51.0" width="101.0" x="415.0" y="106.0"/>
+          <dc:Bounds height="60.0" width="106.0" x="413.0" y="101.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_1" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
@@ -143,25 +146,25 @@ linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailDa
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_1" bpmnElement="ScriptTask_1" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="160.0" y="90.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="107.0" x="161.0" y="122.0"/>
+          <dc:Bounds height="60.0" width="106.0" x="162.0" y="100.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_2" bpmnElement="ScriptTask_2" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="755.0" y="91.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_3" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="108.0" x="756.0" y="124.0"/>
+          <dc:Bounds height="45.0" width="106.0" x="757.0" y="109.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_3" bpmnElement="ScriptTask_3" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="755.0" y="358.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_8" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="100.0" x="760.0" y="391.0"/>
+          <dc:Bounds height="45.0" width="106.0" x="757.0" y="376.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_4" bpmnElement="ScriptTask_4" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="900.0" y="90.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_16" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="15.0" width="102.0" x="904.0" y="123.0"/>
+          <dc:Bounds height="60.0" width="106.0" x="902.0" y="100.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_EventEndLinkedDatasetRestrictedAccess">
@@ -189,7 +192,7 @@ linkedDatasetWorkflowContext.sendEMailToInitiator(context,execution,localEmailDa
         <di:waypoint xsi:type="dc:Point" x="604.0" y="398.0"/>
         <di:waypoint xsi:type="dc:Point" x="755.0" y="398.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_12">
-          <dc:Bounds height="17.0" width="59.0" x="575.0" y="354.0"/>
+          <dc:Bounds height="30.0" width="58.0" x="576.0" y="354.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_UserTask_1" targetElement="BPMNShape_ExclusiveGateway_1">

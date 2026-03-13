@@ -1,14 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "colors";
-@import "variables-rudi";
-@import "font-open-sans";
-@import "font-montserrat";
+@use "colors";
+@use "variables-rudi";
+@use "font-open-sans";
+@use "font-montserrat";
+@use "mat-theming.scss";
+@use "responsive";
+
 @import "ag-grid-community/styles/ag-grid.css";
 @import "ag-grid-community/styles/ag-theme-alpine.css";
-@import "bootstrap/scss/bootstrap";
-@import "mat-theming.scss";
-@import "responsive";
+
+
 
 html, body {
     height: 100%;
@@ -378,23 +380,23 @@ a {
         }
     }
 
-    @include xs() {
+    @include responsive.xs() {
         @include mobile-screen;
     }
 
-    @include sm() {
+    @include responsive.sm() {
         @include mobile-screen;
     }
 
-    @include md() {
+    @include responsive.md() {
         @include desktop-screen;
     }
 
-    @include lg() {
+    @include responsive.lg() {
         @include desktop-screen;
     }
 
-    @include xl() {
+    @include responsive.xl() {
         @include desktop-screen;
     }
 }

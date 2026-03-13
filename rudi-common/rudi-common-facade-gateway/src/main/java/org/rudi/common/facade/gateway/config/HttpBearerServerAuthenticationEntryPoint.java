@@ -1,6 +1,10 @@
-package org.rudi.microservice.apigateway.facade.config.security;
+package org.rudi.common.facade.gateway.config;
 
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
+import org.rudi.common.facade.gateway.config.exception.ExpiredAuthenticationException;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
@@ -25,10 +29,20 @@ public class HttpBearerServerAuthenticationEntryPoint implements ServerAuthentic
 
 	@Override
 	public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
-		return Mono.fromRunnable(() -> {
-			ServerHttpResponse response = exchange.getResponse();
-			response.setStatusCode(HttpStatus.UNAUTHORIZED);
-			response.getHeaders().set(WWW_AUTHENTICATE, HEADER_VALUE);
-		});
+		if (e instanceof ExpiredAuthenticationException) {
+			DataBufferFactory bufferFactory = exchange.getResponse().bufferFactory();
+			exchange.getResponse().setStatusCode(CommonSecurityConstants.HTTP_TOKEN_EXPIRED);
+			exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+			String body = "{\"error\":\"Token expiré\"}";
+			return exchange.getResponse().writeWith(Mono.just(bufferFactory.wrap(body.getBytes())));
+		} else if (e != null) {
+			return Mono.error(e);
+		} else {
+			return Mono.fromRunnable(() -> {
+				ServerHttpResponse response = exchange.getResponse();
+				response.setStatusCode(HttpStatus.UNAUTHORIZED);
+				response.getHeaders().set(WWW_AUTHENTICATE, HEADER_VALUE);
+			});
+		}
 	}
 }

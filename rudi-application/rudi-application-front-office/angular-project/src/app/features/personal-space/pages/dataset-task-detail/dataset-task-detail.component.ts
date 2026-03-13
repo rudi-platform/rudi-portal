@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -39,7 +39,7 @@ import {TaskDetailComponent as TaskDetailComponent_1} from '../../components/tas
     selector: 'app-dataset-task-detail',
     templateUrl: './dataset-task-detail.component.html',
     styleUrls: ['./dataset-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, TaskDetailComponent_1, ProjectDetailComponent, NgFor, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectOwnerDetailComponent, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, TaskDetailComponent_1, ProjectDetailComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectOwnerDetailComponent, TranslatePipe]
 })
 export class DatasetTaskDetailComponent
     extends TaskDetailComponent<LinkedDataset, LinkedDatasetDependencies, LinkedDatasetTask, ProjektTaskSearchCriteria>

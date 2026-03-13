@@ -7,11 +7,11 @@ import {DialogSubscribeDatasetsService} from '@core/services/dialog-subscribe-da
 import {ObjectType} from '@core/services/tasks/object-type.enum';
 import {DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {DataRequestItem} from '@features/project/model/data-request-item';
+import {TranslatePipe} from '@ngx-translate/core';
 import {NewDatasetRequestTableData, RowTableData} from '@shared/business/projects/projects-datasets-tables/dataset.interface';
 import {NewDatasetRequest, NewDatasetRequestStatus} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
 import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
-import {TranslatePipe} from '@ngx-translate/core';
 
 
 @Component({
@@ -53,7 +53,7 @@ export class NewDatasetRequestTableComponent {
     commentActionEvent: EventEmitter<RowTableData> = new EventEmitter();
 
     constructor(
-        private _liveAnnouncer: LiveAnnouncer,
+        private readonly _liveAnnouncer: LiveAnnouncer,
         private readonly projectSubmissionService: ProjectSubmissionService,
         private readonly personalSpaceProjectService: DialogSubscribeDatasetsService,
         private readonly projectConsultationService: ProjectConsultationService,

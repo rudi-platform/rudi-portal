@@ -1,7 +1,10 @@
 import {Injectable} from '@angular/core';
 import {LanguageService} from '@core/i18n/language.service';
 import {MatchingDataView} from '@features/personal-space/components/matching-data-card/matching-data-view';
-import {PagedSelfdataDataset, SelfdataDataset} from '@features/personal-space/components/selfdata-datasets-table/selfdata-dataset.interface';
+import {
+    PagedSelfdataDataset,
+    SelfdataDataset
+} from '@features/personal-space/components/selfdata-datasets-table/selfdata-dataset.interface';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {
@@ -123,7 +126,7 @@ export class SelfdataDatasetService {
         // Récupération du 1er résultat ou nul si inexistant
         return this.selfdataService.searchMySelfdataInformationRequests(criteria).pipe(
             map((page: PagedSelfdataInformationRequestList) => {
-                if (page == null || page.elements == null || page.elements.length === 0) {
+                if (page?.elements?.length === 0) {
                     return null;
                 }
 

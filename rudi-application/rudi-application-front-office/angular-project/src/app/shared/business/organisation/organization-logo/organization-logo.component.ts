@@ -5,7 +5,7 @@ import {ProducersMetierService} from '@core/services/producers-metier.service';
 import {ProvidersMetierService} from '@core/services/providers-metier.service';
 import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {LoaderComponent} from '../../../core/common/loader/loader.component';
-import {NgIf} from '@angular/common';
+
 
 const PRODUCER = 'producer';
 const PROVIDER = 'provider';
@@ -15,7 +15,7 @@ export type OrganizationType = 'producer' | 'provider';
     selector: 'app-organization-logo',
     templateUrl: './organization-logo.component.html',
     styleUrls: ['./organization-logo.component.scss'],
-    imports: [LoaderComponent, NgIf, TranslatePipe]
+    imports: [LoaderComponent, TranslatePipe]
 })
 export class OrganizationLogoComponent implements OnInit {
     @Input() organizationType: OrganizationType;

@@ -1,55 +1,60 @@
-<div *ngIf="hasSelectedItems" class="d-flex d-table-cell keywords-row mb-5">
-
+@if (hasSelectedItems) {
+  <div class="d-flex d-table-cell keywords-row mb-5">
     <!-- THEME -->
-    <div *ngFor="let theme of selectedThemeItems"
-         class="button-filter-container">
+    @for (theme of selectedThemeItems; track theme) {
+      <div
+        class="button-filter-container">
         <div class="button-filter-texte">
-            {{ theme.name }}
+          {{ theme.name }}
         </div>
         <div class="button-filter-icon-container" (click)="deleteThemeFilter(theme)">
-            <mat-icon aria-hidden="false" aria-label="close icon">close
-            </mat-icon>
+          <mat-icon aria-hidden="false" aria-label="close icon">close
+          </mat-icon>
         </div>
-    </div>
-
+      </div>
+    }
     <!-- PRODUCER -->
-    <div *ngFor="let producer of selectedProducerItems"
-         class="button-filter-container">
+    @for (producer of selectedProducerItems; track producer) {
+      <div
+        class="button-filter-container">
         <div class="button-filter-texte">
-            {{ producer.name }}
+          {{ producer.name }}
         </div>
         <div class="button-filter-icon-container" (click)="deleteProducerFilter(producer)">
-            <mat-icon aria-hidden="false" aria-label="close icon">close
-            </mat-icon>
+          <mat-icon aria-hidden="false" aria-label="close icon">close
+          </mat-icon>
         </div>
-    </div>
-
+      </div>
+    }
     <!-- DATE -->
-    <div *ngFor="let date of selectedDatesItems"
-         class="button-filter-container">
+    @for (date of selectedDatesItems; track date) {
+      <div
+        class="button-filter-container">
         <div class="button-filter-texte">
-            {{ date.name }}
+          {{ date.name }}
         </div>
         <div class="button-filter-icon-container" (click)="deleteDateFilter(date)">
-            <mat-icon aria-hidden="false" aria-label="close icon">close
-            </mat-icon>
+          <mat-icon aria-hidden="false" aria-label="close icon">close
+          </mat-icon>
         </div>
-    </div>
-
+      </div>
+    }
     <!-- JDD STATUS -->
-    <ng-container *ngFor="let restrictedAccessItem of notNullSelectedAccessStatusItems">
-        <div class="button-filter-container">
-            <div class="button-filter-texte">
-                {{ restrictedAccessItem.name }}
-            </div>
-            <div class="button-filter-icon-container" (click)="deleteRestrictedAccessFilter()">
-                <mat-icon aria-hidden="false" aria-label="close icon">close
-                </mat-icon>
-            </div>
+    @for (restrictedAccessItem of notNullSelectedAccessStatusItems; track restrictedAccessItem) {
+      <div class="button-filter-container">
+        <div class="button-filter-texte">
+          {{ restrictedAccessItem.name }}
         </div>
-    </ng-container>
-
-    <span *ngIf="hasSelectedAllOtherFiltre()" (click)="deleteAllFilters()" class="filter-link">
+        <div class="button-filter-icon-container" (click)="deleteRestrictedAccessFilter()">
+          <mat-icon aria-hidden="false" aria-label="close icon">close
+          </mat-icon>
+        </div>
+      </div>
+    }
+    @if (hasSelectedAllOtherFiltre()) {
+      <span (click)="deleteAllFilters()" class="filter-link">
         {{ 'filterBox.toutEffacer' | translate}}
-    </span>
-</div>
+      </span>
+    }
+  </div>
+}

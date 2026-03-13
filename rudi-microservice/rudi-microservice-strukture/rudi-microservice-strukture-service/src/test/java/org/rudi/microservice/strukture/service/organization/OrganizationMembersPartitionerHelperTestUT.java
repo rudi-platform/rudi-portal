@@ -1,5 +1,13 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -24,9 +32,12 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.provider.LinkedProducerDataFactory;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMemberSort;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
+import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
@@ -38,14 +49,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @StruktureSpringBootTest
 class OrganizationMembersPartitionerHelperTestUT {
 
@@ -55,15 +58,26 @@ class OrganizationMembersPartitionerHelperTestUT {
 	@Autowired
 	private OrganizationDao organizationDao;
 
+	@Autowired
+	private LinkedProducerDao linkedProducerDao;
+
 	@MockitoBean
 	private ACLHelper aclHelper;
 
 	@MockitoBean
 	DatasetService datasetService;
 
+	@Autowired
+	private OrganizationDataFactory organizationDataFactory;
+
+	@Autowired
+	private LinkedProducerDataFactory linkedProducerDataFactory;
+
 	@AfterEach
 	void tearDown() {
-		organizationDao.deleteAll();
+		linkedProducerDataFactory.deleteAllLinkedProducer();
+		organizationDataFactory.deleteAllOrganizationMembers();
+		organizationDataFactory.deleteAllOrganizations();
 	}
 
 	@Test
@@ -101,11 +115,11 @@ class OrganizationMembersPartitionerHelperTestUT {
 		assertFalse(CollectionUtils.isEmpty(partitions));
 
 		// On attend 5 partitions :
-		//  - 0 -> 9
-		//  - 10 -> 19
-		//  - 20 -> 29
-		//  - 30 -> 39
-		//  - 40 -> 49 (ici 42 -> car 43 membres)
+		// - 0 -> 9
+		// - 10 -> 19
+		// - 20 -> 29
+		// - 30 -> 39
+		// - 40 -> 49 (ici 42 -> car 43 membres)
 		assertEquals(5, partitions.size());
 		List<Pageable> sortedPartititons = partitions.stream().sorted(this::compare).collect(Collectors.toList());
 		for (int i = 0; i < sortedPartititons.size(); i++) {

@@ -5,9 +5,9 @@
     <mat-card-subtitle class="section-sub-title">
         {{ name }}
     </mat-card-subtitle>
+    @if(email) {
     <mat-card-content class="section-content">
-        <app-clipboard-field
-            [content]="email"
-        ></app-clipboard-field>
+        <app-contact-button [email]="email" [showEmailDirectly]="true"></app-contact-button>
     </mat-card-content>
+    }
 </mat-card>

@@ -1,4 +1,4 @@
-import {AsyncPipe, NgClass, NgFor, NgIf} from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatDivider} from '@angular/material/divider';
@@ -26,7 +26,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.scss'],
-    imports: [NgClass, ExtendedModule, NgIf, SocialMediaSectionComponent, MatDivider, NgFor, AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
+    imports: [NgClass, ExtendedModule, SocialMediaSectionComponent, MatDivider, AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
 })
 export class FooterComponent implements OnInit {
 

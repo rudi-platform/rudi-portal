@@ -13,7 +13,7 @@ import {
 } from 'micro_service_modules/projekt/projekt-api';
 import {LinkedDataset, OwnerInfo, Project} from 'micro_service_modules/projekt/projekt-model';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
-import {from} from 'rxjs';
+import {from, Observable} from 'rxjs';
 import {map, mergeMap, reduce, switchMap} from 'rxjs/operators';
 import {ProjektMetierService} from '../../asset/project/projekt-metier.service';
 import {KonsultMetierService} from '../../konsult-metier.service';
@@ -88,7 +88,7 @@ export class LinkedDatasetTaskDependencyFetchers
 
     get dataset(): DependencyFetcher<LinkedDatasetTask, Metadata> {
         return {
-            hasPrerequisites: (input: LinkedDatasetTask) => input != null && input.asset != null && input.asset.dataset_uuid != null,
+            hasPrerequisites: (input: LinkedDatasetTask) => input?.asset?.dataset_uuid != null,
             getKey: taskWithDependencies => taskWithDependencies.asset.dataset_uuid,
             getValue: datasetUuid => this.konsultMetierService.getMetadataByUuid(datasetUuid)
         };
@@ -96,7 +96,7 @@ export class LinkedDatasetTaskDependencyFetchers
 
     get project(): DependencyFetcher<LinkedDatasetTask, Project> {
         return {
-            hasPrerequisites: (input: LinkedDatasetTask) => input != null && input.asset != null && input.asset.uuid != null,
+            hasPrerequisites: (input: LinkedDatasetTask) => input?.asset?.uuid != null,
             getKey: taskWithDependencies => taskWithDependencies.asset.uuid,
             getValue: linkedDatasetUuid => this.projektMetierService.getLinkedProject(linkedDatasetUuid)
         };
@@ -104,8 +104,7 @@ export class LinkedDatasetTaskDependencyFetchers
 
     get ownerInfo(): DependencyFetcher<LinkedDatasetTask, OwnerInfo> {
         return {
-            hasPrerequisites: (input: LinkedDatasetTask) => input != null && input.dependencies != null
-                && input.dependencies.project != null,
+            hasPrerequisites: (input: LinkedDatasetTask) => input?.dependencies?.project != null,
             getKey: taskWithDependencies => OwnerKey.serialize(taskWithDependencies.dependencies.project),
             getValue: ownerKey => {
                 const {owner_type, owner_uuid} = OwnerKey.deserialize(ownerKey);
@@ -150,28 +149,37 @@ export class LinkedDatasetTaskDependencyFetchers
         return {
             hasPrerequisites: (input: LinkedDatasetTask) => LinkedDatasetTaskDependencyFetchers.hasProjectUuid(input),
             getKey: taskWithDependencies => taskWithDependencies.dependencies.project.uuid,
-            getValue: projectUuid => this.projektMetierService.getLinkedDatasets(projectUuid).pipe(
-                map((links: LinkedDataset[]) => {
-                    return links.filter((link: LinkedDataset) =>
-                        link.dataset_confidentiality === DatasetConfidentiality.Opened);
-                }),
-                switchMap((openLinks: LinkedDataset[]) => {
-                    return from(openLinks).pipe(
-                        mergeMap((openLink: LinkedDataset) => {
-                            return this.konsultMetierService.getMetadataByUuid(openLink.dataset_uuid).pipe(
-                                map((dataset: Metadata) => {
-                                    return {linkedDataset: openLink, dataset};
-                                })
-                            );
-                        }),
-                        reduce((accumulator: OpenLinkedDatasetAccessRequest[], current: OpenLinkedDatasetAccessRequest) => {
-                            accumulator.push(current);
-                            return accumulator;
-                        }, [])
-                    );
-                })
-            )
+            getValue: projectUuid => this.fetchOpenedLinkedDatasetsWithMetadata(projectUuid)
         };
+    }
+
+    private fetchOpenedLinkedDatasetsWithMetadata(projectUuid: string): Observable<OpenLinkedDatasetAccessRequest[]> {
+        return this.projektMetierService.getLinkedDatasets(projectUuid).pipe(
+            map((links: LinkedDataset[]) => this.filterOpenedDatasets(links)),
+            switchMap((openLinks: LinkedDataset[]) => this.enrichOpenLinkedDatasetsWithMetadata(openLinks))
+        );
+    }
+
+    private filterOpenedDatasets(links: LinkedDataset[]): LinkedDataset[] {
+        return links.filter((link: LinkedDataset) =>
+            link.dataset_confidentiality === DatasetConfidentiality.Opened
+        );
+    }
+
+    private enrichOpenLinkedDatasetsWithMetadata(openLinks: LinkedDataset[]): Observable<OpenLinkedDatasetAccessRequest[]> {
+        return from(openLinks).pipe(
+            mergeMap((openLink: LinkedDataset) => this.fetchMetadataForOpenLink(openLink)),
+            reduce((accumulator: OpenLinkedDatasetAccessRequest[], current: OpenLinkedDatasetAccessRequest) => {
+                accumulator.push(current);
+                return accumulator;
+            }, [])
+        );
+    }
+
+    private fetchMetadataForOpenLink(openLink: LinkedDataset): Observable<OpenLinkedDatasetAccessRequest> {
+        return this.konsultMetierService.getMetadataByUuid(openLink.dataset_uuid).pipe(
+            map((dataset: Metadata) => ({linkedDataset: openLink, dataset}))
+        );
     }
 
     get newDatasetRequests(): DependencyFetcher<LinkedDatasetTask, NewDatasetRequest[]> {
@@ -204,7 +212,7 @@ export class LinkedDatasetTaskDependencyFetchers
      * @private
      */
     private static hasProjectUuid(input: LinkedDatasetTask): boolean {
-        return input != null && input.dependencies != null && input.dependencies.project != null && input.dependencies.project.uuid != null;
+        return input?.dependencies?.project?.uuid != null;
     }
 
     /**
@@ -213,7 +221,6 @@ export class LinkedDatasetTaskDependencyFetchers
      * @private
      */
     private static hasTaskProjectAndDatasetProducer(input: LinkedDatasetTask): boolean {
-        return input != null && input.dependencies != null && input.dependencies.project != null && input.dependencies.dataset != null
-            && input.dependencies.dataset.producer != null && input.task != null;
+        return input?.dependencies?.project != null && input?.dependencies?.dataset?.producer != null && input?.task != null;
     }
 }

@@ -1,4 +1,4 @@
-import {KeyValuePipe, NgFor, NgIf} from '@angular/common';
+import {KeyValuePipe} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {MatError} from '@angular/material/form-field';
@@ -16,7 +16,7 @@ import saveAs from 'file-saver';
     selector: 'app-uploader',
     templateUrl: './uploader.component.html',
     styleUrls: ['./uploader.component.scss'],
-    imports: [FilePickerComponent, MatIcon, NgIf, MatError, NgFor, KeyValuePipe, TranslatePipe]
+    imports: [FilePickerComponent, MatIcon, MatError, KeyValuePipe, TranslatePipe]
 })
 export class UploaderComponent<T> {
 
@@ -47,8 +47,8 @@ export class UploaderComponent<T> {
     constructor(
         public snackBarService: SnackBarService,
         public translateService: TranslateService,
-        private matIconRegistry: MatIconRegistry,
-        private domSanitizer: DomSanitizer,
+        private readonly matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
     ) {
         this.cropperOptions = {
             aspectRatio: 416 / 220,
@@ -105,7 +105,7 @@ export class UploaderComponent<T> {
     }
 
     onDownLoadFile($event: FilePreviewModel): void {
-        if ($event && $event.file) {
+        if ($event?.file) {
             saveAs($event.file, $event.fileName, {autoBom: false});
         }
     }

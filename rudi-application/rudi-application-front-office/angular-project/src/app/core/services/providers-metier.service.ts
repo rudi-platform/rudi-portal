@@ -12,7 +12,7 @@ import {OrganizationMetierService} from './organization/organization-metier.serv
 export class ProvidersMetierService extends OrganizationMetierService {
 
     constructor(protected imageLogoService: ImageLogoService,
-                private providersService: ProvidersService,
+                private readonly providersService: ProvidersService,
                 protected organizationService: OrganizationService,
                 protected userService: UserService) {
         super(imageLogoService, organizationService, userService);

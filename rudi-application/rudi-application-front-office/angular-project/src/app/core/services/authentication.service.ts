@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
@@ -32,7 +32,7 @@ export const X_TOKEN = '_xtoken';
 /**
  * La clé dans le storage qui va contenir la route avant authentification
  */
-export const ROUTE = "_route";
+export const ROUTE = '_route';
 
 const AUTHENTICATION_STATE_SESSION_STORAGE_KEY = 'authenticationState';
 
@@ -42,13 +42,13 @@ const AUTHENTICATION_STATE_SESSION_STORAGE_KEY = 'authenticationState';
 })
 export class AuthenticationService {
 
-    public static FIELD_LOGIN_AUTHENTICATION = 'login';
-    public static FIELD_PASSWORD_AUTHENTICATION = 'password';
+    public static readonly FIELD_LOGIN_AUTHENTICATION = 'login';
+    public static readonly FIELD_PASSWORD_AUTHENTICATION = 'password';
 
-    public static ERROR_ACCOUNT_NOT_ACTIVE = 'error_account_not_active_42';
-    public static ERROR_SERVER_IS_NOT_ACTIVE = 'error_account_not_active_43';
-    public static ERROR_SERVER_AUTHENTICATE = 'error_account_not_active_44';
-    public static ERROR_SERVER_USER_LOCKED = '423';
+    public static readonly ERROR_ACCOUNT_NOT_ACTIVE = 'error_account_not_active_42';
+    public static readonly ERROR_SERVER_IS_NOT_ACTIVE = 'error_account_not_active_43';
+    public static readonly ERROR_SERVER_AUTHENTICATE = 'error_account_not_active_44';
+    public static readonly ERROR_SERVER_USER_LOCKED = '423';
 
     /**
      * Pour éviter les boucles infinies en cas d'erreur d'authentification avec ACL
@@ -58,21 +58,21 @@ export class AuthenticationService {
     /**
      * Permet de récupérer l'évènement d'authentification
      */
-    private isAuthenticated: BehaviorSubject<boolean>;
+    private readonly isAuthenticated: BehaviorSubject<boolean>;
     public readonly isAuthenticated$: Observable<boolean>;
 
     /**
      * Evenement qui indique qu'une authentification a eu lieu
      */
-    private authenticationChanged: BehaviorSubject<AuthenticationState> = new BehaviorSubject<AuthenticationState>(AuthenticationService.getAuthenticationStateFromSessionStorage());
+    private readonly authenticationChanged: BehaviorSubject<AuthenticationState> = new BehaviorSubject<AuthenticationState>(AuthenticationService.getAuthenticationStateFromSessionStorage());
     public authenticationChanged$: Observable<AuthenticationState> = this.authenticationChanged.asObservable();
 
     /**
      * Constructeur
      */
     constructor(private readonly logService: LogService,
-                private http: HttpClient,
-                private accountService: AccountService,
+                private readonly http: HttpClient,
+                private readonly accountService: AccountService,
                 private readonly anonymousAuthenticationService: AnonymousAuthentication,
                 private readonly loginAuthenticationService: LoginAuthentication
     ) {
@@ -156,8 +156,9 @@ export class AuthenticationService {
      * Récupération des tokens qui seront insérés pour une requête de refresh token
      */
     getHeadersForRefreshToken(): { [name: string]: string | string[] } {
+        const token = AuthenticationService.getXToken();
         return {
-            [X_TOKEN_HEADER]: AuthenticationService.getXToken()
+            [X_TOKEN_HEADER]: token
         };
     }
 
@@ -174,7 +175,7 @@ export class AuthenticationService {
      */
     authenticate(form: FormGroup): Observable<void> {
 
-        if (form == null || form.get(AuthenticationService.FIELD_LOGIN_AUTHENTICATION) == null
+        if (form?.get(AuthenticationService.FIELD_LOGIN_AUTHENTICATION) == null
             || form.get(AuthenticationService.FIELD_PASSWORD_AUTHENTICATION) == null) {
             return throwError(() => new Error('paramètres manquant pour effectuer une authentification (formulaire nul ou incomplet)'));
         }
@@ -182,23 +183,21 @@ export class AuthenticationService {
         return this.accountService.isAccountCreatedNotValidated(form.get(AuthenticationService.FIELD_LOGIN_AUTHENTICATION).value).pipe(
             catchError((error: HttpErrorResponse) => {
                 console.error('error server is not active :', error.message);
-                return throwError(() =>  new Error(AuthenticationService.ERROR_SERVER_IS_NOT_ACTIVE));
+                return throwError(() => new Error(AuthenticationService.ERROR_SERVER_IS_NOT_ACTIVE));
             }),
             switchMap((isAccountCreatedNotValidated: boolean) => {
                 if (isAccountCreatedNotValidated) {
                     throw new Error(AuthenticationService.ERROR_ACCOUNT_NOT_ACTIVE);
-                } else {
-                    // Quand on s'authent en tant que user normal et que ça échoue, ben on fait rien comme ça on perd pas l'authent anonyme
-                    return this.authenticateWith(this.loginAuthenticationService, form).pipe(
-                        catchError((error: HttpErrorResponse) => {
-                            console.error('error server authent :', error.message);
-                            if (error.status >= 400 && error.status < 500) {
-                                return throwError(() => new Error('' + error.status));
-                            }
-                            return throwError(() => new Error(AuthenticationService.ERROR_SERVER_AUTHENTICATE));
-                        })
-                    );
                 }
+                return this.authenticateWith(this.loginAuthenticationService, form).pipe(
+                    catchError((error: HttpErrorResponse) => {
+                        console.error('error server authent :', error.message);
+                        if (error.status >= 400 && error.status < 500) {
+                            return throwError(() => new Error('' + error.status));
+                        }
+                        return throwError(() => new Error(AuthenticationService.ERROR_SERVER_AUTHENTICATE));
+                    })
+                );
             })
         );
     }
@@ -319,15 +318,15 @@ export class AuthenticationService {
     }
 
     /**
-   * sauvegarde la route pour y rediriger une fois connecté
-   * @param route
-   */
-  public saveRoute(route: string): void {
-    localStorage.setItem(ROUTE, route);
-  }
+     * sauvegarde la route pour y rediriger une fois connecté
+     * @param route
+     */
+    public saveRoute(route: string): void {
+        localStorage.setItem(ROUTE, route);
+    }
 
-  public getRoute(): string {
-    return localStorage.getItem(ROUTE) ?? "/";
-  }
+    public getRoute(): string {
+        return localStorage.getItem(ROUTE) ?? '/';
+    }
 
 }

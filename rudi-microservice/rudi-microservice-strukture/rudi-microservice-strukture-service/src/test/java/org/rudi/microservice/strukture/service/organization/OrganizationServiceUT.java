@@ -1,5 +1,17 @@
 package org.rudi.microservice.strukture.service.organization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -42,6 +54,7 @@ import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCrit
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.organizationmember.OrganizationMemberDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.provider.LinkedProducerDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
@@ -61,20 +74,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.val;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationServiceUT {
+
+	public static final String LOGIN = "login@mail.fr";
 
 	@Autowired
 	private OrganizationService organizationService;
@@ -124,7 +128,21 @@ class OrganizationServiceUT {
 	@Autowired
 	private LinkedProducerHelper linkedProducerHelper;
 
-	public static final String LOGIN = "login@mail.fr";
+	@Autowired
+	private LinkedProducerDataFactory linkedProducerDataFactory;
+
+	@BeforeEach
+	void init() {
+		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
+		doNothing().when(projektHelper).notifyUserHasBeenRemoved(any(), any());
+	}
+
+	@AfterEach
+	void tearDown() {
+		linkedProducerDataFactory.deleteAllLinkedProducer();
+		organizationDataFactory.deleteAllOrganizationMembers();
+		organizationDataFactory.deleteAllOrganizations();
+	}
 
 	private Organization createOrganizationDto() {
 		Organization organization = new Organization();
@@ -238,18 +256,6 @@ class OrganizationServiceUT {
 		return adminOrgaMember;
 	}
 
-	@BeforeEach
-	void init() {
-		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
-		doNothing().when(projektHelper).notifyUserHasBeenRemoved(any(), any());
-	}
-
-	@AfterEach
-	void tearDown() {
-		providerDao.deleteAll();
-		organizationDao.deleteAll();
-	}
-
 	@Test
 	@DisplayName("Création d'une organization - champs minimums")
 	void createOrganization() throws AppServiceBadRequestException {
@@ -279,7 +285,7 @@ class OrganizationServiceUT {
 				.as("L'opening date ne doit pas être celle saisie, mais celle du jour")
 				.matches(o -> o.getOpeningDate() != organization.getOpeningDate()
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
 				.as("La date de cloture doit être égale à celle saisie")
 				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
 				.as("La description doit correspondre à celle saiaie")
@@ -332,7 +338,7 @@ class OrganizationServiceUT {
 				.as("Et la date ne doit pas être celle renseignée, mais celle du jour")
 				.matches(o -> !o.getOpeningDate().equals(openingDate)
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
@@ -918,7 +924,6 @@ class OrganizationServiceUT {
 		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
 
-
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
 		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
@@ -938,13 +943,11 @@ class OrganizationServiceUT {
 				.isEqualTo(originPage.getTotalElements() + expectedOrganizations.size());
 		;
 		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
-				.as("Ne doit pas contenir l'organization non concernée")
-				.doesNotContain(organization.getUuid())
+				.as("Ne doit pas contenir l'organization non concernée").doesNotContain(organization.getUuid())
 				.as("Mais doit contenir les deux autres")
 				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
 		;
 	}
-
 
 	@Test
 	@DisplayName("MyOrganization - Search organizations liées au user connecté. Force userUuid")
@@ -960,7 +963,6 @@ class OrganizationServiceUT {
 		mockAuthenticationData(jacques);
 		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
-
 
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
@@ -978,8 +980,7 @@ class OrganizationServiceUT {
 
 		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
 				.as("Ne doit pas contenir l'organization dont jacques est membre, malgré le paramètre forcé")
-				.doesNotContain(organization.getUuid())
-				.as("Mais doit contenir les deux autres")
+				.doesNotContain(organization.getUuid()).as("Mais doit contenir les deux autres")
 				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
 		;
 	}
@@ -998,7 +999,6 @@ class OrganizationServiceUT {
 		mockAuthenticationData(jacques);
 		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
-
 
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
@@ -1024,8 +1024,7 @@ class OrganizationServiceUT {
 				.isEqualTo(originPage.getTotalElements() + expectedOrganizations.size());
 		;
 		assertThat(resultPage.getContent().stream().map(o -> o.getUuid()).toList())
-				.as("Ne doit pas contenir l'organization non concernée")
-				.doesNotContain(organization.getUuid())
+				.as("Ne doit pas contenir l'organization non concernée").doesNotContain(organization.getUuid())
 				.as("Mais doit contenir les deux autres")
 				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
 		;

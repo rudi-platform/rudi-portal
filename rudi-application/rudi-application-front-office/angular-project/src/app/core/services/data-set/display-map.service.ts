@@ -36,7 +36,7 @@ const geoJSON = new GeoJSON();
 })
 export class DisplayMapService {
 
-    private KONSULT_SERVICE_BASEPATH = '/konsult/v1';
+    private readonly KONSULT_SERVICE_BASEPATH = '/konsult/v1';
 
     constructor(
         private readonly konsultService: KonsultService,
@@ -109,7 +109,7 @@ export class DisplayMapService {
      * @param destinationProjection la projection d'affichage de la feature
      */
     getMetadataBoundingBox(metadata: Metadata, destinationProjection: string): Feature<Polygon> {
-        if (metadata == null || metadata.geography == null || metadata.geography.bounding_box == null) {
+        if (metadata?.geography?.bounding_box == null) {
             return null;
         }
         const boundingBox = metadata?.geography?.bounding_box;
@@ -124,7 +124,7 @@ export class DisplayMapService {
      * @param destinationProjection la projection d'affichage de la géométrie
      */
     getMetadataGeolocation(metadata: Metadata, destinationProjection: string): Geometry {
-        if (metadata == null || metadata.geography == null || metadata.geography.geographic_distribution == null) {
+        if (metadata?.geography?.geographic_distribution == null) {
             return null;
         }
         const geometrie = metadata?.geography?.geographic_distribution;

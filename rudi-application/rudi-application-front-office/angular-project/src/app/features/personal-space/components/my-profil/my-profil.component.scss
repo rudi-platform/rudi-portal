@@ -1,5 +1,5 @@
-@import "common-style";
-@import "responsive";
+@use "common-style";
+@use "responsive";
 
 
 .my-profil-title {
@@ -34,23 +34,23 @@
     }
 }
 
-@include xs() {
+@include responsive.xs() {
     @include mobile-screen;
 }
 
-@include sm() {
+@include responsive.sm() {
     @include mobile-screen;
 }
 
-@include md() {
+@include responsive.md() {
     @include mobile-screen;
 }
 
-@include lg() {
+@include responsive.lg() {
     @include desktop-screen;
 }
 
-@include xl() {
+@include responsive.xl() {
     @include desktop-screen;
 }
 

@@ -1,4 +1,4 @@
-import {NgClass, NgFor, NgIf, UpperCasePipe} from '@angular/common';
+import { NgClass, UpperCasePipe } from '@angular/common';
 import {Component, EventEmitter, Output} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FlexModule} from '@angular/flex-layout/flex';
@@ -19,7 +19,7 @@ const LIST_ORDER: OrderItem[] = [
     selector: 'app-organization-order',
     templateUrl: './organization-order.component.html',
     styleUrls: ['./organization-order.component.scss'],
-    imports: [MatButton, MatMenuTrigger, NgIf, MatIcon, MatMenu, FlexModule, NgFor, MatMenuItem, NgClass, ExtendedModule, UpperCasePipe, TranslatePipe]
+    imports: [MatButton, MatMenuTrigger, MatIcon, MatMenu, FlexModule, MatMenuItem, NgClass, ExtendedModule, UpperCasePipe, TranslatePipe]
 })
 export class OrganizationOrderComponent {
     listOrder: OrderItem[];

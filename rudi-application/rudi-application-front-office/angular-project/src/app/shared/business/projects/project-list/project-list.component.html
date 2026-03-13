@@ -1,38 +1,41 @@
 <app-loader [active]="isLoading" [allPage]="false" [noText]="true" [isTransparent]="true">
 </app-loader>
 
-<div *ngIf="!isLoading" [ngClass]="{'project-card-full-height-sm': mediaSize.isSm || mediaSize.isMd }"
-     class="project-card-full-height">
-    <div *ngIf="projectList && projectList.items.length > 0" class="content"
-         [ngClass]="{'mb-4': projectList?.total <= maxResultsPerPage}">
+@if (!isLoading) {
+  <div [ngClass]="{'project-card-full-height-sm': mediaSize.isSm || mediaSize.isMd }"
+    class="project-card-full-height">
+    @if (projectList && projectList.items.length > 0) {
+      <div class="content"
+        [ngClass]="{'mb-4': projectList?.total <= maxResultsPerPage}">
         <div class="project-cards-container" fxLayout="row wrap">
+          @for (project of projectListItems | paginate: {
+            itemsPerPage: maxResultsPerPage,
+            currentPage: page,
+            totalItems: projectList.total
+            }; track project) {
             <div
-                *ngFor="let project of projectListItems | paginate: {
-                              itemsPerPage: maxResultsPerPage,
-                              currentPage: page,
-                              totalItems: projectList.total
-                            }"
                 [ngClass]="{'project-card-container-xs': mediaSize.isXs,
                             'project-card-container-sm': mediaSize.isSm || mediaSize.isMd,
                             'project-card-container-lg':  mediaSize.isLg,
                             'project-card-container-xl': mediaSize.isXl,
                             'project-card-container-xxl': mediaSize.isXxl}"
-
-            >
-                <app-project-card (click)="clickProject.emit(project)" [projectCatalogItem]="project">
-                </app-project-card>
+              >
+              <app-project-card (click)="clickProject.emit(project)" [projectCatalogItem]="project">
+              </app-project-card>
             </div>
+          }
         </div>
-    </div>
-
-    <pagination-controls
-        *ngIf="projectList?.total > maxResultsPerPage"
+      </div>
+    }
+    @if (projectList?.total > maxResultsPerPage) {
+      <pagination-controls
         (pageChange)="handlePageChange($event)"
         [maxSize]="mediaSize.isDeviceMobile ? maxPageMobile : maxPageDesktop"
         [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
         [ngClass]="paginationControlsNgClass"
         [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate"
         class="d-flex justify-content-center mt-4 pagination-font-size pagination-container">
-    </pagination-controls>
-
-</div>
+      </pagination-controls>
+    }
+  </div>
+}

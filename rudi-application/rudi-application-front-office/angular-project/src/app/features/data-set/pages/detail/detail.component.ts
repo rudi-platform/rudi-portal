@@ -1,4 +1,4 @@
-import {CommonModule, NgClass, NgFor, NgIf} from '@angular/common';
+import {CommonModule, NgClass} from '@angular/common';
 import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
@@ -75,7 +75,7 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, NgClass, ExtendedModule, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup, NgFor, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
+    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;
@@ -113,7 +113,7 @@ export class DetailComponent implements OnInit {
      * quand cet observable émet une valeur de JDD non nulle
      * @private
      */
-    private metadataLoaded: BehaviorSubject<Metadata> = new BehaviorSubject<Metadata>(null);
+    private readonly metadataLoaded: BehaviorSubject<Metadata> = new BehaviorSubject<Metadata>(null);
 
     constructor(
         iconRegistryService: IconRegistryService,
@@ -183,6 +183,10 @@ export class DetailComponent implements OnInit {
         return MetadataUtils.isSelfdata(this.metadata);
     }
 
+    get hasMedia(): boolean {
+        return this.metadata?.available_formats?.length > 0;
+    }
+
 
     get isSpreadsheetDisplayed(): boolean {
         for (const item of this.metadata.available_formats) {
@@ -240,6 +244,11 @@ export class DetailComponent implements OnInit {
 
             // On fait un appel REST pour récupèrer le JDD lié à partir de l'UUID dans la route
             switchMap((params: Params) => this.konsultMetierService.getMetadataByUuid(params.uuid)),
+
+            // On vérifie en amont que les availables_formats sont présents, sinon tableau vide
+            tap((metadata: Metadata) => {
+                metadata.available_formats = metadata.available_formats ?? [];
+            }),
 
             /// On veut initialiser d'autres trucs une fois qu'on a récupéré le JDD
             tap((metadata: Metadata) => {
@@ -375,7 +384,7 @@ export class DetailComponent implements OnInit {
         // format du header content-disposition : attachment; filename="nom_fichier.ext"
         const filename = response?.headers?.get('content-disposition')?.split(';')[1].split('=')[1].replace(/"(.*)"/g, '$1').trim();
 
-        saveAs(blob, filename ? filename : media.media_name);
+        saveAs(blob, filename || media.media_name);
     }
 
     /**
@@ -430,6 +439,13 @@ export class DetailComponent implements OnInit {
      * @private
      */
     private initDownloadableMedias(): Observable<void> {
+
+        // Si le tableau est vide
+        if (!this.metadata || this.metadata.available_formats?.length === 0) {
+            // Il n'y a donc pas de media a initialiser.
+            return of(void 0);
+        }
+
         return ObservableUtils
             .filter(this.metadata.available_formats)
             .using(media => this.dataSetDetailsFunctions.canDownloadMedia(media, this.metadata))

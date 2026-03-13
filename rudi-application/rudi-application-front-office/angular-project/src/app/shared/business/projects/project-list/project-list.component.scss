@@ -1,4 +1,4 @@
-@import "app/styles/common-style";
+@use "app/styles/common-style";
 
 .project-card-full-height {
     height: calc(100% - 170px);
@@ -41,7 +41,7 @@ $gap: var(--bootstrap-gutter);
 
     &-lg {
         height: var(--card-project-height-lg);
-        width: calc-shared-space(2, $gap);
+        width: common-style.calc-shared-space(2, $gap);
 
         ::ng-deep .ngx-pagination .pagination-previous {
             margin-right: 40px !important;
@@ -61,7 +61,7 @@ $gap: var(--bootstrap-gutter);
 
     &-xl {
         min-height: var(--card-project-height-lg);
-        width: calc-shared-space(3, $gap);
+        width: common-style.calc-shared-space(3, $gap);
 
         ::ng-deep .ngx-pagination .pagination-previous {
             margin-right: 40px !important;
@@ -80,7 +80,7 @@ $gap: var(--bootstrap-gutter);
 
     &-xxl {
         min-height: var(--card-project-height-lg);
-        width: calc-shared-space(4, $gap);
+        width: common-style.calc-shared-space(4, $gap);
 
         ::ng-deep .ngx-pagination .pagination-previous {
             margin-right: 40px !important;

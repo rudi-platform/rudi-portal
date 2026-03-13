@@ -23,6 +23,8 @@ public interface TokenService {
 
 	void removeTokenByUserId(String userId, String value);
 
+	boolean removeTokenByValue(String value);
+
 	List<Token> searchTokens(TokenSearchCritera searchCritera);
 
 	void cleanup();

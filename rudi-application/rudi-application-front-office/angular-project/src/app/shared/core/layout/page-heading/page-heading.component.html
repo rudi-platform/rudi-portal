@@ -3,29 +3,33 @@
                 'p-large': mediaSize.isDeviceDesktop
             }">
 
-    <div class="header-img-container mb-sm-2">
-        <div class="header-img">
+  <div class="header-img-container mb-sm-2">
+    <div class="header-img">
             <app-organization-logo [ngClass]="{'metadata-theme-sm' : mediaSize.isSm,
                                                     'metadata-theme-md' : mediaSize.isMd,
                                                     'metadata-theme-lg' : mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
-                                   class="organization-logo"
-                                   [organizationId]="organizationId"
-                                   organizationType="producer">
-            </app-organization-logo>
-        </div>
+        class="organization-logo"
+        [organizationId]="organizationId"
+        organizationType="producer">
+      </app-organization-logo>
     </div>
+  </div>
 
-    <div class="header-ressource-container">
-        <div class="header-ressource">
-            <div class="producer-name">{{organizationName}}</div>
-            <div class="resource-description d-flex mx-auto">
-                <h1 class="blue-theme resource-title my-auto">
-                    <mat-icon class="d-inline-flex dataset-icon picto" [svgIcon]="icon"
-                              *ngIf="icon != null && icon !== ''"></mat-icon>
-                    {{resourceTitle}}
-                </h1>
-            </div>
-            <div *ngIf="!mediaSize.isXs && status" class="fake-btn">{{ status }}</div>
-        </div>
+  <div class="header-ressource-container">
+    <div class="header-ressource">
+      <div class="producer-name">{{organizationName}}</div>
+      <div class="resource-description d-flex mx-auto">
+        <h1 class="blue-theme resource-title my-auto">
+          @if (icon != null && icon !== '') {
+            <mat-icon class="d-inline-flex dataset-icon picto" [svgIcon]="icon"
+            ></mat-icon>
+          }
+          {{resourceTitle}}
+        </h1>
+      </div>
+      @if (!mediaSize.isXs && status) {
+        <div class="fake-btn">{{ status }}</div>
+      }
     </div>
+  </div>
 </div>

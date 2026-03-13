@@ -2,7 +2,7 @@ import {Component, Input, OnChanges, SimpleChange} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {PasswordStrengthCriteria} from '@shared/core/form/password-strength/password-strength-criteria';
 import {PasswordStrengthCriterion} from '@shared/core/form/password-strength/password-strength-criterion';
-import {NgFor, NgClass} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {TranslatePipe} from '@ngx-translate/core';
 
@@ -10,7 +10,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-password-strength',
     templateUrl: './password-strength.component.html',
     styleUrls: ['./password-strength.component.scss'],
-    imports: [NgFor, NgClass, ExtendedModule, TranslatePipe]
+    imports: [NgClass, ExtendedModule, TranslatePipe]
 })
 export class PasswordStrengthComponent implements OnChanges {
     /** Le mot-de-passe dont on cherche la force */

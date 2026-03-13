@@ -1,28 +1,35 @@
-@import "bootstrap/scss/bootstrap-grid";
-
-
 .organization-details-container {
-
     display: flex;
-    @extend .row;
-
+    flex-wrap: wrap;
 
     .organization-information-container {
         padding-bottom: 24px;
-        @extend .col-sm-12;
-        @extend .col-md-12;
-        @extend .col-lg-8;
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 
     .owner-information-container {
-        @extend .col-sm-12;
-        @extend .col-md-12;
-        @extend .col-lg-4;
+        flex: 0 0 100%;
+        max-width: 100%;
 
     }
 
     .organization-modified-expansion {
         margin-top: 15px;
+    }
+}
+
+@media (min-width: 992px) {
+    .organization-details-container {
+        .organization-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+        }
+
+        .owner-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
 }
 

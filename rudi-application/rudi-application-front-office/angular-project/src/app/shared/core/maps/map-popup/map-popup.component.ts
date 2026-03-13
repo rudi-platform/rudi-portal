@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {Feature} from 'ol';
@@ -8,7 +8,7 @@ import {Geometry} from 'ol/geom';
     selector: 'app-map-popup',
     templateUrl: './map-popup.component.html',
     styleUrls: ['./map-popup.component.scss'],
-    imports: [MatIcon, NgIf, NgFor]
+    imports: [MatIcon]
 })
 export class MapPopupComponent {
 

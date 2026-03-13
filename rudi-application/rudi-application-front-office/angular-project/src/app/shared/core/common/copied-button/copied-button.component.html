@@ -1,15 +1,21 @@
 <div class="main-container">
-    <button class="btn-action" (click)="clickOnButton()"
-            mat-raised-button>
-        <div class="input-and-icon" [title]="getInputTitle()">
-            <input matInput [type]="hidePassword ? 'password' : 'text'" autocomplete="off"
-                   class="fake-input" [value]="toCopy">
-            <mat-icon class="copy-icon-button" *ngIf="!copiedSuccess">content_copy</mat-icon>
-            <mat-icon class="copy-icon-button" *ngIf="copiedSuccess">done_all</mat-icon>
-        </div>
+  <button class="btn-action" (click)="clickOnButton()"
+    mat-raised-button>
+    <div class="input-and-icon" [title]="getInputTitle()">
+      <input matInput [type]="hidePassword ? 'password' : 'text'" autocomplete="off"
+        class="fake-input" [value]="toCopy">
+        @if (!copiedSuccess) {
+          <mat-icon class="copy-icon-button">content_copy</mat-icon>
+        }
+        @if (copiedSuccess) {
+          <mat-icon class="copy-icon-button">done_all</mat-icon>
+        }
+      </div>
     </button>
-    <mat-icon *ngIf="masked" matSuffix class="floating-icon-visibility"
-              (click)="hidePassword = !hidePassword">
+    @if (masked) {
+      <mat-icon matSuffix class="floating-icon-visibility"
+        (click)="hidePassword = !hidePassword">
         {{hidePassword ? 'visibility' : 'visibility_off'}}
-    </mat-icon>
-</div>
+      </mat-icon>
+    }
+  </div>

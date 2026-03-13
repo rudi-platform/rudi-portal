@@ -2,7 +2,7 @@ import {Component, ContentChild, Input, TemplateRef} from '@angular/core';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES, TitleIconType} from '@shared/models/title-icon-type';
 import {MatButton} from '@angular/material/button';
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatIcon} from '@angular/material/icon';
 
@@ -10,7 +10,7 @@ import {MatIcon} from '@angular/material/icon';
     selector: 'app-tab',
     templateUrl: './tab.component.html',
     styleUrls: ['./tab.component.scss'],
-    imports: [MatButton, NgClass, ExtendedModule, NgIf, MatIcon]
+    imports: [MatButton, NgClass, ExtendedModule, MatIcon]
 })
 export class TabComponent {
 

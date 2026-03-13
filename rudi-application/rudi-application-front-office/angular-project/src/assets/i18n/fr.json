@@ -1186,6 +1186,7 @@
         },
         "organizationDetails": {
             "declaration": "Déclaration d'organisation",
+            "declarationTaskTitle": "Demande de déclaration d'organisation",
             "demande": "Demande",
             "description": "Description",
             "url": "Url de l'organisation",
@@ -1254,7 +1255,10 @@
             "initiator": "Initiateur de l'action",
             "action": "Action",
             "step": "Etape",
-            "noResult": "Aucun historique."
+            "noResult": "Aucun historique.",
+            "processInitiator": "Porteur de la demande",
+            "contact": "Contact",
+            "archive": "Archivé"
         },
         "myRequests": {
             "dateTableHeader": "Date",
@@ -1443,6 +1447,9 @@
                 "demand": "Demande",
                 "project": "Réutilisation",
                 "history": "Historique"
+            },
+            "details": {
+                "new-data": "Demande de nouvelles données"
             }
         },
         "selfdataDatasetRequestDetails": {

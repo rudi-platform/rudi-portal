@@ -11,19 +11,20 @@
   <bpmn:itemDefinition id="ItemDefinition_1499" isCollection="false" structureRef="xs:int"/>
   <bpmn:process id="project-process" name="ProjectProcess" isExecutable="true">
     <bpmn:documentation id="Documentation_2"><![CDATA[Processus d'une demande]]></bpmn:documentation>
-    <bpmn:startEvent id="StartEvent_1" name="Création">
+    <bpmn:startEvent id="StartEvent_1" name="Transmission de la demande de publication">
       <bpmn:documentation id="Documentation_1"><![CDATA[Etat de départ du processus]]></bpmn:documentation>
       <bpmn:outgoing>SequenceFlow_3</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>
     </bpmn:startEvent>
-    <bpmn:scriptTask id="ScriptTask_1" name="Prise en compte" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande de publication de réutilisation"
+			  scriptFormat="javascript">
       <bpmn:documentation id="Documentation_4"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_27</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_12" sourceRef="ScriptTask_1" targetRef="UserTask_6"/>
-    <bpmn:scriptTask id="ScriptTask_7" name="Publication" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_7" name="Publication de la réutilisation" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_41"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_35</bpmn:outgoing>
@@ -34,7 +35,7 @@ projectWorkflowContext.startSubProcess(execution);
 var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;); 
 projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:endEvent id="EndEvent_1" name="Done">
+    <bpmn:endEvent id="EndEvent_1" name="Demande traitée">
       <bpmn:incoming>SequenceFlow_2</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:exclusiveGateway id="ExclusiveGateway_4" name="OK ou refusé ?" gatewayDirection="Diverging">
@@ -49,7 +50,8 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:documentation id="Documentation_7"><![CDATA[Accepter la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_7" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;ok&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:scriptTask id="ScriptTask_4" name="Reutilisation à revoir" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_4" name="Demande de publication de réutilisation retournée"
+			  scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_21</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_22</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Update status refused&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;REJECTED&quot;, &quot;Refusée&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
@@ -58,7 +60,7 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:documentation id="Documentation_8"><![CDATA[Refuser la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_9" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;refused&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_5" name="Soumission suite au refus de demande de publication">
+	  <bpmn:userTask id="UserTask_5" name="Traitement de la demande de réutilisation retournée">
       <bpmn:incoming>SequenceFlow_22</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_25</bpmn:outgoing>
       <bpmn:potentialOwner id="PotentialOwner_1" name="Potential Owner 1">
@@ -90,7 +92,8 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:documentation id="Documentation_15"><![CDATA[Archiver ma réutilisation]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_11" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="UserTask_6" name="Modération par l'animateur de la réutilisation" implementation="##unspecified">
+	  <bpmn:userTask id="UserTask_6" name="Traitement de la demande de publication de la réutilisation"
+			  implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_12</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_28</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_30">
@@ -106,7 +109,7 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_27" sourceRef="InclusiveGateway_1" targetRef="ScriptTask_1"/>
     <bpmn:sequenceFlow id="SequenceFlow_28" sourceRef="UserTask_6" targetRef="ExclusiveGateway_4"/>
-    <bpmn:scriptTask id="ScriptTask_5" name="Archivage" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_5" name="Archivage de la réutilisation" scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_26</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_36</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Update status cancelled&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;CANCELLED&quot;, &quot;CANCELLED&quot;, &quot;Archivée&quot;);</bpmn:script>
@@ -149,13 +152,15 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:outgoing>SequenceFlow_39</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_40</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:scriptTask id="ScriptTask_17" name="Prise en compte de modification" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_17" name="Réception de la demande de modification de réutilisation"
+			  scriptFormat="javascript">
       <bpmn:documentation id="Documentation_27"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_42</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status pending&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;); var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner); projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:userTask id="UserTask_11" name="Modération par l'animateur de la modification de la réutilisation" implementation="##unspecified">
+	  <bpmn:userTask id="UserTask_11" name="Traitement de la demande de modification de réutilisation"
+			  implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_42</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_41</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_7">
@@ -169,7 +174,7 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
         </bpmn:resourceAssignmentExpression>
       </bpmn:potentialOwner>
     </bpmn:userTask>
-    <bpmn:userTask id="UserTask_12" name="Soumission suite au refus de demande de modification">
+	  <bpmn:userTask id="UserTask_12" name="Traitement de la demande de modification de réutilisation retournée">
       <bpmn:incoming>SequenceFlow_43</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_45</bpmn:outgoing>
       <bpmn:potentialOwner id="PotentialOwner_12" name="Potential Owner 1">
@@ -184,7 +189,8 @@ projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</
       <bpmn:outgoing>SequenceFlow_44</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : publication des modifications&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-modif-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData); projectWorkflowContext.publishProjectModification(context, execution);</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:scriptTask id="ScriptTask_19" name="Reutilisation à revoir" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_19" name="Demande de modification de réutilisation retournée"
+			  scriptFormat="javascript">
       <bpmn:incoming>SequenceFlow_40</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_43</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status refused&quot;); projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;Refusée&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-refused-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-refused-modif-body.html&quot;); projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);</bpmn:script>
@@ -239,7 +245,8 @@ projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;,
 projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;refused&quot;, &quot;refused-project&quot;);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="ScriptTask_3" targetRef="InclusiveGateway_2"/>
-    <bpmn:scriptTask id="ScriptTask_8" name="Archivage des liens vers les JDD" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_8" name="Archivage de l'ensemble des accès aux jeux de données"
+			  scriptFormat="javascript">
       <bpmn:documentation id="Documentation_49"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_11</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
@@ -256,7 +263,8 @@ projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;,
     <bpmn:sequenceFlow id="SequenceFlow_11" name="Archivage" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_8">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_8" evaluatesToTypeRef="ItemDefinition_18">${projectStatus == &quot;VALIDATED&quot; &amp;&amp; draftType == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:scriptTask id="ScriptTask_9" name="Suppression des clés d'API" scriptFormat="javascript">
+	  <bpmn:scriptTask id="ScriptTask_9" name="Suppression de l'ensemble des clés d'accès aux jeux de données"
+			  scriptFormat="javascript">
       <bpmn:documentation id="Documentation_3"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_13</bpmn:outgoing>
@@ -273,25 +281,25 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds height="36.0" width="36.0" x="82.0" y="427.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_4" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="55.0" x="73.0" y="463.0"/>
+			<dc:Bounds height="60.0" width="80.0" x="60.0" y="463.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_1" bpmnElement="ScriptTask_1" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="357.0" y="115.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="107.0" x="358.0" y="147.0"/>
+			<dc:Bounds height="60.0" width="95.0" x="364.0" y="125.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_7" bpmnElement="ScriptTask_7" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="823.0" y="116.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_25" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="71.0" x="842.0" y="148.0"/>
+			<dc:Bounds height="30.0" width="100.0" x="828.0" y="141.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_EndEvent_1" bpmnElement="EndEvent_1">
         <dc:Bounds height="36.0" width="36.0" x="1424.0" y="434.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_5" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="35.0" x="1424.0" y="470.0"/>
+			<dc:Bounds height="30.0" width="58.0" x="1413.0" y="470.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_4" bpmnElement="ExclusiveGateway_4" isMarkerVisible="true">
@@ -303,13 +311,13 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_4" bpmnElement="ScriptTask_4" isExpanded="true">
         <dc:Bounds height="73.0" width="110.0" x="744.0" y="250.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_39" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="96.0" x="751.0" y="269.0"/>
+			<dc:Bounds height="60.0" width="83.0" x="757.0" y="256.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_5" bpmnElement="UserTask_5" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="905.0" y="246.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_41" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="85.0" width="108.0" x="906.0" y="244.0"/>
+			<dc:Bounds height="60.0" width="98.0" x="911.0" y="256.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_1" bpmnElement="InclusiveGateway_1" isMarkerVisible="true">
@@ -327,13 +335,13 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_UserTask_6" bpmnElement="UserTask_6" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="521.0" y="116.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_49" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="51.0" width="105.0" x="523.0" y="131.0"/>
+			<dc:Bounds height="60.0" width="100.0" x="526.0" y="126.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_5" bpmnElement="ScriptTask_5" isExpanded="true">
         <dc:Bounds height="50.0" width="110.0" x="1177.0" y="372.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_52" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="17.0" width="64.0" x="1200.0" y="388.0"/>
+			<dc:Bounds height="30.0" width="92.0" x="1186.0" y="382.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_2" bpmnElement="InclusiveGateway_2" isMarkerVisible="true">
@@ -363,19 +371,19 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_17" bpmnElement="ScriptTask_17" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="357.0" y="487.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_13" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="97.0" x="363.0" y="512.0"/>
+			<dc:Bounds height="60.0" width="95.0" x="364.0" y="497.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_11" bpmnElement="UserTask_11" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="521.0" y="487.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_14" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="85.0" width="105.0" x="523.0" y="485.0"/>
+			<dc:Bounds height="60.0" width="98.0" x="527.0" y="497.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_UserTask_12" bpmnElement="UserTask_12" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="906.0" y="617.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_15" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="85.0" width="108.0" x="907.0" y="615.0"/>
+			<dc:Bounds height="75.0" width="98.0" x="912.0" y="620.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_18" bpmnElement="ScriptTask_18" isExpanded="true">
@@ -387,7 +395,7 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_19" bpmnElement="ScriptTask_19" isExpanded="true">
         <dc:Bounds height="73.0" width="110.0" x="745.0" y="621.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_20" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="96.0" x="752.0" y="640.0"/>
+			<dc:Bounds height="60.0" width="87.0" x="756.0" y="627.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_9" bpmnElement="ExclusiveGateway_9" isMarkerVisible="true">
@@ -417,13 +425,13 @@ projectWorkflowContext.deleteProjectKeyStore(execution);
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_8" bpmnElement="ScriptTask_8" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="390.0" y="819.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_56" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="30.0" width="110.0" x="390.0" y="844.0"/>
+			<dc:Bounds height="60.0" width="105.0" x="392.0" y="829.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_ScriptTask_9" bpmnElement="ScriptTask_9" isExpanded="true">
         <dc:Bounds height="81.0" width="110.0" x="980.0" y="820.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_44" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="34.0" width="102.0" x="984.0" y="843.0"/>
+			<dc:Bounds height="60.0" width="103.0" x="983.0" y="830.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="SequenceFlow_12" sourceElement="BPMNShape_ScriptTask_1" targetElement="BPMNShape_UserTask_6">

@@ -1,5 +1,5 @@
-@import "responsive";
-@import "swiper/css";
+@use "responsive";
+@import url("swiper/css");
 
 :host {
     --swiper-button-top-offset: 42%;
@@ -68,19 +68,19 @@
         }
     }
 
-    @include xs() {
+    @include responsive.xs() {
         @include switch-from-desktop-to-mobile();
     }
 
-    @include sm() {
+    @include responsive.sm() {
         @include switch-from-desktop-to-mobile();
     }
 
-    @include md() {
+    @include responsive.md() {
         @include switch-from-desktop-to-mobile();
     }
 
-    @include lg() {
+    @include responsive.lg() {
         @include switch-from-mobile-to-desktop();
     }
 }

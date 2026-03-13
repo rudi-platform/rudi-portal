@@ -1,4 +1,4 @@
-import {AsyncPipe, KeyValuePipe, NgFor, NgIf} from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
@@ -19,7 +19,7 @@ import {LoaderComponent} from '../../../common/loader/loader.component';
     selector: 'app-workflow-field-address',
     templateUrl: './workflow-field-address.component.html',
     styleUrls: ['./workflow-field-address.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, NgIf, MatFormField, MatInput, MatAutocompleteTrigger, MatAutocomplete, NgFor, MatOption, MatError, LoaderComponent, AsyncPipe, KeyValuePipe, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatAutocompleteTrigger, MatAutocomplete, MatOption, MatError, LoaderComponent, AsyncPipe, KeyValuePipe, TranslatePipe]
 })
 export class WorkflowFieldAddressComponent extends WorkflowFieldComponent implements OnInit {
     private selectedAddress: Address = null;

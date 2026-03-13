@@ -3,6 +3,7 @@ package org.rudi.microservice.acl.facade.config.security.jwt;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,8 +38,8 @@ public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = -2550185165626007488L;
 
-	@Value("${module.oauth2.check-token-uri}")
-	private String checkTokenUri;
+	@Value("${module.oauth2.issuers:}")
+	private List<String> internalIssuers;
 
 	private transient JwtEncoder jwtEncoder;
 
@@ -70,6 +71,11 @@ public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 	}
 
 	@Override
+	public boolean isPortailIssuer(JwtTokenData token) {
+		return super.isPortailIssuer(token) || internalIssuers.contains(token.getIssuer());
+	}
+
+	@Override
 	protected void handleExternalAccount(JwtTokenData token, JWTClaimsSet claims) {
 		// Nothing to do
 		log.warn("External account not handled in common facade");
@@ -78,13 +84,15 @@ public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 	@Override
 	protected void handlePortailAccount(JwtTokenData token, JWTClaimsSet claims) throws JsonProcessingException {
 		String serializedConnectedUser = getTokenProperty(claims, CONNECTED_USER);
-		AuthenticatedUser connectedUser = getMapper().readValue(serializedConnectedUser, AuthenticatedUser.class);
-		token.setAccount(connectedUser);
+		if (serializedConnectedUser != null) {
+			AuthenticatedUser connectedUser = getMapper().readValue(serializedConnectedUser, AuthenticatedUser.class);
+			token.setAccount(connectedUser);
+		}
 	}
 
 	@Override
 	protected void verify(JwtTokenData token, SignedJWT jwt) throws JOSEException, MalformedURLException {
-		if (isPortailIssuer(token) && checkTokenUri.startsWith(token.getIssuer())) {
+		if (isPortailIssuer(token)) {
 			try {
 				Jwt decodedJwt = getJwtDecoder().decode(token.getToken());
 				log.debug("Decoded JWT success: {}", decodedJwt.getId());

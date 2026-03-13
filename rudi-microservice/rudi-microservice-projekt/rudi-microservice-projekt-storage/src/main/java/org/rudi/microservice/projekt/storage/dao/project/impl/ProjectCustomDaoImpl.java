@@ -4,14 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
@@ -34,6 +26,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.val;
 
 @Repository
@@ -77,6 +77,9 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.add(searchCriteria.getLinkedDatasetUuids(),
 						(project, linkedDatasetEntityUuids) -> project.join(FIELD_LINKED_DATASETS).get(FIELD_UUID)
 								.in(linkedDatasetEntityUuids))
+				.add(searchCriteria.getNewRequestDatasetUuids(),
+						(project, newRequestDatasetUuids) -> project.join(FIELD_DATASET_REQUESTS).get(FIELD_UUID)
+								.in(newRequestDatasetUuids))
 				.add(searchCriteria.getOwnerUuids(),
 						(project, ownerUuids) -> project.get(FIELD_OWNER_UUID).in(ownerUuids))
 				.add(searchCriteria.getProjectUuids(),
@@ -86,7 +89,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.add(searchCriteria.getIsPrivate(),
 						(project, confidentialities) -> project.join(FIELD_PROJECT_CONFIDENTIALITY)
 								.get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE).in(confidentialities))
-				.add(searchCriteria.getStatus(),(project, status) -> project.get(FIELD_STATUS).in(status));
+				.add(searchCriteria.getStatus(), (project, status) -> project.get(FIELD_STATUS).in(status));
 	}
 
 	@Override
@@ -170,7 +173,8 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria) {
+	public List<ProjectByOwner> getNumberOfProjectsPerOwners(
+			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria) {
 		val builder = entityManager.getCriteriaBuilder();
 		val countQuery = builder.createQuery(ProjectByOwner.class);
 		val countRoot = countQuery.from(entitiesClass);
@@ -218,7 +222,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), false);
 		Predicate isPrivatePredicate = builder
 				.equal(root.join(FIELD_PROJECT_CONFIDENTIALITY).get(FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE), true);
-		
+
 		List<Predicate> or1 = new ArrayList<>();
 		if (!Boolean.TRUE.equals(searchCriteria.getIsPrivate())) {
 			or1.add(isNotPrivatePredicate);

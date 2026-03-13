@@ -1,24 +1,23 @@
 import {Component} from '@angular/core';
-import {MatDialogRef, MatDialogContent} from '@angular/material/dialog';
-import {MatIconRegistry, MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
-import {CloseEvent, DialogClosedData} from '../../models/dialog-closed-data';
-import {CdkScrollable} from '@angular/cdk/scrolling';
-import {MatIconButton} from '@angular/material/button';
 import {TranslatePipe} from '@ngx-translate/core';
+import {CloseEvent, DialogClosedData} from '../../models/dialog-closed-data';
 
 @Component({
     selector: 'app-success-restricted-request-dialog',
     templateUrl: './success-restricted-request-dialog.component.html',
     styleUrls: ['./success-restricted-request-dialog.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, TranslatePipe]
+    imports: [MatDialogContent, MatIconButton, MatIcon, TranslatePipe]
 })
 export class SuccessRestrictedRequestDialogComponent {
 
-    constructor(private matIconRegistry: MatIconRegistry,
-                private domSanitizer: DomSanitizer,
-                private router: Router,
+    constructor(private readonly matIconRegistry: MatIconRegistry,
+                private readonly domSanitizer: DomSanitizer,
+                private readonly router: Router,
                 public dialogRef: MatDialogRef<DialogClosedData<void>>,
     ) {
         this.matIconRegistry.addSvgIcon(

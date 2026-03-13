@@ -37,10 +37,10 @@ export class SearchOrganizationsService {
     datasetCountLoading$: BehaviorSubject<boolean>;
     projectsCountLoading$: BehaviorSubject<boolean>;
     private subscription: Subscription;
-    private currentRequest: SearchOrganisationsRequest;
+    private readonly currentRequest: SearchOrganisationsRequest;
 
     constructor(
-        private organizationService: OrganizationService,
+        private readonly organizationService: OrganizationService,
         private readonly projektMetierService: ProjektMetierService,
         private readonly konsultService: KonsultService
     ) {
@@ -61,7 +61,7 @@ export class SearchOrganizationsService {
     initSubscriptions(isPersonalSpace: boolean = false, itemPerPage?: number) {
         this.currentRequest.isPersonalSpace = isPersonalSpace;
         this.currentRequest.itemPerPage = searchDefaultPageSize;
-        
+
         if (itemPerPage) {
             this.currentRequest.itemPerPage = itemPerPage;
         }
@@ -142,7 +142,7 @@ export class SearchOrganizationsService {
 
             projectByOwners.forEach((projectByOwner: ProjectByOwner) => {
                 const orga = organizations.find(organisation => organisation.uuid === projectByOwner.ownerUUID);
-                if (!!orga) {
+                if (orga) {
                     orga.projectCount = projectByOwner.projectCount;
                 }
             });
@@ -161,7 +161,7 @@ export class SearchOrganizationsService {
                 const targetedFacet = metadataFacets.items.find(i => i.propertyName === 'producer_organization_id');
                 organizations.forEach((organization: OrganizationBean) => {
                     const datasetCount = targetedFacet.values.find(value => value.value == organization.uuid);
-                    if (!!datasetCount) {
+                    if (datasetCount) {
                         organization.datasetCount = datasetCount.count;
                     }
                 });

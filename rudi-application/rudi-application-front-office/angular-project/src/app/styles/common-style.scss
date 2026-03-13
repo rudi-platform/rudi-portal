@@ -1,5 +1,8 @@
-@import 'mixins';
-@import 'functions';
+@forward 'mixins';
+@forward 'functions';
+
+@use 'mixins';
+@use 'functions';
 
 .rudi-select-panel-footer {
     button {
@@ -205,13 +208,13 @@
     font-style: normal;
     letter-spacing: normal;
     color: var(--secondary-color);
-    background-color: var(--focus);
-    border: 1px solid var(--focus);
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     line-height: 2.5;
 }
 
 .rudi-icon-encircled {
-    @include encircled(1.7em);
+    @include mixins.encircled(1.7em);
 }
 
 mat-toolbar a:hover {

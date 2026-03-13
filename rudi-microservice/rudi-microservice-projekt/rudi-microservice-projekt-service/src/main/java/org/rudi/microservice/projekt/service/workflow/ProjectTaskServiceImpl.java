@@ -154,29 +154,12 @@ public class ProjectTaskServiceImpl extends
 	@Override
 	protected void checkEntityStatus(ProjectEntity assetDescriptionEntity)
 			throws AppServiceBadRequestException, InvalidDataException {
-		if (assetDescriptionEntity == null || getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getClass(),
-				assetDescriptionEntity.getId()) != null
-				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
-						|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
-			throw new AppServiceBadRequestException("Asset is already linked to a task");
-		}
+
+		validateEntityAndTask(assetDescriptionEntity);
 
 		// Si le owner est une organisation
 		if(OwnerType.ORGANIZATION.equals(assetDescriptionEntity.getOwnerType()) && assetDescriptionEntity.getOwnerUuid() != null) {
-			try {
-				// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
-				// L'organisation ne doit pas avoir de Workflow en cours
-				PagedOrganizationList organizations = organizationHelper.searchOrganizations(assetDescriptionEntity.getOwnerUuid(), null, null, null, null, Status.COMPLETED, 0, 1, null);
-
-				// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
-				// Soit qu'elle a un workflow en cours
-				// On empêche donc le lancement du workflow
-				if(organizations.getElements() == null || organizations.getElements().isEmpty()) {
-					throw new IllegalArgumentException("Invalid organization");
-				}
-			} catch (GetOrganizationException e) {
-				throw new IllegalArgumentException("Invalid organization uuid");
-			}
+			validateOrganizationOwner(assetDescriptionEntity);
 		}
 
 		// Vérifie si l'état de l'asset est DRAFT (création de project)
@@ -194,19 +177,49 @@ public class ProjectTaskServiceImpl extends
 			checkStatusLinkedDataset(assetDescriptionEntity);
 			checkStatusNewDatasetRequest(assetDescriptionEntity);
 		} else {
-			// entrée dans le workflow pour modification de la reutilisation
-			// Vérifie si l'état est COMPLETED (pas de workflow en cours, le dernier workflow sur le projet est terminé) et s'il n'y a pas de dataset restreint
-			boolean isCompletedAndNoRestrictedDataset = assetDescriptionEntity.getStatus().equals(Status.COMPLETED)
-					&& !isAnyRestrictedDatasetOnProjekt(assetDescriptionEntity);
+			validateModificationWorkflow(assetDescriptionEntity, isDraft);
+		}
+	}
 
-			// Si l'état n'est ni DRAFT, ni [COMPLETED avec un dataset non restreint], on lève une exception
-			if (!isCompletedAndNoRestrictedDataset) {
-				log.error(
-						"Invalid status for project {} : project is draft = {}, project is completed without restricted dataset = {}",
-						assetDescriptionEntity.getUuid(), isDraft, isCompletedAndNoRestrictedDataset);
-				throw new AppServiceBadRequestException(
-						"Invalid status or dataset type for project " + assetDescriptionEntity.getUuid());
+	private void validateEntityAndTask(ProjectEntity assetDescriptionEntity) throws AppServiceBadRequestException {
+		if (assetDescriptionEntity == null || getBpmnHelper().queryTaskByAssetId(assetDescriptionEntity.getClass(),
+				assetDescriptionEntity.getId()) != null
+				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
+				|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
+			throw new AppServiceBadRequestException("Asset is already linked to a task");
+		}
+	}
+
+	private void validateOrganizationOwner(ProjectEntity assetDescriptionEntity) {
+		try {
+			// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
+			// L'organisation ne doit pas avoir de Workflow en cours
+			PagedOrganizationList organizations = organizationHelper.searchOrganizations(assetDescriptionEntity.getOwnerUuid(), null, null, null, null, Status.COMPLETED, 0, 1, null);
+
+			// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
+			// Soit qu'elle a un workflow en cours
+			// On empêche donc le lancement du workflow
+			if (organizations.getElements() == null || organizations.getElements().isEmpty()) {
+				throw new IllegalArgumentException("Invalid organization");
 			}
+		} catch (GetOrganizationException e) {
+			throw new IllegalArgumentException("Invalid organization uuid");
+		}
+	}
+
+	private void validateModificationWorkflow(ProjectEntity assetDescriptionEntity, boolean isDraft) throws AppServiceBadRequestException {
+		// entrée dans le workflow pour modification de la reutilisation
+		// Vérifie si l'état est COMPLETED (pas de workflow en cours, le dernier workflow sur le projet est terminé) et s'il n'y a pas de dataset restreint
+		boolean isCompletedAndNoRestrictedDataset = assetDescriptionEntity.getStatus().equals(Status.COMPLETED)
+				&& !isAnyRestrictedDatasetOnProjekt(assetDescriptionEntity);
+
+		// Si l'état n'est ni DRAFT, ni [COMPLETED avec un dataset non restreint], on lève une exception
+		if (!isCompletedAndNoRestrictedDataset) {
+			log.error(
+					"Invalid status for project {} : project is draft = {}, project is completed without restricted dataset = {}",
+					assetDescriptionEntity.getUuid(), isDraft, isCompletedAndNoRestrictedDataset);
+			throw new AppServiceBadRequestException(
+					"Invalid status or dataset type for project " + assetDescriptionEntity.getUuid());
 		}
 	}
 

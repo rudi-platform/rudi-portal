@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.locationtech.jts.geom.Geometry;
 import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
 import org.rudi.microservice.strukture.core.common.SchemaConstants;
@@ -70,6 +74,8 @@ public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 	 * Membres
 	 */
 	@ElementCollection
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@Cascade(CascadeType.ALL)
 	@CollectionTable(name = "organization_member", schema = SchemaConstants.DATA_SCHEMA, joinColumns = @JoinColumn(name = "organization_fk"))
 	private Set<OrganizationMemberEntity> members = new HashSet<>();
 
@@ -80,17 +86,18 @@ public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof OrganizationEntity)) return false;
-		if (!super.equals(o)) return false;
+		if (this == o)
+			return true;
+		if (!(o instanceof OrganizationEntity))
+			return false;
+		if (!super.equals(o))
+			return false;
 		final OrganizationEntity that = (OrganizationEntity) o;
 		return Objects.equals(name, that.name);
 	}
 
 	@Override
 	public String toString() {
-		return "OrganizationEntity{" +
-				"name='" + name + '\'' +
-				'}';
+		return "OrganizationEntity{" + "name='" + name + '\'' + '}';
 	}
 }

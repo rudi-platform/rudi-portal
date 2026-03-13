@@ -85,7 +85,7 @@ export class ProjectDependenciesFetchers {
 
     get ownerInfo(): DependencyFetcher<ProjectWithDependencies, OwnerInfo> {
         return {
-            hasPrerequisites: (input: ProjectWithDependencies) => input != null && input.project != null,
+            hasPrerequisites: (input: ProjectWithDependencies) => input?.project != null,
             getKey: projectWithDependencies => OwnerKey.serialize(projectWithDependencies.project),
             getValue: ownerKey => {
                 const {owner_type, owner_uuid} = OwnerKey.deserialize(ownerKey);
@@ -141,37 +141,42 @@ export class ProjectDependenciesFetchers {
      * @private
      */
     private static hasProjectUuid(input: ProjectWithDependencies): boolean {
-        return input != null && input.project != null && input.project.uuid != null;
+        return input?.project?.uuid != null;
     }
 
     linkedDatasetMetadatas(status?: LinkedDatasetStatus[]): DependencyFetcher<ProjectWithDependencies, LinkedDatasetMetadatas[]> {
         return {
             hasPrerequisites: (input: ProjectWithDependencies) => ProjectDependenciesFetchers.hasProjectUuid(input),
             getKey: projectWithDependencies => projectWithDependencies.project.uuid,
-            getValue: projectUuid => this.projektMetierService.getLinkedDatasets(projectUuid, status).pipe(
-                switchMap((linkedDatasets: LinkedDataset[]) => {
-                    return from(linkedDatasets).pipe(
-                        mergeMap((linkedDataset: LinkedDataset) => {
-                            return this.konsultMetierService.getMetadataByUuid(linkedDataset.dataset_uuid).pipe(
-                                map((dataset: Metadata) => {
-                                    return {linkedDataset, dataset};
-                                }),
-                                catchError(error => {
-                                    if (error.status === 404) {
-                                        return of();
-                                    }
-
-                                    return error;
-                                })
-                            );
-                        }),
-                        reduce((accumulator: LinkedDatasetMetadatas[], current: LinkedDatasetMetadatas) => {
-                            accumulator.push(current);
-                            return accumulator;
-                        }, [])
-                    );
-                })
-            )
+            getValue: projectUuid => this.fetchLinkedDatasetsWithMetadata(projectUuid, status)
         };
+    }
+
+    private fetchLinkedDatasetsWithMetadata(projectUuid: string, status?: LinkedDatasetStatus[]): Observable<LinkedDatasetMetadatas[]> {
+        return this.projektMetierService.getLinkedDatasets(projectUuid, status).pipe(
+            switchMap((linkedDatasets: LinkedDataset[]) => this.enrichLinkedDatasetsWithMetadata(linkedDatasets))
+        );
+    }
+
+    private enrichLinkedDatasetsWithMetadata(linkedDatasets: LinkedDataset[]): Observable<LinkedDatasetMetadatas[]> {
+        return from(linkedDatasets).pipe(
+            mergeMap((linkedDataset: LinkedDataset) => this.fetchMetadataForLinkedDataset(linkedDataset)),
+            reduce((accumulator: LinkedDatasetMetadatas[], current: LinkedDatasetMetadatas) => {
+                accumulator.push(current);
+                return accumulator;
+            }, [])
+        );
+    }
+
+    private fetchMetadataForLinkedDataset(linkedDataset: LinkedDataset): Observable<LinkedDatasetMetadatas> {
+        return this.konsultMetierService.getMetadataByUuid(linkedDataset.dataset_uuid).pipe(
+            map((dataset: Metadata) => ({linkedDataset, dataset})),
+            catchError(error => {
+                if (error.status === 404) {
+                    return of();
+                }
+                throw error;
+            })
+        );
     }
 }

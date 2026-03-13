@@ -1,4 +1,4 @@
-import {NgClass, NgFor, NgIf} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {SafeHtml} from '@angular/platform-browser';
@@ -12,9 +12,10 @@ const FIRST_PAGE = 1;
 
 @Component({
     selector: 'cms-news-list',
+    standalone: true,
     templateUrl: './news-list.component.html',
     styleUrl: './news-list.component.scss',
-    imports: [LoaderComponent, NgIf, NgFor, NgClass, ExtendedModule, NgxPaginationModule]
+    imports: [CommonModule, LoaderComponent, ExtendedModule, NgxPaginationModule]
 })
 export class NewsListComponent implements OnInit {
 

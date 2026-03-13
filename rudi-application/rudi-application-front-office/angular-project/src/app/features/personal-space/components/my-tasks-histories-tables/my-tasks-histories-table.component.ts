@@ -20,7 +20,6 @@ import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table
 import {MaterialModules} from '@shared/shared.constant';
 import {SharedModule} from '@shared/shared.module';
 import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
-import {NgxPaginationModule} from 'ngx-pagination';
 
 @Component({
     selector: 'app-my-tasks-histories-table',
@@ -28,11 +27,10 @@ import {NgxPaginationModule} from 'ngx-pagination';
     styleUrls: ['./my-tasks-histories-table.component.scss'],
     standalone: true,
     imports: [
-        NgxPaginationModule,
         MatTable,
         MatSort,
         DatePipe,
-        MaterialModules,
+        ...MaterialModules,
         SharedModule,
         MatHeaderCell,
         MatCell,
@@ -79,7 +77,7 @@ export class MyTasksHistoriesTableComponent implements OnInit {
     /***
      * Booléen d'état : recherche en cours, pour le loader du tableau
      */
-    public searchIsRunning: boolean = false;
+    public searchIsRunning = false;
 
     /**
      * ensemble des colonnes à afficher, toutes les mêmes car tous les composants affichent des demandes
@@ -109,7 +107,7 @@ export class MyTasksHistoriesTableComponent implements OnInit {
             return;
         }
 
-        this.elements = data.sort((a, b) => {
+        data.sort((a, b) => {
             const isAsc = sort.direction === 'asc';
             switch (sort.active) {
                 case 'endDate':
@@ -124,6 +122,8 @@ export class MyTasksHistoriesTableComponent implements OnInit {
                     return 0;
             }
         });
+
+        this.elements = data;
     }
 
     private compare(a: number | string | undefined, b: number | string | undefined, isAsc: boolean) {
@@ -131,8 +131,8 @@ export class MyTasksHistoriesTableComponent implements OnInit {
     }
 
     initElements() {
-        this.ELEMENTS = this.entries!.map(entry => {
-            this.total = this.entries!.length;
+        this.ELEMENTS = this.entries.map(entry => {
+            this.total = this.entries.length;
 
             let item = {} as TaskHistoryItem;
             if (entry.endTime) {
@@ -150,6 +150,19 @@ export class MyTasksHistoriesTableComponent implements OnInit {
             if (entry.id) {
                 item.id = entry.id;
             }
+            if (entry.processDefinitionKey) {
+                item.processDefinitionKey = entry.processDefinitionKey;
+            }
+
+            // On conserve l'objet complet pour alimenter la page détail via Router state
+            item.processHistoricInformation = entry;
+
+            // Navigation vers la page de détail d'un historique
+            // Route attendue: my-task-history-detail/:historicId
+            if (item.id) {
+                item.taskId = item.id;
+                item.url = 'my-task-history-detail';
+            }
 
             return item;
         });
@@ -158,11 +171,30 @@ export class MyTasksHistoriesTableComponent implements OnInit {
         this.sortData(this.DEFAULT_SORT);
     }
 
-    protected getRouterLink(item: TaskHistoryItem): any[] {
-        if (this.url && item.id) {
-            return ['..', this.url, item.id];
+    // tslint:disable-next-line:no-any type de retour any[] obligatoire
+    getRouterLinkUrl(row: TaskHistoryItem): any[] {
+        const url = row?.url;
+        const taskId = row?.taskId ?? row?.id;
+
+        if (url && taskId) {
+            // Supporte les URLs avec segments (ex: 'task-history-detail/organization-process')
+            const segments = url.split('/').filter(Boolean);
+            return ['..', ...segments, taskId];
         }
-        return undefined;
+
+        // Fallback (sécurité) : route explicite
+        if (row?.processDefinitionKey && row?.id) {
+            return ['..', 'task-history-detail', row.processDefinitionKey, row.id];
+        }
+
+        return null;
+    }
+
+    // tslint:disable-next-line:no-any type de retour any obligatoire
+    getRouterLinkState(row: TaskHistoryItem): any {
+        return {
+            processHistoricInformation: row?.processHistoricInformation
+        };
     }
 
     protected getResultsMessage(): string {

@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -20,7 +19,7 @@ import {OrganizationInformationsComponent} from '../../components/organization-i
 @Component({
     selector: 'app-detail',
     templateUrl: './detail.component.html',
-    imports: [PageComponent, PageHeadingComponent, TabsComponent, TabComponent, NgIf, OrganizationInformationsComponent, AdministrationTabComponent, TranslatePipe]
+    imports: [PageComponent, PageHeadingComponent, TabsComponent, TabComponent, OrganizationInformationsComponent, AdministrationTabComponent, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
 

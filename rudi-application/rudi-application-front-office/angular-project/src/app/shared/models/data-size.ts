@@ -38,7 +38,7 @@ const BYTES_PER_TB = BYTES_PER_GB * 1024;
  * Exemple : <code>10MB</code>.
  */
 export class DataSize {
-    private constructor(private bytes: number) {
+    private constructor(private readonly bytes: number) {
     }
 
 
@@ -65,6 +65,7 @@ export class DataSize {
      * Obtain a {@link DataSize} representing an amount in the specified {@link DataUnit}.
      * @param amount the amount of the size, measured in terms of the unit,
      * positive or negative
+     * @param unit data unit
      * @return a corresponding {@link DataSize}
      */
     static of(amount: number, unit: DataUnit): DataSize {
@@ -89,6 +90,7 @@ export class DataSize {
      * "20"   -- parses as "20 kilobytes" (where the {@code defaultUnit} is {@link DataUnit#KILOBYTES})
      * </pre>
      * @param text the text to parse
+     * @param defaultUnit data unit default to use if no unit is specified
      * @return the parsed {@link DataSize}
      */
     static parse(text: string, defaultUnit?: DataUnit): DataSize {

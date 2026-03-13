@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -25,7 +25,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
     selector: 'app-dataset-table',
     templateUrl: './dataset-table.component.html',
     styleUrls: ['./dataset-table.component.scss'],
-    imports: [NgIf, TranslateDirective, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, DatasetsInfosComponent, NgbPopover, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
+    imports: [TranslateDirective, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, DatasetsInfosComponent, NgbPopover, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
 })
 export class DatasetTableComponent {
     displayedColumns: string[] = ['addedDate', 'title', 'status', 'comment-action', 'delete-action'];

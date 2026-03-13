@@ -1,4 +1,4 @@
-import {AsyncPipe, NgFor, NgIf} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {Component, OnInit, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
@@ -37,7 +37,7 @@ import {OwnerInformationComponent} from '../../components/owner-information/owne
     selector: 'app-organization-task-detail',
     templateUrl: './organization-task-detail.component.html',
     styleUrls: ['./organization-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, NgFor, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
 })
 export class OrganizationTaskDetailComponent
     extends TaskDetailComponent<Organization, OrganizationDependencies, OrganizationTask, OrganizationTaskSearchCriteria>

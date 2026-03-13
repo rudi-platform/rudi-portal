@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 
 import {MatDialog} from '@angular/material/dialog';
@@ -43,7 +43,7 @@ import UnitEnum = Period.UnitEnum;
     selector: 'app-selfdata-information-request-task-detail',
     templateUrl: './selfdata-information-request-task-detail.component.html',
     styleUrls: ['./selfdata-information-request-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, SelfdataMainInformationComponent, NgFor, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, CardComponent, LoaderComponent, TranslateDirective, ContactCardComponent, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, SelfdataMainInformationComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, CardComponent, LoaderComponent, TranslateDirective, ContactCardComponent, TranslatePipe]
 })
 export class SelfdataInformationRequestTaskDetailComponent
     extends TaskDetailComponent<SelfdataInformationRequest, SelfdataInformationRequestDependencies,

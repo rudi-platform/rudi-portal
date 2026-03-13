@@ -72,7 +72,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="getRouterLink(row)"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="getRouterLinkUrl(row)" [state]="getRouterLinkState(row)"></tr>
         </table>
     </div>
     <app-back-pagination

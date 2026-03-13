@@ -97,7 +97,7 @@ export class OrganizationTableComponent implements OnInit {
 
     openPopinArchive() {
         this.form.sections.forEach((section: Section) => {
-            section.fields && section.fields.forEach((field: Field) => {
+            section.fields?.forEach((field: Field) => {
                 if (field.definition.name == 'draftType') {
                     field.values = ['archive'];
                     return field;

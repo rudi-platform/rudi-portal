@@ -1,4 +1,4 @@
-@import "responsive";
+@use "responsive";
 
 $themes-section-height: 225px;
 $themes-section-overflow: 135px;
@@ -45,14 +45,14 @@ $themes-section-overflow: 135px;
 }
 
 
-@include md() {
+@include responsive.md() {
     @include themes-section-for-small-screens;
 }
 
-@include sm() {
+@include responsive.sm() {
     @include themes-section-for-small-screens;
 }
 
-@include xs() {
+@include responsive.xs() {
     @include themes-section-for-small-screens;
 }

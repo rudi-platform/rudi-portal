@@ -3,10 +3,10 @@ import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import moment, {Moment} from 'moment';
 import {MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
-import {NgIf} from '@angular/common';
+import moment, {Moment} from 'moment';
+
 
 /**
  * Format MM/YYYY appliqué au DatePicker
@@ -39,7 +39,7 @@ export const MONTH_YEAR_FORMAT = {
         // C'est ici qu'on donne notre format Custom
         {provide: MAT_DATE_FORMATS, useValue: MONTH_YEAR_FORMAT}
     ],
-    imports: [MatFormField, FormsModule, ReactiveFormsModule, MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker, NgIf]
+    imports: [MatFormField, FormsModule, ReactiveFormsModule, MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
 })
 export class MonthYearDatepickerComponent implements OnInit {
 
@@ -133,7 +133,7 @@ export class MonthYearDatepickerComponent implements OnInit {
      * Est-ce que le composant est en état d'erreur ?
      */
     hasErrors(): boolean {
-        if (this.formGroup != null && this.formGroup.get(this.controlName) != null) {
+        if (this.formGroup?.get(this.controlName) != null) {
             const control = this.formGroup.get(this.controlName);
 
             // Composant en erreur si le contrôle a bougé et sil y'a des erreurs

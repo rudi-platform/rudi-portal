@@ -1,18 +1,22 @@
 <ng-container [formGroup]="formGroup">
-    <label for="input-{{formControlName}}">
-        <span class="title">{{label}}<span *ngIf="required && !readonly" class="required-symbol">*</span></span>
-        <br/>
-        <span *ngIf="!readonly" class="description">{{help}}</span>
-    </label>
-    <mat-form-field appearance="outline">
-        <input autocomplete="off" [formControlName]="formControlName"
-               [readonly]="readonly"
-               id="input-{{formControlName}}"
-               matInput
-               type="text"
-               (keydown.control.enter)="submitForm.emit()">
-        <mat-error>
-            <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}
-        </mat-error>
+  <label for="input-{{formControlName}}">
+    <span class="title">{{label}}@if (required && !readonly) {
+      <span class="required-symbol">*</span>
+    }</span>
+    <br/>
+    @if (!readonly) {
+      <span class="description">{{help}}</span>
+    }
+  </label>
+  <mat-form-field appearance="outline">
+    <input autocomplete="off" [formControlName]="formControlName"
+      [readonly]="readonly"
+      id="input-{{formControlName}}"
+      matInput
+      type="text"
+      (keydown.control.enter)="submitForm.emit()">
+      <mat-error>
+        <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}
+      </mat-error>
     </mat-form-field>
-</ng-container>
+  </ng-container>

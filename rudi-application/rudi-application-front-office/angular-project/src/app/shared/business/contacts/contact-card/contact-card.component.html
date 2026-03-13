@@ -1,2 +1,6 @@
-<app-contact-button *ngIf="!copiedButton" [email]="email"></app-contact-button>
-<app-copied-button *ngIf="copiedButton" [masked]="masked" [toCopy]="toCopy"></app-copied-button>
+@if (!copiedButton) {
+  <app-contact-button [email]="email"></app-contact-button>
+}
+@if (copiedButton) {
+  <app-copied-button [masked]="masked" [toCopy]="toCopy"></app-copied-button>
+}

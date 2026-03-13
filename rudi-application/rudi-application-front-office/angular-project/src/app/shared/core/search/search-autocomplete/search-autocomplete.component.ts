@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
@@ -11,7 +11,7 @@ import {debounceTime, filter, map, tap} from 'rxjs/operators';
     selector: 'app-search-autocomplete',
     templateUrl: './search-autocomplete.component.html',
     styleUrls: ['./search-autocomplete.component.scss'],
-    imports: [FormsModule, MatAutocompleteTrigger, ReactiveFormsModule, NgIf, MatProgressSpinner, MatAutocomplete, NgFor, MatOption]
+    imports: [FormsModule, MatAutocompleteTrigger, ReactiveFormsModule, MatProgressSpinner, MatAutocomplete, MatOption]
 })
 export class SearchAutocompleteComponent<T> implements OnInit {
 

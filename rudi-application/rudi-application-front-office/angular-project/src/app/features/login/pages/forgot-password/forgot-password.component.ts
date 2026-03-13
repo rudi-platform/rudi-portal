@@ -1,5 +1,13 @@
+import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {AuthenticationService} from '@core/services/authentication.service';
@@ -8,24 +16,16 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {RedirectService} from '@core/services/redirect.service';
 import {RouteHistoryService} from '@core/services/route-history.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
-import {TranslateService, TranslateDirective, TranslatePipe} from '@ngx-translate/core';
+import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {forkJoin} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
-import {MatSidenavContainer, MatSidenav, MatSidenavContent} from '@angular/material/sidenav';
-import {NgClass, NgIf} from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
-import {MatCard, MatCardTitle, MatCardContent, MatCardActions} from '@angular/material/card';
-import {MatFormField, MatLabel, MatError} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
-import {MatButton} from '@angular/material/button';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, NgIf, MatError, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class ForgotPasswordComponent implements OnInit {
     /**
@@ -50,11 +50,11 @@ export class ForgotPasswordComponent implements OnInit {
         return this.route.snapshot.queryParams.snackBar;
     }
 
-    constructor(private formBuilder: FormBuilder,
-                private breakpointObserver: BreakpointObserverService,
-                private authentificationService: AuthenticationService,
-                private router: Router,
-                private redirectService: RedirectService,
+    constructor(private readonly formBuilder: FormBuilder,
+                private readonly breakpointObserver: BreakpointObserverService,
+                private readonly authentificationService: AuthenticationService,
+                private readonly router: Router,
+                private readonly redirectService: RedirectService,
                 private readonly route: ActivatedRoute,
                 private readonly snackBarService: SnackBarService,
                 private readonly translateService: TranslateService,

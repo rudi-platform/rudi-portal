@@ -1,5 +1,5 @@
 import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
 import {enableProdMode, importProvidersFrom, inject, Injector, LOCALE_ID, provideAppInitializer} from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
@@ -45,12 +45,9 @@ bootstrapApplication(AppComponent, {
         {provide: LOCALE_ID, useValue: 'fr-FR'},
         {provide: LocationStrategy, useClass: PathLocationStrategy},
         {provide: APP_BASE_HREF, useValue: '/'},
-        {provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true},
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: ResponseTokenInterceptor,
-            multi: true
-        },
+        provideHttpClient(
+            withInterceptors([HttpTokenInterceptor, ResponseTokenInterceptor])
+        ),
         {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
         {provide: MESSAGE_FORMAT_CONFIG, useValue: {locales: ['fr']}},
         {provide: TranslateService, useClass: CustomTranslateService},

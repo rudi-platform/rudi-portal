@@ -1,32 +1,61 @@
-<div *ngIf="processHistoricInformation$ | async as processHistoricInformation">
-
-    <div class="no-result" *ngIf="processHistoricInformation.historicInformations?.length == 0">
-        <h3>{{ 'personalSpace.projectTaskHistoric.noResult' | translate }}</h3>
+<div>
+  @if (!processHistoricInformation || (processHistoricInformation.historicInformations?.length ?? 0) === 0) {
+    <div class="no-result">
+      <h3>{{ 'personalSpace.projectTaskHistoric.noResult' | translate }}</h3>
     </div>
+  } @else {
+    <table
+      mat-table
+      matSort
+      matSortActive="endTime"
+      matSortDirection="desc"
+      matSortDisableClear
+      (matSortChange)="onMatSortChange($event)"
+      [dataSource]="sortedHistoricInformations">
+      <caption>
+        {{ 'personalSpace.projectTaskHistoric.title' | translate }}
+      </caption>
 
-    <table *ngIf="processHistoricInformation.historicInformations.length > 0">
-        <caption>
-            {{ 'personalSpace.projectTaskHistoric.title' | translate }}
-        </caption>
-        <thead>
-        <tr>
-            <th class="date-label">{{ 'personalSpace.projectTaskHistoric.addAt' | translate }}</th>
-            <th class="initiator-label">{{ 'personalSpace.projectTaskHistoric.initiator' | translate }}</th>
-            <th class="step-label">{{ 'personalSpace.projectTaskHistoric.step' | translate }}</th>
-            <th class="action-label">{{ 'personalSpace.projectTaskHistoric.action' | translate }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let historicInformation of processHistoricInformation.historicInformations">
-            <td class="date-value">{{ historicInformation.endTime | date:'dd/MM/yyyy' }}</td>
-            <td class="initiator-value">{{ historicInformation.assignee }}</td>
-            <td class="step-value">
-                <div class="blue-step">{{ historicInformation.activityName }}</div>
-            </td>
-            <td class="action-value">
-                <div *ngIf="historicInformation.action">{{ historicInformation.action!! }}</div>
-            </td>
-        </tr>
-        </tbody>
+      <ng-container matColumnDef="endTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="date-label">
+          {{ 'personalSpace.projectTaskHistoric.addAt' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let historicInformation" class="date-value">
+          {{ historicInformation.endTime | date:'dd/MM/yyyy' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="assignee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="initiator-label">
+          {{ 'personalSpace.projectTaskHistoric.processInitiator' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let historicInformation" class="initiator-value">
+          {{ getAssigneeDisplayName(historicInformation.assignee) }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="activityName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="step-label">
+          {{ 'personalSpace.projectTaskHistoric.step' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let historicInformation" class="step-value">
+          <div class="blue-step">{{ historicInformation.activityName }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="action-label">
+          {{ 'personalSpace.projectTaskHistoric.action' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let historicInformation" class="action-value">
+          @if (historicInformation.action) {
+            <div>{{ historicInformation.action }}</div>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+  }
 </div>

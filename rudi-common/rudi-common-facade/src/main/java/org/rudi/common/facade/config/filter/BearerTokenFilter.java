@@ -1,6 +1,5 @@
 package org.rudi.common.facade.config.filter;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.springframework.http.HttpHeaders;
@@ -8,12 +7,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public abstract class BearerTokenFilter extends OncePerRequestFilter {
 
-	private static final int INVALID_TOKEN_STATUS = HttpServletResponse.SC_UNAUTHORIZED;
+	protected static final int INVALID_TOKEN_STATUS = HttpServletResponse.SC_UNAUTHORIZED;
 	private final UtilContextHelper utilContextHelper;
 	protected final RestTemplate oAuth2RestTemplate;
 
@@ -33,7 +33,11 @@ public abstract class BearerTokenFilter extends OncePerRequestFilter {
 	}
 
 	protected void setTokenIsInvalid(HttpServletResponse response) {
-		response.setStatus(INVALID_TOKEN_STATUS);
+		setTokenIsInvalid(response, INVALID_TOKEN_STATUS);
+	}
+
+	protected void setTokenIsInvalid(HttpServletResponse response, int status) {
+		response.setStatus(status);
 		response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
 	}
 

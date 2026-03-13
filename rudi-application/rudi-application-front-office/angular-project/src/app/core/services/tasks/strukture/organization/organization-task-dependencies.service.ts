@@ -132,10 +132,10 @@ export class OrganizationTaskDependencyFetchers extends TaskDependencyFetchers<O
      * @private
      */
     private static hasOrganizationUuid(input: OrganizationTask): boolean {
-        return input != null && input.task != null && input.task.functionalId != null;
+        return input?.task?.functionalId != null;
     }
 
     private static hasInitiator(input: OrganizationTask): boolean {
-        return input != null && input.task != null && input.task.initiator != null;
+        return input?.task?.initiator != null;
     }
 }

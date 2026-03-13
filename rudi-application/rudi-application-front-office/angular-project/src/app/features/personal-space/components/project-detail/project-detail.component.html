@@ -1,24 +1,22 @@
 <div class="project-container">
-    <!--  Card Description -->
-    <div class="card-description-keyword">
-        <app-loader [active]="loading" [allPage]="false" [noText]="true" [isLight]="true"></app-loader>
-        <mat-card class="project-card project-card-description" *ngIf="!loading">
-            <app-project-main-informations [project]="dependencies.project"></app-project-main-informations>
-            <!-- Tableau des autres demandes -->
-            <app-acces-details-table1
-                [otherIndicators]="dependencies?.otherIndicators"
-                [otherLinkedDatasets]="dependencies?.otherLinkedDatasets">
-
-            </app-acces-details-table1>
-
-            <!-- Tableau des demandes de nouvelle données -->
-            <app-acces-details-table2
-                [newDatasetRequests]="dependencies?.newDatasetRequests"></app-acces-details-table2>
-
-            <!-- Tableau des jeu de données ouverts réutilisés -->
-            <app-acces-details-table3
-                [openLinkedDatasetAccessRequests]="dependencies?.linkedDatasetsOpened"></app-acces-details-table3>
-
-        </mat-card>
-    </div>
+  <!--  Card Description -->
+  <div class="card-description-keyword">
+    <app-loader [active]="loading" [allPage]="false" [noText]="true" [isLight]="true"></app-loader>
+    @if (!loading) {
+      <mat-card class="project-card project-card-description">
+        <app-project-main-informations [project]="dependencies.project"></app-project-main-informations>
+        <!-- Tableau des autres demandes -->
+        <app-acces-details-table1
+          [otherIndicators]="dependencies?.otherIndicators"
+          [otherLinkedDatasets]="dependencies?.otherLinkedDatasets">
+        </app-acces-details-table1>
+        <!-- Tableau des demandes de nouvelle données -->
+        <app-acces-details-table2
+        [newDatasetRequests]="dependencies?.newDatasetRequests"></app-acces-details-table2>
+        <!-- Tableau des jeu de données ouverts réutilisés -->
+        <app-acces-details-table3
+        [openLinkedDatasetAccessRequests]="dependencies?.linkedDatasetsOpened"></app-acces-details-table3>
+      </mat-card>
+    }
+  </div>
 </div>

@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
@@ -25,7 +25,7 @@ import {TemporalBarchartDataComponent} from '../temporal-barchart-data/temporal-
     selector: 'app-selfdata-dataset-data-tab',
     templateUrl: './selfdata-dataset-data-tab.component.html',
     styleUrls: ['./selfdata-dataset-data-tab.component.scss'],
-    imports: [NgIf, LoaderComponent, CardComponent, FormsModule, PasswordComponent, ErrorBoxComponent, MatButton, GenericDataComponent, TemporalBarchartDataComponent, TranslatePipe]
+    imports: [LoaderComponent, CardComponent, FormsModule, PasswordComponent, ErrorBoxComponent, MatButton, GenericDataComponent, TemporalBarchartDataComponent, TranslatePipe]
 })
 export class SelfdataDatasetDataTabComponent implements OnInit {
 

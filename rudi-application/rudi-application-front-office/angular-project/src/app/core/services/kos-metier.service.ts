@@ -14,8 +14,8 @@ const CONCEPT_ICON_REGEX = /^assets\/pictos\/(\w+\.svg)$/;
 })
 export class KosMetierService {
 
-    constructor(private skosConceptsService: SkosConceptsService,
-                private languageService: LanguageService) {
+    constructor(private readonly skosConceptsService: SkosConceptsService,
+                private readonly languageService: LanguageService) {
     }
 
     static getAssetNameFromConceptIcon(conceptIcon: string, namePrefix = ''): string {

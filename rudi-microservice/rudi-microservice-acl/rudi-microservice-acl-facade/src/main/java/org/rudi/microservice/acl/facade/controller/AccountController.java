@@ -2,7 +2,7 @@ package org.rudi.microservice.acl.facade.controller;
 
 import java.util.UUID;
 
-import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.acl.core.bean.Account;
 import org.rudi.microservice.acl.core.bean.PasswordChange;
@@ -86,8 +86,8 @@ public class AccountController implements AccountApi {
 		if (tokens != null) {
 			Tokens result = new Tokens().jwtToken(tokens.getJwtToken()).refreshToken(tokens.getRefreshToken());
 			return ResponseEntity.status(HttpStatus.OK)
-					.header(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY, result.getJwtToken())
-					.header(AbstractJwtTokenUtil.HEADER_X_TOKEN_KEY, result.getRefreshToken()).body(result);
+					.header(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY, result.getJwtToken())
+					.header(CommonSecurityConstants.HEADER_X_TOKEN_KEY, result.getRefreshToken()).body(result);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}

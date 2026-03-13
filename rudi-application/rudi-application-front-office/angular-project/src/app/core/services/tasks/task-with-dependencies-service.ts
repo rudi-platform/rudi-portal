@@ -82,7 +82,7 @@ export abstract class TaskDependencyFetchers<T extends TaskWithDependencies<A, D
 
     get initiatorInfo(): DependencyFetcher<T, string> {
         return {
-            hasPrerequisites: (input: T) => input != null && input.dependencies != null,
+            hasPrerequisites: (input: T) => input?.dependencies != null,
             getKey: taskWithDependencies => taskWithDependencies.task.initiator,
             getValue: initiatorString => {
                 if (validateUuid(initiatorString)) {

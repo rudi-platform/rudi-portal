@@ -53,18 +53,18 @@
 #   - Added a new MIME type 'text/x-yaml' for .yaml / .yml files
 #
 # [1.4.0]
-#   - Added 'ext_metadata' to be able to extend the current metadata with
-#     additional sub-parts, in particular 'ext_selfdata' to describe a
-#     dataset that contains personal (GDPR) information.
+#   - Organization integration and attachment reports
+#   - Field metadata_info.metadata_provider is now mandatory
+#   - Added a new MIME type 'text/markdown' for .md files
 #
 # [1.4.1]
-#   - The metadata_provider no longer needs to be filled in the metadatas,
-#     as the provider of the authenticated nodeProvider is now used for the request.
-#   - Summary is now a RichDictionaryEntry with lang, text, and html fields (instead of a DictionaryEntry)
+#   - 'RichDictionaryEntry' with an 'html' field for formatted description.
+#   - Added 'dataset_update_frequency' as an UpdateFrequency enum.
+
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
-  version: 1.4.0
+  version: 1.4.2
   title: Public API for RUDI producer node
   description: "API pour l'accès aux données au niveau du nœud producteur RUDI"
   termsOfService: 'no'
@@ -102,7 +102,7 @@ paths: {} # On ne reprend pas les path du swagger de l'IRISA
 components:
   #=============================================================================
   # See schemas definitions at
-  # https://github.com/rudi-platform/rudi-documentation/tree/main/schemas
+  # https://github.com/sigrennesmetropole/rudi_documentation/tree/main/schemas
   #=============================================================================
   schemas:
     #---------------------------------------------------------------------------
@@ -120,8 +120,6 @@ components:
 
         - producer
         - contacts
-
-        - available_formats
 
         #- temporal_spread
         #- geography
@@ -224,7 +222,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Media'
-          minItems: 1
 
         #—•—•—•—•—•—•—•—•—•—•—•—•—•
         # DATASET INFO
@@ -445,7 +442,6 @@ components:
             'metadata_provider':
               $ref: '#/components/schemas/Organization' # On met $ref en 1er car s'il est en 2e, il est ignoré par la génération de code
               description: Description of the organization that produced the metadata
-
             #......................
             'metadata_contacts':
               description: Addresses to get further information on the metadata
@@ -895,6 +891,7 @@ components:
         - 'text/css' # (.css)
         - 'text/csv' # (.csv)
         - 'text/html' # (.html | .htm)
+        - 'text/markdown' # (.md)
         - 'text/php' # (.php)
         - 'text/plain' # (.txt)
         - 'text/xml' # (.xml)
@@ -949,6 +946,7 @@ components:
         - docx
         - jpg
         - json
+        - md
         - odt
         - pdf
         - png
@@ -989,7 +987,7 @@ components:
 
     #---------------------------------------------------------------------------
     'ReferenceDates':
-      description: 'Dates of the ac tions on the data'
+      description: 'Dates of the actions on the data'
       type: object
       required:
         - created
@@ -1107,22 +1105,22 @@ components:
             'html':
               type: string
           example: {
-            'lang': 'en-GB',
+            'lang': 'fr-FR',
             'text':
               "Cryptides de Bretagne: Les Marie Morganes, sirènes d’Ouessant, 
-                    les Gallizènes de l’île de Sein, les korrigans, l'Ankou.",
+                les Gallizènes de l’île de Sein, les korrigans, l'Ankou.",
             'html':
               "<p>Cryptides de Bretagne:</p>
-                      <dl>
-                        <dt>Les Marie Morganes</dt><dd>Sirènes d’Ouessant.</dd>
-                        <dt>Les Gallizènes</dt><dd>Neuf prêtresses de l’île de Sein.</dd>
-                        <dt>Les korrigans</dt><dd>Lutins farceurs.</dd>
-                        <dt>L'Ankou</dt>
-                          <dd>
-                            La mort personnifiée, squelette drapé d’un linceul sombre
-                            tenant une faux emmanchée à l’envers.
-                          </dd>
-                      </dl>"
+                  <dl>
+                    <dt>Les Marie Morganes</dt><dd>Sirènes d’Ouessant.</dd>
+                    <dt>Les Gallizènes</dt><dd>Neuf prêtresses de l’île de Sein.</dd>
+                    <dt>Les korrigans</dt><dd>Lutins farceurs.</dd>
+                    <dt>L'Ankou</dt>
+                      <dd>
+                        La mort personnifiée, squelette drapé d’un linceul sombre
+                        tenant une faux emmanchée à l’envers.
+                      </dd>
+                  </dl>"
           }
 
       #---------------------------------------------------------------------------
@@ -1133,6 +1131,7 @@ components:
         both joined by an hyphen-minus sign, or alternatively the 
         lowercase ISO-639 language code alone
       type: string
+      pattern: '^[a-z]{2}(-[A-Z]{2})?$'
       enum:
         [
           # On conserve les langues déjà existantes pour éviter de faire planter les JDD existants :

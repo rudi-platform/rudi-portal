@@ -6,6 +6,10 @@ package org.rudi.microservice.acl.facade.config.security.oauth2.cas;
 import java.io.IOException;
 import java.util.Map;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.log.LogMessage;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,11 +40,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 /**
  * Override of spring behavior to set authenticationManagerResolver
  * 
@@ -66,8 +65,9 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 
 	/**
 	 * Construct a {@code CasBearerTokenAuthenticationFilter} using the provided parameter(s)
-	 * 
-	 * @param authenticationManagerResolver
+	 *
+	 * @param authenticationManagerResolver resolver used to select the appropriate {@link AuthenticationManager}
+	 *                                      for the current HTTP request context
 	 */
 	public CasBearerTokenAuthenticationFilter(
 			AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver/* , JwtDecoder jwtDecoder */) {
@@ -78,12 +78,12 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	/**
 	 * Extract any <a href="https://tools.ietf.org/html/rfc6750#section-1.2" target="_blank">Bearer Token</a> from the request and attempt an
 	 * authentication.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param filterChain
-	 * @throws ServletException
-	 * @throws IOException
+	 *
+	 * @param request current HTTP request from which the bearer token is extracted
+	 * @param response current HTTP response used to return authentication errors when needed
+	 * @param filterChain chain used to continue request processing after this filter
+	 * @throws ServletException if the filter chain fails while processing the request
+	 * @throws IOException if an I/O error occurs while delegating to the chain or entry point
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -143,8 +143,11 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * Sets the {@link SecurityContextHolderStrategy} to use. The default action is to use the {@link SecurityContextHolderStrategy} stored in
 	 * {@link SecurityContextHolder}.
 	 *
+	 * @param securityContextHolderStrategy strategy used to create, store and clear the {@link SecurityContext}
+	 *                                      for the current execution thread
 	 * @since 5.8
 	 */
+	@Override
 	public void setSecurityContextHolderStrategy(SecurityContextHolderStrategy securityContextHolderStrategy) {
 		Assert.notNull(securityContextHolderStrategy, "securityContextHolderStrategy cannot be null");
 		this.securityContextHolderStrategy = securityContextHolderStrategy;
@@ -156,6 +159,7 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * 
 	 * @param securityContextRepository the {@link SecurityContextRepository} to use. Cannot be null.
 	 */
+	@Override
 	public void setSecurityContextRepository(SecurityContextRepository securityContextRepository) {
 		Assert.notNull(securityContextRepository, "securityContextRepository cannot be null");
 		this.securityContextRepository = securityContextRepository;
@@ -166,6 +170,7 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * 
 	 * @param bearerTokenResolver the {@code BearerTokenResolver} to use
 	 */
+	@Override
 	public void setBearerTokenResolver(BearerTokenResolver bearerTokenResolver) {
 		Assert.notNull(bearerTokenResolver, "bearerTokenResolver cannot be null");
 		this.bearerTokenResolver = bearerTokenResolver;
@@ -176,6 +181,7 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * 
 	 * @param authenticationEntryPoint the {@code AuthenticationEntryPoint} to use
 	 */
+	@Override
 	public void setAuthenticationEntryPoint(final AuthenticationEntryPoint authenticationEntryPoint) {
 		Assert.notNull(authenticationEntryPoint, "authenticationEntryPoint cannot be null");
 		this.authenticationEntryPoint = authenticationEntryPoint;
@@ -187,6 +193,7 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * @param authenticationFailureHandler the {@code AuthenticationFailureHandler} to use
 	 * @since 5.2
 	 */
+	@Override
 	public void setAuthenticationFailureHandler(final AuthenticationFailureHandler authenticationFailureHandler) {
 		Assert.notNull(authenticationFailureHandler, "authenticationFailureHandler cannot be null");
 		this.authenticationFailureHandler = authenticationFailureHandler;
@@ -198,12 +205,19 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 	 * @param authenticationDetailsSource the {@code AuthenticationConverter} to use
 	 * @since 5.5
 	 */
+	@Override
 	public void setAuthenticationDetailsSource(
 			AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
 		Assert.notNull(authenticationDetailsSource, "authenticationDetailsSource cannot be null");
 		this.authenticationDetailsSource = authenticationDetailsSource;
 	}
 
+	/**
+	 * Checks whether the authenticated token contains a DPoP confirmation (`cnf.jkt`) claim.
+	 *
+	 * @param authentication authentication result to inspect
+	 * @return {@code true} when the access token is bound to a DPoP proof key, otherwise {@code false}
+	 */
 	private static boolean isDPoPBoundAccessToken(Authentication authentication) {
 		if (!(authentication instanceof AbstractOAuth2TokenAuthenticationToken<?> accessTokenAuthentication)) {
 			return false;
@@ -217,19 +231,15 @@ public class CasBearerTokenAuthenticationFilter extends BearerTokenAuthenticatio
 		return StringUtils.hasText(jwkThumbprintClaim);
 	}
 
+	/**
+	 * Indicates if bearer token validation should run for the current response/context state.
+	 *
+	 * @param response HTTP response used to detect a previous unauthorized status
+	 * @return {@code true} if no authentication is present or if the current status is {@code 401},
+	 *         meaning token validation may be attempted
+	 */
 	protected boolean tokenHasNotAlreadyBeenChecked(HttpServletResponse response) {
 		return response.getStatus() == HttpServletResponse.SC_UNAUTHORIZED
 				|| SecurityContextHolder.getContext().getAuthentication() == null;
 	}
-
-//	private Jwt getJwt(BearerTokenAuthenticationToken bearer) {
-//		try {
-//			return jwtDecoder.decode(bearer.getToken());
-//		} catch (BadJwtException failed) {
-//			log.debug("Failed to authenticate since the JWT was invalid");
-//			throw new InvalidBearerTokenException(failed.getMessage(), failed);
-//		} catch (JwtException failed) {
-//			throw new AuthenticationServiceException(failed.getMessage(), failed);
-//		}
-//	}
 }

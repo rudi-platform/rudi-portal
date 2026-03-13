@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
@@ -31,15 +30,15 @@ import {switchMap} from 'rxjs/operators';
 import {Step1ProjectComponent} from '../step1-project/step1-project.component';
 import {ProjectMainInformationDateComponent} from './project-main-information-date/project-main-information-date.component';
 import {ProjectMainInformationLabelComponent} from './project-main-information-label/project-main-information-label.component';
-import { ProjectMainInformationRichLabelComponent } from './project-main-information-rich-label/project-main-information-rich-label.component';
+import {
+    ProjectMainInformationRichLabelComponent
+} from './project-main-information-rich-label/project-main-information-rich-label.component';
 
 @Component({
     selector: 'app-project-main-informations',
     templateUrl: './project-main-informations.component.html',
     styleUrls: ['./project-main-informations.component.scss'],
-    imports: [LoaderComponent, NgIf, MatCardTitle, MatButton, MatCardContent, ProjectMainInformationLabelComponent,
-    ProjectMainInformationDateComponent, FormsModule, ReactiveFormsModule, MatFormField, MatInput,
-    Step1ProjectComponent, TranslatePipe, ToStringPipe, ProjectMainInformationRichLabelComponent]
+    imports: [LoaderComponent, MatCardTitle, MatButton, MatCardContent, ProjectMainInformationLabelComponent, ProjectMainInformationDateComponent, FormsModule, ReactiveFormsModule, MatFormField, MatInput, Step1ProjectComponent, TranslatePipe, ToStringPipe, ProjectMainInformationRichLabelComponent]
 })
 export class ProjectMainInformationsComponent implements OnInit {
     @Input() project: Project;
@@ -74,7 +73,7 @@ export class ProjectMainInformationsComponent implements OnInit {
      * L'image du projet qui a été sauvegardée, pour savoir si une mise à jour a eu lieu
      * @private
      */
-    private projectImageSaved: Blob;
+    private readonly projectImageSaved: Blob;
 
     constructor(
         readonly projektMetierService: ProjektMetierService,
@@ -170,7 +169,7 @@ export class ProjectMainInformationsComponent implements OnInit {
     public updateConfirmation(): void {
         this.personalSpaceProjectService.openDialogUpdateConfirmation(this.dialogDescription)
             .subscribe(item => {
-                if (item && item.closeEvent === CloseEvent.VALIDATION) {
+                if (item?.closeEvent === CloseEvent.VALIDATION) {
                     this.updateForm.emit({
                         confidentialities: this.confidentialities,
                         form: this.step1FormGroup,

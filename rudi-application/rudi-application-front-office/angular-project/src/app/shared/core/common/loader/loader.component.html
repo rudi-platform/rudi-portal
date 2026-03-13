@@ -1,11 +1,15 @@
 <!-- Le loader de Rudi est par défaut sur toute la page (all-page-loading) -->
-<div class="loader-inner line-scale custom-loader"
-     [ngClass]="[getCssClass(), getAllPageClass()]"
-     *ngIf="active">
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <div></div>
-  <small [ngClass]="getCssClass()" *ngIf="isWithText()"><br/>{{ description }}</small>
-</div>
+@if (active) {
+  <div class="loader-inner line-scale custom-loader"
+    [ngClass]="[getCssClass(), getAllPageClass()]"
+    >
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    @if (isWithText()) {
+      <small [ngClass]="getCssClass()"><br/>{{ description }}</small>
+    }
+  </div>
+}

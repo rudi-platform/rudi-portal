@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
@@ -32,9 +32,10 @@ import {RequestItem} from '../request-item';
 
 @Component({
     selector: 'app-my-selfdata-requests',
+    standalone: true,
     templateUrl: './my-selfdata-requests.component.html',
     styleUrls: ['./my-selfdata-requests.component.scss'],
-    imports: [SearchCountComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgIf, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
+    imports: [SearchCountComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
 })
 export class MySelfdataRequestsComponent extends AbstractMyRequestTableComponent implements OnInit {
 

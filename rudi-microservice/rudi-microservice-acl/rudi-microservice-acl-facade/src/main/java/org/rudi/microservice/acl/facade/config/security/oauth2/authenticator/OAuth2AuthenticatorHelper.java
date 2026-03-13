@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistration.ClientSettings;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.stereotype.Component;
@@ -208,14 +210,31 @@ public class OAuth2AuthenticatorHelper {
 	@Bean
 	public InMemoryClientRegistrationRepository createClientRegistrationRepository() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		// récupère les descriptions des authentificateurs pour initialiser les providers et registrations à partir de ces descriptions. Les descriptions sont
+		// ensuite utilisées pour construire les ClientRegistration à partir des propriétés.
 		List<OAuth2AuthenticatorDescription> auth2AuthenticatorDescriptions = getOAuth2AuthenticatorDescriptions();
 		if (CollectionUtils.isNotEmpty(auth2AuthenticatorDescriptions)) {
-
+			// initialise les providers et registrations à partir des descriptions des authentificateurs.
 			initializeProviders(auth2AuthenticatorDescriptions, properties);
 			initializeRegistrations(auth2AuthenticatorDescriptions, properties);
 		}
-		List<ClientRegistration> registrations = new ArrayList<>(
-				new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
+		// on reparcourt la liste des descriptions des authentificateurs pour prendre en compte les éventuelles exigences de PKCE et construire les
+		// ClientRegistration en conséquence.
+		Map<String, ClientRegistration> registrationMaps = new OAuth2ClientPropertiesMapper(properties)
+				.asClientRegistrations();
+		List<ClientRegistration> registrations = new ArrayList<>();
+		for (Map.Entry<String, ClientRegistration> registration : registrationMaps.entrySet()) {
+			OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = getOAuth2AuthenticatorDescription(
+					registration.getKey(), true);
+			if (oAuth2AuthenticatorDescription != null
+					&& Boolean.TRUE.equals(oAuth2AuthenticatorDescription.getRequireProofKey())) {
+				ClientRegistration original = registration.getValue();
+				registrations.add(ClientRegistration.withClientRegistration(original)
+						.clientSettings(ClientSettings.builder().requireProofKey(true).build()).build());
+			} else {
+				registrations.add(registration.getValue());
+			}
+		}
 		return new InMemoryClientRegistrationRepository(registrations);
 	}
 

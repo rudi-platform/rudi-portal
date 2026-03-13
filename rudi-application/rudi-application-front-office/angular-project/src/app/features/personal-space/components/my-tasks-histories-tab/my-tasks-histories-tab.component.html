@@ -1,52 +1,106 @@
 <div>
-    @if (hasData) {
-        <app-my-tasks-histories-table
-            *ngIf="organizationTasksHistories?.length > 0 && !isStruktureLoading else loading"
-            [entries]="organizationTasksHistories"
-            [icon]="organizationTasksIcon"
-            [backPaginatorId]="'organizationTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.organization'">
-        </app-my-tasks-histories-table>
-        <app-my-tasks-histories-table
-            *ngIf="linkedProducerTasksHistories?.length > 0 && !isStruktureLoading else loading"
-            [entries]="linkedProducerTasksHistories" [icon]="linkedProducerTasksIcon"
-            [backPaginatorId]="'linkedProducerTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.linkedProducer'">
-        </app-my-tasks-histories-table>
-        <app-my-tasks-histories-table
-            *ngIf="linkedDatasetTasksHistories?.length > 0 && !isProjektLoading else loading"
-            [entries]="linkedDatasetTasksHistories" [icon]="linkedDatasetTasksIcon"
-            [backPaginatorId]="'linkedDatasetTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.linkedDataset'">
-        </app-my-tasks-histories-table>
-        <app-my-tasks-histories-table
-            *ngIf="projectTasksHistories?.length > 0 &&!isProjektLoading else loading" [entries]="projectTasksHistories"
-            [icon]="projectTasksIcon"
-            [backPaginatorId]="'projectTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.project'">
-        </app-my-tasks-histories-table>
-        <app-my-tasks-histories-table
-            *ngIf="selfdataTasksHistories?.length > 0 && !isSelfdataLoading else loading"
-            [entries]="selfdataTasksHistories"
-            [icon]="selfdataTasksIcon"
-            [backPaginatorId]="'selfdataTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.selfdata'">
-        </app-my-tasks-histories-table>
-        <app-my-tasks-histories-table
-            *ngIf="newDatasetRequestTasksHistories?.length > 0 && !isProjektLoading else loading"
-            [entries]="newDatasetRequestTasksHistories" [icon]="newDatasetRequestTasksIcon"
-            [backPaginatorId]="'newDatasetRequestTasksHistories'"
-            [tableTitleKey]="'personalSpace.myTasksHistories.newDatasetRequest'">
-        </app-my-tasks-histories-table>
-    } @else if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
-        <app-loader [allPage]="true" [isLight]="false" [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+  @if (hasData) {
+    @if (organizationTasksHistories?.length > 0 && !isStruktureLoading) {
+      <app-my-tasks-histories-table
+        [entries]="organizationTasksHistories"
+        [icon]="organizationTasksIcon"
+        [backPaginatorId]="'organizationTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.organization'">
+      </app-my-tasks-histories-table>
     } @else {
-        <div class="noData">{{ 'personalSpace.myTasksHistories.noTasksHistories' | translate }}</div>
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
     }
+
+    @if (linkedProducerTasksHistories?.length > 0 && !isStruktureLoading) {
+      <app-my-tasks-histories-table
+        [entries]="linkedProducerTasksHistories"
+        [icon]="linkedProducerTasksIcon"
+        [backPaginatorId]="'linkedProducerTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.linkedProducer'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
+    }
+
+    @if (linkedDatasetTasksHistories?.length > 0 && !isProjektLoading) {
+      <app-my-tasks-histories-table
+        [entries]="linkedDatasetTasksHistories"
+        [icon]="linkedDatasetTasksIcon"
+        [backPaginatorId]="'linkedDatasetTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.linkedDataset'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
+    }
+
+    @if (projectTasksHistories?.length > 0 && !isProjektLoading) {
+      <app-my-tasks-histories-table
+        [entries]="projectTasksHistories"
+        [icon]="projectTasksIcon"
+        [backPaginatorId]="'projectTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.project'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
+    }
+
+    @if (selfdataTasksHistories?.length > 0 && !isSelfdataLoading) {
+      <app-my-tasks-histories-table
+        [entries]="selfdataTasksHistories"
+        [icon]="selfdataTasksIcon"
+        [backPaginatorId]="'selfdataTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.selfdata'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
+    }
+
+    @if (newDatasetRequestTasksHistories?.length > 0 && !isProjektLoading) {
+      <app-my-tasks-histories-table
+        [entries]="newDatasetRequestTasksHistories"
+        [icon]="newDatasetRequestTasksIcon"
+        [backPaginatorId]="'newDatasetRequestTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.newDatasetRequest'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      }
+    }
+  } @else if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+    <app-loader
+      [allPage]="true"
+      [isLight]="false"
+      [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+  } @else {
+    <div class="noData">{{ 'personalSpace.myTasksHistories.noTasksHistories' | translate }}</div>
+  }
 </div>
-
-<ng-template #loading>
-    <app-loader *ngIf="isStruktureLoading || isProjektLoading || isSelfdataLoading" [allPage]="false" [isLight]="true"
-    [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
-</ng-template>
-

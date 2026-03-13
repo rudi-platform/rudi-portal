@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OAuth2RequestFilter extends BearerTokenFilter {
 
 	// Controle des patterns des URL
-	private AntPathMatcher pathMatcher;
+	private AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	// Liste des URL à exclure
 	private Collection<String> excludeUrlPatterns;
@@ -46,7 +46,6 @@ public class OAuth2RequestFilter extends BearerTokenFilter {
 			final UtilContextHelper utilContextHelper, final RestTemplate oAuth2RestTemplate) {
 		super(utilContextHelper, oAuth2RestTemplate);
 		this.excludeUrlPatterns = Arrays.asList(excludeUrlPatterns);
-		pathMatcher = new AntPathMatcher();
 		this.checkTokenUri = checkTokenUri;
 	}
 
@@ -54,7 +53,7 @@ public class OAuth2RequestFilter extends BearerTokenFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 			final FilterChain chain) throws ServletException, IOException {
 		// Request token header
-		String requestAuthentTokenHeader = request.getHeader(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY);
+		String requestAuthentTokenHeader = request.getHeader(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY);
 
 		if (log.isDebugEnabled()) {
 			log.debug("Header: {}", requestAuthentTokenHeader);
@@ -62,12 +61,13 @@ public class OAuth2RequestFilter extends BearerTokenFilter {
 		if (requestAuthentTokenHeader == null) {
 			// on a pas de contexte donc on n'est pas authentifié
 			setTokenIsInvalid(response);
-		} else if (!requestAuthentTokenHeader.startsWith(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX)) {
+		} else if (!requestAuthentTokenHeader.startsWith(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX)) {
+			// on a un token mais il ne commence pas par Bearer, on considère que c'est un token invalide
 			log.error("Le token ne commence pas avec la chaine Bearer");
 			setTokenIsInvalid(response);
 		} else {
 			final String tokenJwt = requestAuthentTokenHeader
-					.substring(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX.length());
+					.substring(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX.length());
 
 			handleToken(response, tokenJwt);
 		}
@@ -106,8 +106,9 @@ public class OAuth2RequestFilter extends BearerTokenFilter {
 			setTokenIsValid(authenticatedUser, response);
 		} else {
 			// On considère que le token est invalide
-			log.warn("Le token OAuth2 pour {} est inactif", tokenData.getUserName());
-			setTokenIsInvalid(response);
+			log.warn("Le token OAuth2 pour {} est invalide {}", tokenData.getUserName(), tokenData.getErrorCode());
+			// On retourne un status correspondant à celui retourné par ACL
+			setTokenIsInvalid(response, tokenData.getErrorCode() > 0 ? tokenData.getErrorCode() : INVALID_TOKEN_STATUS);
 		}
 	}
 

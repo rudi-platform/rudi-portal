@@ -1,38 +1,40 @@
 <div class="block-upload">
-    <ngx-awesome-uploader
-        class="awesome-uploader-style"
-        [adapter]="adapterProxy"
-        [enableCropper]="enableCropper"
-        [fileMaxCount]="fileMaxCount"
-        [uploadType]="fileMaxCount > 1 ? 'multi' : 'single'"
-        [fileMaxSize]="fileMaxSize"
-        [captions]="captions"
-        [cropperOptions]="cropperOptions"
-        [fileExtensions]="fileExtensions"
-        (validationError)="onValidationError($event)"
-        (uploadSuccess)="onUploadSuccess($event)"
-        (fileDownload)="onDownLoadFile($event)"
+  <ngx-awesome-uploader
+    class="awesome-uploader-style"
+    [adapter]="adapterProxy"
+    [enableCropper]="enableCropper"
+    [fileMaxCount]="fileMaxCount"
+    [uploadType]="fileMaxCount > 1 ? 'multi' : 'single'"
+    [fileMaxSize]="fileMaxSize"
+    [captions]="captions"
+    [cropperOptions]="cropperOptions"
+    [fileExtensions]="fileExtensions"
+    (validationError)="onValidationError($event)"
+    (uploadSuccess)="onUploadSuccess($event)"
+    (fileDownload)="onDownLoadFile($event)"
     >
 
-        <div class="dropzoneTemplate container pointer">
-            <div class="item">
-                <mat-icon class="upload-icon" svgIcon="rudi_picto_image.svg" aria-hidden="false"
-                          aria-label="icon pour le upload d'image"></mat-icon>
-            </div>
-            <div class="item">
-                <span class="ajouter-une-image d-block">{{imageText | translate}}</span>
-            </div>
-            <div class="item mt-0">
-                <span class="au-format-png-pdf-o">{{imageFormat|translate: {fileMaxSize: fileMaxSize} }}</span>
-            </div>
-        </div>
+    <div class="dropzoneTemplate container pointer">
+      <div class="item">
+        <mat-icon class="upload-icon" svgIcon="rudi_picto_image.svg" aria-hidden="false"
+        aria-label="icon pour le upload d'image"></mat-icon>
+      </div>
+      <div class="item">
+        <span class="ajouter-une-image d-block">{{imageText | translate}}</span>
+      </div>
+      <div class="item mt-0">
+        <span class="au-format-png-pdf-o">{{imageFormat|translate: {fileMaxSize: fileMaxSize} }}</span>
+      </div>
+    </div>
 
-    </ngx-awesome-uploader>
+  </ngx-awesome-uploader>
 
-    <mat-error *ngIf="fileFormControl.touched && fileFormControl.errors">
-        <ng-container *ngFor="let error of fileFormControl.errors | keyvalue">
-            <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.validatorsErrors.' + error.key |translate}}<br/>
-        </ng-container>
+  @if (fileFormControl.touched && fileFormControl.errors) {
+    <mat-error>
+      @for (error of fileFormControl.errors | keyvalue; track error) {
+        <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.validatorsErrors.' + error.key |translate}}<br/>
+      }
     </mat-error>
+  }
 
 </div>

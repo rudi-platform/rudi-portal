@@ -14,7 +14,7 @@ export class ClipboardFieldComponent {
     content: string;
 
     constructor(
-        private clipboard: Clipboard,
+        private readonly clipboard: Clipboard,
     ) {
         this.content = '';
     }

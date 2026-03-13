@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -71,7 +71,7 @@ export interface ProjectDependencies {
     selector: 'app-project-detail',
     templateUrl: './project-detail.component.html',
     styleUrls: ['./project-detail.component.scss'],
-    imports: [LoaderComponent, NgIf, MatCard, ProjectMainInformationsComponent, AccesDetailsTable1Component, AccesDetailsTable2Component, AccesDetailsTable3Component]
+    imports: [LoaderComponent, MatCard, ProjectMainInformationsComponent, AccesDetailsTable1Component, AccesDetailsTable2Component, AccesDetailsTable3Component]
 })
 export class ProjectDetailComponent implements OnInit {
 

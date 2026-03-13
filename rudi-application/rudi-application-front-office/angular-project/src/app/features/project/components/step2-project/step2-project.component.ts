@@ -3,7 +3,7 @@ import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatRadioChange, MatRadioGroup, MatRadioButton} from '@angular/material/radio';
 import {OwnerType} from 'micro_service_modules/projekt/projekt-model';
 import {OrganizationItem} from '../../model/organization-item';
-import {NgIf, NgFor} from '@angular/common';
+
 import {MatFormField, MatError} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatSelect} from '@angular/material/select';
@@ -14,7 +14,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-step2-project',
     templateUrl: './step2-project.component.html',
     styleUrls: ['./step2-project.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, NgIf, MatFormField, MatInput, MatSelect, NgFor, MatOption, MatError, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatFormField, MatInput, MatSelect, MatOption, MatError, TranslatePipe]
 })
 export class Step2ProjectComponent implements OnInit {
 

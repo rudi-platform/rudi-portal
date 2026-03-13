@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatSort, MatSortHeader, Sort, SortDirection} from '@angular/material/sort';
 import {
@@ -47,7 +47,7 @@ const DEFAULT_SORT_DIRECTION: SortDirection = 'desc';
     selector: 'app-reuses',
     templateUrl: './reuses.component.html',
     styleUrls: ['./reuses.component.scss'],
-    imports: [SearchCountComponent, RouterLink, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgIf, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
+    imports: [SearchCountComponent, RouterLink, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
 })
 export class ReusesComponent implements OnInit {
 

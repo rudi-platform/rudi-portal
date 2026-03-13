@@ -1,9 +1,9 @@
-@import "common-style";
+@use "common-style";
 
 .account-container {
     padding-top: 180px;
 }
 
 .main-container {
-    @include card-container-bgcolor;
+    @include common-style.card-container-bgcolor;
 }

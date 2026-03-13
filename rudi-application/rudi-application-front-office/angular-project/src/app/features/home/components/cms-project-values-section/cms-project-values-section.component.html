@@ -1,17 +1,21 @@
-<div class="project-values-section-container" *ngIf="displayComponent">
+@if (displayComponent) {
+  <div class="project-values-section-container">
     <div class="project-values-background"></div>
     <div class="project-values-container">
-        <div class="project-values-text-container">
-            <div class="d-sm-block d-md-flex align-items-baseline column-gap-2">
-            <h2 class="project-values-title">{{ cmsProjectValuesDescription.title1 }}</h2>
-            <h2 class="project-values-subtitle">{{ cmsProjectValuesDescription.title2 }}</h2>
-            </div>
-            <p class="project-values-description">{{ cmsProjectValuesDescription.description }}</p>
+      <div class="project-values-text-container">
+        <div class="d-sm-block d-md-flex align-items-baseline column-gap-2">
+          <h2 class="project-values-title">{{ cmsProjectValuesDescription.title1 }}</h2>
+          <h2 class="project-values-subtitle">{{ cmsProjectValuesDescription.title2 }}</h2>
         </div>
-        <div class="project-values-row">
-            <div *ngFor="let projectValue of projectValues" [innerHTML]="projectValue"
-                 [ngClass]="'project-values'"></div>
-        </div>
+        <p class="project-values-description">{{ cmsProjectValuesDescription.description }}</p>
+      </div>
+      <div class="project-values-row">
+        @for (projectValue of projectValues; track projectValue) {
+          <div [innerHTML]="projectValue"
+          [ngClass]="'project-values'"></div>
+        }
+      </div>
     </div>
-</div>
+  </div>
+}
 

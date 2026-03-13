@@ -1,4 +1,4 @@
-import {NgClass, NgIf, NgFor} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -11,7 +11,6 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
-import { LogService } from '@app/core/services/log.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
@@ -23,15 +22,15 @@ import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.compone
 import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
+import {AuthenticatorService, OAuth2AuthenticatorDescription} from 'micro_service_modules/acl/acl-api';
 import {Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
-import { AclService, AuthenticatorService, OAuth2AuthenticatorDescription } from 'micro_service_modules/acl/acl-api';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, NgIf, NgFor, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class LoginComponent implements OnInit {
 
@@ -95,7 +94,7 @@ export class LoginComponent implements OnInit {
      */
     isCaptchaNeeded = false;
 
-	/**
+    /**
      * Authenticators
      */
     oauth2Authenticators: OAuth2AuthenticatorDescription[] = [];
@@ -131,19 +130,18 @@ export class LoginComponent implements OnInit {
     /**
      * Constructeur
      */
-    constructor(private formBuilder: FormBuilder,
-                private breakpointObserver: BreakpointObserverService,
-                private authentificationService: AuthenticationService,
-                private router: Router,
-                private redirectService: RedirectService,
+    constructor(private readonly formBuilder: FormBuilder,
+                private readonly breakpointObserver: BreakpointObserverService,
+                private readonly authentificationService: AuthenticationService,
+                private readonly router: Router,
+                private readonly redirectService: RedirectService,
                 private readonly route: ActivatedRoute,
                 private readonly snackBarService: SnackBarService,
                 private readonly translateService: TranslateService,
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly captchaCheckerService: CaptchaCheckerService,
                 private readonly authenticatorService: AuthenticatorService,
-                private readonly accountService: AccountService,
-                private readonly logService: LogService) {
+                private readonly accountService: AccountService) {
     }
 
     ngOnInit(): void {
@@ -177,8 +175,9 @@ export class LoginComponent implements OnInit {
     }
 
     handleClickOAuth2Login(authenticator: OAuth2AuthenticatorDescription): void {
-        window.location.href = '/acl/v1/oauth2-authenticators/' + authenticator.name + '?action=login' ;
+        window.location.href = '/acl/v1/oauth2-authenticators/' + authenticator.name + '?action=login';
     }
+
     /**
      * Quand l'utilisateur clique sur s'inscrire
      */

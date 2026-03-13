@@ -1,4 +1,4 @@
-import {Location, NgClass, NgIf, NgTemplateOutlet} from '@angular/common';
+import {Location, NgClass, NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton, MatMiniFabAnchor, MatMiniFabButton} from '@angular/material/button';
@@ -17,9 +17,9 @@ import {PropertiesMetierService} from '@core/services/properties-metier.service'
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
+import {CustomRouterlinkDirective} from '@shared/utils/directives/custom-routerlink-directive/custom-routerlink.directive';
 import {CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {forkJoin, switchMap} from 'rxjs';
-import {CustomRouterlinkDirective} from '../../../utils/directives/custom-routerlink-directive/custom-routerlink.directive';
 
 
 const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
@@ -28,7 +28,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    imports: [RouterLink, CustomRouterlinkDirective, NgIf, NgClass, ExtendedModule, NgTemplateOutlet, MatButton, MatMenuTrigger, MatMiniFabAnchor, MatIcon, MatMiniFabButton, RouterLinkActive, MatMenu, MatMenuItem, TranslatePipe]
+    imports: [RouterLink, CustomRouterlinkDirective, NgClass, ExtendedModule, NgTemplateOutlet, MatButton, MatMenuTrigger, MatMiniFabAnchor, MatIcon, MatMiniFabButton, RouterLinkActive, MatMenu, MatMenuItem, TranslatePipe]
 })
 export class HeaderComponent implements OnInit {
 
@@ -59,9 +59,9 @@ export class HeaderComponent implements OnInit {
     logoAltTxt: string;
 
     constructor(
-        private location: Location,
         public dialog: MatDialog,
         public router: Router,
+        private readonly location: Location,
         private readonly authenticationService: AuthenticationService,
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly iconRegistry: MatIconRegistry,

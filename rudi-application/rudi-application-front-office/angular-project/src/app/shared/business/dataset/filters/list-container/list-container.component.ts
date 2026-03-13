@@ -1,4 +1,4 @@
-import {AsyncPipe, NgClass, NgIf} from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton} from '@angular/material/button';
@@ -45,13 +45,12 @@ const EMPTY_METADATA_LIST: MetadataList = {
         NgClass,
         ExtendedModule,
         LoaderComponent,
-        NgIf,
         OrderComponent,
         MatButton,
         MatIcon,
         DatasetListComponent,
         AsyncPipe,
-        TranslatePipe,
+        TranslatePipe
     ],
 })
 export class ListContainerComponent implements OnInit, OnDestroy {
@@ -82,7 +81,7 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     metadataListTotal: number;
     private filtersServiceSubscription?: Subscription;
     producerNames: string[];
-    private isDestroyed$: Subject<void> = new Subject<void>();
+    private readonly isDestroyed$: Subject<void> = new Subject<void>();
     selectedDatesItems: Item[] = [];
     selectedThemeItems: Item[] = [];
     selectedProducerItems: Item[] = [];

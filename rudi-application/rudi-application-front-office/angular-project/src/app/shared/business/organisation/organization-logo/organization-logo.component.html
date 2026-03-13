@@ -1,7 +1,11 @@
 <div>
-    <app-loader [active]="isLoading" [allPage]="false" [isTransparent]="true" [noText]="true"></app-loader>
-    <ng-container *ngIf="!isLoading">
-        <img *ngIf="content" [alt]="name | translate" [class]="cssClass" [src]="content">
-        <img *ngIf="!content" [class]="cssClass" [alt]="defaultAlt" [src]="defaultLogo">
-    </ng-container>
+  <app-loader [active]="isLoading" [allPage]="false" [isTransparent]="true" [noText]="true"></app-loader>
+  @if (!isLoading) {
+    @if (content) {
+      <img [alt]="name | translate" [class]="cssClass" [src]="content">
+    }
+    @if (!content) {
+      <img [class]="cssClass" [alt]="defaultAlt" [src]="defaultLogo">
+    }
+  }
 </div>

@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.common.facade.config.filter;
+package org.rudi.microservice.acl.facade.config.security.jwt;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,15 +9,21 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
+import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.BearerTokenFilter;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
+import org.rudi.common.facade.config.filter.JwtTokenData;
+import org.rudi.common.facade.config.filter.Tokens;
 import org.rudi.common.service.helper.UtilContextHelper;
+import org.rudi.microservice.acl.core.bean.TokenType;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JOSEException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,21 +40,22 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtRequestFilter extends BearerTokenFilter {
 
 	/**
-	 * Le code d'erreur à renvoyer au front quand un token d'authent a expiré
-	 */
-	private static final int HTTP_CODE_TOKEN_EXPIRED = 498;
-
-	/**
 	 * L'URL de demande de refresh d'un token JWT Le contrôleur n'existe pas, mais si un user fait une requête vers cette URL là dans ACL alors avant de
 	 * faire 404 on rentre dans le filter JWT comme on définit pas cette URL comme étant non sécurisée, et on est capable de faire des actions
 	 */
 	private static final String REFRESH_TOKEN_URL = "/refresh_token";
 
+	/** OAuth2 resfresh token is used once */
+	@Value("${module.oauth2.refresh-token.use-once:true}")
+	private boolean refreshTokenUseOnce;
+
 	@Autowired
 	private AbstractJwtTokenUtil jwtTokenUtil;
 
+	private final TokenManager tokenManager;
+
 	// Controle des patterns des URL
-	private AntPathMatcher pathMatcher;
+	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	// Liste des URL à exclure
 	private Collection<String> excludeUrlPatterns;
@@ -57,18 +64,11 @@ public class JwtRequestFilter extends BearerTokenFilter {
 
 	private String logoutUrl;
 
-	public JwtRequestFilter(final String[] excludeUrlPatterns, final UtilContextHelper utilContextHelper,
-			final RestTemplate oAuth2RestTemplate) {
-		super(utilContextHelper, oAuth2RestTemplate);
-		this.excludeUrlPatterns = Arrays.asList(excludeUrlPatterns);
-		pathMatcher = new AntPathMatcher();
-	}
-
-	public JwtRequestFilter(final String[] excludeUrlPatterns, final String logoutUrl,
+	public JwtRequestFilter(final String[] excludeUrlPatterns, final String logoutUrl, final TokenManager tokenManager,
 			final UtilContextHelper utilContextHelper, final RestTemplate oAuth2RestTemplate) {
 		super(utilContextHelper, oAuth2RestTemplate);
 		this.excludeUrlPatterns = Arrays.asList(excludeUrlPatterns);
-		pathMatcher = new AntPathMatcher();
+		this.tokenManager = tokenManager;
 		this.logoutUrl = logoutUrl;
 	}
 
@@ -84,10 +84,10 @@ public class JwtRequestFilter extends BearerTokenFilter {
 		if (tokenHasNotAlreadyBeenChecked(response)) {
 
 			// Récupération du token qui certifie si on est authentifié ou pas
-			String requestAuthentTokenHeader = request.getHeader(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY);
+			String requestAuthentTokenHeader = request.getHeader(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY);
 
 			// Récupération du refresh token au cas où le token du dessus expire
-			String requestXTokenHeader = request.getHeader(AbstractJwtTokenUtil.HEADER_X_TOKEN_KEY);
+			String requestXTokenHeader = request.getHeader(CommonSecurityConstants.HEADER_X_TOKEN_KEY);
 
 			if (log.isDebugEnabled()) {
 				log.debug("Header: {}", requestAuthentTokenHeader);
@@ -104,16 +104,15 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			}
 			// Sinon on gère le token 'Authorization' simplement
 			else {
-				if (StringUtils.isNotEmpty(logoutUrl) && request.getRequestURI().contains(logoutUrl)
-						&& StringUtils.isNotEmpty(request.getHeader("token"))) {
-					jwtTokenUtil.deleteRefreshToken(request.getHeader("token"));
+				if (StringUtils.isNotEmpty(logoutUrl) && request.getRequestURI().contains(logoutUrl)) {
+					tokenManager.remove(requestXTokenHeader);
 				}
 				handleToken(requestAuthentTokenHeader, response);
 			}
 		}
 
 		// Si un token d'authent a expiré ou qu'on a refresh le token on doit bloquer la chaîne de filtres
-		if (response.getStatus() != HTTP_CODE_TOKEN_EXPIRED && !hasRefreshed) {
+		if (response.getStatus() != CommonSecurityConstants.HTTP_CODE_TOKEN_EXPIRED && !hasRefreshed) {
 			chain.doFilter(request, response);
 		}
 	}
@@ -130,10 +129,12 @@ public class JwtRequestFilter extends BearerTokenFilter {
 			final JwtTokenData authentJtd = validateToken(requestAuthentTokenHeader);
 
 			// Si le token est expiré on veut arrêter la chaîne car l'auteur de la requête n'est plus authentifié
-			if (!authentJtd.isHasError() && authentJtd.isExpired()) {
+			if (authentJtd.isExpired()) {
 				log.warn("Le token JWT d'authentification à expiré");
-				response.setStatus(HTTP_CODE_TOKEN_EXPIRED);
-
+				setTokenIsInvalid(response, CommonSecurityConstants.HTTP_CODE_TOKEN_EXPIRED);
+			} else if (authentJtd.isHasError()) {
+				log.warn("Le token JWT d'authentification est invalid");
+				setTokenIsInvalid(response);
 			} else if (!authentJtd.isHasError() && authentJtd.getSubject() != null && authentJtd.getAccount() != null
 					&& SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -165,13 +166,24 @@ public class JwtRequestFilter extends BearerTokenFilter {
 	 */
 	private boolean handleRefreshToken(final HttpServletResponse response, String requestXTokenHeader) {
 		try {
-			// On essaye de refresh les token à l'aide du refresh token
-			Tokens tokens = jwtTokenUtil.generateNewJwtTokens(requestXTokenHeader);
-			response.addHeader(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY, tokens.getJwtToken());
-			response.addHeader(AbstractJwtTokenUtil.HEADER_X_TOKEN_KEY, tokens.getRefreshToken());
-			response.setStatus(HttpServletResponse.SC_OK);
-			return true;
-		} catch (RefreshTokenExpiredException | JsonProcessingException | JOSEException e) {
+			if (tokenManager.existsRefreshToken(requestXTokenHeader)) {
+				// On essaye de refresh les token à l'aide du refresh token
+				Tokens tokens = jwtTokenUtil.generateNewJwtTokens(requestXTokenHeader);
+				response.addHeader(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY, tokens.getJwtToken());
+				response.addHeader(CommonSecurityConstants.HEADER_X_TOKEN_KEY, tokens.getRefreshToken());
+				response.setStatus(HttpServletResponse.SC_OK);
+				tokenManager.saveToken(TokenType.USER_CODE, null, tokens.getJwtToken());
+				tokenManager.saveToken(TokenType.REFRESH_TOKEN, null, tokens.getRefreshToken());
+				if (refreshTokenUseOnce) {
+					tokenManager.remove(requestXTokenHeader);
+				}
+				return true;
+			} else {
+				log.warn("Refresh token not found in store");
+				setTokenIsInvalid(response);
+				return false;
+			}
+		} catch (Exception e) {
 			// En cas d'erreur c'est que même le refresh token a expiré
 			log.warn("Failed to refresh", e);
 			setTokenIsInvalid(response);
@@ -189,4 +201,5 @@ public class JwtRequestFilter extends BearerTokenFilter {
 	protected JwtTokenData validateToken(String requestAuthentTokenHeader) {
 		return jwtTokenUtil.validateToken(requestAuthentTokenHeader);
 	}
+
 }

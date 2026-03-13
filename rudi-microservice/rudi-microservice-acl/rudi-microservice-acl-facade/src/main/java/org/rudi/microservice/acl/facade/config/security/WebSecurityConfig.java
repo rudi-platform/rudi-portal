@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.rudi.common.facade.config.filter.JwtRequestFilter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -34,6 +33,7 @@ import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLog
 import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationLoginSuccessHandler;
 import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProcessingFilter;
 import org.rudi.microservice.acl.facade.config.security.jwt.JwtAuthenticationProvider;
+import org.rudi.microservice.acl.facade.config.security.jwt.JwtRequestFilter;
 import org.rudi.microservice.acl.facade.config.security.jwt.JwtTokenUtil;
 import org.rudi.microservice.acl.facade.config.security.oauth2.RudiAuthorizationService;
 import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredClient;
@@ -187,6 +187,8 @@ public class WebSecurityConfig {
 	private final AuthenticationManagerResolver<HttpServletRequest> trustedIssuerJwtAuthenticationManagerResolver;
 
 	private final UtilContextHelper utilContextHelper;
+
+	private final TokenManager tokenManager;
 
 	private final RestTemplate oAuth2RestTemplate;
 
@@ -441,7 +443,7 @@ public class WebSecurityConfig {
 	public JwtRequestFilter createJwtRequestFilter() {
 		return new JwtRequestFilter(
 				ArrayUtils.addAll(SecurityConstants.SB_PERMIT_ALL_URL2, SecurityConstants.AUTHENTICATION_PERMIT_URL),
-				SecurityConstants.LOGOUT_URL, utilContextHelper, oAuth2RestTemplate);
+				SecurityConstants.LOGOUT_URL, tokenManager, utilContextHelper, oAuth2RestTemplate);
 	}
 
 	@Bean

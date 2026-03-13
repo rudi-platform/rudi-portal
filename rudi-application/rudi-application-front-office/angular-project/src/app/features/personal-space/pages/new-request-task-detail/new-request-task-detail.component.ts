@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -34,7 +34,7 @@ import {TaskDetailComponent as TaskDetailComponent_1} from '../../components/tas
     selector: 'app-new-request-task-detail',
     templateUrl: './new-request-task-detail.component.html',
     styleUrls: ['./new-request-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, TaskDetailComponent_1, ProjectDetailComponent, NgFor, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectOwnerDetailComponent, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, TaskDetailComponent_1, ProjectDetailComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectOwnerDetailComponent, TranslatePipe]
 })
 export class NewRequestTaskDetailComponent
     extends TaskDetailComponent<LinkedDataset, LinkedDatasetDependencies, LinkedDatasetTask, ProjektTaskSearchCriteria>

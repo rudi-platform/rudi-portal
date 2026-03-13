@@ -29,7 +29,7 @@
 	rudi_contact_role	role	Updated status of the contact person		text	24	#VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_contact	rudi	
 	rudi_contact_summary	summary	Description of the contact person		text	25	#VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_contact	rudi	
 	rudi_contact_email	email	E-mail address of the contact		email	26	#EMAIL	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_contact	rudi	
-	rudi_media	Available format	Available formats		none	27	";"	FALSE	FALSE	TRUE	FALSE	TRUE	TRUE		rudi	
+	rudi_media	Available format	Available formats		none	27	";"	FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		rudi	
 	rudi_media_id	Media uuid	Unique identifier of the media		text	28	#VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_media	rudi	
 	rudi_media_name	name	Name of the Media		text	29	#VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_media	rudi	
 	rudi_media_caption	caption	Description of the Media		text	30	#VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	rudi_media	rudi	
@@ -137,7 +137,7 @@
 	rudi_ext_metadata_ext_selfdata_ext_selfdata_content_deletion_reason	Not Deletetable data reason(s)	Motif de non effacement des données. Le producteur peut choisir un motif parmi une liste de motif (cf. article 17 §3 de la CNIL : https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre3#Article17). 		text	134	#VALUE	TRUE	FALSE	TRUE	FALSE	TRUE	FALSE	rudi_ext_metadata_ext_selfdata_ext_selfdata_content	rudi	
 	rudi_ext_metadata_ext_selfdata_ext_selfdata_content_matching_data	Matching Data (JSON)	Liste des données pivot. Les données pivot sont les données nécessaires pour identifier un citoyen de manière unique et sure dans le jdd. Dans le portail, lorsqu'un citoyen souhaite demander l'accès à ses données personnelles dans un jdd, il doit saisir ses données pivot dans un formulaire. La liste des données pivot permet de générer ce formulaire dans le portail. 		text	135	#VALUE	TRUE	FALSE	TRUE	FALSE	TRUE	FALSE	rudi_ext_metadata_ext_selfdata_ext_selfdata_content	rudi	
 	rudi_ext_metadata_ext_selfdata_ext_selfdata_content_selfdata_categories	Selfdata Categories	Catégorie de données personnelles concernées qui sont dans l'ordre    État civil, identité, données d'identification, images…    Vie personnelle (habitudes de vie, situation familiale, etc.)    Informations d'ordre économique et financier (revenus, situation financière, situation fiscale, etc.)    Données de connexion (adress IP, logs, etc.)    Données de localisation (déplacements, données GPS, GSM, etc.)    Numéro de Sécurité Sociale (ou NIR) 		text	136	#VALUE	TRUE	TRUE	TRUE	FALSE	TRUE	FALSE	rudi_ext_metadata_ext_selfdata_ext_selfdata_content	rudi	
-	rudi_dataset_update_frequency	Dataset Update Frequency	Fréquence de mise à jour de la donnée		text	137	#VALUE	TRUE	TRUE	FALSE	TRUE	TRUE	FALSE		rudi
+	rudi_dataset_update_frequency	Dataset Update Frequency	Fréquence de mise à jour de la donnée		text	137	#VALUE	TRUE	TRUE	FALSE	TRUE	TRUE	FALSE		rudi	
 #controlledVocabulary	DatasetField	Value	identifier	displayOrder
 	rudi_dataset_update_frequency	continual		1
 	rudi_dataset_update_frequency	daily		2

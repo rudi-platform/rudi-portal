@@ -1,4 +1,4 @@
-@import "responsive";
+@use "responsive";
 
 .key-figures-container {
     background-color: var(--primary-color);
@@ -66,15 +66,15 @@
 }
 
 
-@include xs() {
+@include responsive.xs() {
     @include key-figures-container-xs;
 }
 
-@include sm() {
+@include responsive.sm() {
     @include key-figures-container-xs;
 
 }
 
-@include md() {
+@include responsive.md() {
     @include key-figures-container-xs;
 }

@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
@@ -21,7 +21,7 @@ const MAX_ADDRESS_LENGTH = 255;
     selector: 'app-organization-form',
     templateUrl: './organization-form.component.html',
     styleUrls: ['./organization-form.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, NgIf, MatError, WorkflowFormComponent, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, WorkflowFormComponent, TranslatePipe]
 })
 export class OrganizationFormComponent implements OnInit {
     @Input() draftForm: Form;

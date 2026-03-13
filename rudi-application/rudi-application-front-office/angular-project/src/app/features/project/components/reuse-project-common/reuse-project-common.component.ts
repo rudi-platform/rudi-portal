@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {FiltersService} from '@core/services/filters.service';
 import {AccessStatusFiltersType} from '@core/services/filters/access-status-filters-type';
+import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {RequestDetails} from '@shared/models/request-details';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
@@ -98,7 +98,7 @@ export class ReuseProjectCommonComponent {
         // Récupération de la date de fin du projet pour pré-remplir la valeur de la popin
         let endDate;
         const controlEndDate = this.step1FormGroup.get('end_date');
-        if (controlEndDate && controlEndDate.value) {
+        if (controlEndDate?.value) {
             endDate = controlEndDate.value;
         }
 

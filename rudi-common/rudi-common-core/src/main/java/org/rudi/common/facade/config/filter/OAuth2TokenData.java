@@ -32,4 +32,14 @@ public class OAuth2TokenData {
 
 	@JsonProperty("user_name")
 	private String userName;
+
+	private String type;
+
+	private String firstname;
+
+	private String lastname;
+
+	private String email;
+
+	private int errorCode;
 }

@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component} from '@angular/core';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
@@ -13,7 +13,7 @@ import {SelfdataDatasetsTableComponent} from '../../components/selfdata-datasets
 @Component({
     selector: 'app-selfdata-datasets',
     templateUrl: './selfdata-datasets.component.html',
-    imports: [PageComponent, NgIf, PageTitleComponent, TabsComponent, TabComponent, SelfdataDatasetsTableComponent, TranslatePipe]
+    imports: [PageComponent, PageTitleComponent, TabsComponent, TabComponent, SelfdataDatasetsTableComponent, TranslatePipe]
 })
 export class SelfdataDatasetsComponent {
     urlToDoc: string;

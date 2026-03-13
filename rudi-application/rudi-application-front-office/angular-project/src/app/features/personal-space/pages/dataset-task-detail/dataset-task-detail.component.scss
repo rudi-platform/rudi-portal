@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 .detail-wrapper {
     display: flex;
@@ -25,7 +25,7 @@
     }
 
     .button-contact {
-        @include button-blue;
+        @include common-style.button-blue;
     }
 }
 

@@ -17,7 +17,7 @@ import {Task} from 'micro_service_modules/api-bpmn';
 import {Indicators} from 'micro_service_modules/projekt/projekt-api';
 import moment from 'moment';
 import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
-import {NgIf} from '@angular/common';
+
 
 export interface Table1Data {
     date: string;
@@ -34,7 +34,7 @@ export interface OtherIndicators {
     selector: 'app-acces-details-table1',
     templateUrl: './acces-details-table1.component.html',
     styleUrls: ['./acces-details-table1.component.scss'],
-    imports: [TranslateDirective, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgIf, TranslatePipe]
+    imports: [TranslateDirective, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
 export class AccesDetailsTable1Component implements AfterViewInit {
     jdds: Table1Data[] = [];

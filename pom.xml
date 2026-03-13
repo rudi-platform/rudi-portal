@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.3.8</version>
+	<version>3.3.9</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -47,22 +47,22 @@
 		<springfox.version>3.0.0</springfox.version>
 		<openapi.version>1.8.0</openapi.version>
 		<openapi-web.version>2.8.14</openapi-web.version>
-		<openapi.plugin.version>7.17.0</openapi.plugin.version>
+		<openapi.plugin.version>7.20.0</openapi.plugin.version>
 		<openapi-generator-version>7.9.0</openapi-generator-version>	
 		<openapi.jackson.version>0.2.9</openapi.jackson.version>
-		<jackson-core.version>2.21.0</jackson-core.version>
+		<jackson-core.version>2.21.1</jackson-core.version>
 		<apache.directory.api.version>2.1.7</apache.directory.api.version>
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok.version>1.18.42</lombok.version>
 		<swagger.codegen.version>3.0.21</swagger.codegen.version>
-		<swagger.version>2.2.42</swagger.version>
+		<swagger.version>2.2.45</swagger.version>
 		<flyway.version>9.19.4</flyway.version>
 		<freemarker.version>2.3.34</freemarker.version>
-		<jetbrains.annotations.version>26.0.2-1</jetbrains.annotations.version>
+		<jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
 		<mockwebserver.version>5.3.2</mockwebserver.version>
-		<nimbus.jose.jwt.version>10.7</nimbus.jose.jwt.version>
+		<nimbus.jose.jwt.version>10.8</nimbus.jose.jwt.version>
 		<freemarker.version>2.3.33</freemarker.version>
 		<jsoup.version>1.22.1</jsoup.version>
 		<activiti.version>7.1.0.M6</activiti.version>
@@ -88,16 +88,16 @@
 		<jsonassert.version>1.5.3</jsonassert.version>
 		<boucycastle.version>1.83</boucycastle.version>
 		<activation.version>1.1.1</activation.version>
-		<reactor-test.version>3.8.3</reactor-test.version>
+		<reactor-test.version>3.8.4</reactor-test.version>
 		<h2.version>2.4.240</h2.version>
 		<json-smart.version>2.6.0</json-smart.version>
 		<proj4j.version>1.4.1</proj4j.version>
 
 		<maven-replacer-plugin.version>1.4.1</maven-replacer-plugin.version>
-		<maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<compiler.plugin.version>3.15.0</compiler.plugin.version>
 		<version-maven-plugin.version>2.21.0</version-maven-plugin.version>
-		<maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
@@ -173,6 +173,11 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>rudi-common-facade</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>rudi-common-facade-gateway</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

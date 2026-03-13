@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Component
-public class LinkedProducerDataFactory extends AbstractAssetDescriptionDataFactory<LinkedProducerEntity, LinkedProducerDao> {
+public class LinkedProducerDataFactory
+		extends AbstractAssetDescriptionDataFactory<LinkedProducerEntity, LinkedProducerDao> {
 	public final String PROCESS_DEFINITION_KEY = "linked-producer-process";
 
 	@Autowired
@@ -26,14 +27,20 @@ public class LinkedProducerDataFactory extends AbstractAssetDescriptionDataFacto
 		super(repository, LinkedProducerEntity.class);
 	}
 
-	public LinkedProducerEntity createValidatedLinkedProducer(UUID providerUuid, UUID orgnizationUuid, UUID nodeProviderUuid) {
+	public LinkedProducerEntity createValidatedLinkedProducer(UUID providerUuid, UUID orgnizationUuid,
+			UUID nodeProviderUuid) {
 		LocalDateTime now = LocalDateTime.now();
-		LinkedProducerEntity linkedProducer = create(UUID.randomUUID(), PROCESS_DEFINITION_KEY, Status.COMPLETED, "Validé", nodeProviderUuid.toString(), now, randomString(100));
+		LinkedProducerEntity linkedProducer = create(UUID.randomUUID(), PROCESS_DEFINITION_KEY, Status.COMPLETED,
+				"Validé", nodeProviderUuid.toString(), now, randomString(100));
 		linkedProducer.setLinkedProducerStatus(LinkedProducerStatus.VALIDATED);
 
 		OrganizationEntity organization = organizationDataFactory.createTestOrganizationLinkedProducer(orgnizationUuid);
 		linkedProducer.setOrganization(organization);
 
 		return repository.save(linkedProducer);
+	}
+
+	public void deleteAllLinkedProducer() {
+		repository.deleteAll();
 	}
 }

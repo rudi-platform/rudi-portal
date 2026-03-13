@@ -3,7 +3,7 @@ import {FiltersService} from '@core/services/filters.service';
 import {ArrayFilter} from '@core/services/filters/array-filter';
 import {ArrayFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/array-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
-import {NgIf, NgFor} from '@angular/common';
+
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatButton} from '@angular/material/button';
@@ -13,7 +13,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-producer-names-filter-form',
     templateUrl: './producer-names-filter-form.component.html',
     styleUrls: ['./producer-names-filter-form.component.scss'],
-    imports: [NgIf, FormsModule, ReactiveFormsModule, NgFor, MatCheckbox, MatButton, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatCheckbox, MatButton, TranslatePipe]
 })
 export class ProducerNamesFilterFormComponent extends ArrayFilterFormComponent<string> {
 

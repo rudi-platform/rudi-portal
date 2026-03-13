@@ -392,6 +392,7 @@ class org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnti
 	{field} {static} +FIELD_UUID : String
 	{field} {static} +ORGANIZATION_FK : String
 	{field} {static} +PROVIDER_FK : String
+	{field} {static} -serialVersionUID : long
 	{method} +equals ( o : Object ) : boolean
 	{method} +hashCode () : int
 }

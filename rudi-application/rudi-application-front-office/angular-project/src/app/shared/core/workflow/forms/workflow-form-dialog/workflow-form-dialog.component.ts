@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Inject, ViewChild} from '@angular/core';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
@@ -15,7 +14,7 @@ import {WorkflowFormComponent as WorkflowFormComponent_1} from '../workflow-form
     selector: 'app-workflow-form-dialog',
     templateUrl: './workflow-form-dialog.component.html',
     styleUrls: ['./workflow-form-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, NgIf, WorkflowFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
+    imports: [MatDialogContent, MatIconButton, MatIcon, WorkflowFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class WorkflowFormDialogComponent {
     @ViewChild('workflowForm', {static: true})
@@ -28,7 +27,7 @@ export class WorkflowFormDialogComponent {
     }
 
     get hasRequiredFields(): boolean {
-        if (!this.dialogData.form || this.dialogData.form.sections == null || this.dialogData.form.sections.length === 0) {
+        if (this.dialogData.form?.sections == null || this.dialogData.form.sections.length === 0) {
             return false;
         }
 

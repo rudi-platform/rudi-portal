@@ -1,5 +1,5 @@
 // Tous les styles sont définis dans le composant parent
-@import "create-project-stepper";
+@use "create-project-stepper";
 
 @mixin title-properties() {
     color: var(--primary-color);
@@ -24,7 +24,7 @@
 }
 
 .button-see {
-    @include button-blue;
+    @include create-project-stepper.button-blue;
     padding: 14px 29px 14px 30px;
     font-size: 16px;
 }

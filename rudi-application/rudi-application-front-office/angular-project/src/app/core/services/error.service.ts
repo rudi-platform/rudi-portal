@@ -6,7 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class ErrorService {
 
-    constructor(private translateService: TranslateService) {
+    constructor(private readonly translateService: TranslateService) {
     }
 
 
@@ -15,7 +15,7 @@ export class ErrorService {
         let errorText: string;
 
         // Erreur NULL - Message générique
-        if (error == null || error.status == null) {
+        if (error?.status == null) {
             errorText = this.translateService.instant('error.internalError');
         }
 

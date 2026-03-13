@@ -9,9 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -20,6 +17,8 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,12 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractJwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = -7253285508907149002L;
-
-	public static final String HEADER_TOKEN_JWT_AUTHENT_KEY = "Authorization";
-
-	public static final String HEADER_X_TOKEN_KEY = "X-TOKEN";
-
-	public static final String HEADER_TOKEN_JWT_PREFIX = "Bearer ";
 
 	public static final String ISSUER_RUDI = "Rudi#";
 
@@ -55,8 +48,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	@Value("${security.jwt.refresh.validity:1800}")
 	private int refreshTokenValidity;
 
-	private final transient Map<String, Tokens> refreshTokens = new HashMap<>();
-
 	@Getter(value = AccessLevel.PROTECTED)
 	private ObjectMapper mapper = new ObjectMapper().configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true)
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -71,7 +62,7 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		return (T) getAllClaimsFromToken(token).getClaim(propertyName);
 	}
 
-	public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(final String token) throws ParseException {
+	public Collection<GrantedAuthority> getAuthoritiesFromToken(final String token) throws ParseException {
 		return getTokenProperty(token, "authorities");
 	}
 
@@ -104,9 +95,10 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 			throws JOSEException, JsonProcessingException {
 		// Génération du token d'authentification et de refesh
 		final Tokens tokens = new Tokens();
-		tokens.setJwtToken(HEADER_TOKEN_JWT_PREFIX + generateJwtToken(accountLogin, connectedUser));
-		tokens.setRefreshToken(HEADER_TOKEN_JWT_PREFIX + generateRefreshToken(accountLogin, connectedUser));
-		refreshTokens.put(tokens.getRefreshToken(), tokens);
+		tokens.setJwtToken(
+				CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX + generateJwtToken(accountLogin, connectedUser));
+		tokens.setRefreshToken(
+				CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX + generateRefreshToken(accountLogin, connectedUser));
 		return tokens;
 	}
 
@@ -123,11 +115,8 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 			throws RefreshTokenExpiredException, JsonProcessingException, JOSEException {
 		// Récupération des données du token de refresh
 		final JwtTokenData refreshJtd = validateToken(refreshToken);
-		// Vérification si le token existe dans le référentiel de l'application (en bdd)
-		final boolean refreshToKenExist = checkRefreshToken(refreshJtd.getToken());
-
 		// Si le token de refresh existe et qu'il n'est pas expiré
-		if (refreshToKenExist && !refreshJtd.isHasError() && !refreshJtd.isExpired()) {
+		if (!refreshJtd.isHasError() && !refreshJtd.isExpired()) {
 			// Generation de nouveaux token (jwt et refresh)
 			return generateTokens(refreshJtd.getSubject(), refreshJtd.getAccount());
 		} else {
@@ -137,8 +126,8 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	}
 
 	public String removePrefix(String tokenValue) {
-		if (tokenValue != null && tokenValue.startsWith(HEADER_TOKEN_JWT_PREFIX)) {
-			return tokenValue.substring(HEADER_TOKEN_JWT_PREFIX.length());
+		if (tokenValue != null && tokenValue.startsWith(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX)) {
+			return tokenValue.substring(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX.length());
 		} else {
 			return tokenValue;
 		}
@@ -153,11 +142,11 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 		final JwtTokenData token = new JwtTokenData();
 
 		// Contrôle du préfixe dans la requete
-		if (requestToken == null || !requestToken.startsWith(HEADER_TOKEN_JWT_PREFIX)) {
+		if (requestToken == null || !requestToken.startsWith(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX)) {
 			log.error("Le token ne commence pas avec la chaine Bearer");
 			token.setHasError(true);
 		} else {
-			final String tokenJwt = requestToken.substring(HEADER_TOKEN_JWT_PREFIX.length());
+			final String tokenJwt = requestToken.substring(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX.length());
 			token.setToken(tokenJwt);
 
 			try {
@@ -287,27 +276,6 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	}
 
 	/**
-	 * Controle de l'existance du token de refresh dans la référentiel de l'application
-	 */
-	protected boolean checkRefreshToken(final String token) {
-		// on regarde si le token fourni est géré par l'appli
-		String tokenAndPrefix = HEADER_TOKEN_JWT_PREFIX + token;
-		if (refreshTokens.containsKey(tokenAndPrefix)) {
-
-			// Si oui on va regarder s'il est expiré, de toute façon le token sera utilisé
-			// donc on le sort de la gestion de l'appli
-			refreshTokens.remove(tokenAndPrefix);
-
-			// On regarde si le token de refresh a expiré ou non
-			return isTokenExpired(token);
-		}
-		// Le token de refresh n'est pas géré par l'appli donc il est invalide
-		else {
-			return false;
-		}
-	}
-
-	/**
 	 * Parsing d'un token (pas de validation)
 	 *
 	 * @param token
@@ -396,17 +364,8 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	 * @param token
 	 * @return
 	 */
-	protected boolean isPortailIssuer(JwtTokenData token) {
+	public boolean isPortailIssuer(JwtTokenData token) {
 		return ISSUER_RUDI.equals(token.getIssuer());
-	}
-
-	/**
-	 * Supprime le refreshToken en vue d'une déconnexion
-	 *
-	 * @param token le refreshToken à supprimer
-	 */
-	public void deleteRefreshToken(String token) {
-		refreshTokens.remove(token);
 	}
 
 	/**

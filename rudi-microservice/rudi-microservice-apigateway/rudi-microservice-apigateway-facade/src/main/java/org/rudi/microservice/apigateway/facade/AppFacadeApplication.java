@@ -18,6 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 		"org.rudi.common.storage",
 		"org.rudi.common.facade.util",
 		"org.rudi.common.facade.helper",
+		"org.rudi.common.facade.gateway",
 		"org.rudi.facet.crypto",
 		"org.rudi.facet.acl",
 		"org.rudi.facet.dataverse",

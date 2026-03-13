@@ -3142,7 +3142,44 @@
 				}
 			}
 		},
-		"/linked-producers/{uuid}":{
+		"/linked-producers/request/{uuid}/hasTask": {
+			"get": {
+				"tags": [
+					"linked-producers"
+				],
+				"summary": "Permet de savoir si une organisation a des tâches en cours",
+				"description": "Renvoie true si l'organisation a des tâches en cours, false sinon",
+				"operationId": "linkedProducerHasTasks",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"description": "Identifiant de l'organisation",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/linked-producers/{uuid}": {
 			"get": {
 				"tags": [
 					"linked-producers"

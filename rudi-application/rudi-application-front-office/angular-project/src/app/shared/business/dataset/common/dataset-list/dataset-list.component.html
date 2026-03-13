@@ -1,30 +1,34 @@
 <app-loader [allPage]="false" [isTransparent]="true" [noText]="true"
-            [active]="isLoading"></app-loader>
-<ng-container class="dataset-list" *ngIf="!isLoading">
+[active]="isLoading"></app-loader>
+@if (!isLoading) {
+  <ng-container class="dataset-list">
     <div [ngClass]="{'data-set-container-sm': mediaSize.isXs || mediaSize.isSm || mediaSize.isMd, 'data-set-container-lg':  mediaSize.isLg,
         'data-set-container-xl': mediaSize.isXl, 'data-set-container-xxl': mediaSize.isXxl}">
-        <div *ngFor="let metadata of metadataListItems | paginate: {
-              itemsPerPage: limit,
-              currentPage: page,
-              totalItems: metadataList.total
-            }">
-            <app-data-set-card
-                [metadata]="metadata"
-                [isSelectable]="isSelectable"
-                (selectMetadata)="selectMetadata.emit($event)"
-                (dbSelectMetadata)="dbSelectMetadata.emit($event)"
-            ></app-data-set-card>
+      @for (metadata of metadataListItems | paginate: {
+        itemsPerPage: limit,
+        currentPage: page,
+        totalItems: metadataList.total
+        }; track metadata) {
+        <div>
+          <app-data-set-card
+            [metadata]="metadata"
+            [isSelectable]="isSelectable"
+            (selectMetadata)="selectMetadata.emit($event)"
+            (dbSelectMetadata)="dbSelectMetadata.emit($event)"
+          ></app-data-set-card>
         </div>
+      }
     </div>
     <!-- Pagination des jdd -->
-
-    <pagination-controls
-        *ngIf="metadataList?.total > limit"
+    @if (metadataList?.total > limit) {
+      <pagination-controls
         (pageChange)="handlePageChange($event)"
         [maxSize]="mediaSize.isDeviceMobile ? maxPageMobile : maxPageDesktop"
         class="d-flex justify-content-center mt-4"
         [ngClass]="paginationControlsNgClass"
         [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
         [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate">
-    </pagination-controls>
-</ng-container>
+      </pagination-controls>
+    }
+  </ng-container>
+}

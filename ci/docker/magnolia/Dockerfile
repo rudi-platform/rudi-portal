@@ -1,4 +1,4 @@
-FROM tomcat:9.0.93-jre11-temurin-noble
+FROM tomcat:9.0.115-jre11-temurin-noble
 
 RUN mkdir -p /etc/magnolia/config/default /etc/magnolia/config/repo-conf /etc/magnolia/config/shared
 RUN mkdir -p /opt/magnolia/data/deploy /opt/magnolia/data/repository /opt/magnolia/data/repositories/magnolia /opt/magnolia/data/workspaces  

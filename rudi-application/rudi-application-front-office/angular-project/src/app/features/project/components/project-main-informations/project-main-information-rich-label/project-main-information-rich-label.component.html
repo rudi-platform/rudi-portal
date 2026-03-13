@@ -1,8 +1,10 @@
-<p class="project-detail-label" *ngIf="value">
+@if (value) {
+  <p class="project-detail-label">
     <mat-label class="project-detail-label-title">
-        {{ label }}
+      {{ label }}
     </mat-label>
     <mat-label class="project-detail-label-subtitle">
-        <span [innerHTML]="safeValue"></span>
+      <span [innerHTML]="safeValue"></span>
     </mat-label>
-</p>
+  </p>
+}

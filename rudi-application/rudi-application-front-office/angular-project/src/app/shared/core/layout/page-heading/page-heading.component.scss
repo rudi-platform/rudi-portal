@@ -1,5 +1,5 @@
-@import "app/styles/common-style";
-@import "app/styles/responsive";
+@use "app/styles/common-style";
+@use "app/styles/responsive";
 
 .header-img-container {
 
@@ -107,22 +107,22 @@
     }
 }
 
-@include xs {
+@include responsive.xs {
     @include mobile();
 }
 
-@include sm {
+@include responsive.sm {
     @include mobile();
 }
 
-@include md {
+@include responsive.md {
     @include desktop();
 }
 
-@include lg {
+@include responsive.lg {
     @include desktop();
 }
 
-@include xl {
+@include responsive.xl {
     @include desktop();
 }

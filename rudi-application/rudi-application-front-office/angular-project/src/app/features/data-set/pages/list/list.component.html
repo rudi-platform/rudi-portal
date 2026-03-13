@@ -1,147 +1,149 @@
 <mat-sidenav-container>
-    <!--  Liste des filtres-->
-    <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (closeSidenav)="sidenav.close()" titleKey="filterBox.filtres">
+  <!--  Liste des filtres-->
+  <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container (closeSidenav)="sidenav.close()" titleKey="filterBox.filtres">
 
-            <div (click)="sidenavOrder.open(); sidenav.close()" class="rudi-sidenav-container-filter">
-                {{'sortBox.sort'|translate}}
-                <div>
-                    <mat-icon aria-hidden="false" aria-label="close icon"
-                              class="toolbar-icon pointer">chevron_right
-                    </mat-icon>
-                </div>
-            </div>
-
-            <div (click)="sidenavThemes.open(); sidenav.close()" class="rudi-sidenav-container-filter">
-                {{'filterBox.thematique'|translate}}
-                <div>
-                    <mat-icon [matBadge]="themesForm.counter$ | async" aria-hidden="false" aria-label="close icon"
-                              class="toolbar-icon pointer">chevron_right
-                    </mat-icon>
-                </div>
-            </div>
-
-            <div (click)="sidenavProducerNames.open(); sidenav.close()" class="rudi-sidenav-container-filter">
-                {{'filterBox.producteur'|translate}}
-                <div>
-                    <mat-icon [matBadge]="producerNamesForm.counter$ | async" aria-hidden="false"
-                              aria-label="close icon"
-                              class="toolbar-icon pointer">chevron_right
-                    </mat-icon>
-                </div>
-            </div>
-
-            <div (click)="sidenavDates.open(); sidenav.close()" class="rudi-sidenav-container-filter">
-                {{'filterBox.couvertureTemporelle'|translate}}
-                <div>
-                    <mat-icon [matBadge]="datesForm.counter$ | async" aria-hidden="false" aria-label="close icon"
-                              class="toolbar-icon pointer">chevron_right
-                    </mat-icon>
-                </div>
-            </div>
-
-            <div (click)="sidenavRestrictedAccess.open(); sidenav.close()"
-                 class="rudi-sidenav-container-filter bottom-border"
-                 *ngIf="accessStatusfilterForcedValue === undefined">
-                {{'filterBox.restrictedAccess.statut'|translate}}
-                <div>
-                    <mat-icon [matBadge]="restrictedAccessForm.counter$ | async" aria-hidden="false"
-                              aria-label="close icon"
-                              class="toolbar-icon pointer">chevron_right
-                    </mat-icon>
-                </div>
-            </div>
-
-            <div class="rudi-sidenav-container-footer mt-5">
-                <button color="primary" type="submit" mat-raised-button class="rudi-blue-button"
-                        (click)="submitFilters()">
-                    {{'filterBox.toutEffacer'|translate}}
-                </button>
-            </div>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav #sidenavOrder (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (closeSidenav)="orderForm.revert(); sidenavOrder.close(); sidenav.open()"
-                                      titleKey="sortBox.sort">
-            <app-order-filter-form
-                #orderForm
-                [values]="orders"
-                (submitFormEvent)="sidenavOrder.close()"
-                ulClass="ps-5">
-            </app-order-filter-form>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav #sidenavThemes (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (closeSidenav)="themesForm.revert(); sidenavThemes.close(); sidenav.open()"
-                                      titleKey="filterBox.thematique">
-            <app-themes-filter-form
-                #themesForm
-                (selectedItemsChange)="selectedThemeItems = $event"
-                (submitFormEvent)="sidenavThemes.close()"
-                [values]="themes"
-                ulClass="ps-5">
-            </app-themes-filter-form>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav #sidenavProducerNames (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container
-            (closeSidenav)="producerNamesForm.revert(); sidenavProducerNames.close(); sidenav.open()"
-                                      titleKey="filterBox.producteur">
-            <app-producer-names-filter-form
-                #producerNamesForm
-                (selectedItemsChange)="selectedProducerItems = $event"
-                (submitFormEvent)="sidenavProducerNames.close()"
-                [values]="producerNames"
-                ulClass="ps-5">
-            </app-producer-names-filter-form>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav #sidenavDates (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container (closeSidenav)="datesForm.revert(); sidenavDates.close(); sidenav.open()"
-                                      titleKey="filterBox.couvertureTemporelle">
-            <app-dates-filter-form
-                #datesForm
-                (selectedItemsChange)="selectedDatesItems = $event"
-                (submitFormEvent)="sidenavDates.close()"
-                debutDivClass="d-flex"
-                finDivClass="d-flex mt-3"
-                formClass="d-flex flex-column justify-content-center"
-                ulClass="ps-5"
-            >
-            </app-dates-filter-form>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav #sidenavRestrictedAccess (keydown.escape)="sidenav.close()" disableClose>
-        <app-filter-sidenav-container
-            (closeSidenav)="restrictedAccessForm.revert(); sidenavRestrictedAccess.close(); sidenav.open()"
-            titleKey="filterBox.restrictedAccess.statut">
-            <app-access-status-filter-form
-                #restrictedAccessForm
-                (selectedItemsChange)="selectedAccessStatusFilterItems = $event"
-                (submitFormEvent)="sidenavRestrictedAccess.close()"
-                [forcedValue]="accessStatusfilterForcedValue"
-                ulClass="ps-5">
-            </app-access-status-filter-form>
-        </app-filter-sidenav-container>
-    </mat-sidenav>
-
-    <mat-sidenav-content>
-        <div class="container-fluid"
-             [ngClass]="{'p-small': mediaSize.isXs || mediaSize.isSm,'p-medium': mediaSize.isMd, 'p-large': mediaSize.isDeviceDesktop}">
-
-
-            <app-page-title [title1]="'searchbox.jeux'|translate"
-                            [title2]="'searchbox.donnees'|translate"
-                            class="d-flex justify-content-center w-100"></app-page-title>
-
-            <app-list-container [accessStatusForcedValue]="accessStatusfilterForcedValue"
-                                [orders]="orders"
-                                [themes]="themes"></app-list-container>
+      <div (click)="sidenavOrder.open(); sidenav.close()" class="rudi-sidenav-container-filter">
+        {{'sortBox.sort'|translate}}
+        <div>
+          <mat-icon aria-hidden="false" aria-label="close icon"
+            class="toolbar-icon pointer">chevron_right
+          </mat-icon>
         </div>
-    </mat-sidenav-content>
+      </div>
+
+      <div (click)="sidenavThemes.open(); sidenav.close()" class="rudi-sidenav-container-filter">
+        {{'filterBox.thematique'|translate}}
+        <div>
+          <mat-icon [matBadge]="themesForm.counter$ | async" aria-hidden="false" aria-label="close icon"
+            class="toolbar-icon pointer">chevron_right
+          </mat-icon>
+        </div>
+      </div>
+
+      <div (click)="sidenavProducerNames.open(); sidenav.close()" class="rudi-sidenav-container-filter">
+        {{'filterBox.producteur'|translate}}
+        <div>
+          <mat-icon [matBadge]="producerNamesForm.counter$ | async" aria-hidden="false"
+            aria-label="close icon"
+            class="toolbar-icon pointer">chevron_right
+          </mat-icon>
+        </div>
+      </div>
+
+      <div (click)="sidenavDates.open(); sidenav.close()" class="rudi-sidenav-container-filter">
+        {{'filterBox.couvertureTemporelle'|translate}}
+        <div>
+          <mat-icon [matBadge]="datesForm.counter$ | async" aria-hidden="false" aria-label="close icon"
+            class="toolbar-icon pointer">chevron_right
+          </mat-icon>
+        </div>
+      </div>
+
+      @if (accessStatusfilterForcedValue === undefined) {
+        <div (click)="sidenavRestrictedAccess.open(); sidenav.close()"
+          class="rudi-sidenav-container-filter bottom-border"
+          >
+          {{'filterBox.restrictedAccess.statut'|translate}}
+          <div>
+            <mat-icon [matBadge]="restrictedAccessForm.counter$ | async" aria-hidden="false"
+              aria-label="close icon"
+              class="toolbar-icon pointer">chevron_right
+            </mat-icon>
+          </div>
+        </div>
+      }
+
+      <div class="rudi-sidenav-container-footer mt-5">
+        <button color="primary" type="submit" mat-raised-button class="rudi-blue-button"
+          (click)="submitFilters()">
+          {{'filterBox.toutEffacer'|translate}}
+        </button>
+      </div>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav #sidenavOrder (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container (closeSidenav)="orderForm.revert(); sidenavOrder.close(); sidenav.open()"
+      titleKey="sortBox.sort">
+      <app-order-filter-form
+        #orderForm
+        [values]="orders"
+        (submitFormEvent)="sidenavOrder.close()"
+        ulClass="ps-5">
+      </app-order-filter-form>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav #sidenavThemes (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container (closeSidenav)="themesForm.revert(); sidenavThemes.close(); sidenav.open()"
+      titleKey="filterBox.thematique">
+      <app-themes-filter-form
+        #themesForm
+        (selectedItemsChange)="selectedThemeItems = $event"
+        (submitFormEvent)="sidenavThemes.close()"
+        [values]="themes"
+        ulClass="ps-5">
+      </app-themes-filter-form>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav #sidenavProducerNames (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container
+      (closeSidenav)="producerNamesForm.revert(); sidenavProducerNames.close(); sidenav.open()"
+      titleKey="filterBox.producteur">
+      <app-producer-names-filter-form
+        #producerNamesForm
+        (selectedItemsChange)="selectedProducerItems = $event"
+        (submitFormEvent)="sidenavProducerNames.close()"
+        [values]="producerNames"
+        ulClass="ps-5">
+      </app-producer-names-filter-form>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav #sidenavDates (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container (closeSidenav)="datesForm.revert(); sidenavDates.close(); sidenav.open()"
+      titleKey="filterBox.couvertureTemporelle">
+      <app-dates-filter-form
+        #datesForm
+        (selectedItemsChange)="selectedDatesItems = $event"
+        (submitFormEvent)="sidenavDates.close()"
+        debutDivClass="d-flex"
+        finDivClass="d-flex mt-3"
+        formClass="d-flex flex-column justify-content-center"
+        ulClass="ps-5"
+        >
+      </app-dates-filter-form>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav #sidenavRestrictedAccess (keydown.escape)="sidenav.close()" disableClose>
+    <app-filter-sidenav-container
+      (closeSidenav)="restrictedAccessForm.revert(); sidenavRestrictedAccess.close(); sidenav.open()"
+      titleKey="filterBox.restrictedAccess.statut">
+      <app-access-status-filter-form
+        #restrictedAccessForm
+        (selectedItemsChange)="selectedAccessStatusFilterItems = $event"
+        (submitFormEvent)="sidenavRestrictedAccess.close()"
+        [forcedValue]="accessStatusfilterForcedValue"
+        ulClass="ps-5">
+      </app-access-status-filter-form>
+    </app-filter-sidenav-container>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="container-fluid"
+      [ngClass]="{'p-small': mediaSize.isXs || mediaSize.isSm,'p-medium': mediaSize.isMd, 'p-large': mediaSize.isDeviceDesktop}">
+
+
+      <app-page-title [title1]="'searchbox.jeux'|translate"
+        [title2]="'searchbox.donnees'|translate"
+      class="d-flex justify-content-center w-100"></app-page-title>
+
+      <app-list-container [accessStatusForcedValue]="accessStatusfilterForcedValue"
+        [orders]="orders"
+      [themes]="themes"></app-list-container>
+    </div>
+  </mat-sidenav-content>
 </mat-sidenav-container>

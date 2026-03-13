@@ -1,23 +1,23 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
-import {MatIconRegistry, MatIcon} from '@angular/material/icon';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {
-    MatTableDataSource,
-    MatTable,
-    MatColumnDef,
-    MatHeaderCellDef,
-    MatHeaderCell,
-    MatCellDef,
     MatCell,
-    MatHeaderRowDef,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
     MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
     MatRowDef,
-    MatRow
+    MatTable,
+    MatTableDataSource
 } from '@angular/material/table';
 import {DomSanitizer} from '@angular/platform-browser';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 import {NewDatasetRequest} from 'micro_service_modules/projekt/projekt-api';
 import moment from 'moment';
-import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 
 export interface Table2Data {
     date: string;
@@ -52,8 +52,8 @@ export class AccesDetailsTable2Component implements AfterViewInit {
     }
 
     constructor(
-        private domSanitizer: DomSanitizer,
-        private matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
+        private readonly matIconRegistry: MatIconRegistry,
     ) {
         this.matIconRegistry.addSvgIcon(
             'nouvelles_donnees',

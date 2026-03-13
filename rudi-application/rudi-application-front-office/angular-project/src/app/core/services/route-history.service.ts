@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
-import {AuthenticationService} from './authentication.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,11 +16,8 @@ export class RouteHistoryService {
     /**
      * Constructeur du service : définit le comportement de gestion de l'historique à l'aide d'un observable
      * @param router service angular pour intéréagir avec les routes
-     * @param authenticationService service de gestion de l'authent
      */
-    constructor(private router: Router,
-                // private authenticationService: AuthenticationService) {
-                private authenticationService: AuthenticationService) {
+    constructor(private readonly router: Router) {
         // On observe les évènements de changement de route
         this.router.events.pipe(
             // On regarde juste les event de chargement de page = page chargée

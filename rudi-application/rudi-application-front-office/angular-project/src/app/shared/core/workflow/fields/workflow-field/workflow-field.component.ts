@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatError, MatFormField} from '@angular/material/form-field';
@@ -15,7 +14,7 @@ import {Field} from 'micro_service_modules/api-bpmn';
     selector: 'app-workflow-field',
     templateUrl: './workflow-field.component.html',
     styleUrls: ['./workflow-field.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, NgIf, MatFormField, MatInput, MatError, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatError, TranslatePipe]
 })
 export class WorkflowFieldComponent {
     /**

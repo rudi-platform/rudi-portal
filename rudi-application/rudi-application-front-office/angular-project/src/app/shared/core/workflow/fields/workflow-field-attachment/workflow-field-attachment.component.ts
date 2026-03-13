@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -29,7 +29,7 @@ import {UploaderComponent} from '../../../form/uploader/uploader.component';
     selector: 'app-workflow-field-attachment',
     templateUrl: './workflow-field-attachment.component.html',
     styleUrls: ['./workflow-field-attachment.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, NgIf, MatHint, UploaderComponent, LoaderComponent, NgClass, ExtendedModule, MatIcon, TranslateDirective, FileSizePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, UploaderComponent, LoaderComponent, NgClass, ExtendedModule, MatIcon, TranslateDirective, FileSizePipe]
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
     attachmentLoading: boolean = false;

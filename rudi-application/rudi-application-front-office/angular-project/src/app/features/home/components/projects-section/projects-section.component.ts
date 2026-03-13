@@ -1,4 +1,3 @@
-import {NgFor} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
@@ -12,15 +11,15 @@ import {from, Observable} from 'rxjs';
     selector: 'app-projects-section',
     templateUrl: './projects-section.component.html',
     styleUrls: ['./projects-section.component.scss'],
-    imports: [NgFor, ProjectCardComponent, RudiSwiperComponent, TranslatePipe]
+    imports: [ProjectCardComponent, RudiSwiperComponent, TranslatePipe]
 })
 export class ProjectsSectionComponent implements OnInit {
     @Input() projects: ProjectCatalogItem[];
     @Input() projectsDescription: ProjectsDescription;
 
     constructor(
-        private router: Router,
-        private translateService: TranslateService
+        private readonly router: Router,
+        private readonly translateService: TranslateService
     ) {
     }
 

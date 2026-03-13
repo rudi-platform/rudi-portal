@@ -377,7 +377,8 @@ public class HistoricHelper {
 	 * @param endCompletionDate
 	 * @return
 	 */
-	public List<HistoricProcessInstance> collectHistoricProcess(Collection<String> processInstanceIds, boolean isFinished) {
+	public List<HistoricProcessInstance> collectHistoricProcess(Collection<String> processInstanceIds,
+			boolean isFinished) {
 		HistoryService historyService = processEngine.getHistoryService();
 		HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery();
 		if (CollectionUtils.isNotEmpty(processInstanceIds)) {
@@ -489,13 +490,18 @@ public class HistoricHelper {
 				Pageable.unpaged());
 
 		// initialisation de la description et du statut fonctionnel
-		HistoricDetailVariableInstanceUpdateEntity detail = lookupHistoricDetail(historicDetails.getContent(),
-				TaskConstants.DESCRIPTION);
-		if (detail != null) {
-			processHistoricInformation.setDescription(detail.getTextValue());
+		HistoricDetailVariableInstanceUpdateEntity detailTitre = lookupHistoricDetail(historicDetails.getContent(),
+				TaskConstants.TITLE);
+		HistoricDetailVariableInstanceUpdateEntity detailDescription = lookupHistoricDetail(
+				historicDetails.getContent(), TaskConstants.DESCRIPTION);
+		if (detailTitre != null) {
+			processHistoricInformation.setDescription(detailTitre.getTextValue());
+		} else if (detailDescription != null) {
+			processHistoricInformation.setDescription(detailDescription.getTextValue());
 		}
 		// initialisation du statut fonctionnel
-		detail = lookupHistoricDetail(historicDetails.getContent(), TaskConstants.FUNCTIONAL_STATUS);
+		HistoricDetailVariableInstanceUpdateEntity detail = lookupHistoricDetail(historicDetails.getContent(),
+				TaskConstants.FUNCTIONAL_STATUS);
 		if (detail != null) {
 			processHistoricInformation.setFunctionnalStatus(detail.getTextValue());
 		}

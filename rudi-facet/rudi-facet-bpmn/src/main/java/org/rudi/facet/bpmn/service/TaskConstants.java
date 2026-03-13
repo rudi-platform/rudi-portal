@@ -22,6 +22,8 @@ public final class TaskConstants {
 
 	public static final String FUNCTIONAL_STATUS = "functionalStatus";
 
+	public static final String TITLE = "title";
+
 	public static final String DESCRIPTION = "description";
 
 	public static final String CREATION_DATE = "creationDate";

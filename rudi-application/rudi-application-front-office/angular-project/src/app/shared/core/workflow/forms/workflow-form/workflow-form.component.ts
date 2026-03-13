@@ -1,4 +1,4 @@
-import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
@@ -14,7 +14,7 @@ import {WorkflowFieldTemplateComponent} from '../../fields/workflow-field-templa
     selector: 'app-workflow-form',
     templateUrl: './workflow-form.component.html',
     styleUrls: ['./workflow-form.component.scss'],
-    imports: [NgIf, FormsModule, ReactiveFormsModule, NgFor, NgTemplateOutlet, WorkflowFieldTemplateComponent, IsSectionDisplayedPipe, IsSectionOnlyHelpPipe]
+    imports: [FormsModule, ReactiveFormsModule, NgTemplateOutlet, WorkflowFieldTemplateComponent, IsSectionDisplayedPipe, IsSectionOnlyHelpPipe]
 })
 export class WorkflowFormComponent implements OnInit {
     formGroup: FormGroup;

@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.rudi.common.facade.config.filter.JwtTokenData;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
 import org.rudi.microservice.acl.core.bean.AddressType;
@@ -86,7 +87,7 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 	protected Authentication authenticateRudiToken(BearerTokenAuthenticationToken bearer, Jwt jwt) {
 		log.debug("Token with RUDI issuer");
 		String token = bearer.getToken();
-		JwtTokenData jwtTokenData = jwtTokenUtil.validateToken(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX + token);
+		JwtTokenData jwtTokenData = jwtTokenUtil.validateToken(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX + token);
 
 		if (jwtTokenData != null && !jwtTokenData.isHasError() && !jwtTokenData.isExpired()) {
 			return convertToken(jwtTokenData);

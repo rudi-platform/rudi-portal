@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {IconRegistryService} from '@core/services/icon-registry.service';
@@ -9,7 +8,8 @@ import {LoaderComponent} from '../../../common/loader/loader.component';
     selector: 'app-task-detail-header',
     templateUrl: './task-detail-header.component.html',
     styleUrls: ['./task-detail-header.component.scss'],
-    imports: [LoaderComponent, NgIf, MatIcon]
+    standalone: true,
+    imports: [LoaderComponent, MatIcon]
 })
 export class TaskDetailHeaderComponent {
 

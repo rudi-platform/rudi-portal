@@ -13,7 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.RoleCodes;
-import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.rudi.common.facade.config.filter.Tokens;
 import org.rudi.microservice.acl.core.bean.OAuth2AttributeMapping;
 import org.rudi.microservice.acl.core.bean.OAuth2AuthenticatorDescription;
@@ -25,10 +25,11 @@ import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserAttribute;
 import org.rudi.microservice.acl.core.bean.UserType;
 import org.rudi.microservice.acl.facade.config.security.AbstractAuthenticationSuccessHandler;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.rudi.microservice.acl.facade.config.security.cache.AccessTokenManager;
 import org.rudi.microservice.acl.facade.config.security.oauth2.authenticator.OAuth2AuthenticatorHelper;
 import org.rudi.microservice.acl.service.role.RoleService;
-import org.rudi.microservice.acl.service.token.TokenService;
 import org.rudi.microservice.acl.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -71,21 +72,21 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 
 	private final AccessTokenManager accessTokenManager;
 
-	private final TokenService tokenService;
+	private final TokenManager tokenManager;
 
 	private final OAuth2AuthenticatorHelper oAuth2AuthenticatorHelper;
 
 	private final OAuth2AuthorizedClientRepository authorizedClientRepository;
 
 	public CasOAuth2AuthenticationSuccessHandler(UserService userService, RoleService roleService,
-			AccessTokenManager accessTokenManager, TokenService tokenService,
+			AccessTokenManager accessTokenManager, TokenManager tokenHelper,
 			OAuth2AuthenticatorHelper oAuth2AuthenticatorHelper,
 			OAuth2AuthorizedClientRepository authorizedClientRepository) {
 		super();
 		this.userService = userService;
 		this.roleService = roleService;
 		this.accessTokenManager = accessTokenManager;
-		this.tokenService = tokenService;
+		this.tokenManager = tokenHelper;
 		this.oAuth2AuthenticatorHelper = oAuth2AuthenticatorHelper;
 		this.authorizedClientRepository = authorizedClientRepository;
 	}
@@ -116,8 +117,9 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 						&& authorizedClient != null && authorizedClient.getRefreshToken() != null) {
 
 					tokens = new Tokens(
-							AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX + defaultOidcUser.getIdToken().getTokenValue(),
-							AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX
+							CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX
+									+ defaultOidcUser.getIdToken().getTokenValue(),
+							CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX
 									+ authorizedClient.getRefreshToken().getTokenValue());
 				} else {
 					tokens = generateTokens(authenticatedUser);
@@ -262,8 +264,8 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 		Tokens tokens = null;
 		try {
 			tokens = getJwtTokenUtil().generateTokens(user.getLogin(), user);
-			tokenService.saveToken(buildToken(TokenType.AUTHORIZATION_TOKEN, user, tokens.getJwtToken()));
-			tokenService.saveToken(buildToken(TokenType.REFRESH_TOKEN, user, tokens.getRefreshToken()));
+			tokenManager.saveToken(TokenType.AUTHORIZATION_TOKEN, user, tokens.getJwtToken());
+			tokenManager.saveToken(TokenType.REFRESH_TOKEN, user, tokens.getRefreshToken());
 		} catch (Exception e) {
 			throw new IOException("Failed to generate tokens", e);
 		}

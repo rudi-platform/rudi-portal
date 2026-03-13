@@ -1,4 +1,4 @@
-@import "app/styles/common-style";
+@use "app/styles/common-style";
 
 button, button.mat-raised-button.mat-mdc-raised-button:not(:disabled) {
     --mdc-protected-button-container-color: var(--primary-color);

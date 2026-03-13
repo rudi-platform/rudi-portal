@@ -1,63 +1,72 @@
 <div class="home-container">
-    <div class="hero-section">
-        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
-                    [active]="customizationDescriptionIsLoading"></app-loader>
-        <app-hero-section
-            *ngIf="!customizationDescriptionIsLoading"
-            [heroDescription]="customizationDescription?.hero_description"
-        ></app-hero-section>
-    </div>
-    <!--    Themes Section-->
-    <ng-container>
-        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="themesIsLoading"></app-loader>
-        <div class="themes-section" *ngIf="themes.length > 0 && !themesIsLoading">
-            <div class="themes-container">
-                <app-themes-section
-                    [themes]="themes"
-                    [isLoading]="themesIsLoading"
-                ></app-themes-section>
-            </div>
+  <div class="hero-section">
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
+    [active]="customizationDescriptionIsLoading"></app-loader>
+    @if (!customizationDescriptionIsLoading) {
+      <app-hero-section
+        [heroDescription]="customizationDescription?.hero_description"
+      ></app-hero-section>
+    }
+  </div>
+  <!--    Themes Section-->
+  <ng-container>
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false" [active]="themesIsLoading"></app-loader>
+    @if (themes.length > 0 && !themesIsLoading) {
+      <div class="themes-section">
+        <div class="themes-container">
+          <app-themes-section
+            [themes]="themes"
+            [isLoading]="themesIsLoading"
+          ></app-themes-section>
         </div>
-    </ng-container>
+      </div>
+    }
+  </ng-container>
 
-    <div class="news-section">
-        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
-                    [active]="customizationDescriptionIsLoading"></app-loader>
-        <app-cms-news-section *ngIf="!customizationDescriptionIsLoading"
-                              [cmsNewsDescription]="customizationDescription.cms_news_description"
-                              [newsPageDescription]="customizationDescription.news_page_description"
-        ></app-cms-news-section>
-    </div>
+  <div class="news-section">
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
+    [active]="customizationDescriptionIsLoading"></app-loader>
+    @if (!customizationDescriptionIsLoading) {
+      <app-cms-news-section
+        [cmsNewsDescription]="customizationDescription.cms_news_description"
+        [newsPageDescription]="customizationDescription.news_page_description"
+      ></app-cms-news-section>
+    }
+  </div>
 
-    <div class="projectvalues-section">
-        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
-                    [active]="customizationDescriptionIsLoading"></app-loader>
-        <app-cms-project-values-section *ngIf="!customizationDescriptionIsLoading"
-                                        [cmsProjectValuesDescription]="customizationDescription.cms_project_values_description"></app-cms-project-values-section>
-    </div>
+  <div class="projectvalues-section">
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
+    [active]="customizationDescriptionIsLoading"></app-loader>
+    @if (!customizationDescriptionIsLoading) {
+      <app-cms-project-values-section
+      [cmsProjectValuesDescription]="customizationDescription.cms_project_values_description"></app-cms-project-values-section>
+    }
+  </div>
 
-    <div class="jdd-section">
-        <app-jdd-section [isLoading]="jddsIsLoading" [jdds]="jdds"></app-jdd-section>
-    </div>
+  <div class="jdd-section">
+    <app-jdd-section [isLoading]="jddsIsLoading" [jdds]="jdds"></app-jdd-section>
+  </div>
 
-    <div class="projects-section">
-        <div class="projects-container">
-            <app-loader [isTransparent]="true" [allPage]="false" [noText]="true"
-                        [active]="customizationDescriptionIsLoading || projectsIsLoading"></app-loader>
-            <app-projects-section
-                *ngIf="!customizationDescriptionIsLoading && !projectsIsLoading"
-                [projectsDescription]="customizationDescription.projects_description"
-                [projects]="projects">
-            </app-projects-section>
-        </div>
+  <div class="projects-section">
+    <div class="projects-container">
+      <app-loader [isTransparent]="true" [allPage]="false" [noText]="true"
+      [active]="customizationDescriptionIsLoading || projectsIsLoading"></app-loader>
+      @if (!customizationDescriptionIsLoading && !projectsIsLoading) {
+        <app-projects-section
+          [projectsDescription]="customizationDescription.projects_description"
+          [projects]="projects">
+        </app-projects-section>
+      }
     </div>
+  </div>
 
-    <div class="key-figures-sections">
-        <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
-                    [active]="customizationDescriptionIsLoading"></app-loader>
-        <app-key-figures-section
-            *ngIf="!customizationDescriptionIsLoading"
-            [keyFiguresDescription]="customizationDescription.key_figures_description">
-        </app-key-figures-section>
-    </div>
+  <div class="key-figures-sections">
+    <app-loader [isTransparent]="true" [noText]="true" [allPage]="false"
+    [active]="customizationDescriptionIsLoading"></app-loader>
+    @if (!customizationDescriptionIsLoading) {
+      <app-key-figures-section
+        [keyFiguresDescription]="customizationDescription.key_figures_description">
+      </app-key-figures-section>
+    }
+  </div>
 </div>

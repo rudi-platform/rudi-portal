@@ -1,144 +1,174 @@
 <mat-sidenav-container class="main-container">
-    <mat-sidenav>
-    </mat-sidenav>
-    <mat-sidenav-content>
-        <div class="container-fluid"
+  <mat-sidenav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="container-fluid"
              [ngClass]="{
                 'p-small': mediaSize.isDeviceMobile,
                 'p-large': mediaSize.isDeviceDesktop
             }"
-        >
-            <!-- La page entière -->
-            <div>
-                <!-- Le titre de la page -->
-                <div class="d-flex justify-content-center">
-                    <h1 class="login-header-title" [translate]="'authentification.seConnection'"></h1>
+      >
+      <!-- La page entière -->
+      <div>
+        <!-- Le titre de la page -->
+        <div class="d-flex justify-content-center">
+          <h1 class="login-header-title" [translate]="'authentification.seConnection'"></h1>
+        </div>
+        <!--Lien vers inscription -->
+        <div class="d-flex justify-content-center mb-2">
+          <span class="text-center">{{'authentification.pas-compte'|translate}}</span>
+          <span class="text-center ms-1 link-bold-underlined-colored pointer"
+            routerLink="sign-up"
+          [queryParams]="{redirectTo: redirectToParam}">{{'authentification.inscrire'|translate}}</span>
+        </div>
+        <!-- Le bloc formulaire authent -->
+        <form [formGroup]="loginForm" (submit)="handleClickLogin()">
+          <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
+            <!-- Titre du bloc -->
+            <mat-card-title class="d-flex justify-content-center">
+              @if (!mediaSize.isSm) {
+                <p class="login-text-title"
+                [translate]="'authentification.connectez-vous'"></p>
+              }
+              @if (mediaSize.isSm) {
+                <p class="login-text-title">
+                  <span class="login-text-title-mobile"
+                  [translate]="'authentification.connectez-vous-mobileDebut'"></span>
+                  <span class="login-text-title-mobile"
+                  [translate]="'authentification.connectez-vous-mobileFin'"></span>
+                </p>
+              }
+            </mat-card-title>
+            <!-- Formulaire du bloc -->
+            <mat-card-content>
+              <div class="d-flex justify-content-center">
+                <!-- Champ identifiant -->
+                <div class="login-form-container">
+                  <mat-form-field appearance="fill">
+                    <mat-label [translate]="'authentification.login'"></mat-label>
+                    <input matInput type="text" formControlName="login" autocomplete="off">
+                    @if (formControls.login.errors) {
+                      <mat-error>
+                        {{'authentification.loginRequired'|translate}}
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                  <!-- Champ mot de passe -->
+                  <mat-form-field appearance="fill">
+                    <mat-label [translate]="'authentification.password'"></mat-label>
+                    <input matInput [type]="hidePassword ? 'password' : 'text'"
+                      formControlName="password" autocomplete="off">
+                      <mat-icon matSuffix class="visibility-icon"
+                        (click)="hidePassword = !hidePassword">
+                        {{hidePassword ? 'visibility' : 'visibility_off'}}
+                      </mat-icon>
+                      @if (formControls.password.errors) {
+                        <mat-error>
+                          {{'authentification.passwordRequired'|translate}}
+                        </mat-error>
+                      }
+                    </mat-form-field>
+                    @if (enableCaptchaOnPage && isCaptchaNeeded) {
+                      <app-rudi-captcha
+                      [nomCaptcha]="'captchaFR'"></app-rudi-captcha>
+                    }
+                    <!-- Box erreur sur le captcha -->
+                    @if (errorCaptchaInput) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.error-captcha'|translate">
+                      </app-error-box>
+                    }
+                    <!-- Box erreur d'authent normale -->
+                    @if (isError4xx) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.error-body'|translate"
+                        [clickableText]="'authentification.error-footer'|translate"
+                        (clickableTextClicked)="handleClickGoInscrire()"
+                        >
+                      </app-error-box>
+                    }
+                    @if (errorAccountNotActif) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.errorBodyAccountNotActif'|translate"
+                        [clickableText]="'common.ici'|translate"
+                        (clickableTextClicked)="handleClickContactRudi()"
+                        >
+                      </app-error-box>
+                    }
+                    <!-- Box erreur d'authent 500 -->
+                    @if (errorServerAccountNotActive) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.errorServerIsNotActive'|translate"
+                        >
+                      </app-error-box>
+                    }
+                    @if (errorServerAuthenticate) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.errorServerAuthent'|translate"
+                        >
+                      </app-error-box>
+                    }
+                    <!-- Box erreur d'authent dù à multiples tentatives de connection -->
+                    @if (errorUserLocked) {
+                      <app-error-box class="pt-3"
+                        [text]="'authentification.errorLoginLocked'|translate"
+                        [clickableText]="'authentification.errorLoginLockedFooter'|translate"
+                        (clickableTextClicked)="handleClickToResetPassword()"
+                        >
+                      </app-error-box>
+                    }
+                    <!-- interaction mdp oublié -->
+                    <div class="d-flex justify-content-end p-2">
+                      <a class="forgot-password" routerLink="forgot-password"
+                      [translate]="'authentification.passwordForget'"></a>
+                    </div>
+                  </div>
                 </div>
-                <!--Lien vers inscription -->
-                <div class="d-flex justify-content-center mb-2">
-                    <span class="text-center">{{'authentification.pas-compte'|translate}}</span>
-                    <span class="text-center ms-1 link-bold-underlined-colored pointer"
-                          routerLink="sign-up"
-                          [queryParams]="{redirectTo: redirectToParam}">{{'authentification.inscrire'|translate}}</span>
-                </div>
-                <!-- Le bloc formulaire authent -->
-                <form [formGroup]="loginForm" (submit)="handleClickLogin()">
-                    <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
-                        <!-- Titre du bloc -->
-                        <mat-card-title class="d-flex justify-content-center">
-                            <p *ngIf="!mediaSize.isSm" class="login-text-title"
-                               [translate]="'authentification.connectez-vous'"></p>
-                            <p *ngIf="mediaSize.isSm" class="login-text-title">
-                                <span class="login-text-title-mobile"
-                                      [translate]="'authentification.connectez-vous-mobileDebut'"></span>
-                                <span class="login-text-title-mobile"
-                                      [translate]="'authentification.connectez-vous-mobileFin'"></span>
-                            </p>
-                        </mat-card-title>
-                        <!-- Formulaire du bloc -->
-                        <mat-card-content>
-                            <div class="d-flex justify-content-center">
-                                <!-- Champ identifiant -->
-                                <div class="login-form-container">
-                                    <mat-form-field appearance="fill">
-                                        <mat-label [translate]="'authentification.login'"></mat-label>
-                                        <input matInput type="text" formControlName="login" autocomplete="off">
-                                        <mat-error *ngIf="formControls.login.errors">
-                                            {{'authentification.loginRequired'|translate}}
-                                        </mat-error>
-                                    </mat-form-field>
-                                    <!-- Champ mot de passe -->
-                                    <mat-form-field appearance="fill">
-                                        <mat-label [translate]="'authentification.password'"></mat-label>
-                                        <input matInput [type]="hidePassword ? 'password' : 'text'"
-                                               formControlName="password" autocomplete="off">
-                                        <mat-icon matSuffix class="visibility-icon"
-                                                  (click)="hidePassword = !hidePassword">
-                                            {{hidePassword ? 'visibility' : 'visibility_off'}}
-                                        </mat-icon>
-                                        <mat-error *ngIf="formControls.password.errors">
-                                            {{'authentification.passwordRequired'|translate}}
-                                        </mat-error>
-                                    </mat-form-field>
-                                    <app-rudi-captcha *ngIf="enableCaptchaOnPage && isCaptchaNeeded"
-                                                      [nomCaptcha]="'captchaFR'"></app-rudi-captcha>
-                                    <!-- Box erreur sur le captcha -->
-                                    <app-error-box *ngIf="errorCaptchaInput" class="pt-3"
-                                                   [text]="'authentification.error-captcha'|translate">
-                                    </app-error-box>
-                                    <!-- Box erreur d'authent normale -->
-                                    <app-error-box *ngIf="isError4xx" class="pt-3"
-                                                   [text]="'authentification.error-body'|translate"
-                                                   [clickableText]="'authentification.error-footer'|translate"
-                                                   (clickableTextClicked)="handleClickGoInscrire()"
-                                    >
-                                    </app-error-box>
-                                    <app-error-box *ngIf="errorAccountNotActif" class="pt-3"
-                                                   [text]="'authentification.errorBodyAccountNotActif'|translate"
-                                                   [clickableText]="'common.ici'|translate"
-                                                   (clickableTextClicked)="handleClickContactRudi()"
-                                    >
-                                    </app-error-box>
-                                    <!-- Box erreur d'authent 500 -->
-                                    <app-error-box *ngIf="errorServerAccountNotActive" class="pt-3"
-                                                   [text]="'authentification.errorServerIsNotActive'|translate"
-                                    >
-                                    </app-error-box>
-                                    <app-error-box *ngIf="errorServerAuthenticate" class="pt-3"
-                                                   [text]="'authentification.errorServerAuthent'|translate"
-                                    >
-                                    </app-error-box>
-                                    <!-- Box erreur d'authent dù à multiples tentatives de connection -->
-                                    <app-error-box *ngIf="errorUserLocked" class="pt-3"
-                                                   [text]="'authentification.errorLoginLocked'|translate"
-                                                   [clickableText]="'authentification.errorLoginLockedFooter'|translate"
-                                                   (clickableTextClicked)="handleClickToResetPassword()"
-                                    >
-                                    </app-error-box>
-                                    <!-- interaction mdp oublié -->
-                                    <div class="d-flex justify-content-end p-2">
-                                            <a class="forgot-password" routerLink="forgot-password"
-                                                  [translate]="'authentification.passwordForget'"></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </mat-card-content>
-                        <mat-card-actions class="d-flex align-items-center flex-column mb-2 mx-0">
-                            <!-- Bouton d'action du formulaire -->
-                            <button mat-raised-button class="bouton-login"
+              </mat-card-content>
+              <mat-card-actions class="d-flex align-items-center flex-column mb-2 mx-0">
+                <!-- Bouton d'action du formulaire -->
+                <button mat-raised-button class="bouton-login"
                                     [ngClass]="{
                                         'login-btn-desktop': mediaSize.isDeviceDesktop,
                                         'login-btn-mobile': mediaSize.isDeviceMobile
                                     }"
-                                    [disabled]="!isValid"
-                                    type="submit">
-                                <span>{{'authentification.seConnection'|translate}}</span>
-                            </button>
-                            <!-- Loader -->
-                            <mat-progress-spinner *ngIf="loading" class="m-2" mode="indeterminate"
-                                                  diameter="30"></mat-progress-spinner>
-                        </mat-card-actions>
-                    </mat-card>
-                </form>
-                <div *ngIf="oauth2Authenticators.length">
-                    <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
-                        <!-- Titre du bloc -->
-                        <mat-card-title class="d-flex justify-content-center">
-                            <p class="login-text-title" [translate]="'authentification.authenticators'"></p>
-                        </mat-card-title>
-                        <mat-card-content>
-                            <div *ngFor="let authenticator of oauth2Authenticators" class="authenticator-item">
-                                <div [ngClass]="authenticator?.viewSettings?.cssClass ? authenticator.viewSettings.cssClass : ''">
-                                    <button mat-raised-button class="bouton-login bouton-external-login" (click)="handleClickOAuth2Login(authenticator)">                                     
-                                        <img *ngIf="authenticator?.viewSettings?.iconUrl" src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.name}} icon" class="oauth2-icon">
-                                        <span class="oauth2-name">{{authenticator.label}}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </mat-card-content>
-                    </mat-card>
-                </div>
+                  [disabled]="!isValid"
+                  type="submit">
+                  <span>{{'authentification.seConnection'|translate}}</span>
+                </button>
+                <!-- Loader -->
+                @if (loading) {
+                  <mat-progress-spinner class="m-2" mode="indeterminate"
+                  diameter="30"></mat-progress-spinner>
+                }
+              </mat-card-actions>
+            </mat-card>
+          </form>
+          @if (oauth2Authenticators.length) {
+            <div>
+              <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
+                <!-- Titre du bloc -->
+                <mat-card-title class="d-flex justify-content-center">
+                  <p class="login-text-title" [translate]="'authentification.authenticators'"></p>
+                </mat-card-title>
+                <mat-card-content>
+                  @for (authenticator of oauth2Authenticators; track authenticator) {
+                    <div class="authenticator-item">
+                      <div [ngClass]="authenticator?.viewSettings?.cssClass ? authenticator.viewSettings.cssClass : ''">
+                        <button mat-raised-button class="bouton-login bouton-external-login" (click)="handleClickOAuth2Login(authenticator)">
+                          @if (authenticator?.viewSettings?.iconUrl) {
+                            <img src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.name}} icon" class="oauth2-icon">
+                          }
+                          <span class="oauth2-name">{{authenticator.label}}</span>
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </mat-card-content>
+              </mat-card>
             </div>
+          }
         </div>
+      </div>
     </mat-sidenav-content>
-</mat-sidenav-container>
+  </mat-sidenav-container>

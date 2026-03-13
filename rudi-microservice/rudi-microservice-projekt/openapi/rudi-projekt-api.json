@@ -885,6 +885,18 @@
 					},
 					{
 						"in": "query",
+						"name": "newRequestDatasetUuids",
+						"description": "UUIDs des NewRequestDatasetEntiy (des demandes de nouveaux jeux de données) liées aux projets recherchés",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
 						"name": "ownerUuids",
 						"description": "UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet",
 						"schema": {

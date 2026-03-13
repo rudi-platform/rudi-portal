@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.apigateway.facade.config.security;
+package org.rudi.common.facade.gateway.config;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -52,7 +52,9 @@ public class RestTemplateConfiguration {
 		CloseableHttpClient httpClient = null;
 		if (trustAllCerts) {
 			final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial((chain, authType) -> true).build();
-			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, new NoopHostnameVerifier());
+
+			final TlsSocketStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext,
+					NoopHostnameVerifier.INSTANCE);
 			final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
 					.setTlsSocketStrategy(tlsStrategy).setDefaultTlsConfig(TlsConfig.custom().build()).build();
 

@@ -13,7 +13,7 @@ export class ProducersMetierService extends OrganizationMetierService {
 
     constructor(
         protected imageLogoService: ImageLogoService,
-        private producersService: ProducersService,
+        private readonly producersService: ProducersService,
         protected readonly organizationService: OrganizationService,
         protected readonly userService: UserService
     ) {

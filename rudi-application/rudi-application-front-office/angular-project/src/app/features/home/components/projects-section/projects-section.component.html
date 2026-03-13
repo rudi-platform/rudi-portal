@@ -1,37 +1,41 @@
 <div class="section-container">
-    <div class="title-container d-sm-block d-md-flex justify-content-center">
-        <h2 class="title1">{{ projectsDescription.title1 }}</h2>
-        <h2 class="title2">{{ projectsDescription.title2 }}</h2>
-    </div>
-    <div class="d-flex flex-column align-items-center">
+  <div class="title-container d-sm-block d-md-flex justify-content-center">
+    <h2 class="title1">{{ projectsDescription.title1 }}</h2>
+    <h2 class="title2">{{ projectsDescription.title2 }}</h2>
+  </div>
+  <div class="d-flex flex-column align-items-center">
 
-        <div class="description-container">
-            <p class="description">{{ projectsDescription.description }} <span class="submit-project-link" (click)="submitProject()" >{{ 'home.projectsSection.viaOurForm' | translate }}</span></p>
+    <div class="description-container">
+      <p class="description">{{ projectsDescription.description }} <span class="submit-project-link" (click)="submitProject()" >{{ 'home.projectsSection.viaOurForm' | translate }}</span></p>
+    </div>
+  </div>
+
+
+  <div class="desktop-list-container row-cols-3">
+    @for (project of projects; track project) {
+      <div class="card-container col">
+        <app-project-card [projectCatalogItem]="project"></app-project-card>
+      </div>
+    }
+  </div>
+
+  <div class="mobile-list-container">
+    <app-rudi-swiper
+      containerName="rudi-projects"
+      [autoplay]="false"
+      [loop]="true"
+      >
+      @for (project of projects; track project) {
+        <div>
+          <app-project-card [projectCatalogItem]="project"></app-project-card>
         </div>
-    </div>
+      }
+    </app-rudi-swiper>
+  </div>
 
-
-    <div class="desktop-list-container row-cols-3">
-        <div class="card-container col" *ngFor="let project of projects">
-            <app-project-card [projectCatalogItem]="project"></app-project-card>
-        </div>
-    </div>
-
-    <div class="mobile-list-container">
-        <app-rudi-swiper
-            containerName="rudi-projects"
-            [autoplay]="false"
-            [loop]="true"
-        >
-            <div *ngFor="let project of projects">
-                <app-project-card [projectCatalogItem]="project"></app-project-card>
-            </div>
-        </app-rudi-swiper>
-    </div>
-
-    <div class="text-center">
-        <button class="button-redirect" (click)="redirectToProject()">
-            <span>{{ 'home.projectsSection.seeMoreProjects' | translate }}</span>
-        </button>
-    </div>
+  <div class="text-center">
+    <button class="button-redirect" (click)="redirectToProject()">
+      <span>{{ 'home.projectsSection.seeMoreProjects' | translate }}</span>
+    </button>
+  </div>
 </div>

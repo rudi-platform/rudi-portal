@@ -25,11 +25,11 @@ export class SpreadsheetComponent {
         this.defaultColDef = SpreadsheetComponent.createDefaultColDef();
     }
 
-    private static MAX_COL_SM_SCREEN = 2;
-    private static MAX_COL_MD_SCREEN = 3;
-    private static MAX_COL_LG_SCREEN = 6;
-    private static MAX_COL_XL_SCREEN = 8;
-    private static MAX_COL_XXL_SCREEN = 10;
+    private static readonly MAX_COL_SM_SCREEN = 2;
+    private static readonly MAX_COL_MD_SCREEN = 3;
+    private static readonly MAX_COL_LG_SCREEN = 6;
+    private static readonly MAX_COL_XL_SCREEN = 8;
+    private static readonly MAX_COL_XXL_SCREEN = 10;
 
     @ViewChild(AgGridAngular) grid?: AgGridAngular;
 
@@ -57,20 +57,20 @@ export class SpreadsheetComponent {
     }
 
     fitColumnSize(): void {
-        if (this.columnDefs.length <= this.mediaSizeGestion()){
+        if (this.columnDefs.length <= this.mediaSizeGestion()) {
             this.grid?.api.sizeColumnsToFit();
         }
     }
 
     private mediaSizeGestion(): number {
         const mediaSize = this.breakpointObserver.getMediaSize();
-        if (mediaSize.isSm){
+        if (mediaSize.isSm) {
             return SpreadsheetComponent.MAX_COL_SM_SCREEN;
         }
-        if (mediaSize.isMd){
+        if (mediaSize.isMd) {
             return SpreadsheetComponent.MAX_COL_MD_SCREEN;
         }
-        if (mediaSize.isLg){
+        if (mediaSize.isLg) {
             return SpreadsheetComponent.MAX_COL_LG_SCREEN;
         }
         if (mediaSize.isXl) {

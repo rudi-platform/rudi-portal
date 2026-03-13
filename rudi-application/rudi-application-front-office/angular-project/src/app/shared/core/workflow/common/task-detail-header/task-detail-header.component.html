@@ -1,23 +1,25 @@
 <div class="demand-resume">
-    <div class="card-body">
-        <app-loader [active]="headingLoading" [allPage]="false" [noText]="true" [isLight]="true" [isTransparent]="true"></app-loader>
-        <div *ngIf="!headingLoading">
-            <div class="d-flex justify-content-center">
-            <span
-                class="card-text">{{ pageTitle }}</span>
-            </div>
-
-            <div class="title-container">
-                    <span class="icon-header-title">
-                      <mat-icon class="large-icon-size" aria-hidden="false" aria-label=""
-                                [svgIcon]="icon"></mat-icon>
-                    </span>
-                <span class="header-title">{{ pageSubTitle }}</span>
-            </div>
-
-            <div *ngIf="status" class="status-container">
-                <span class="status-chip">{{ status }}</span>
-            </div>
+  <div class="card-body">
+    <app-loader [active]="headingLoading" [allPage]="false" [noText]="true" [isLight]="true" [isTransparent]="true"></app-loader>
+    @if (!headingLoading) {
+      <div>
+        <div class="d-flex justify-content-center">
+          <span
+          class="card-text">{{ pageTitle }}</span>
         </div>
-    </div>
+        <div class="title-container">
+          <span class="icon-header-title">
+            <mat-icon class="large-icon-size" aria-hidden="false" aria-label=""
+            [svgIcon]="icon"></mat-icon>
+          </span>
+          <span class="header-title">{{ pageSubTitle }}</span>
+        </div>
+        @if (status) {
+          <div class="status-container">
+            <span class="status-chip">{{ status }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
 </div>

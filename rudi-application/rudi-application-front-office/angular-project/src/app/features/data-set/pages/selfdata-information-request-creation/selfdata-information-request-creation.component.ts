@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCard} from '@angular/material/card';
@@ -33,7 +32,7 @@ const ERROR_DURATION = 10000;
     selector: 'app-selfdata-information-request-creation',
     templateUrl: './selfdata-information-request-creation.component.html',
     styleUrls: ['./selfdata-information-request-creation.component.scss'],
-    imports: [LoaderComponent, MatSidenavContainer, MatSidenavContent, PageTitleComponent, PageSubtitleComponent, MatCard, NgIf, ErrorBoxComponent, TranslateDirective, WorkflowFormComponent_1, RudiCaptchaComponent_1, MatButton, TranslatePipe]
+    imports: [LoaderComponent, MatSidenavContainer, MatSidenavContent, PageTitleComponent, PageSubtitleComponent, MatCard, ErrorBoxComponent, TranslateDirective, WorkflowFormComponent_1, RudiCaptchaComponent_1, MatButton, TranslatePipe]
 })
 export class SelfdataInformationRequestCreationComponent implements OnInit {
 

@@ -1,11 +1,17 @@
-<ng-container *ngIf="searchIsRunning">
-    {{'searchbox.searchIsRunning'|translate}}
-</ng-container>
-<ng-container *ngIf="!searchIsRunning">
-    <ng-container *ngIf="count">{{count}} {{resultMessage | translate}}<span *ngIf="isDefaultText">{{count > 1 ? 's' : ''}}</span>
-    </ng-container>
-    <ng-container *ngIf="!count">{{noResultMessage}} <span *ngIf="hasLink"
-                                                           [routerLink]="routerLink"
-                                                           class="link"> {{hyperLink}} </span>
-    </ng-container>
-</ng-container>
+@if (searchIsRunning) {
+  {{'searchbox.searchIsRunning'|translate}}
+}
+@if (!searchIsRunning) {
+  @if (count) {
+    {{count}} {{resultMessage | translate}}@if (isDefaultText) {
+    <span>{{count > 1 ? 's' : ''}}</span>
+  }
+}
+@if (!count) {
+  {{noResultMessage}} @if (hasLink) {
+  <span
+    [routerLink]="routerLink"
+  class="link"> {{hyperLink}} </span>
+}
+}
+}

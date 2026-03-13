@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
 
 
-export let logLevel = environment.logLevel;
+export const logLevel = environment.logLevel;
 
 @Injectable()
 export class LogService {

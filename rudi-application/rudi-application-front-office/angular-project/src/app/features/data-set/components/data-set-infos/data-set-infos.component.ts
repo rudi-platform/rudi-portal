@@ -1,5 +1,5 @@
 import {Clipboard} from '@angular/cdk/clipboard';
-import {AsyncPipe, DatePipe, NgClass, NgFor, NgIf, UpperCasePipe} from '@angular/common';
+import {AsyncPipe, DatePipe, NgClass, UpperCasePipe} from '@angular/common';
 import {HttpResponse} from '@angular/common/http';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
@@ -60,7 +60,7 @@ import SelfdataCatagoriesEnum = SelfdataContent.SelfdataCategoriesEnum;
     selector: 'app-data-sets-infos',
     templateUrl: './data-set-infos.component.html',
     styleUrls: ['./data-set-infos.component.scss'],
-    imports: [MatCardHeader, MatCardTitle, MatCardContent, LoaderComponent, MatExpansionPanel, MatExpansionPanelHeader, NgClass, ExtendedModule, MatExpansionPanelTitle, NgIf, BooleanDataBlockComponent, MatError, NgFor, MatIcon, MatButton, MapComponent, OrganizationLogoComponent, ContactButtonComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe, ReplaceIfNullPipe]
+    imports: [MatCardHeader, MatCardTitle, MatCardContent, LoaderComponent, MatExpansionPanel, MatExpansionPanelHeader, NgClass, ExtendedModule, MatExpansionPanelTitle, BooleanDataBlockComponent, MatError, MatIcon, MatButton, MapComponent, OrganizationLogoComponent, ContactButtonComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe, ReplaceIfNullPipe]
 })
 export class DataSetInfosComponent implements OnInit {
 
@@ -273,8 +273,7 @@ export class DataSetInfosComponent implements OnInit {
         if (MetadataUtils.isSelfdata(this.metadata)) {
             return false;
         } else {
-            return this.downloadableMedias
-                && this.downloadableMedias.some(downloadableMedia => downloadableMedia.media_id === media.media_id);
+            return this.downloadableMedias?.some(downloadableMedia => downloadableMedia.media_id === media.media_id);
         }
     }
 
@@ -425,8 +424,7 @@ export class DataSetInfosComponent implements OnInit {
      */
     getSelfDataPivot(metadata: Metadata): string {
 
-        if (metadata.ext_metadata == null || metadata.ext_metadata.ext_selfdata == null
-            || metadata.ext_metadata.ext_selfdata.ext_selfdata_content == null) {
+        if (metadata.ext_metadata?.ext_selfdata?.ext_selfdata_content == null) {
             return null;
         }
 
@@ -457,8 +455,7 @@ export class DataSetInfosComponent implements OnInit {
      */
     getSelfDataAccessMode(metadata: Metadata): string {
 
-        if (metadata.ext_metadata == null || metadata.ext_metadata.ext_selfdata == null
-            || metadata.ext_metadata.ext_selfdata.ext_selfdata_content == null) {
+        if (metadata.ext_metadata?.ext_selfdata?.ext_selfdata_content == null) {
             return null;
         }
 
@@ -477,7 +474,7 @@ export class DataSetInfosComponent implements OnInit {
      * @param period élément à traduire et afficher
      */
     getSelfDataPeriod(period: Period): string {
-        if (period && period.unit && period.value) {
+        if (period?.unit && period.value) {
             let translateKey;
             switch (period.unit) {
                 case UnitEnum.Days:
@@ -502,8 +499,7 @@ export class DataSetInfosComponent implements OnInit {
     }
 
     getSelfDataCategories(metadata: Metadata): string {
-        if (metadata.ext_metadata == null || metadata.ext_metadata.ext_selfdata == null
-            || metadata.ext_metadata.ext_selfdata.ext_selfdata_content == null) {
+        if (metadata.ext_metadata?.ext_selfdata?.ext_selfdata_content == null) {
             return null;
         }
 

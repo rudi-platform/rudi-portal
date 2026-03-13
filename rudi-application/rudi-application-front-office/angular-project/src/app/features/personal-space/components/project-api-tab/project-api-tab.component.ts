@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import {MatCard} from '@angular/material/card';
@@ -45,7 +44,7 @@ export interface ProjectKeyTableData {
     selector: 'app-project-api-tab',
     templateUrl: './project-api-tab.component.html',
     styleUrls: ['./project-api-tab.component.scss'],
-    imports: [MatCard, LoaderComponent, NgIf, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
+    imports: [MatCard, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatButton, TranslatePipe]
 })
 export class ProjectApiTabComponent implements OnInit, AfterViewInit {
 
@@ -67,7 +66,7 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
     constructor(private readonly route: ActivatedRoute,
                 private readonly projectDependenciesService: ProjectDependenciesService,
                 private readonly propertiesMetierService: PropertiesMetierService,
-                private projektService: ProjektService,
+                private readonly projektService: ProjektService,
                 private readonly dialog: MatDialog
     ) {
     }

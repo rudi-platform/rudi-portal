@@ -75,6 +75,7 @@ export class ProjektMetierService {
         return this.projektService.searchProjects(
             criteria.dataset_uuids,
             criteria.linked_dataset_uuids,
+            criteria.new_request_dataset_uuids,
             criteria.owner_uuids,
             criteria.project_uuids,
             criteria.status,

@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -17,7 +16,7 @@ import {Organization} from 'micro_service_modules/strukture/strukture-model';
     selector: 'app-organization-informations',
     templateUrl: './organization-informations.component.html',
     styleUrls: ['./organization-informations.component.scss'],
-    imports: [LoaderComponent, NgIf, CardComponent, ContactCardComponent, DatasetListComponent, ProjectListComponent, TranslatePipe]
+    imports: [LoaderComponent, CardComponent, ContactCardComponent, DatasetListComponent, ProjectListComponent, TranslatePipe]
 })
 export class OrganizationInformationsComponent implements OnInit {
     @Input() isLoading: boolean;

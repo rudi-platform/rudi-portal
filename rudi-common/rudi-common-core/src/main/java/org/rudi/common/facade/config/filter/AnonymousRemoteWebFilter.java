@@ -92,9 +92,9 @@ public class AnonymousRemoteWebFilter extends AnonymousAuthenticationWebFilter {
 				try {
 					Tokens tokens = remoteAnonymousAuthentication();
 					if (tokens != null) {
-						exchange.getRequest().getHeaders().add(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY,
+						exchange.getRequest().getHeaders().add(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY,
 								tokens.getJwtToken());
-						exchange.getRequest().getHeaders().add(AbstractJwtTokenUtil.HEADER_X_TOKEN_KEY,
+						exchange.getRequest().getHeaders().add(CommonSecurityConstants.HEADER_X_TOKEN_KEY,
 								tokens.getRefreshToken());
 					}
 				} catch (Exception e) {

@@ -1,5 +1,4 @@
-@import "app/styles/common-style";
-@import "../../../../../../node_modules/bootstrap/scss/functions";
+@use "app/styles/common-style";
 
 // Ajustement des variables initialisées dans ngx-smart-popover/scss/popover-content.component
 $popover-arrow-width: 16px;
@@ -26,7 +25,7 @@ $popover-header-bg: white;
         margin-top: $popover-arrow-height;
 
         > .arrow {
-            top: subtract(-$popover-arrow-height, $popover-border-width);
+            top: (-$popover-arrow-height - $popover-border-width);
             left: unset; // ajustement RUDI
             right: 25px; // ajustement RUDI
 

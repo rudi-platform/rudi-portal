@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
@@ -42,7 +41,7 @@ import MediaTypeEnum = Media.MediaTypeEnum;
     selector: 'app-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
-    imports: [NgIf, SearchAutocompleteComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, NgFor, MatMenuItem, MapPopupComponent, TranslatePipe]
+    imports: [SearchAutocompleteComponent, MatButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem, MapPopupComponent, TranslatePipe]
 })
 export class MapComponent implements AfterViewInit, OnInit {
 
@@ -69,8 +68,8 @@ export class MapComponent implements AfterViewInit, OnInit {
     configDefaultZoom: number = 13;
 
     constructor(
-        private matIconRegistry: MatIconRegistry,
-        private domSanitizer: DomSanitizer,
+        private readonly matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
         private readonly displayMapService: DisplayMapService,
         private readonly logService: LogService,
         private readonly mapLayerFunction: MapLayerFunction,
@@ -204,9 +203,7 @@ export class MapComponent implements AfterViewInit, OnInit {
             // Affichage de données cartographiques d'un JDD récupération de la projection et register avec proj4
             if (this.media != null) {
                 let projectionString = getDefaultCrs(this.media);
-                if (projectionString === null) {
-                    projectionString = DEFAULT_VIEW_PROJECTION;
-                }
+                projectionString ??= DEFAULT_VIEW_PROJECTION;
                 this.viewProjectionString = projectionString;
                 projection = this.displayMapService.registerAndGetProjection(projectionString).pipe(
                     tap(() => {
@@ -506,9 +503,7 @@ export class MapComponent implements AfterViewInit, OnInit {
      */
     handleClickCentrage(): void {
         let centeredElement = this.centeredExtent;
-        if (centeredElement == null) {
-            centeredElement = this.initExtent;
-        }
+        centeredElement ??= this.initExtent;
         this.map.getView().fit(
             centeredElement,
             {
@@ -556,7 +551,7 @@ export class MapComponent implements AfterViewInit, OnInit {
             this.addressSource.removeFeature(this.autocompletePin);
         }
 
-        const destination = this.viewProjectionString != null ? this.viewProjectionString : DEFAULT_VIEW_PROJECTION;
+        const destination = this.viewProjectionString ?? DEFAULT_VIEW_PROJECTION;
 
         const point = new Point([Number(item.x), Number(item.y)]).transform(GPS_PROJECTION, destination) as Point;
         this.autocompletePin = new Feature<Point>(point);

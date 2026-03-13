@@ -53,7 +53,7 @@ export class OpenDatasetTableComponent {
     addingElementToOpenedTable = new EventEmitter<boolean>();
 
     constructor(
-        private _liveAnnouncer: LiveAnnouncer,
+        private readonly _liveAnnouncer: LiveAnnouncer,
         private readonly projectSubmissionService: ProjectSubmissionService,
         private readonly snackBarService: SnackBarService,
         private readonly translateService: TranslateService,

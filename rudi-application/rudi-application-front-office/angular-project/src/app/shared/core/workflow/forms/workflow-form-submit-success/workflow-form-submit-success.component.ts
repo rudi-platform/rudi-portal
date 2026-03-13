@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {Router} from '@angular/router';
@@ -12,7 +11,7 @@ import {PageComponent} from '../../../layout/page/page.component';
     selector: 'app-workflow-form-submit-success',
     templateUrl: './workflow-form-submit-success.component.html',
     styleUrls: ['./workflow-form-submit-success.component.scss'],
-    imports: [LoaderComponent, PageComponent, PageTitleComponent, NgIf, CardComponent, MatButton]
+    imports: [LoaderComponent, PageComponent, PageTitleComponent, CardComponent, MatButton]
 })
 export class WorkflowFormSubmitSuccessComponent {
     @Input()

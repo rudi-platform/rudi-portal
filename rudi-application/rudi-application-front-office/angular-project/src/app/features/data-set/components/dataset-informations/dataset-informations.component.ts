@@ -1,4 +1,4 @@
-import {AsyncPipe, DatePipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
+import { AsyncPipe, DatePipe, UpperCasePipe } from '@angular/common';
 import {Component, Input, SecurityContext} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
@@ -28,7 +28,7 @@ import MediaTypeEnum = Media.MediaTypeEnum;
     selector: 'app-dataset-informations',
     templateUrl: './dataset-informations.component.html',
     styleUrls: ['./dataset-informations.component.scss'],
-    imports: [LoaderComponent, NgIf, MatCard, MatCardTitle, MatCardContent, MatButton, MatTooltip, MatIcon, NgFor, DataSetInfosComponent, OrganizationLogoComponent, MatDivider, ContactButtonComponent, DatasetsInfosComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe]
+    imports: [LoaderComponent, MatCard, MatCardTitle, MatCardContent, MatButton, MatTooltip, MatIcon, DataSetInfosComponent, OrganizationLogoComponent, MatDivider, ContactButtonComponent, DatasetsInfosComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe]
 })
 export class DatasetInformationsComponent {
     @Input() mediaType = mediaType.Media.MediaTypeEnum;
@@ -54,7 +54,7 @@ export class DatasetInformationsComponent {
 
     constructor(
         iconRegistryService: IconRegistryService,
-        private domSanitizer: DomSanitizer,
+        private readonly domSanitizer: DomSanitizer,
         private readonly breakpointObserverService: BreakpointObserverService,
         private readonly dataSetDetailsFunctions: DetailFunctions,
         private readonly languageService: LanguageService,

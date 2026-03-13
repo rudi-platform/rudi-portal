@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatCard} from '@angular/material/card';
@@ -12,7 +12,7 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, NgIf, MatIcon, TranslatePipe]
+    imports: [MatCard, NgClass, ExtendedModule, MatIcon, TranslatePipe]
 })
 export class CardComponent {
 

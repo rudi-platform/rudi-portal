@@ -1,76 +1,80 @@
 <script src="../add-data-set-dialog/add-data-set-dialog.component.ts"></script>
 <div id="dialog-container">
-    <mat-dialog-content>
-        <div class="dialog-cross-button">
-            <button mat-icon-button [mat-dialog-close]="null">
-                <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
-            </button>
-        </div>
+  <mat-dialog-content>
+    <div class="dialog-cross-button">
+      <button mat-icon-button [mat-dialog-close]="null">
+        <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+      </button>
+    </div>
 
-        <div class="dialog-content">
-            <div class="dialog-title">{{'project.dialogEditNewDatasetRequest.title'|translate}}</div>
+    <div class="dialog-content">
+      <div class="dialog-title">{{'project.dialogEditNewDatasetRequest.title'|translate}}</div>
 
-            <div
-                class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionHint' | translate}}</div>
-            <div class="dialog-description">
+      <div
+      class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionHint' | translate}}</div>
+      <div class="dialog-description">
+        <span class="required-symbol">*</span>
+        {{'common.requiredInformation' | translate}}
+      </div>
+
+      <form [formGroup]="newDatasetRequestFormGroup">
+        <!-- Title Field-->
+        <ng-container>
+          <div class="d-flex">
+            <mat-label
+              class="dialog-subtitle">{{'project.dialogEditNewDatasetRequest.titleField'|translate}}
+              <span class="required-symbol">*</span>
+            </mat-label>
+          </div>
+          <mat-hint
+            class="dialog-description">{{'project.dialogEditNewDatasetRequest.titleFieldHint'|translate}}
+          </mat-hint>
+          <mat-form-field appearance="outline" hideRequiredMarker>
+            <input type="text" formControlName="title" matInput
+              autocomplete="off" maxlength="150">
+              @if (newDatasetRequestFormGroup.get('title').errors?.required) {
+                <mat-error class="stepper-mat-error"
+                  >
+                  <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                </mat-error>
+              }
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Description Field-->
+          <ng-container>
+            <div class="d-flex">
+              <mat-label class="dialog-subtitle">
+                {{'project.dialogEditNewDatasetRequest.descriptionField'|translate}}
                 <span class="required-symbol">*</span>
-                {{'common.requiredInformation' | translate}}
+              </mat-label>
             </div>
 
-            <form [formGroup]="newDatasetRequestFormGroup">
-                <!-- Title Field-->
-                <ng-container>
-                    <div class="d-flex">
-                        <mat-label
-                            class="dialog-subtitle">{{'project.dialogEditNewDatasetRequest.titleField'|translate}}
-                            <span class="required-symbol">*</span>
-                        </mat-label>
-                    </div>
-                    <mat-hint
-                        class="dialog-description">{{'project.dialogEditNewDatasetRequest.titleFieldHint'|translate}}
-                    </mat-hint>
-                    <mat-form-field appearance="outline" hideRequiredMarker>
-                        <input type="text" formControlName="title" matInput
-                               autocomplete="off" maxlength="150">
-                        <mat-error class="stepper-mat-error"
-                                   *ngIf="newDatasetRequestFormGroup.get('title').errors?.required">
-                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
-                        </mat-error>
-                    </mat-form-field>
-                </ng-container>
+            <mat-hint
+              class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionFieldHint'|translate}}
+            </mat-hint>
+            <mat-form-field appearance="outline" hideRequiredMarker>
+              <textarea class="text-area-height" type="text" matInput
+                formControlName="description" autocomplete="off"
+              maxlength="255"></textarea>
+              @if (newDatasetRequestFormGroup.get('description').errors?.required) {
+                <mat-error class="stepper-mat-error"
+                  >
+                  <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                </mat-error>
+              }
+            </mat-form-field>
+          </ng-container>
+        </form>
 
-                <!-- Description Field-->
-                <ng-container>
-                    <div class="d-flex">
-                        <mat-label class="dialog-subtitle">
-                            {{'project.dialogEditNewDatasetRequest.descriptionField'|translate}}
-                            <span class="required-symbol">*</span>
-                        </mat-label>
-                    </div>
-
-                    <mat-hint
-                        class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionFieldHint'|translate}}
-                    </mat-hint>
-                    <mat-form-field appearance="outline" hideRequiredMarker>
-                                        <textarea class="text-area-height" type="text" matInput
-                                                  formControlName="description" autocomplete="off"
-                                                  maxlength="255"></textarea>
-                        <mat-error class="stepper-mat-error"
-                                   *ngIf="newDatasetRequestFormGroup.get('description').errors?.required">
-                            <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
-                        </mat-error>
-                    </mat-form-field>
-                </ng-container>
-            </form>
-
-            <mat-dialog-actions class="dialog-buttons">
-                <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
-                    <span>{{'project.addDatasetPopup.cancel'|translate}}</span>
-                </button>
-                <button class="primary-raised-button" mat-raised-button (click)="submit()"
-                        [disabled]="!newDatasetRequestFormGroup.valid">
-                    <span>{{'project.addDatasetPopup.validate'|translate}}</span></button>
-            </mat-dialog-actions>
+        <mat-dialog-actions class="dialog-buttons">
+          <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
+            <span>{{'project.addDatasetPopup.cancel'|translate}}</span>
+          </button>
+          <button class="primary-raised-button" mat-raised-button (click)="submit()"
+            [disabled]="!newDatasetRequestFormGroup.valid">
+            <span>{{'project.addDatasetPopup.validate'|translate}}</span></button>
+          </mat-dialog-actions>
         </div>
-    </mat-dialog-content>
-</div>
+      </mat-dialog-content>
+    </div>

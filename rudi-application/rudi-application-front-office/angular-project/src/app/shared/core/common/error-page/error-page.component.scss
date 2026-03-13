@@ -1,4 +1,4 @@
-@import "app/styles/responsive";
+@use "app/styles/responsive";
 
 $headerHeight: 150px;
 
@@ -86,22 +86,22 @@ $headerHeight: 150px;
     }
 }
 
-@include xs() {
+@include responsive.xs() {
     @include mobile-screen;
 }
 
-@include sm() {
+@include responsive.sm() {
     @include mobile-screen;
 }
 
-@include md() {
+@include responsive.md() {
     @include desktop-screen;
 }
 
-@include lg() {
+@include responsive.lg() {
     @include desktop-screen;
 }
 
-@include xl() {
+@include responsive.xl() {
     @include large-screen;
 }

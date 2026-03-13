@@ -1,4 +1,4 @@
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, OnInit, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatCard, MatCardContent} from '@angular/material/card';
@@ -57,7 +57,7 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
     selector: 'app-project-task-detail',
     templateUrl: './project-task-detail.component.html',
     styleUrls: ['./project-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, NgFor, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, ProjectMainInformationsComponent, MatCard, MatCardContent, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, OwnerInformationComponent, ProjectTaskHistoricComponent, BannerButtonComponent, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, ProjectMainInformationsComponent, MatCard, MatCardContent, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, OwnerInformationComponent, ProjectTaskHistoricComponent, BannerButtonComponent, TranslatePipe]
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>
@@ -81,7 +81,7 @@ export class ProjectTaskDetailComponent
     deleteActionAuthorized = false;
     project: Project;
     readonly panelInitialTaskOpenState = signal(false);
-    hasSections: boolean = false;
+    hasSections = false;
     linkError: string;
 
     constructor(

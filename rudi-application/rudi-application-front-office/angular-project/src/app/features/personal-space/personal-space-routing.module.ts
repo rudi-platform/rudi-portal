@@ -4,6 +4,7 @@ import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
 import {AuthGuardService as AuthGuard} from '@core/services/auth-guard.service';
 import {OwnerGuardService} from '@core/services/owner-guard.service';
 import {UserGuardService} from '@core/services/user-guard.service';
+import {environment} from '../../../environments/environment';
 import {
     LinkedProducerTaskDetailComponent
 } from '@features/personal-space/pages/linked-producer-task-detail/linked-producer-task-detail.component';
@@ -21,6 +22,7 @@ import {SelfdataDatasetsComponent} from './pages/selfdata-datasets/selfdata-data
 import {
     SelfdataInformationRequestTaskDetailComponent
 } from './pages/selfdata-information-request-task-detail/selfdata-information-request-task-detail.component';
+import {MyTaskHistoryDetailComponent} from './pages/my-task-history-detail/my-task-history-detail.component';
 
 const routes: Routes = [
     {
@@ -37,7 +39,11 @@ const routes: Routes = [
         // Path my-notifications
         path: 'my-notifications',
         component: MyNotificationsComponent,
-        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+        // En local, on autorise l'accès en ANONYMOUS (évite la redirection /login du UserGuardService)
+        // tout en conservant l'AuthGuard pour obtenir un token anonymous.
+        canActivate: environment.production
+            ? mapToCanActivate([AuthGuard, UserGuardService])
+            : mapToCanActivate([AuthGuard])
     },
     {
         // Path my activity
@@ -97,6 +103,18 @@ const routes: Routes = [
         // Path to see a producer link task detail
         path: 'linked-producer-task-detail/:taskId',
         component: LinkedProducerTaskDetailComponent,
+        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+    },
+    {
+        // Path to see the history details of a processed request (new canonical route)
+        path: 'my-task-history-detail/:historicId',
+        component: MyTaskHistoryDetailComponent,
+        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+    },
+    {
+        // Path to see the history details of a processed request
+        path: 'task-history-detail/:processDefinitionKey/:historicId',
+        component: MyTaskHistoryDetailComponent,
         canActivate: mapToCanActivate([AuthGuard, UserGuardService])
     }
 ];

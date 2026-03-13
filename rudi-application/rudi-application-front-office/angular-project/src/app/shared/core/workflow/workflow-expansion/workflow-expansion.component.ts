@@ -1,4 +1,3 @@
-import {NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {Component, Input, signal} from '@angular/core';
 import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {FieldType, Section} from 'micro_service_modules/projekt/projekt-api';
@@ -10,8 +9,7 @@ import { WorklfowExpansionRichLabelComponent } from './worklfow-expansion-rich-l
     selector: 'app-workflow-expansion',
     templateUrl: './workflow-expansion.component.html',
     styleUrl: './workflow-expansion.component.scss',
-    imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, NgFor, NgIf, NgSwitch, NgSwitchCase, 
-        WorkflowExpansionLabelComponent, WorkflowExpansionDateComponent, WorklfowExpansionRichLabelComponent, NgSwitchDefault]
+    imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, WorkflowExpansionLabelComponent, WorkflowExpansionDateComponent, WorklfowExpansionRichLabelComponent]
 })
 export class WorkflowExpansionComponent {
 

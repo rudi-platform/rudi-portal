@@ -2,18 +2,18 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
+
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {FooterDescription} from 'micro_service_modules/konsult/konsult-model';
 import {Observable, of, switchMap} from 'rxjs';
-import {NgIf, NgFor} from '@angular/common';
-import {LoaderComponent} from '../../../core/common/loader/loader.component';
 
 @Component({
     selector: 'app-social-media-section',
     templateUrl: './social-media-section.component.html',
     styleUrl: './social-media-section.component.scss',
     encapsulation: ViewEncapsulation.None,
-    imports: [NgIf, LoaderComponent, NgFor]
+    imports: [LoaderComponent]
 })
 export class SocialMediaSectionComponent implements OnInit {
 
@@ -27,10 +27,10 @@ export class SocialMediaSectionComponent implements OnInit {
     isLoading: number;
 
     constructor(
-        private konsultService: KonsultService,
-        private imageLogoService: ImageLogoService,
-        private logger: LogService,
-        private domSanitizer: DomSanitizer
+        private readonly konsultService: KonsultService,
+        private readonly imageLogoService: ImageLogoService,
+        private readonly logger: LogService,
+        private readonly domSanitizer: DomSanitizer
     ) {
     }
 
@@ -57,7 +57,7 @@ export class SocialMediaSectionComponent implements OnInit {
         this.isError = false;
         this.isLoading = 0;
         this.socialsNetworks = [];
-        for (const socialNetwork of this.footerDescription?.socialNetworks) {
+        for (const socialNetwork of this.footerDescription?.socialNetworks ?? []) {
             if (socialNetwork.label && socialNetwork.url && socialNetwork.icon) {
                 this.isLoading++;
                 this.initIcon(socialNetwork.icon).subscribe({

@@ -1,5 +1,5 @@
 // Tous les styles sont définis dans le composant parent
-@import "create-project-stepper";
+@use "create-project-stepper";
 
 .buttons-container {
     gap: 19px;

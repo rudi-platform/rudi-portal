@@ -48,7 +48,7 @@ export class ProjectCardComponent implements OnInit {
     }
 
     get projectPicture(): string {
-        return this.projectCatalogItem?.logo !== null ? this.projectCatalogItem.logo : this.defaultLogo;
+        return this.projectCatalogItem?.logo ?? this.defaultLogo;
     }
 
     get projectOwnerInfo(): string {
@@ -74,7 +74,7 @@ export class ProjectCardComponent implements OnInit {
     }
 
     private projectIsNotNull(): boolean {
-        return (this.projectCatalogItem != null && this.projectCatalogItem.project != null);
+        return (this.projectCatalogItem?.project != null);
     }
 
     clickCard(): void {

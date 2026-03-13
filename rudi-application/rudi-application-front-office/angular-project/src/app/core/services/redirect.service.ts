@@ -16,9 +16,9 @@ export class RedirectService {
     redirectTo: string;
 
     constructor(
-        private activatedRoute: ActivatedRoute,
-        private router: Router,
-        private routeHistoryService: RouteHistoryService
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly router: Router,
+        private readonly routeHistoryService: RouteHistoryService
     ) {
         this.activatedRoute.queryParamMap.subscribe(queryParamMap => {
             this.redirectTo = queryParamMap.get('redirectTo');
@@ -30,6 +30,7 @@ export class RedirectService {
             redirectTo: route
         };
     }
+
     goToTop(): void {
         window.scroll({
             top: 0,

@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {IconRegistryService} from '@core/services/icon-registry.service';
@@ -21,7 +21,7 @@ import {TasksComponent} from '../../components/tasks/tasks.component';
     selector: 'app-my-notifications',
     templateUrl: './my-notifications.component.html',
     styleUrls: ['./my-notifications.component.scss'],
-    imports: [PageComponent, LoaderComponent, NgIf, PageTitleComponent, TabsComponent, TabComponent, TasksComponent, MyTasksHistoriesTabComponent, TranslatePipe]
+    imports: [PageComponent, LoaderComponent, PageTitleComponent, TabsComponent, TabComponent, TasksComponent, MyTasksHistoriesTabComponent, TranslatePipe]
 })
 export class MyNotificationsComponent implements OnInit {
     searchIsRunning = false;

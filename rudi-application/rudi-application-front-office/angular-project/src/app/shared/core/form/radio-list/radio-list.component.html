@@ -1,10 +1,12 @@
 <div [formGroup]="formGroup">
-    <mat-radio-group [formControlName]="controlName" class="radio-container" [ngClass]="{'confidentiality': !isConfidentialityValid && formGroup.get('confidentiality').errors?.required}">
-        <div *ngFor="let suggestion of suggestions" class="radio-body">
-            <mat-radio-button [value]="suggestion" [checked]="formGroup.get(controlName).value.code === suggestion.code">
-                <div class="option-title">{{suggestion.label}}</div>
-            </mat-radio-button>
-            <div class="option-detail">{{suggestion.description}}</div>
-        </div>
-    </mat-radio-group>
+  <mat-radio-group [formControlName]="controlName" class="radio-container" [ngClass]="{'confidentiality': !isConfidentialityValid && formGroup.get('confidentiality').errors?.required}">
+    @for (suggestion of suggestions; track suggestion) {
+      <div class="radio-body">
+        <mat-radio-button [value]="suggestion" [checked]="formGroup.get(controlName).value.code === suggestion.code">
+          <div class="option-title">{{suggestion.label}}</div>
+        </mat-radio-button>
+        <div class="option-detail">{{suggestion.description}}</div>
+      </div>
+    }
+  </mat-radio-group>
 </div>

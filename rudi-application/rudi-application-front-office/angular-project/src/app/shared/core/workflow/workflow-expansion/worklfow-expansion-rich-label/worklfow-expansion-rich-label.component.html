@@ -1,8 +1,10 @@
-<p class="workflow-label" *ngIf="value">
+@if (value) {
+  <p class="workflow-label">
     <mat-label class="workflow-label-title">
-        {{ label }}
+      {{ label }}
     </mat-label>
     <mat-label class="workflow-label-subtitle">
-        <span [innerHTML]="safeValue"></span>
+      <span [innerHTML]="safeValue"></span>
     </mat-label>
-</p>
+  </p>
+}

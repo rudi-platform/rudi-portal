@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
 import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
-import {NgClass, NgFor} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 
 /**
@@ -12,7 +12,7 @@ import {ExtendedModule} from '@angular/flex-layout/extended';
     selector: 'app-radio-list',
     templateUrl: './radio-list.component.html',
     styleUrls: ['./radio-list.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, NgClass, ExtendedModule, NgFor, MatRadioButton]
+    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, NgClass, ExtendedModule, MatRadioButton]
 })
 export class RadioListComponent {
 

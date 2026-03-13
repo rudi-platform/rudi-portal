@@ -73,7 +73,7 @@ export class SelfdataInformationRequestTaskDependencyFetchers
 
     get dataset(): DependencyFetcher<SelfdataInformationRequestTask, Metadata> {
         return {
-            hasPrerequisites: (input: SelfdataInformationRequestTask) => input != null && input.asset != null && input.asset.dataset_uuid != null,
+            hasPrerequisites: (input: SelfdataInformationRequestTask) => input?.asset?.dataset_uuid != null,
             getKey: taskWithDependencies => taskWithDependencies.asset.dataset_uuid,
             getValue: datasetUuid => this.konsultMetierService.getMetadataByUuid(datasetUuid)
         };

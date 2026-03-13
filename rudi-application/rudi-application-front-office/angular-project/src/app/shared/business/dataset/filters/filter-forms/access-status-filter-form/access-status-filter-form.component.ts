@@ -6,7 +6,7 @@ import {AccessStatusFiltersType} from '@core/services/filters/access-status-filt
 import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {FilterFormComponent} from '@shared/business/dataset/filters/filter-forms/filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
-import {NgIf, NgFor} from '@angular/common';
+
 import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
 import {MatButton} from '@angular/material/button';
 
@@ -25,7 +25,7 @@ const ALL_KEY = 'filterBox.restrictedAccess.all';
     selector: 'app-access-status-filter-form',
     templateUrl: './access-status-filter-form.component.html',
     styleUrls: ['./access-status-filter-form.component.scss'],
-    imports: [NgIf, FormsModule, ReactiveFormsModule, MatRadioGroup, NgFor, MatRadioButton, MatButton, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, TranslatePipe]
 })
 export class AccessStatusFilterFormComponent extends FilterFormComponent<AccessStatusFiltersType, AccessStatusFilter, AccessStatusFilterItem> implements OnInit {
     items: AccessStatusFilterItem[];

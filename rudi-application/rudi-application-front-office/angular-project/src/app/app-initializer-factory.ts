@@ -11,8 +11,8 @@ const TRANSLATE_SERVICE_IS_READY = new ReplaySubject<void>();
 export const TRANSLATE_SERVICE_IS_READY$: Observable<void> = TRANSLATE_SERVICE_IS_READY.asObservable();
 
 export function appInitializerFactory(
-    translate: CustomTranslateService, 
-    injector: Injector, 
+    translate: CustomTranslateService,
+    injector: Injector,
     propertiesMetierService: PropertiesMetierService): () => Promise<void> {
     return () => new Promise<void>(resolve => {
         const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
@@ -20,22 +20,25 @@ export function appInitializerFactory(
             locationInitialized,
             teamName: propertiesMetierService.get('front.teamName'),
             projectName: propertiesMetierService.get('front.projectName')
-        }).subscribe(res => {
-            const langToSet = 'fr';
-            translate.setFallbackLang('fr');
-            translate.setProjectName(res.projectName);
-            translate.setTeamName(res.teamName);
-            translate.use(langToSet).subscribe({
-                next: () => TRANSLATE_SERVICE_IS_READY.next(void 0),
-                error: (err) => {
-                    console.error(`Problem with '${langToSet}' language initialization.'`);
-                    TRANSLATE_SERVICE_IS_READY.error(err);
-                },
-                complete: () => {
-                    resolve(null);
-                    TRANSLATE_SERVICE_IS_READY.complete();
-                }
-            });
-        });
+        }).subscribe(res => translateServiceSetUp(res, translate, injector, resolve));
     });
+}
+
+function translateServiceSetUp(res, translate: CustomTranslateService, injector: Injector, resolve) {
+    const langToSet = 'fr';
+    translate.setFallbackLang('fr');
+    translate.setProjectName(res.projectName);
+    translate.setTeamName(res.teamName);
+    translate.use(langToSet).subscribe({
+        next: () => TRANSLATE_SERVICE_IS_READY.next(void 0),
+        error: (err) => {
+            console.error(`Problem with '${langToSet}' language initialization.'`);
+            TRANSLATE_SERVICE_IS_READY.error(err);
+        },
+        complete: () => {
+            resolve(null);
+            TRANSLATE_SERVICE_IS_READY.complete();
+        }
+    });
+
 }

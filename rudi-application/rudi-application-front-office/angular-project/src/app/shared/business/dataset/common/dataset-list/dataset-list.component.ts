@@ -1,4 +1,4 @@
-import {NgClass, NgFor, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {SafeResourceUrl} from '@angular/platform-browser';
@@ -25,7 +25,7 @@ const EMPTY_METADATA_LIST: MetadataList = {
     selector: 'app-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
-    imports: [LoaderComponent, NgIf, NgClass, ExtendedModule, NgFor, DataSetCardComponent, NgxPaginationModule, TranslatePipe],
+    imports: [LoaderComponent, NgClass, ExtendedModule, DataSetCardComponent, NgxPaginationModule, TranslatePipe],
 })
 export class DatasetListComponent implements OnInit, OnDestroy {
     // Indique si on affiche le loader pendant le chargement es JDD
@@ -36,7 +36,7 @@ export class DatasetListComponent implements OnInit, OnDestroy {
     readonly maxPageDesktop = 9;
     /** minimum = 5 */
     readonly maxPageMobile = 5;
-    private isDestroyed$ = new Subject<void>();
+    private readonly isDestroyed$ = new Subject<void>();
     @Input() producerUuid?: string;
     @Input() limit = MAX_RESULTS_PER_PAGE;
     @Input() mediaSize: MediaSize;

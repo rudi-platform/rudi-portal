@@ -1,21 +1,24 @@
-<form [formGroup]="formGroup" *ngIf="formGroup" (ngSubmit)="submitForm()"
-      [class]="formClass">
+@if (formGroup) {
+  <form [formGroup]="formGroup" (ngSubmit)="submitForm()"
+    [class]="formClass">
     <mat-radio-group
-        formControlName="sortFormControl"
-        class="pl-47 d-flex flex-column rudi-radio-group"
-    >
+      formControlName="sortFormControl"
+      class="pl-47 d-flex flex-column rudi-radio-group"
+      >
+      @for (item of items; track item) {
         <mat-radio-button
-            *ngFor="let item of items"
-            [value]="item.value"
-            [checked]="valueIsSelected(item.value)"
-            class="rudi-radio-button"
-        >{{item.name}}
+          [value]="item.value"
+          [checked]="valueIsSelected(item.value)"
+          class="rudi-radio-button"
+          >{{item.name}}
         </mat-radio-button>
+      }
     </mat-radio-group>
     <div class="rudi-select-panel-footer">
-        <button color="primary" type="submit" mat-raised-button class="rudi-blue-button" (click)="submitForm()"
-                [disabled]="!submitIsEnabled">
-            {{'common.appliquer'| translate}}
-        </button>
+      <button color="primary" type="submit" mat-raised-button class="rudi-blue-button" (click)="submitForm()"
+        [disabled]="!submitIsEnabled">
+        {{'common.appliquer'| translate}}
+      </button>
     </div>
-</form>
+  </form>
+}

@@ -10,8 +10,9 @@ import javax.net.ssl.SSLException;
 
 import org.rudi.common.core.webclient.HttpClientHelper;
 import org.rudi.common.facade.config.filter.AnonymousRemoteWebFilter;
+import org.rudi.common.facade.gateway.config.HttpBearerServerAuthenticationEntryPoint;
 import org.rudi.microservice.apigateway.facade.config.gateway.exception.GenericErrorWebExceptionHandler;
-import org.rudi.microservice.apigateway.facade.config.security.oauth2.OAuth2WebFilter;
+import org.rudi.microservice.apigateway.facade.config.security.oauth2.OAuth2ApiWebFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -170,7 +171,7 @@ public class WebSecurityConfig {
 	}
 
 	private WebFilter createOAuth2Filter() {
-		return new OAuth2WebFilter(SecurityConstants.SB_PERMIT_ALL_URL, checkTokenUri, internalRestTemplate);
+		return new OAuth2ApiWebFilter(SecurityConstants.SB_PERMIT_ALL_URL, checkTokenUri, internalRestTemplate);
 	}
 
 	@Bean

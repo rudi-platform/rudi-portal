@@ -1,5 +1,5 @@
 import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
-import {NgIf} from '@angular/common';
+
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
@@ -43,7 +43,7 @@ import {UpdateAction} from '../../model/upate-action';
     providers: [{
         provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
     }],
-    imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent, MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, NgIf, TranslatePipe]
+    imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent, MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, TranslatePipe]
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
 
@@ -438,8 +438,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
     }
 
     private redirectToLogin(): void {
-        this.router.navigate
-        (['/login'],
+        this.router.navigate(['/login'],
             {
                 queryParams: {
                     snackBar: 'project.buttonPopover.genericUnauthorizedMessage'

@@ -37,6 +37,8 @@ import org.rudi.microservice.strukture.core.bean.OrganizationMemberType;
 import org.rudi.microservice.strukture.core.bean.OrganizationUserMember;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.provider.LinkedProducerDataFactory;
 import org.rudi.microservice.strukture.service.exception.UserIsAlreadyOrganizationMemberException;
 import org.rudi.microservice.strukture.service.exception.UserNotFoundException;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
@@ -66,9 +68,17 @@ class OrganizationMembersHelperTestUT {
 	@MockitoBean
 	DatasetService datasetService;
 
+	@Autowired
+	private OrganizationDataFactory organizationDataFactory;
+
+	@Autowired
+	private LinkedProducerDataFactory linkedProducerDataFactory;
+
 	@AfterEach
-	public void cleanData() {
-		organizationDao.deleteAll();
+	void cleanData() {
+		linkedProducerDataFactory.deleteAllLinkedProducer();
+		organizationDataFactory.deleteAllOrganizationMembers();
+		organizationDataFactory.deleteAllOrganizations();
 	}
 
 	@Test
@@ -420,7 +430,7 @@ class OrganizationMembersHelperTestUT {
 
 	@Test
 	@DisplayName("Assurer l'unicité des membres dans une organisation")
-	public void checkUserIsNotMember() {
+	void checkUserIsNotMember() {
 		UUID uuid1 = UUID.randomUUID();
 		UUID uuid2 = UUID.randomUUID();
 		LocalDateTime now = LocalDateTime.now();

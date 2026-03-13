@@ -1,49 +1,57 @@
 <app-loader [allPage]="false" [isLight]="true" [noText]="true"
-            [active]="isLoading"></app-loader>
+[active]="isLoading"></app-loader>
 
-<ng-template #loadingForm>
-    <app-loader [allPage]="false" [isLight]="true" [noText]="true"
-                [active]="draftForm.isLoading" ></app-loader>
-</ng-template>
 
-<div *ngIf="!isLoading && errorLoading">
+@if (!isLoading && errorLoading) {
+  <div>
     <app-error-box [text]="'accountInfo.tab.errorLoading' | translate"
-                   [clickableText]="'common.ici'|translate"
-                   (clickableTextClicked)="handleClickContactRudi()">
+      [clickableText]="'common.ici'|translate"
+      (clickableTextClicked)="handleClickContactRudi()">
     </app-error-box>
-</div>
-<div *ngIf="!isLoading">
+  </div>
+}
+@if (!isLoading) {
+  <div>
     <div class="my-organisation-count">
-        <span> {{ 'accountInfo.tab.myOrganizations'| translate }} ({{ totalOrganizations$ | async }})</span>
-        <ng-container *ngIf="!draftForm.isError">
-            <button *ngIf="!draftForm.isLoading; else loadingForm" class="primary-raised-button" mat-raised-button
-                    (click)="handleAddOrganization()">
-                {{ 'accountInfo.tab.addOrganization' | translate }}
-            </button>
-        </ng-container>
+      <span> {{ 'accountInfo.tab.myOrganizations'| translate }} ({{ totalOrganizations$ | async }})</span>
+      @if (!draftForm.isError) {
+        @if (!draftForm.isLoading) {
+          <button class="primary-raised-button" mat-raised-button
+            (click)="handleAddOrganization()">
+            {{ 'accountInfo.tab.addOrganization' | translate }}
+          </button>
+        } @else {
+          <app-loader [allPage]="false" [isLight]="true" [noText]="true"
+          [active]="draftForm.isLoading" ></app-loader>
+        }
+      }
     </div>
-
     <!--Pas d'organisation -->
-    <mat-card class="mat-elevation-z0 card-no-result py-3" *ngIf="(totalOrganizations$ | async) <= 0">
+    @if ((totalOrganizations$ | async) <= 0) {
+      <mat-card class="mat-elevation-z0 card-no-result py-3">
         <mat-card-content>
-            <div>
-                <span>
-                    <img alt="{{'accountInfo.tab.img' | translate}}" src="assets/images/organisation.png">
-                </span>
-                <span class="span-style">{{ 'accountInfo.tab.noOrganizations' | translate }}</span>
-            </div>
+          <div>
+            <span>
+              <img alt="{{'accountInfo.tab.img' | translate}}" src="assets/images/organisation.png">
+            </span>
+            <span class="span-style">{{ 'accountInfo.tab.noOrganizations' | translate }}</span>
+          </div>
         </mat-card-content>
-    </mat-card>
-    <div *ngIf="(totalOrganizations$ | async) > 0">
+      </mat-card>
+    }
+    @if ((totalOrganizations$ | async) > 0) {
+      <div>
         <div class="content">
-            <app-list-organization-card
-                [organizations]="organizations$ | async"
-                [itemsPerPage]="itemsPerPage"
-                [totalItems]="totalOrganizations$ | async"
-                [datasetCountLoading]="datasetCountLoading$ | async"
-                [projectCountLoading]="projectCountLoading$ | async"
-                (pageChangeEvent)="onPageChange($event)"
-            ></app-list-organization-card>
+          <app-list-organization-card
+            [organizations]="organizations$ | async"
+            [itemsPerPage]="itemsPerPage"
+            [totalItems]="totalOrganizations$ | async"
+            [datasetCountLoading]="datasetCountLoading$ | async"
+            [projectCountLoading]="projectCountLoading$ | async"
+            (pageChangeEvent)="onPageChange($event)"
+          ></app-list-organization-card>
         </div>
-    </div>
-</div>
+      </div>
+    }
+  </div>
+}

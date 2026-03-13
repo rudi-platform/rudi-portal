@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {ActivatedRoute} from '@angular/router';
@@ -26,7 +26,7 @@ export interface ProjectOwnerDependencies {
     selector: 'app-project-owner-detail',
     templateUrl: './project-owner-detail.component.html',
     styleUrls: ['./project-owner-detail.component.scss'],
-    imports: [MatCard, MatCardTitle, LoaderComponent, NgIf, MatCardContent, ContactButtonComponent, TranslatePipe]
+    imports: [MatCard, MatCardTitle, LoaderComponent, MatCardContent, ContactButtonComponent, TranslatePipe]
 })
 export class ProjectOwnerDetailComponent implements OnInit {
 

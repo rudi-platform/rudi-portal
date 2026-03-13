@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.microservice.kalim.service.integration.impl.validator.metadata.AbstractMetadataValidator;
@@ -21,10 +22,13 @@ public class MediaValidator extends AbstractMetadataValidator<List<Media>> {
 	public Set<IntegrationRequestErrorEntity> validate(List<Media> mediaList) {
 		Set<IntegrationRequestErrorEntity> integrationRequestsErrors = new HashSet<>();
 
-		for (Media media : mediaList) {
-			// Tous les Connector présents dans les MEDIA du JDD
-			integrationRequestsErrors.addAll(connectorValidator.validate(media.getConnector()));
+		if (CollectionUtils.isNotEmpty(mediaList)) {
+			for (Media media : mediaList) {
+				// Tous les Connector présents dans les MEDIA du JDD
+				integrationRequestsErrors.addAll(connectorValidator.validate(media.getConnector()));
+			}
 		}
+
 
 		return integrationRequestsErrors;
 	}

@@ -37,10 +37,10 @@
             <appender-ref ref="fileLogger" level="INFO" />
             <appender-ref ref="console" level="INFO" />
         </Logger>
-        <Logger name="org.springframework.security" level="TRACE" additivity="false">
+        <!-- <Logger name="org.springframework.security" level="TRACE" additivity="false">
             <appender-ref ref="fileLogger" level="TRACE" />
             <appender-ref ref="console" level="TRACE" />
-        </Logger>
+        </Logger> -->
         <Logger name="org.ehcache" level="TRACE" additivity="false">
         	<appender-ref ref="fileLogger" level="TRACE" />
             <appender-ref ref="console" level="TRACE" />

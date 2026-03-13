@@ -8,7 +8,7 @@ import {
     FIN_NAME_PREFIX
 } from '@shared/business/dataset/filters/filter-forms/dates-filter-form/dates-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
-import {NgIf, NgFor} from '@angular/common';
+
 import {MatIcon} from '@angular/material/icon';
 import {TranslatePipe} from '@ngx-translate/core';
 
@@ -17,11 +17,9 @@ import {TranslatePipe} from '@ngx-translate/core';
     templateUrl: './filters-items-list.component.html',
     styleUrl: './filters-items-list.component.scss',
     imports: [
-        NgIf,
-        NgFor,
-        MatIcon,
-        TranslatePipe,
-    ],
+    MatIcon,
+    TranslatePipe
+],
 })
 export class FiltersItemsListComponent {
     @Input() selectedDatesItems: Item[];

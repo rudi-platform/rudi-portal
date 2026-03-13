@@ -19,9 +19,9 @@ export class ResetPasswordErrorBoxComponent implements OnInit {
     mediaSize: MediaSize;
 
     constructor(@Inject(MAT_SNACK_BAR_DATA) public data,
-                private router: Router,
-                private breakpointObserver: BreakpointObserverService,
-                public snackBarRef: MatSnackBarRef<ResetPasswordErrorBoxComponent>) {
+                private readonly router: Router,
+                private readonly breakpointObserver: BreakpointObserverService,
+                public readonly snackBarRef: MatSnackBarRef<ResetPasswordErrorBoxComponent>) {
     }
 
     ngOnInit(): void {

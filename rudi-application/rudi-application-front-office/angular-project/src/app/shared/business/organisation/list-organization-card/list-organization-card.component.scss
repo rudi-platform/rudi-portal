@@ -1,6 +1,5 @@
-@import "app/styles/common-style";
-@import "app/styles/pagination";
-@import "../../../../../../node_modules/bootstrap/scss/bootstrap-grid";
+@use "app/styles/common-style";
+@use "app/styles/pagination";
 
 .rudi-filters-toolbar {
     width: auto;
@@ -14,11 +13,30 @@
 }
 
 .card-container {
-    @extend .row;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -12px;
+    margin-right: -12px;
 
     .card-organization {
-        @extend .col-sm-12;
-        @extend .col-md-6;
-        @extend .col-lg-4;
+        width: 100%;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-container {
+        .card-organization {
+            width: 50%;
+        }
+    }
+}
+
+@media (min-width: 992px) {
+    .card-container {
+        .card-organization {
+            width: 33.3333%;
+        }
     }
 }

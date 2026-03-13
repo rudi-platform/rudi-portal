@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input} from '@angular/core';
 import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 import {CardComponent} from '@shared/core/common/card/card.component';
@@ -12,7 +12,7 @@ import {RequestDetailDependencies} from '../../pages/request-detail-dependencies
     selector: 'app-selfdata-main-information',
     templateUrl: './selfdata-main-information.component.html',
     styleUrls: ['./selfdata-main-information.component.scss'],
-    imports: [CardComponent, LoaderComponent, NgIf, TranslateDirective, WorkflowFormComponent, TranslatePipe, ProcessDefinitionKeyTranslatePipe]
+    imports: [CardComponent, LoaderComponent, TranslateDirective, WorkflowFormComponent, TranslatePipe, ProcessDefinitionKeyTranslatePipe]
 })
 export class SelfdataMainInformationComponent {
     @Input() task: RequestDetailDependencies;

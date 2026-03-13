@@ -1,77 +1,83 @@
 <mat-sidenav-container>
-    <mat-sidenav-content class="sidebar-content-pd">
-        <div class="project-container ps-0 pe-0 container-fluid">
+  <mat-sidenav-content class="sidebar-content-pd">
+    <div class="project-container ps-0 pe-0 container-fluid">
 
-            <!-- Loader chargement toute page -->
-            <app-loader [allPage]="true" [active]="loading"></app-loader>
+      <!-- Loader chargement toute page -->
+      <app-loader [allPage]="true" [active]="loading"></app-loader>
 
-            <!-- En-tête de la section détail projet -->
-            <app-project-heading
-                class="project-header"
-                [logo]="projectLogo"
-                [projectTitle]="project?.title"
-                [ownerDescription]="projectOwnerInfo?.name"
-                [status]="project?.functional_status"
+      <!-- En-tête de la section détail projet -->
+      <app-project-heading
+        class="project-header"
+        [logo]="projectLogo"
+        [projectTitle]="project?.title"
+        [ownerDescription]="projectOwnerInfo?.name"
+        [status]="project?.functional_status"
+        >
+      </app-project-heading>
+
+      <!-- Bannière et onglets du détail projet -->
+      <app-tabs #tabs>
+        <app-tab [label]="'personalSpace.project.tabs.information' | translate"
+          [icon]="'icon_tab_infos'" #tabInformation>
+          <ng-template>
+
+            <mat-card class="p-3">
+              <app-project-main-informations
+                [project]="project"
+                (updateForm)="updateProjectTask($event)"
+                [isProjectUpdatable]="isProjectUpdatable()"
+                [isLoading]="childrenIsLoading"
+                [isUpdating]="isUpdateInProgress"
+                [dialogDescription]="'personalSpace.project.tabs.update.text2' | translate"
+              ></app-project-main-informations>
+            </mat-card>
+          </ng-template>
+        </app-tab>
+        <app-tab [label]="'personalSpace.project.tabs.datasets.title' | translate" [icon]="'jdd_icon'">
+          <ng-template>
+            <app-project-datasets-tab [project]="project"
+            (projectIsUpdate)="loadProject()"></app-project-datasets-tab>
+          </ng-template>
+        </app-tab>
+        @if (displayApiTab) {
+          <app-tab [label]="'personalSpace.project.tabs.api.title' | translate"
+            [icon]="'api_icon'">
+            <ng-template>
+              @if (displayApiTab) {
+                <app-project-api-tab></app-project-api-tab>
+              }
+            </ng-template>
+          </app-tab>
+        }
+
+        <!-- Bouton "Archiver la réutilisation" -->
+        @if (isProjectArchived()) {
+          <app-banner-button (click)="openPopinArchive(tabs, tabInformation)"
             >
-            </app-project-heading>
+            {{ 'personalSpace.project.archive.archived' | translate }}
+          </app-banner-button>
+        }
 
-            <!-- Bannière et onglets du détail projet -->
-            <app-tabs #tabs>
-                <app-tab [label]="'personalSpace.project.tabs.information' | translate"
-                         [icon]="'icon_tab_infos'" #tabInformation>
-                    <ng-template>
+        <ng-container appTabsLayout>
+          <div class="detail-wrapper">
+            <div class="onglet-wrapper">
+              <ng-container appTabContent></ng-container>
+            </div>
+            <div class="aside-wrapper">
+              <div>
+                <app-project-basic-details
+                  [projectType]="project?.type?.label"
+                  [ownerDescription]="projectOwnerInfo?.name"
+                  [ownerEmail]="project?.contact_email"
+                  [creationDate]="getDateToFormat('creation_date')"
+                  [updatedDate]="getDateToFormat('updated_date')"
+                ></app-project-basic-details>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </app-tabs>
+    </div>
 
-                        <mat-card class="p-3">
-                            <app-project-main-informations
-                                [project]="project"
-                                (updateForm)="updateProjectTask($event)"
-                                [isProjectUpdatable]="isProjectUpdatable()"
-                                [isLoading]="childrenIsLoading"
-                                [isUpdating]="isUpdateInProgress"
-                                [dialogDescription]="'personalSpace.project.tabs.update.text2' | translate"
-                            ></app-project-main-informations>
-                        </mat-card>
-                    </ng-template>
-                </app-tab>
-                <app-tab [label]="'personalSpace.project.tabs.datasets.title' | translate" [icon]="'jdd_icon'">
-                    <ng-template>
-                        <app-project-datasets-tab [project]="project"
-                                                  (projectIsUpdate)="loadProject()"></app-project-datasets-tab>
-                    </ng-template>
-                </app-tab>
-                <app-tab *ngIf="displayApiTab" [label]="'personalSpace.project.tabs.api.title' | translate"
-                         [icon]="'api_icon'">
-                    <ng-template>
-                        <app-project-api-tab *ngIf="displayApiTab"></app-project-api-tab>
-                    </ng-template>
-                </app-tab>
-
-                <!-- Bouton "Archiver la réutilisation" -->
-                <app-banner-button (click)="openPopinArchive(tabs, tabInformation)"
-                                   *ngIf="isProjectArchived()">
-                    {{ 'personalSpace.project.archive.archived' | translate }}
-                </app-banner-button>
-
-                <ng-container appTabsLayout>
-                    <div class="detail-wrapper">
-                        <div class="onglet-wrapper">
-                            <ng-container appTabContent></ng-container>
-                        </div>
-                        <div class="aside-wrapper">
-                            <div>
-                                <app-project-basic-details
-                                    [projectType]="project?.type?.label"
-                                    [ownerDescription]="projectOwnerInfo?.name"
-                                    [ownerEmail]="project?.contact_email"
-                                    [creationDate]="getDateToFormat('creation_date')"
-                                    [updatedDate]="getDateToFormat('updated_date')"
-                                ></app-project-basic-details>
-                            </div>
-                        </div>
-                    </div>
-                </ng-container>
-            </app-tabs>
-        </div>
-
-    </mat-sidenav-content>
+  </mat-sidenav-content>
 </mat-sidenav-container>

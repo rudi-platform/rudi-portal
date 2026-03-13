@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 input::-ms-reveal,
 input::-ms-clear {
@@ -11,7 +11,7 @@ mat-sidenav-content {
 }
 
 .main-container {
-    @include card-container-bgcolor;
+    @include common-style.card-container-bgcolor;
     position: relative;
     padding-bottom: 19px;
 }
@@ -22,24 +22,24 @@ mat-sidenav-content {
 }
 
 .login-header-title {
-    @include card-header-title;
+    @include common-style.card-header-title;
 }
 
 mat-form-field {
-    @include card-form-field-my;
+    @include common-style.card-form-field-my;
 }
 
 mat-error {
-    @include card-error-pb;
+    @include common-style.card-error-pb;
 }
 
 .p-19 {
-    @include card-px-19-mx-auto;
+    @include common-style.card-px-19-mx-auto;
     max-width: 640px;
 }
 
 .p-60 {
-    @include card-px-60-mx-auto;
+    @include common-style.card-px-60-mx-auto;
     width: 640px;
 }
 
@@ -53,7 +53,7 @@ mat-error {
 }
 
 .login-text-title {
-    @include card-text-title;
+    @include common-style.card-text-title;
     padding-bottom: 1em;
 
     .login-text-title-mobile {
@@ -62,7 +62,7 @@ mat-error {
 }
 
 .login-form-container {
-    @include card-form-container;
+    @include common-style.card-form-container;
     width: 100%;
 }
 
@@ -72,7 +72,7 @@ mat-error {
 }
 
 .bouton-login {
-    @include card-main-button;
+    @include common-style.card-main-button;
     
 }
 
@@ -85,11 +85,11 @@ mat-error {
 }
 
 .login-btn-desktop {
-    @include card-main-button-desktop;
+    @include common-style.card-main-button-desktop;
 }
 
 .login-btn-mobile {
-    @include card-main-button-mobile;
+    @include common-style.card-main-button-mobile;
 }
 
 

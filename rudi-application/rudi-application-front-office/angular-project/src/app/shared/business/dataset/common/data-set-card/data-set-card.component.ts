@@ -1,5 +1,10 @@
+import {NgClass, SlicePipe} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatIconRegistry, MatIcon} from '@angular/material/icon';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatButton} from '@angular/material/button';
+import {MatCard, MatCardContent} from '@angular/material/card';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {LanguageService} from '@core/i18n/language.service';
@@ -7,21 +12,16 @@ import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/service
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
-import {Metadata} from 'micro_service_modules/api-kaccess';
-import {MatCard, MatCardContent} from '@angular/material/card';
-import {NgClass, NgIf, NgFor, SlicePipe} from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
-import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
-import {MatButton} from '@angular/material/button';
-import {MatTooltip} from '@angular/material/tooltip';
 import {SplitPipe} from '@shared/utils/pipes/split.pipe';
 import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
+import {Metadata} from 'micro_service_modules/api-kaccess';
+import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
 
 @Component({
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, NgIf, MatIcon, MatButton, MatTooltip, NgFor, SlicePipe, SplitPipe, TruncateTextPipe]
+    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe]
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;
@@ -37,9 +37,9 @@ export class DataSetCardComponent implements OnInit {
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly languageService: LanguageService,
         private readonly uriComponentCodec: URIComponentCodec,
-        private matIconRegistry: MatIconRegistry,
-        private domSanitizer: DomSanitizer,
-        private router: Router,
+        private readonly matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
+        private readonly router: Router,
     ) {
         this.matIconRegistry.addSvgIcon(
             'key_icon_88_blue',

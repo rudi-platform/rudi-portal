@@ -18,7 +18,7 @@ export class BannerComponent {
     @Input() mediaSize: MediaSize;
 
     constructor(
-        private router: Router) {
+        private readonly router: Router) {
     }
 
     submitProject(): Observable<boolean> {

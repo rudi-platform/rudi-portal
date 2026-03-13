@@ -1,10 +1,14 @@
 <div>
-    <div class="close-container">
-        <mat-icon (click)="handleClose()">close</mat-icon>
-    </div>
-    <ul *ngIf="properties">
-        <li *ngFor="let key of keys">
-            {{key}} : {{value(key)}}
+  <div class="close-container">
+    <mat-icon (click)="handleClose()">close</mat-icon>
+  </div>
+  @if (properties) {
+    <ul>
+      @for (key of keys; track key) {
+        <li>
+          {{key}} : {{value(key)}}
         </li>
+      }
     </ul>
+  }
 </div>

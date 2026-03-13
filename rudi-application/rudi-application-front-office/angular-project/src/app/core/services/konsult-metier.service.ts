@@ -149,7 +149,7 @@ export class KonsultMetierService {
         httpHeaderAccept?: 'application/octet-stream' | 'application/json'
     }): Observable<HttpResponse<Blob>> {
         let headers = this.defaultHeaders;
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        let httpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
@@ -187,7 +187,7 @@ export class KonsultMetierService {
         }
 
         let headers: HttpHeaders = this.defaultHeaders;
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        let httpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             const httpHeaderAccepts: string[] = [
                 'application/octet-stream',

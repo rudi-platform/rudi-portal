@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.apigateway.facade.config.security.oauth2;
+package org.rudi.common.facade.gateway.config.oauth2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,14 +11,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
-import org.rudi.common.service.util.ApplicationContext;
-import org.rudi.facet.acl.bean.ProjectKeystore;
-import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.facet.acl.helper.ProjectKeystoreSearchCriteria;
-import org.rudi.microservice.apigateway.facade.config.gateway.ApiGatewayConstants;
-import org.rudi.microservice.apigateway.facade.config.security.AbstractAuthenticationWebFilter;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
+import org.rudi.common.facade.gateway.config.AbstractAuthenticationWebFilter;
+import org.rudi.common.facade.gateway.config.exception.ExpiredAuthenticationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -43,10 +39,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 
-	private ACLHelper aclHelper;
-
+	@Getter(value = lombok.AccessLevel.PROTECTED)
 	private RestTemplate restTemplate = null;
 
+	@Getter(value = lombok.AccessLevel.PROTECTED)
 	private String checkTokenUri;
 
 	public OAuth2WebFilter(final String[] excludeUrlPatterns, String checkTokenUri, RestTemplate restTemplate) {
@@ -60,7 +56,7 @@ public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 			ResponseEntity<OAuth2TokenData> checkToken = restTemplate.postForEntity(checkTokenUri,
 					buildFomEntity("token", token), OAuth2TokenData.class);
 			if (checkToken.getStatusCode() == HttpStatus.OK) {
-				return authenticationSuccess(checkToken);
+				return checkTokenSuccess(checkToken);
 			} else {
 				// On considère que le token est invalide
 				log.warn("Le token OAuth2 est invalide {}", checkToken.getStatusCode());
@@ -68,47 +64,42 @@ public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 			}
 		} catch (HttpClientErrorException.BadRequest e) {
 			// c'est la cas d'un token jwt reçu
-			log.warn(
-					"OAuth2 token check by Gateway failed. JWT token check should be done afterward by another filter. See ACL logs for details.");
+			log.warn("OAuth2 token check by Gateway failed. See ACL logs for details.", e);
 			return Mono.empty();
 		} catch (Exception e) {
-			log.warn("OAuth2 authentication failed", e);
+			log.warn("OAuth2 token check by Gateway failed. ", e);
 			return Mono.empty();
 		}
 	}
 
-	private Mono<Authentication> authenticationSuccess(ResponseEntity<OAuth2TokenData> checkToken) {
+	protected Mono<Authentication> checkTokenSuccess(ResponseEntity<OAuth2TokenData> checkToken) {
 		OAuth2TokenData tokenData = checkToken.getBody();
-		if (tokenData != null && tokenData.isActive()) {
+		if (tokenData != null) {
 			// Validation du token
-			AuthenticatedUser user = createAuthenticatedUser(tokenData);
-			// Application des authorités
-			final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					user.getLogin(), null, collectAuthorities(user));
-			usernamePasswordAuthenticationToken.setDetails(user);
-
-			return Mono.just(usernamePasswordAuthenticationToken);
+			if (tokenData.isActive()) {
+				// le token est actif
+				AuthenticatedUser user = createAuthenticatedUser(tokenData);
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken
+						.authenticated(user.getLogin(), null, collectAuthorities(user));
+				usernamePasswordAuthenticationToken.setDetails(user);
+				return Mono.just(usernamePasswordAuthenticationToken);
+			} else if (tokenData.getErrorCode() == CommonSecurityConstants.HTTP_CODE_TOKEN_EXPIRED) {
+				// Token expiré
+				log.warn("Token OAuth2 expiré");
+				return Mono.error(new ExpiredAuthenticationException());
+			} else {
+				log.warn("Token OAuth2 invalide");
+				return Mono.empty();
+			}
 		} else {
 			// On considère que le token est invalide
-			if (tokenData != null) {
-				log.warn("Le token OAuth2 pour {} est inactif", tokenData.getClientId());
-			} else {
-				log.warn("Aucune donnée trouvée dans le token");
-			}
+			log.warn("Aucune donnée trouvée dans le token");
 			return Mono.empty();
 		}
 	}
 
-	private AuthenticatedUser createAuthenticatedUser(OAuth2TokenData tokenData) {
+	protected AuthenticatedUser createAuthenticatedUser(OAuth2TokenData tokenData) {
 		AuthenticatedUser user = new AuthenticatedUser(tokenData.getClientId(), UserType.ROBOT);
-		ProjectKeystoreSearchCriteria searchCriteria = ProjectKeystoreSearchCriteria.builder()
-				.clientId(tokenData.getClientId()).build();
-		// on essaye de récupérer le keystore (donc l'uuid du projet)
-		Page<ProjectKeystore> keyStores = getAclHelper().searchProjectKeystores(searchCriteria, Pageable.ofSize(1));
-		if (!keyStores.isEmpty()) {
-			user.addData(ApiGatewayConstants.PROJECTKEY_STORE_UUID,
-					keyStores.getContent().get(0).getProjectUuid().toString());
-		}
 		user.setRoles(new ArrayList<>());
 		if (CollectionUtils.isNotEmpty(tokenData.getAuthorities())) {
 			for (String role : tokenData.getAuthorities()) {
@@ -134,13 +125,6 @@ public class OAuth2WebFilter extends AbstractAuthenticationWebFilter {
 		}
 
 		return new HttpEntity<>(map, headers);
-	}
-
-	protected ACLHelper getAclHelper() {
-		if (aclHelper == null) {
-			aclHelper = ApplicationContext.getBean(ACLHelper.class);
-		}
-		return aclHelper;
 	}
 
 }

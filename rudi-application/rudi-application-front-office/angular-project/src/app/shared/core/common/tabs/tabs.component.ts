@@ -1,4 +1,4 @@
-import {DOCUMENT, NgFor, NgClass} from '@angular/common';
+import { DOCUMENT, NgClass } from '@angular/common';
 import {AfterViewInit, Component, ContentChild, ContentChildren, Inject, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TabComponent} from '@shared/core/common/tab/tab.component';
@@ -13,7 +13,7 @@ import {ExtendedModule} from '@angular/flex-layout/extended';
     selector: 'app-tabs',
     templateUrl: './tabs.component.html',
     styleUrls: ['./tabs.component.scss'],
-    imports: [BannerComponent, NgFor, TabComponent_1, NgClass, ExtendedModule]
+    imports: [BannerComponent, TabComponent_1, NgClass, ExtendedModule]
 })
 export class TabsComponent implements AfterViewInit {
 
@@ -59,7 +59,7 @@ export class TabsComponent implements AfterViewInit {
             // setTimeout pour éviter l'erreur ExpressionChangedAfterItHasBeenCheckedError
             // tslint:disable-next-line:max-line-length
             // source : https://indepth.dev/posts/1001/everything-you-need-to-know-about-the-expressionchangedafterithasbeencheckederror-error#asynchronous-update)
-            setTimeout(() => {
+            globalThis.setTimeout(() => {
                 this.selectTab(this.tabs.first);
             });
         }
@@ -84,7 +84,7 @@ export class TabsComponent implements AfterViewInit {
                     return this.customLayoutTabContent.viewContainer;
                 }
             } else {
-                throw new Error(`Cannot find <ng-container appTabContent> child element in <ng-container appTabsLayout>`);
+                throw new Error('Cannot find <ng-container appTabContent> child element in <ng-container appTabsLayout>');
             }
         }
         return this.defaultLayoutTabContent;

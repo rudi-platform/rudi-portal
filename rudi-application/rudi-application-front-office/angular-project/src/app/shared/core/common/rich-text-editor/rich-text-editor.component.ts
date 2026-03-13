@@ -1,6 +1,6 @@
-import { Component, forwardRef, ViewEncapsulation } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ChangeEvent, CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import {Component, forwardRef, ViewEncapsulation} from '@angular/core';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ChangeEvent, CKEditorModule} from '@ckeditor/ckeditor5-angular';
 import {
     Alignment,
     Autoformat,

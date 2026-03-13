@@ -1,4 +1,4 @@
-import {AsyncPipe, NgIf} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent} from '@angular/material/card';
@@ -29,7 +29,7 @@ export const FIELD_NAME_IMAGE_ORGANIZATION = 'organizationImage';
     selector: 'app-organization-tab',
     templateUrl: './organization-tab.component.html',
     styleUrls: ['./organization-tab.component.scss'],
-    imports: [LoaderComponent, NgIf, ErrorBoxComponent, MatButton, MatCard, MatCardContent, ListOrganizationCardComponent, AsyncPipe, TranslatePipe]
+    imports: [LoaderComponent, ErrorBoxComponent, MatButton, MatCard, MatCardContent, ListOrganizationCardComponent, AsyncPipe, TranslatePipe]
 })
 export class OrganizationTabComponent implements OnInit, OnDestroy {
     isLoading: boolean;

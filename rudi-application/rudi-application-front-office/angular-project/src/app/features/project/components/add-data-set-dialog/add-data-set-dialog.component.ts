@@ -17,10 +17,11 @@ import {AddDataSetDialogData} from './add-data-set-dialog-data';
 
 @Component({
     selector: 'app-add-data-set-dialog',
+    standalone: true,
     templateUrl: './add-data-set-dialog.component.html',
     styleUrls: ['./add-data-set-dialog.component.scss'],
     imports: [
-        MaterialModules,
+        ...MaterialModules,
         ListContainerComponent
     ],
 })
@@ -48,9 +49,9 @@ export class AddDataSetDialogComponent implements OnInit {
     producerNames: string[];
 
     constructor(
-        private matIconRegistry: MatIconRegistry,
+        private readonly matIconRegistry: MatIconRegistry,
         private readonly konsultMetierService: KonsultMetierService,
-        private domSanitizer: DomSanitizer,
+        private readonly domSanitizer: DomSanitizer,
         public dialogRef: MatDialogRef<AddDataSetDialogComponent>,
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly kosMetierService: KosMetierService,

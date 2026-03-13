@@ -1,4 +1,4 @@
-import {DatePipe, NgClass, NgFor, NgIf} from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
@@ -50,7 +50,7 @@ interface Dependencies {
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgIf, NgClass, ExtendedModule, ProjectHeadingComponent, MatToolbar, MatButton, MatIcon, MatCard, ProjectMainInformationsComponent, ContactButtonComponent, FlexModule, MatCardTitle, NgFor, DatasetsInfosComponent, DatePipe, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, ProjectHeadingComponent, MatToolbar, MatButton, MatIcon, MatCard, ProjectMainInformationsComponent, ContactButtonComponent, FlexModule, MatCardTitle, DatasetsInfosComponent, DatePipe, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     project: Project;

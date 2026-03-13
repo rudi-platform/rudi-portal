@@ -3,7 +3,7 @@ import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {MatButton} from '@angular/material/button';
 import {MatMenuTrigger, MatMenu, MatMenuItem} from '@angular/material/menu';
-import {NgIf, NgFor, NgClass, UpperCasePipe} from '@angular/common';
+import { NgClass, UpperCasePipe } from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {FlexModule} from '@angular/flex-layout/flex';
 import {ExtendedModule} from '@angular/flex-layout/extended';
@@ -17,7 +17,7 @@ interface OrderItem extends Item {
     selector: 'cms-order',
     templateUrl: './order.component.html',
     styleUrl: './order.component.scss',
-    imports: [MatButton, MatMenuTrigger, NgIf, MatIcon, MatMenu, FlexModule, NgFor, MatMenuItem, NgClass, ExtendedModule, UpperCasePipe, TranslatePipe]
+    imports: [MatButton, MatMenuTrigger, MatIcon, MatMenu, FlexModule, MatMenuItem, NgClass, ExtendedModule, UpperCasePipe, TranslatePipe]
 })
 export class CmsOrderComponent {
 

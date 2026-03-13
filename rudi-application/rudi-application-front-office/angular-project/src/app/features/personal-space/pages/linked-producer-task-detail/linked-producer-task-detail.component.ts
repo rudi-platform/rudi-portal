@@ -1,4 +1,4 @@
-import {AsyncPipe, NgFor, NgIf} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -37,7 +37,7 @@ import {OwnerInformationComponent} from '../../components/owner-information/owne
     selector: 'app-producer-link-task-detail',
     templateUrl: './linked-producer-task-detail.component.html',
     styleUrls: ['./linked-producer-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, NgIf, TabsComponent, TabComponent, OrganizationInformationComponent, OwnerInformationComponent, NgFor, BannerButtonComponent, AsyncPipe, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
 })
 export class LinkedProducerTaskDetailComponent
     extends TaskDetailComponent<LinkedProducer, LinkedProducerDependencies, LinkedProducerTask, LinkedProducerTaskSearchCriteria>

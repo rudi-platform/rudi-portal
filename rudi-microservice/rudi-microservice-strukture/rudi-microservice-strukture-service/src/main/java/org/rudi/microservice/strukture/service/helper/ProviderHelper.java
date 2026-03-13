@@ -62,6 +62,7 @@ public class ProviderHelper {
 		return getProviderFromNodeProvider(nodeProvider);
 	}
 
+
 	public ProviderEntity getProviderFromNodeProvider(NodeProvider nodeProvider) {
 		ProviderSearchCriteria criteria = new ProviderSearchCriteria();
 		criteria.setNodeProviderUuid(List.of(nodeProvider.getUuid()));
@@ -69,11 +70,11 @@ public class ProviderHelper {
 		Pageable pageable = utilPageable.getPageable(0, 1, null);
 
 		Page<ProviderEntity> providers = providerCustomDao.searchProviders(criteria, pageable);
-		if (!providers.hasContent()) {
+		if (providers.isEmpty()) {
 			throw new InvalidParameterException("Provider introuvable");
 		}
 
-		return providers.getContent().get(0);
+		return providers.getContent().getFirst();
 	}
 
 	public String getContactEmail(NodeProvider nodeProvider) {

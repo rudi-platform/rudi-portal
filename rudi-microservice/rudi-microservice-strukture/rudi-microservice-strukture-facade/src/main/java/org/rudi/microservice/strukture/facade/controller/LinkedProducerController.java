@@ -1,9 +1,5 @@
 package org.rudi.microservice.strukture.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-
 import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Form;
@@ -20,6 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
 
 @RestController
 @RequiredArgsConstructor
@@ -108,5 +107,19 @@ public class LinkedProducerController implements LinkedProducersApi {
 	@Override
 	public ResponseEntity<Boolean> isAttachedToProducer(UUID uuid) throws Exception {
 		return ResponseEntity.ok(linkedProducerService.isOrganizationAttachedToMyProvider(uuid));
+	}
+
+	@Override
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + PROVIDER + ")")
+	public ResponseEntity<Boolean> linkedProducerHasTasks(UUID organisationUuid) throws Exception {
+		LinkedProducer linkedProducer = linkedProducerService.getMyLinkedProducerFromOrganizationUuid(organisationUuid);
+
+		// S'il n'y a pas de linkedProducer lié à cette organisation et au noeud producteur connecté
+		// Alors il n'y a pas de tâche en cours.
+		if (linkedProducer == null) {
+			return ResponseEntity.ok(false);
+		}
+
+		return ResponseEntity.ok(linkedProducerTaskService.hasTask(linkedProducer.getUuid()));
 	}
 }

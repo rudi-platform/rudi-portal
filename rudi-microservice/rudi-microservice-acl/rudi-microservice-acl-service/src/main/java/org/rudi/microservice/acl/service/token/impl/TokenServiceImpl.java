@@ -102,11 +102,22 @@ public class TokenServiceImpl implements TokenService {
 		List<TokenEntity> tokens = tokenRepository.findAll();
 		if (CollectionUtils.isNotEmpty(tokens)) {
 			for (TokenEntity token : tokens) {
-				if (now.isAfter(token.getExpriresAt())) {
+				// on doit laisser ici les tokens expirés un certain temps pour gérer les tockens avec refresh token
+				if (now.isAfter(token.getExpriresAt().plusHours(5))) {
 					tokenRepository.delete(token);
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean removeTokenByValue(String value) {
+		TokenEntity token = tokenRepository.findByValue(value);
+		if (token != null) {
+			tokenRepository.delete(token);
+			return true;
+		}
+		return false;
 	}
 
 }

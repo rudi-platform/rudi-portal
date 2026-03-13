@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, OnInit} from '@angular/core';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {UserService} from '@core/services/user.service';
@@ -10,7 +10,7 @@ import {User} from 'micro_service_modules/acl/acl-model';
     selector: 'app-my-profil',
     templateUrl: './my-profil.component.html',
     styleUrls: ['./my-profil.component.scss'],
-    imports: [MatCard, MatCardContent, NgIf, LoaderComponent, TranslatePipe]
+    imports: [MatCard, MatCardContent, LoaderComponent, TranslatePipe]
 })
 export class MyProfilComponent implements OnInit {
     public user: User | undefined;

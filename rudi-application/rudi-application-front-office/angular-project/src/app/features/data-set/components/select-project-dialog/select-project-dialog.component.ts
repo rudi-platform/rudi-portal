@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -36,7 +35,7 @@ export interface SelectProjectDialogData {
     selector: 'app-restricted-dataset-request-dialog',
     templateUrl: './select-project-dialog.component.html',
     styleUrls: ['./select-project-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatCard, MatLabel, NgIf, MatProgressSpinner, MatFormField, MatSelect, NgFor, MatOption, MatError, ErrorBoxComponent, MatDialogActions, MatButton, TranslatePipe]
+    imports: [MatDialogContent, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatCard, MatLabel, MatProgressSpinner, MatFormField, MatSelect, MatOption, MatError, ErrorBoxComponent, MatDialogActions, MatButton, TranslatePipe]
 })
 export class SelectProjectDialogComponent implements OnInit {
 
@@ -76,14 +75,14 @@ export class SelectProjectDialogComponent implements OnInit {
     metadata: Metadata;
 
     constructor(public dialogRef: MatDialogRef<SelectProjectDialogComponent, DialogClosedData<Project>>,
-                private matIconRegistry: MatIconRegistry,
-                public dialog: MatDialog,
-                private domSanitizer: DomSanitizer,
+                private readonly matIconRegistry: MatIconRegistry,
+                private readonly domSanitizer: DomSanitizer,
                 private readonly formBuilder: FormBuilder,
                 private readonly userService: UserService,
                 private readonly projektMetierService: ProjektMetierService,
                 private readonly dataSetActionsAuthorizationService: DataSetActionsAuthorizationService,
-                private router: Router,
+                private readonly router: Router,
+                public dialog: MatDialog,
                 @Inject(MAT_DIALOG_DATA) public dialogData: SelectProjectDialogData,
     ) {
         this.matIconRegistry.addSvgIcon('icon-close', this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-close.svg'));
@@ -96,7 +95,7 @@ export class SelectProjectDialogComponent implements OnInit {
      * Récupération du projet qui a été choisi dans la liste (nul sinon)
      */
     get projectSelected(): Project {
-        if (this.formGroup && this.formGroup.get('selectProject')) {
+        if (this.formGroup?.get('selectProject')) {
             return this.formGroup.get('selectProject').value;
         }
 
@@ -143,7 +142,7 @@ export class SelectProjectDialogComponent implements OnInit {
      */
     validate(): void {
         const project: Project = this.formGroup.get('selectProject').value;
-        const returned = project ? project : null;
+        const returned = project || null;
         this.dialogRef.close({
             data: returned,
             closeEvent: CloseEvent.VALIDATION

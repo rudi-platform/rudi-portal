@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption} from '@angular/material/core';
@@ -11,14 +10,14 @@ import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-fiel
     selector: 'app-workflow-field-list',
     templateUrl: './workflow-field-list.component.html',
     styleUrls: ['./workflow-field-list.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, NgIf, MatHint, MatFormField, MatSelect, NgFor, MatOption, MatError, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatSelect, MatOption, MatError, TranslatePipe]
 })
 export class WorkflowFieldListComponent extends WorkflowFieldComponent implements OnInit {
 
     public options: any;
 
     ngOnInit(): void {
-        if (this.field && this.field.definition && this.field.definition.extendedType) {
+        if (this.field?.definition?.extendedType) {
             let extendedTypeString: string = this.field.definition.extendedType;
 
             this.options = JSON.parse(extendedTypeString);

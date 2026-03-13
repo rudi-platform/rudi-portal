@@ -59,7 +59,7 @@ export class AuthGuardService {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
         Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-        if (route.queryParamMap.has("token")) {
+        if (route.queryParamMap.has("token") && route.url[0].path === "home") {
             // pas de token en localstorage, mais on l'a dans l'url
             const token = route.queryParamMap.get("token") ?? "";
             return this.accountService.authenticate(token).pipe(

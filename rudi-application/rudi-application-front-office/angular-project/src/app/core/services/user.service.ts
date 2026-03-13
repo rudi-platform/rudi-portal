@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
 import {AclService, AddressType, EmailAddress, User} from 'micro_service_modules/acl/acl-api';
 import {EMPTY, Observable, of} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
@@ -15,8 +14,7 @@ export class UserService {
      * Constructeur
      */
     constructor(private readonly aclService: AclService,
-                private readonly authenticationService: AuthenticationService,
-                private formBuilder: FormBuilder) {
+                private readonly authenticationService: AuthenticationService) {
     }
 
     /**

@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 ::ng-deep {
     table {
@@ -6,10 +6,6 @@
 
         tr {
             height: unset;
-
-            &:focus, &:active, &:hover {
-                background-color: var(--selected-table-row);
-            }
         }
 
         th {
@@ -19,7 +15,7 @@
             padding: 12px 24px;
 
             mat-icon {
-                @include mat-icon-size(18px);
+                @include common-style.mat-icon-size(18px);
                 margin-right: 5px;
             }
 

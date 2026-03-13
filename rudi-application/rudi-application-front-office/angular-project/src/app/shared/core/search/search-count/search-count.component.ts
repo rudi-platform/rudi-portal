@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
@@ -10,7 +9,7 @@ const DEFAULT_TEXT_RESULT = 'searchbox.results';
     selector: 'app-search-count',
     templateUrl: './search-count.component.html',
     styleUrls: ['./search-count.component.scss'],
-    imports: [NgIf, RouterLink, CustomRouterlinkDirective, TranslatePipe]
+    imports: [RouterLink, CustomRouterlinkDirective, TranslatePipe]
 })
 export class SearchCountComponent implements OnInit {
 

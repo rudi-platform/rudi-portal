@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.apigateway.facade.config.security.oauth2;
+package org.rudi.common.facade.gateway.config.oauth2;
 
 import java.util.List;
 
@@ -28,4 +28,17 @@ public class OAuth2TokenData {
 
 	@JsonProperty("client_id")
 	private String clientId;
+
+	@JsonProperty("user_name")
+	private String userName;
+
+	private String type;
+
+	private String firstname;
+
+	private String lastname;
+
+	private String email;
+
+	private int errorCode;
 }

@@ -695,6 +695,10 @@
 						"type": "string",
 						"description": "Méthode d'authentification du client OAuth2. Peut être laissée vide lors de l'utilisation d'un fournisseur pré-défini."
 					},
+					"requireProofKey": {
+                        "type": "boolean",
+                        "description": "Indique si la méthode d'autorisation OAuth2 nécessite une preuve de clé (PKCE)"
+                    },
 					"scope": {
 						"type": "string",
 						"description": "Liste des scopes séparés par des espaces"

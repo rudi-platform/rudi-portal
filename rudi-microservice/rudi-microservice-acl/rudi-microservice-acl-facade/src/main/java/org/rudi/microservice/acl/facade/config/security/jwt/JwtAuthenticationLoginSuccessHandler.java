@@ -9,7 +9,7 @@ import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.facade.config.filter.Tokens;
 import org.rudi.microservice.acl.core.bean.TokenType;
 import org.rudi.microservice.acl.facade.config.security.AbstractAuthenticationSuccessHandler;
-import org.rudi.microservice.acl.service.token.TokenService;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,11 +34,11 @@ public class JwtAuthenticationLoginSuccessHandler extends AbstractAuthentication
 
 	private static final String X_TOKEN_HEADER = "X-TOKEN";
 
-	private final TokenService tokenService;
+	private final TokenManager tokenHelper;
 
-	public JwtAuthenticationLoginSuccessHandler(TokenService tokenService) {
+	public JwtAuthenticationLoginSuccessHandler(TokenManager tokenHelper) {
 		super();
-		this.tokenService = tokenService;
+		this.tokenHelper = tokenHelper;
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class JwtAuthenticationLoginSuccessHandler extends AbstractAuthentication
 		Tokens tokens = null;
 		try {
 			tokens = getJwtTokenUtil().generateTokens(user.getLogin(), user);
-			tokenService.saveToken(buildToken(TokenType.USER_CODE, user, tokens.getJwtToken()));
-			tokenService.saveToken(buildToken(TokenType.REFRESH_TOKEN, user, tokens.getRefreshToken()));
+			tokenHelper.saveToken(TokenType.USER_CODE, user, tokens.getJwtToken());
+			tokenHelper.saveToken(TokenType.REFRESH_TOKEN, user, tokens.getRefreshToken());
 		} catch (Exception e) {
 			throw new IOException("Failed to generate tokens", e);
 		}

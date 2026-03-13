@@ -20,8 +20,8 @@ export class PopoverComponent {
     @Input()
     public buttonMessageTitle: string;
 
-    constructor(private matIconRegistry: MatIconRegistry,
-                private domSanitizer: DomSanitizer) {
+    constructor(private readonly matIconRegistry: MatIconRegistry,
+                private readonly domSanitizer: DomSanitizer) {
         this.matIconRegistry.addSvgIcon(
             'rudi_picto_reutilisations',
             this.domSanitizer.bypassSecurityTrustResourceUrl('/assets/images/rudi_picto_reutilisations.svg')

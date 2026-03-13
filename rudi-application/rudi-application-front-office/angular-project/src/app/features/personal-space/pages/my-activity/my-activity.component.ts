@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component} from '@angular/core';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import {ReusesComponent} from '../../components/reuses/reuses.component';
 @Component({
     selector: 'app-my-activity',
     templateUrl: './my-activity.component.html',
-    imports: [PageComponent, LoaderComponent, NgIf, PageTitleComponent, TabsComponent, TabComponent, ReusesComponent, MyRequestsComponent, TranslatePipe]
+    imports: [PageComponent, LoaderComponent, PageTitleComponent, TabsComponent, TabComponent, ReusesComponent, MyRequestsComponent, TranslatePipe]
 })
 export class MyActivityComponent {
     urlToDoc: string;

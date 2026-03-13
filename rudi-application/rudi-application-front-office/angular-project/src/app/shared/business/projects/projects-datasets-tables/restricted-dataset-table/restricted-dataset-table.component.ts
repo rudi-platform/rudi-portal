@@ -54,7 +54,7 @@ export class RestrictedDatasetTableComponent {
     commentActionEvent: EventEmitter<RowTableData> = new EventEmitter();
 
     constructor(
-        private _liveAnnouncer: LiveAnnouncer,
+        private readonly _liveAnnouncer: LiveAnnouncer,
         private readonly projectSubmissionService: ProjectSubmissionService,
         private readonly snackBarService: SnackBarService,
         private readonly translateService: TranslateService,

@@ -8,7 +8,6 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,9 +26,11 @@ public class OrganizationMemberEntity implements Serializable {
 
 	@NotNull
 	private UUID userUuid;
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private OrganizationRole role;
+
 	@NotNull
 	private LocalDateTime addedDate;
 

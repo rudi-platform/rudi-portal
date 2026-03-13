@@ -1,5 +1,5 @@
-@import "common-style";
-@import "responsive";
+@use "common-style";
+@use "responsive";
 
 ::ng-deep.cdk-overlay-pane {
     margin: 0;

@@ -1,4 +1,4 @@
-@import "app/styles/common-style";
+@use "app/styles/common-style";
 
 .project-card {
     box-shadow: none;
@@ -36,7 +36,7 @@
         hyphens: auto;
         min-height: 1.2em;
         line-height: 1.3em;
-        @include truncate-text(3);
+        @include common-style.truncate-text(3);
     }
 
     .project-card-content {
@@ -48,7 +48,7 @@
 
     .project-card-summary {
         font-size: 15px;
-        @include truncate-text(3);
+        @include common-style.truncate-text(3);
         hyphens: auto;
         padding-bottom: 0;
         color: #323643;

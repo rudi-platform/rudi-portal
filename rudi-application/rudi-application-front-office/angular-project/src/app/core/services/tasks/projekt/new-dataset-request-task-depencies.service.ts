@@ -65,7 +65,7 @@ export class NewDatasetRequestTaskDependencyFetchers
 
     get project(): DependencyFetcher<NewDatasetRequestTask, Project> {
         return {
-            hasPrerequisites: (input: NewDatasetRequestTask) => input != null && input.asset != null && input.asset.uuid != null,
+            hasPrerequisites: (input: NewDatasetRequestTask) => input?.asset?.uuid != null,
             getKey: taskWithDependencies => taskWithDependencies.asset.uuid,
             getValue: datasetUuid => this.projektMetierService.findProjectByNewDatasetRequest(datasetUuid)
         };
@@ -73,8 +73,7 @@ export class NewDatasetRequestTaskDependencyFetchers
 
     get ownerInfo(): DependencyFetcher<NewDatasetRequestTask, OwnerInfo> {
         return {
-            hasPrerequisites: (input: NewDatasetRequestTask) => input != null && input.dependencies != null
-                && input.dependencies.project != null,
+            hasPrerequisites: (input: NewDatasetRequestTask) => input?.dependencies?.project != null,
             getKey: taskWithDependencies => OwnerKey.serialize(taskWithDependencies.dependencies.project),
             getValue: ownerKey => {
                 const {owner_type, owner_uuid} = OwnerKey.deserialize(ownerKey);

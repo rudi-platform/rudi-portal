@@ -29,23 +29,27 @@ export class MyTasksHistoriesTabComponent implements OnInit {
     selfdataTasksHistories: ProcessHistoricInformation[];
     newDatasetRequestTasksHistories: ProcessHistoricInformation[];
 
-    organizationTasksIcon: string = 'organizationTasksIcon';
-    linkedProducerTasksIcon: string = 'linkedProducerTasksIcon';
-    linkedDatasetTasksIcon: string = 'key_icon_88_secondary-color';
-    projectTasksIcon: string = 'projectTasksIcon';
-    selfdataTasksIcon: string = 'selfdataTasksIcon';
-    newDatasetRequestTasksIcon: string = 'newDatasetRequestTasksIcon';
+    organizationTasksIcon = 'organizationTasksIcon';
+    linkedProducerTasksIcon = 'linkedProducerTasksIcon';
+    linkedDatasetTasksIcon = 'key_icon_88_secondary-color';
+    projectTasksIcon = 'projectTasksIcon';
+    selfdataTasksIcon = 'selfdataTasksIcon';
+    newDatasetRequestTasksIcon = 'newDatasetRequestTasksIcon';
 
-    isStruktureLoading: boolean = false;
-    isProjektLoading: boolean = false;
-    isSelfdataLoading: boolean = false;
+    isStruktureLoading = false;
+    isProjektLoading = false;
+    isSelfdataLoading = false;
 
-    hasData: boolean = false;
+    hasData = false;
 
     constructor(
-        public readonly projektTaskMetierService: ProjectTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
-        public readonly struktureTaskMetierService: OrganizationTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
-        public readonly selfdataTaskMetierService: SelfdataInformationRequestTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
+        public readonly projektTaskMetierService: ProjectTaskMetierService,
+        // Un seul suffit pour récupérer toutes les informations de son microservice
+        public readonly struktureTaskMetierService:
+        OrganizationTaskMetierService,
+        // Un seul suffit pour récupérer toutes les informations de son microservice
+        public readonly selfdataTaskMetierService:
+        SelfdataInformationRequestTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
         private readonly iconRegistry: MatIconRegistry,
         private readonly sanitizer: DomSanitizer,
         private readonly htmlService: HtmlService,

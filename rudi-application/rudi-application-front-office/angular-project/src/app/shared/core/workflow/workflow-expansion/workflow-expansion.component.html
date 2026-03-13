@@ -1,46 +1,46 @@
 <mat-accordion>
-    <mat-expansion-panel [expanded]="true" class="project-modified-expansion" (opened)="panelTaskOpenState.set(true)" (closed)="panelTaskOpenState.set(false)">
-        <mat-expansion-panel-header>
-            <mat-panel-title class="expansion-title"> {{ title ?? (section.label ?? section.fields[0].definition.label) }} </mat-panel-title>
-        </mat-expansion-panel-header>
-        <hr>
-        <ng-container *ngFor="let field of section.fields">
-            <ng-container *ngIf="field.values">
-                    <ng-container [ngSwitch]="field.definition.type">
-                        <ng-container *ngSwitchCase="fieldType.String">
-                            <app-workflow-expansion-label
-                                [label]="field.definition.label"
-                                [value]="field.values[0]"
-                            ></app-workflow-expansion-label>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="fieldType.Date">
-                            <app-workflow-expansion-date
-                                [label]="field.definition.label"
-                                [value]="field.values[0]"
-                            ></app-workflow-expansion-date>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="fieldType.List">
-                            <app-workflow-expansion-label
-                                [label]="field.definition.label"
-                                [value]="getFieldListLabel(field.definition.extendedType, field.values)"
-                            ></app-workflow-expansion-label>
-                        </ng-container>
-                        <ng-container *ngSwitchCase="fieldType.Hidden">
-                        </ng-container>
-                        <ng-container *ngSwitchCase="fieldType.Richtext">
-                            <app-worklfow-expansion-rich-label
-                                [label]="field.definition.label"
-                                [value]="field.values[0]"
-                            ></app-worklfow-expansion-rich-label>
-                        </ng-container>
-                        <ng-container *ngSwitchDefault>
-                            <app-workflow-expansion-label
-                                [label]="field.definition.label"
-                                [value]="field.values[0]"
-                            ></app-workflow-expansion-label>
-                        </ng-container>
-                    </ng-container>
-            </ng-container>
-        </ng-container>
+  <mat-expansion-panel [expanded]="true" class="project-modified-expansion" (opened)="panelTaskOpenState.set(true)" (closed)="panelTaskOpenState.set(false)">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="expansion-title"> {{ title ?? (section.label ?? section.fields[0].definition.label) }} </mat-panel-title>
+    </mat-expansion-panel-header>
+    <hr>
+      @for (field of section.fields; track field) {
+        @if (field.values) {
+          @switch (field.definition.type) {
+            @case (fieldType.String) {
+              <app-workflow-expansion-label
+                [label]="field.definition.label"
+                [value]="field.values[0]"
+              ></app-workflow-expansion-label>
+            }
+            @case (fieldType.Date) {
+              <app-workflow-expansion-date
+                [label]="field.definition.label"
+                [value]="field.values[0]"
+              ></app-workflow-expansion-date>
+            }
+            @case (fieldType.List) {
+              <app-workflow-expansion-label
+                [label]="field.definition.label"
+                [value]="getFieldListLabel(field.definition.extendedType, field.values)"
+              ></app-workflow-expansion-label>
+            }
+            @case (fieldType.Hidden) {
+            }
+            @case (fieldType.Richtext) {
+              <app-worklfow-expansion-rich-label
+                [label]="field.definition.label"
+                [value]="field.values[0]"
+              ></app-worklfow-expansion-rich-label>
+            }
+            @default {
+              <app-workflow-expansion-label
+                [label]="field.definition.label"
+                [value]="field.values[0]"
+              ></app-workflow-expansion-label>
+            }
+          }
+        }
+      }
     </mat-expansion-panel>
-</mat-accordion>
+  </mat-accordion>

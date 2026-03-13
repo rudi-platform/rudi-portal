@@ -1,39 +1,48 @@
 <div class="container-fluid">
-    <mat-toolbar *ngIf="mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl"
-                 class="rudi-filters-toolbar">
+  @if (mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl) {
+    <mat-toolbar
+      class="rudi-filters-toolbar">
     </mat-toolbar>
+  }
 
-    <ng-container *ngIf="organizations$ | async as organizations">
-        <div class="d-flex py-3 justify-content-between">
-            <!--Nombre de résultats-->
-            <div class=" w-50 search-count">
-                <div *ngIf="totalOrganizations$ | async as totalOrganizations">
-                    <div *ngIf="(totalOrganizations$ | async) > 0">
-                        {{totalOrganizations}} {{'searchbox.results'|translate}}{{totalOrganizations > 1 ? 's' : ''}}
-                    </div>
-                    <div *ngIf="(totalOrganizations$ | async) == 0">
-                        {{'searchbox.noResult' | translate}}
-                    </div>
-                </div>
-                    <div *ngIf="isLoadingCatalogue$ | async as isLoading">
-                        {{'searchbox.searchIsRunning'|translate}}
-                    </div>
-            </div>
-
-            <app-organization-order *ngIf="mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl"
-                       (orderChangeEvent)="onOrderChange($event)">
-            </app-organization-order>
-        </div>
-
-        <app-list-organization-card
-            [organizations]="organizations"
-            [itemsPerPage]="itemsPerPage"
-            [totalItems]="totalOrganizations$ | async"
-            [currentPage]="currentPage$ | async"
-            [datasetCountLoading]="datasetCountLoading$ | async"
-            [projectCountLoading]="projectCountLoading$ | async"
-            (pageChangeEvent)="onPageChange($event)"
-        ></app-list-organization-card>
-
-    </ng-container>
+  @if (organizations$ | async; as organizations) {
+    <div class="d-flex py-3 justify-content-between">
+      <!--Nombre de résultats-->
+      <div class=" w-50 search-count">
+        @if (totalOrganizations$ | async; as totalOrganizations) {
+          <div>
+            @if ((totalOrganizations$ | async) > 0) {
+              <div>
+                {{totalOrganizations}} {{'searchbox.results'|translate}}{{totalOrganizations > 1 ? 's' : ''}}
+              </div>
+            }
+            @if ((totalOrganizations$ | async) == 0) {
+              <div>
+                {{'searchbox.noResult' | translate}}
+              </div>
+            }
+          </div>
+        }
+        @if (isLoadingCatalogue$ | async; as isLoading) {
+          <div>
+            {{'searchbox.searchIsRunning'|translate}}
+          </div>
+        }
+      </div>
+      @if (mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl) {
+        <app-organization-order
+          (orderChangeEvent)="onOrderChange($event)">
+        </app-organization-order>
+      }
+    </div>
+    <app-list-organization-card
+      [organizations]="organizations"
+      [itemsPerPage]="itemsPerPage"
+      [totalItems]="totalOrganizations$ | async"
+      [currentPage]="currentPage$ | async"
+      [datasetCountLoading]="datasetCountLoading$ | async"
+      [projectCountLoading]="projectCountLoading$ | async"
+      (pageChangeEvent)="onPageChange($event)"
+    ></app-list-organization-card>
+  }
 </div>

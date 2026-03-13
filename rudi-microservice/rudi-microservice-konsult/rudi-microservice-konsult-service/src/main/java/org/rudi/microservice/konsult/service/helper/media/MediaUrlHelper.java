@@ -1,5 +1,6 @@
 package org.rudi.microservice.konsult.service.helper.media;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.kaccess.bean.Media;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.springframework.stereotype.Component;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 public class MediaUrlHelper {
 
 	public void rewriteMediaUrls(Metadata metadata) {
-		for (final Media media : metadata.getAvailableFormats()) {
-			this.rewriteMediaUrl(metadata, media);
+		if (CollectionUtils.isNotEmpty(metadata.getAvailableFormats())) {
+			for (final Media media : metadata.getAvailableFormats()) {
+				this.rewriteMediaUrl(metadata, media);
+			}
 		}
 	}
 

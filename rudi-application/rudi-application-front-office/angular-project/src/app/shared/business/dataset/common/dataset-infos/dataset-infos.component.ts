@@ -1,20 +1,20 @@
+import {NgClass} from '@angular/common';
 import {Component, Input} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
+import {MatDivider} from '@angular/material/divider';
+import {MatIcon} from '@angular/material/icon';
 import {Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {NgClass, NgIf} from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
-import {MatIcon} from '@angular/material/icon';
-import {MatDivider} from '@angular/material/divider';
 
 @Component({
     selector: 'app-dataset-infos',
     templateUrl: './dataset-infos.component.html',
     styleUrls: ['./dataset-infos.component.scss'],
-    imports: [NgClass, ExtendedModule, NgIf, OrganizationLogoComponent, MatIcon, MatDivider]
+    imports: [NgClass, ExtendedModule, OrganizationLogoComponent, MatIcon, MatDivider]
 })
 export class DatasetsInfosComponent {
     /**
@@ -60,7 +60,7 @@ export class DatasetsInfosComponent {
     constructor(
         private readonly breakpointObserverService: BreakpointObserverService,
         private readonly uriComponentCodec: URIComponentCodec,
-        private router: Router,
+        private readonly router: Router,
         iconRegistryService: IconRegistryService,
     ) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);

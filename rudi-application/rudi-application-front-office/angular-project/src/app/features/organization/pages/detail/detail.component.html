@@ -1,29 +1,35 @@
 <app-page>
-    <app-page-heading
-        [organizationName]="'organization.label'|translate"
-        [resourceTitle]="organization?.name"
-        [organizationId]="organization?.uuid"
-        [status]="getStatus()"
+  <app-page-heading
+    [organizationName]="'organization.label'|translate"
+    [resourceTitle]="organization?.name"
+    [organizationId]="organization?.uuid"
+    [status]="getStatus()"
     >
-    </app-page-heading>
-    <app-tabs>
-        <app-tab [label]="'metaData.informations'|translate"
-                 [icon]="'icon_tab_infos'">
-            <ng-template>
-                <app-organization-informations *ngIf="organization"
-                                               [isLoading]="isLoading"
-                                               [organization]="organization"
-                ></app-organization-informations>
-            </ng-template>
-        </app-tab>
-        <app-tab *ngIf="displayAdministrationTab" [label]="'metaData.administrationTab.title'|translate"
-                 [icon]="'icon-administration-tab'">
-            <ng-template>
-                <app-administration-tab *ngIf="organization"
-                                        [isLoading]="isLoading"
-                                        [organization]="organization"
-                ></app-administration-tab>
-            </ng-template>
-        </app-tab>
-    </app-tabs>
+  </app-page-heading>
+  <app-tabs>
+    <app-tab [label]="'metaData.informations'|translate"
+      [icon]="'icon_tab_infos'">
+      <ng-template>
+        @if (organization) {
+          <app-organization-informations
+            [isLoading]="isLoading"
+            [organization]="organization"
+          ></app-organization-informations>
+        }
+      </ng-template>
+    </app-tab>
+    @if (displayAdministrationTab) {
+      <app-tab [label]="'metaData.administrationTab.title'|translate"
+        [icon]="'icon-administration-tab'">
+        <ng-template>
+          @if (organization) {
+            <app-administration-tab
+              [isLoading]="isLoading"
+              [organization]="organization"
+            ></app-administration-tab>
+          }
+        </ng-template>
+      </app-tab>
+    }
+  </app-tabs>
 </app-page>

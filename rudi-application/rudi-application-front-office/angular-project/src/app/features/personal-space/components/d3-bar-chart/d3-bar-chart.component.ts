@@ -1,4 +1,3 @@
-import {NgFor} from '@angular/common';
 import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {IconRegistryService} from '@core/services/icon-registry.service';
@@ -12,16 +11,16 @@ import * as d3 from 'd3';
     selector: 'app-d3-bar-chart',
     templateUrl: './d3-bar-chart.component.html',
     styleUrls: ['./d3-bar-chart.component.scss'],
-    imports: [NgFor, MatIcon, TranslatePipe]
+    imports: [MatIcon, TranslatePipe]
 })
 export class D3BarChartComponent implements OnInit {
     @Input() graphBar: TpbcDataInterface;
 
-    private margin = MARGIN;
-    private w = WINDOWS_WIDTH;
-    private h = WINDOWS_HEIGHT;
+    private readonly margin = MARGIN;
+    private readonly w = WINDOWS_WIDTH;
+    private readonly h = WINDOWS_HEIGHT;
     private width: number;
-    private height = this.h - this.margin.top - this.margin.bottom;
+    private readonly height = this.h - this.margin.top - this.margin.bottom;
 
     private x0: any;
     private x1: any;
@@ -35,7 +34,7 @@ export class D3BarChartComponent implements OnInit {
     private yAxis: any;
 
     constructor(iconRegistryService: IconRegistryService,
-                private container: ElementRef) {
+                private readonly container: ElementRef) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
     }
 

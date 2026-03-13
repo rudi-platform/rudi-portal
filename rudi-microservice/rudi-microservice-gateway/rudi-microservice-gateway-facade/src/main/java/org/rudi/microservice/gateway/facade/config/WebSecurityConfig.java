@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.rudi.common.facade.config.filter.AnonymousRemoteWebFilter;
-import org.rudi.microservice.gateway.facade.config.oauth2.OAuth2WebFilter;
+import org.rudi.common.facade.gateway.config.HttpBearerServerAuthenticationEntryPoint;
+import org.rudi.common.facade.gateway.config.oauth2.OAuth2WebFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -38,10 +39,27 @@ public class WebSecurityConfig {
 
 	private static final String[] SB_PERMIT_ALL_URL = {
 			// URLs que la gateway laisse passer et les traitements de sécurité sont gérés plus bas dans les µservices
-			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token", "/oauth2/**", "/acl/v1/kaptcha",
-			"/*/v1/healthCheck", "/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
+			"/*/v1/healthCheck",
+			// authentification
+			"/authenticate", "/authenticate/**", "/anonymous", "/refresh_token",
+			// oauth2
+			"/oauth2/**",
+			// ACL
+			// Divers
+			"/acl/v1/kaptcha",
+			// acècs aux définitions des authentificateurs oauth2
 			"/acl/v1/oauth2-authenticators/icons/**", "/acl/v1/oauth2-authenticators",
-			"/acl/v1/oauth2-authenticators/**", "/konsult/v1/robots/{resource}", "/apigateway/v1/encryption-key",
+			"/acl/v1/oauth2-authenticators/**",
+			// paththrough
+			"/acl/v1/account/authenticate/", "/acl/v1/account/authenticate",
+			"/acl/v1/account/{login}/is-created-not-validated",
+			// API-GATEWAY
+			// Url pour les médias
+			"/apigateway/v1/encryption-key",
+			// konsult
+			// Divers
+			"/konsult/v1/cms/**", "/konsult/v1/sitemap/{resource}", "/konsult/v1/properties/**",
+			"/konsult/v1/robots/{resource}",
 			// Url pour le harvester
 			"/konsult/v1/datasets/metadatas/dcat" };
 
@@ -79,8 +97,10 @@ public class WebSecurityConfig {
 		});
 
 		http.httpBasic(Customizer.withDefaults()).formLogin(Customizer.withDefaults())
+				// CSRF et CORS sont gérés par les microservices, pas besoin de les gérer au niveau de la gateway
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				// gestion des exceptions
 				.exceptionHandling(e -> e.authenticationEntryPoint(new HttpBearerServerAuthenticationEntryPoint()));
 
 		if (!disableAnonymous) {

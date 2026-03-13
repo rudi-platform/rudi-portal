@@ -1,5 +1,5 @@
-import {HttpClient, HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import {inject} from '@angular/core';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
@@ -39,129 +39,37 @@ type HttpEventAny = HttpEvent<any>;
 // tslint:disable-next-line:no-any : on utilise any car on intercepte TOUT type de requête
 type HttpRequestAny = HttpRequest<any>;
 
-@Injectable()
-export class ResponseTokenInterceptor implements HttpInterceptor {
 
-    /**
-     * Sujet observant le statut : "Est-ce qu'un refresh token est en cours ?"
-     * @private
-     */
-    private refreshIsRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
+    // Injection des services
+    const authenticationService = inject(AuthenticationService);
+    const translateService = inject(TranslateService);
+    const snackBarService = inject(SnackBarService);
+    const http = inject(HttpClient);
 
-    /**
-     * URL de l'endpoint côté back pour le refresh token
-     * @private
-     */
-    private static REFRESH_TOKEN_URL = '/refresh_token';
+    // Variables d'état
+    const refreshIsRunning = ResponseTokenInterceptor_refreshIsRunning();
+    const REFRESH_TOKEN_URL = '/refresh_token';
 
-    constructor(
-        private readonly authentificationService: AuthenticationService,
-        private readonly translateService: TranslateService,
-        private readonly snackBarService: SnackBarService,
-        private readonly http: HttpClient
-    ) {
-    }
+    // Wrapper sur le type <any>
+    type HttpEventAny = HttpEvent<any>;
+    type HttpRequestAny = HttpRequest<any>;
 
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return this.execRequest(request, next);
-    }
-
-    private execRequest(request: HttpRequest<any>, next: HttpHandler) {
-        // On veut insérer le token JWT pour être authentifié avec les requêtes vers le back
-        const requestWithHeaders = this.injectHeadersAndCloneRequest(request, next);
-
-        // Si on fait un refresh on l'envoie direct
-        if (request.url.includes(ResponseTokenInterceptor.REFRESH_TOKEN_URL)) {
-            return requestWithHeaders;
-        }
-
-        // Pour chaque autre appel HTTP on va voir si un refresh est en cours
-        return this.waitForRefreshTokenOrDo(requestWithHeaders).pipe(
-            // Mais on veut gérer les cas d'erreur de manière spécifique
-            catchError((error: HttpErrorResponse) => this.handleHttpError(request, next, error)),
-            // On map bien vers le bon type de retour
-            map((project: HttpEventAny) => project)
-        );
-    }
-
-    /**
-     * Gestion d'une erreur HTTP provenant du backend RUDI
-     * @param request la requête initiale
-     * @param next le handler de l'erreur
-     * @param error l'erreur HTTP
-     */
-    private handleHttpError(request: HttpRequestAny, next: HttpHandler, error: HttpErrorResponse): Observable<HttpEventAny> {
-        // Si on a reçu une erreur métier
-        if (error.status === HTTP_CODE_BUSINESS_ERROR) {
-            const apiError = error.error;
-            const translateKey = BUSINESS_ERROR_TRANSLATE_KEY_PREFIX + '.' + apiError.code;
-            let errorMessage = this.translateService.instant(translateKey);
-            if (errorMessage == null || errorMessage === '' || errorMessage === translateKey) {
-                errorMessage = apiError.label;
-            }
-
-            this.snackBarService.openSnackBar({
-                message: errorMessage,
-                level: Level.ERROR,
-            }, BUSINESS_ERROR_SNACKBAR_DURATION);
-            return of();
-        }
-        // Si le token de validité a expiré et qu'on est pas entrain de refresh le token
-        else if (error.status === HTTP_CODE_TOKEN_EXPIRED && !this.refreshIsRunning.getValue()) {
-
-            // On doit effacer le token côté front
-            AuthenticationService.clearAuhtenticatedTokenInSession();
-
-            // on demande à refresh notre token, puis on relance l'appel initial
-            return this.refreshToken().pipe(
-                switchMap(() => this.injectHeadersAndCloneRequest(request, next))
-            );
-        }
-        // Si le token a expiré MAIS que une requête de refresh a déjà été lancée du front
-        else if (error.status === HTTP_CODE_TOKEN_EXPIRED && this.refreshIsRunning.getValue()) {
-
-            // On attend que le refresh se finisse pour traiter la requête initiale
-            return this.waitForRefreshTokenOrDo(of(request))
-                .pipe(
-                    // Le refresh s'est finit, donc on clone la requête initiale avec les nouveaux tokens JWT
-                    switchMap((requestDelayed: HttpRequestAny) => this.injectHeadersAndCloneRequest(requestDelayed, next))
-                );
-        }
-
-        // toute autre erreur est gérée normalement
-        return throwError(() => error);
-    }
-
-    /**
-     * Prend la requête en entrée puis injecete les HEADERS pour être authentifié
-     * @param request la requête de base
-     * @param next le handler de la requête
-     * @private
-     */
-    private injectHeadersAndCloneRequest(request: HttpRequestAny, next: HttpHandler): Observable<HttpEventAny> {
-        return next.handle(
+    // Fonction pour injecter les headers
+    function injectHeadersAndCloneRequest(request: HttpRequestAny): Observable<HttpEventAny> {
+        return next(
             request.clone({
-                setHeaders: this.authentificationService.getHeadersForRequestInjection(),
+                setHeaders: authenticationService.getHeadersForRequestInjection(),
                 withCredentials: true
             })
         );
     }
 
-    /**
-     * Vérifie si un refresh token est en cours, si oui, on attend la fin du refresh, sinon on fait l'appel
-     * @param observable l'appel REST voulant être fait
-     * @private
-     */
-    private waitForRefreshTokenOrDo(observable: Observable<unknown>): Observable<unknown> {
-        // Est-ce que le refresh est en cours ?
-        if (this.refreshIsRunning.getValue() === true) {
-            // Oui, alors on va attendre la prochaine émission de changement de statut
-            // sur le "refresh en cours", et quand l'émission vaut : "plus en cours"
-            // on reprend le traitement initial
-            return this.refreshIsRunning.asObservable().pipe(
-                filter((isRunning: boolean) => {
-                    return isRunning === false;
-                }),
+    // Fonction pour attendre la fin du refresh
+    function waitForRefreshTokenOrDo(observable: Observable<unknown>): Observable<unknown> {
+        if (refreshIsRunning.getValue() === true) {
+            return refreshIsRunning.asObservable().pipe(
+                filter((isRunning: boolean) => isRunning === false),
                 take(1),
                 switchMap(() => observable)
             );
@@ -170,26 +78,71 @@ export class ResponseTokenInterceptor implements HttpInterceptor {
         }
     }
 
-    /**
-     * Appel REST pour demander un refresh token
-     * @private
-     */
-    private refreshToken(): Observable<HttpEventAny> {
-        this.refreshIsRunning.next(true);
-        return this.http.get(
-            ResponseTokenInterceptor.REFRESH_TOKEN_URL,
+    // Fonction pour gérer l'erreur HTTP
+    function handleHttpError(request: HttpRequestAny, error: HttpErrorResponse): Observable<HttpEventAny> {
+        if (error.status === HTTP_CODE_BUSINESS_ERROR) {
+            const apiError = error.error;
+            const translateKey = BUSINESS_ERROR_TRANSLATE_KEY_PREFIX + '.' + apiError.code;
+            let errorMessage = translateService.instant(translateKey);
+            if (errorMessage == null || errorMessage === '' || errorMessage === translateKey) {
+                errorMessage = apiError.label;
+            }
+            snackBarService.openSnackBar({
+                message: errorMessage,
+                level: Level.ERROR,
+            }, BUSINESS_ERROR_SNACKBAR_DURATION);
+            return of();
+        } else if (error.status === HTTP_CODE_TOKEN_EXPIRED && !refreshIsRunning.getValue()) {
+            AuthenticationService.clearAuhtenticatedTokenInSession();
+            return refreshToken().pipe(
+                switchMap(() => injectHeadersAndCloneRequest(request))
+            );
+        } else if (error.status === HTTP_CODE_TOKEN_EXPIRED && refreshIsRunning.getValue()) {
+            return waitForRefreshTokenOrDo(of(request))
+                .pipe(
+                    switchMap((requestDelayed: HttpRequestAny) => injectHeadersAndCloneRequest(requestDelayed))
+                );
+        }
+        return throwError(() => error);
+    }
+
+    // Fonction pour refresh le token
+    function refreshToken(): Observable<HttpEventAny> {
+        refreshIsRunning.next(true);
+        return http.get(
+            REFRESH_TOKEN_URL,
             {
-                headers: this.authentificationService.getHeadersForRefreshToken(),
+                headers: authenticationService.getHeadersForRefreshToken(),
                 observe: 'response',
                 reportProgress: false,
                 withCredentials: false
             }
         ).pipe(
             catchError((error) => {
-                this.refreshIsRunning.next(false);
+                refreshIsRunning.next(false);
                 return throwError(() => error);
             }),
-            tap(() => this.refreshIsRunning.next(false))
+            tap(() => refreshIsRunning.next(false))
         );
     }
+
+    // Exécution principale
+    const requestWithHeaders = injectHeadersAndCloneRequest(request);
+    if (request.url.includes(REFRESH_TOKEN_URL)) {
+        return requestWithHeaders;
+    }
+    return waitForRefreshTokenOrDo(requestWithHeaders).pipe(
+        catchError((error: HttpErrorResponse) => handleHttpError(request, error)),
+        map((project: HttpEventAny) => project)
+    );
+};
+
+// Utilitaire pour stocker l'état du refresh (singleton par injection context)
+function ResponseTokenInterceptor_refreshIsRunning() {
+    // Angular inject() context is per request, so we use a static variable
+    // to mimic the previous class property
+    if (!(window as any)._ResponseTokenInterceptor_refreshIsRunning) {
+        (window as any)._ResponseTokenInterceptor_refreshIsRunning = new BehaviorSubject<boolean>(false);
+    }
+    return (window as any)._ResponseTokenInterceptor_refreshIsRunning as BehaviorSubject<boolean>;
 }

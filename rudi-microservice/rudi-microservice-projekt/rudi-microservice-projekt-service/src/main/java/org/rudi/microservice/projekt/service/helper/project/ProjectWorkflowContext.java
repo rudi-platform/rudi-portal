@@ -3,6 +3,9 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
+import static org.rudi.common.core.security.RoleCodes.MODERATOR;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,8 +61,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.common.core.security.RoleCodes.MODERATOR;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -88,7 +89,6 @@ public class ProjectWorkflowContext
 
 	private final ProjectHelper projectHelper;
 	private final DatasetService datasetService;
-
 
 	public ProjectWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			ProjectDao assetDescriptionDao, ProjectAssigmentHelper assignmentHelper, ACLHelper aclHelper,
@@ -304,6 +304,9 @@ public class ProjectWorkflowContext
 			for (LinkedDatasetEntity linkedDataset : project.getLinkedDatasets()) {
 				if (linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.RESTRICTED) {
 					try {
+						if (StringUtils.isEmpty(linkedDataset.getInitiator())) {
+							linkedDataset.setInitiator(project.getInitiator());
+						}
 						Task t = linkedDatasetTaskService.createDraft(linkedDatasetMapper.entityToDto(linkedDataset));
 						linkedDatasetTaskService.startTask(t);
 					} catch (Exception e) {
@@ -318,6 +321,9 @@ public class ProjectWorkflowContext
 		if (CollectionUtils.isNotEmpty(project.getDatasetRequests())) {
 			for (NewDatasetRequestEntity newDatasetRequest : project.getDatasetRequests()) {
 				try {
+					if (StringUtils.isEmpty(newDatasetRequest.getInitiator())) {
+						newDatasetRequest.setInitiator(project.getInitiator());
+					}
 					Task t = newDatasetRequestTaskService
 							.createDraft(newDatasetRequestMapper.entityToDto(newDatasetRequest));
 					newDatasetRequestTaskService.startTask(t);
@@ -369,10 +375,9 @@ public class ProjectWorkflowContext
 		String result = null;
 		User owner = aclHelper.getUserByUUID(assetDescription.getOwnerUuid());
 		if (owner != null) {
-			if(StringUtils.isNotEmpty(owner.getFirstname()) && StringUtils.isNotEmpty(owner.getLastname())){
+			if (StringUtils.isNotEmpty(owner.getFirstname()) && StringUtils.isNotEmpty(owner.getLastname())) {
 				result = String.format("%s %s", owner.getFirstname(), owner.getLastname()).trim();
-			}
-			else {
+			} else {
 				result = owner.getLogin();
 			}
 		} else {
@@ -406,8 +411,8 @@ public class ProjectWorkflowContext
 	@Transactional(readOnly = false)
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void archiveProject(ScriptContext context, ExecutionEntity executionEntity, EMailData producerEmailData,
-			EMailData moderatorEmailData, EMailData projectOwnerEmailData)
-			throws EMailException, GenerationException, IOException, GenerationModelNotFoundException, DataverseAPIException {
+			EMailData moderatorEmailData, EMailData projectOwnerEmailData) throws EMailException, GenerationException,
+			IOException, GenerationModelNotFoundException, DataverseAPIException {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
 		String ownerName = computeProjectOwnerName(context, executionEntity);
 		if (processInstanceBusinessKey != null) {
@@ -415,7 +420,8 @@ public class ProjectWorkflowContext
 			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
 
 			if (assetDescription != null) {
-				projectHelper.archiveProject(assetDescription, ProjectStatus.DISENGAGED, LinkedDatasetStatus.DISENGAGED);
+				projectHelper.archiveProject(assetDescription, ProjectStatus.DISENGAGED,
+						LinkedDatasetStatus.DISENGAGED);
 
 				// post traitement, envoi du mail uniquement dans le workflow
 				sendEmailToRestrictedDatasetProducers(executionEntity, assetDescription, producerEmailData);
@@ -439,10 +445,12 @@ public class ProjectWorkflowContext
 		}
 	}
 
-	private void sendEmailToRestrictedDatasetProducers(ExecutionEntity executionEntity, ProjectEntity assetDescription, EMailData producerEmailData) throws DataverseAPIException {
-		for(LinkedDatasetEntity linkedDataset : assetDescription.getLinkedDatasets()) {
+	private void sendEmailToRestrictedDatasetProducers(ExecutionEntity executionEntity, ProjectEntity assetDescription,
+			EMailData producerEmailData) throws DataverseAPIException {
+		for (LinkedDatasetEntity linkedDataset : assetDescription.getLinkedDatasets()) {
 			Metadata dataset = datasetService.getDataset(linkedDataset.getDatasetUuid());
-			if(dataset.getAccessCondition().getConfidentiality() != null && Boolean.TRUE.equals(dataset.getAccessCondition().getConfidentiality().getRestrictedAccess())) {
+			if (dataset.getAccessCondition().getConfidentiality() != null
+					&& Boolean.TRUE.equals(dataset.getAccessCondition().getConfidentiality().getRestrictedAccess())) {
 				sendEmailToProducer(executionEntity, assetDescription, dataset, producerEmailData);
 			}
 		}

@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input, OnInit} from '@angular/core';
 import {BarchartService} from '@core/services/selfdata-dataset/barchart.service';
 import {BarChartData, TpbcDataInterface} from '@core/services/selfdata-dataset/tpbcData.interface';
@@ -12,7 +12,7 @@ import {D3LineAndPlotChartComponent} from '../d3-line-and-plot-chart/d3-line-and
     selector: 'app-temporal-barchart-data',
     templateUrl: './temporal-barchart-data.component.html',
     styleUrls: ['./temporal-barchart-data.component.scss'],
-    imports: [CardComponent, LoaderComponent, NgIf, D3LineAndPlotChartComponent, D3BarChartComponent]
+    imports: [CardComponent, LoaderComponent, D3LineAndPlotChartComponent, D3BarChartComponent]
 })
 export class TemporalBarchartDataComponent implements OnInit {
     @Input() isLoading: boolean;

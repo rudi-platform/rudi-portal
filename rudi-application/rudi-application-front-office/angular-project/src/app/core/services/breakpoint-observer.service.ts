@@ -49,12 +49,12 @@ export interface MediaSize {
 export type NgClassObject = { [p: string]: boolean };
 
 class ScreenBreakpoints {
-    public static XSBREAKPOINT = '(min-width:0px) and (max-width:459px)';
-    public static SMBREAKPOINT = '(min-width:460px) and (max-width:767px)';
-    public static MDBREAKPOINT = '(min-width:768px) and (max-width:1023px)';
-    public static LGBREAKPOINT = '(min-width:1024px) and (max-width:1439px)';
-    public static XLBREAKPOINT = '(min-width:1440px) and (max-width:1824px)';
-    public static XXLBREAKPOINT = '(min-width:1825px)';
+    public static readonly XSBREAKPOINT = '(min-width:0px) and (max-width:459px)';
+    public static readonly SMBREAKPOINT = '(min-width:460px) and (max-width:767px)';
+    public static readonly MDBREAKPOINT = '(min-width:768px) and (max-width:1023px)';
+    public static readonly LGBREAKPOINT = '(min-width:1024px) and (max-width:1439px)';
+    public static readonly XLBREAKPOINT = '(min-width:1440px) and (max-width:1824px)';
+    public static readonly XXLBREAKPOINT = '(min-width:1825px)';
 }
 
 @Injectable({
@@ -86,7 +86,7 @@ export class BreakpointObserverService {
      * Constructeur
      * @param breakpointObserver service observation du contexte de visualisation
      */
-    constructor(private breakpointObserver: BreakpointObserver) {
+    constructor(private readonly breakpointObserver: BreakpointObserver) {
         this.getMediaSize();
     }
 

@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = { "org.rudi.microservice.gateway.facade" })
+@SpringBootApplication(scanBasePackages = { "org.rudi.common.facade.gateway", "org.rudi.microservice.gateway.facade" })
 @EnableScheduling
 @PropertySource(value = { "classpath:gateway/gateway-common.properties" })
 @PropertySource(value = {

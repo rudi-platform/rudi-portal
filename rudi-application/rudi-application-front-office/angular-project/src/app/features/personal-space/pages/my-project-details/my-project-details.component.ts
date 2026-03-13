@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatCard} from '@angular/material/card';
@@ -52,7 +51,7 @@ import {ProjectDatasetsTabComponent} from '../../components/project-datasets-tab
     selector: 'app-my-project-details',
     templateUrl: './my-project-details.component.html',
     styleUrls: ['./my-project-details.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, ProjectHeadingComponent, TabsComponent_1, TabComponent_1, MatCard, ProjectMainInformationsComponent, ProjectDatasetsTabComponent, NgIf, ProjectApiTabComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectBasicDetailsComponent, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, ProjectHeadingComponent, TabsComponent_1, TabComponent_1, MatCard, ProjectMainInformationsComponent, ProjectDatasetsTabComponent, ProjectApiTabComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectBasicDetailsComponent, TranslatePipe]
 })
 export class MyProjectDetailsComponent implements OnInit {
     public childrenIsLoading: boolean;
@@ -71,8 +70,8 @@ export class MyProjectDetailsComponent implements OnInit {
     protected readonly Status = Status;
 
     constructor(private readonly route: ActivatedRoute,
-                private projectDependenciesService: ProjectDependenciesService,
-                private projectDependenciesFetchers: ProjectDependenciesFetchers,
+                private readonly projectDependenciesService: ProjectDependenciesService,
+                private readonly projectDependenciesFetchers: ProjectDependenciesFetchers,
                 private readonly pageTitleService: PageTitleService,
                 private readonly organizationService: OrganizationMetierService,
                 private readonly logService: LogService,
@@ -133,13 +132,12 @@ export class MyProjectDetailsComponent implements OnInit {
 
             if (this.project.project_status != ProjectStatus.Validated) {
                 this._displayApiTab = false;
+            } else if (this.project.owner_type === OwnerType.User) {
+                this._displayApiTab = true;
             } else {
-                if (this.project.owner_type === OwnerType.User) {
-                    this._displayApiTab = true;
-                } else {
-                    this.isAdministrator(this.project.owner_uuid);
-                }
+                this.isAdministrator(this.project.owner_uuid);
             }
+
             this.projectLogo = dependencies.logo;
             this.projectOwnerInfo = dependencies.ownerInfo;
             this.loading = false;
@@ -163,7 +161,7 @@ export class MyProjectDetailsComponent implements OnInit {
      * @param fieldName le nom du champ du projet
      */
     getDateToFormat(fieldName: string): string {
-        if (!this.project || this.project[fieldName] == null) {
+        if (this.project?.[fieldName] == null) {
             return null;
         }
 

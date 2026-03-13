@@ -8,7 +8,7 @@ describe('AjouterJeuDonneesDialogComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [AddDataSetDialogComponent]
+            imports: [AddDataSetDialogComponent]
         })
             .compileComponents();
     });

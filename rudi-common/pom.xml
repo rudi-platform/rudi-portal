@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-parent</artifactId>
-		<version>3.3.8</version>
+		<version>3.3.9</version>
 	</parent>
 
 	<artifactId>rudi-common</artifactId>
@@ -20,6 +20,7 @@
 		<module>rudi-common-storage</module>
 		<module>rudi-common-service</module>
 		<module>rudi-common-facade</module>
+		<module>rudi-common-facade-gateway</module>
 	</modules>
 
 </project>

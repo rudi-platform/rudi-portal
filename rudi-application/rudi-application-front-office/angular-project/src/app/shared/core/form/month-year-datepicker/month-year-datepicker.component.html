@@ -1,18 +1,20 @@
 <div class="field-content">
-    <mat-form-field appearance="outline" [formGroup]="formGroup">
-        <input matInput [placeholder]="placeholder" [min]="startDate" [matDatepicker]="datepicker" [value]="startDate"
-               [formControlName]="controlName" [readonly]="isDisable">
-        <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-        <mat-datepicker #datepicker
-                        startView="multi-year"
-                        (monthSelected)="chosenMonthHandler($event)"
-                        (yearSelected)="chosenYearHandler($event)"
-                        [disabled]="isDisable"
-                        [startAt]="startDate">
-        </mat-datepicker>
+  <mat-form-field appearance="outline" [formGroup]="formGroup">
+    <input matInput [placeholder]="placeholder" [min]="startDate" [matDatepicker]="datepicker" [value]="startDate"
+      [formControlName]="controlName" [readonly]="isDisable">
+      <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+      <mat-datepicker #datepicker
+        startView="multi-year"
+        (monthSelected)="chosenMonthHandler($event)"
+        (yearSelected)="chosenYearHandler($event)"
+        [disabled]="isDisable"
+        [startAt]="startDate">
+      </mat-datepicker>
     </mat-form-field>
-    <div class="error-label" *ngIf="hasErrors()">
+    @if (hasErrors()) {
+      <div class="error-label">
         <em class="fa fa-info-circle fa-2x me-2"></em> {{errorMessage}}
-    </div>
-</div>
+      </div>
+    }
+  </div>
 

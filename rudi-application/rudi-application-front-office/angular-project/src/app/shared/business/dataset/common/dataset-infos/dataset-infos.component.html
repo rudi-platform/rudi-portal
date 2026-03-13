@@ -1,24 +1,34 @@
 <div class="my-3" [ngClass]="{'jdd-card-lg container-global': mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl,'jdd-card-md flex-row': mediaSize.isMd || mediaSize.isSm,
 'jdd-card-xs flex-row': mediaSize.isXs}" (click)="handleClickOnDatasetCard(currentJddId, resourceTitle)">
-    <div class="logo-container" *ngIf="showLogo">
-        <app-organization-logo [organizationId]="organizationId"
-                               [defaultAlt]="defaultAlt"
-                               [defaultLogo]="defaultLogo"
-                               cssClass="with-border"
-                               organizationType="producer"
-        ></app-organization-logo>
+  @if (showLogo) {
+    <div class="logo-container">
+      <app-organization-logo [organizationId]="organizationId"
+        [defaultAlt]="defaultAlt"
+        [defaultLogo]="defaultLogo"
+        cssClass="with-border"
+        organizationType="producer"
+      ></app-organization-logo>
     </div>
-    <div class="text-container">
-        <div class="dataset-info">
-            <div class="dataset-info-organization_name" *ngIf="organizationName"><span >{{ organizationName }}</span>
-            </div>
-            <div *ngIf="resourceTitle"
-                 class="dataset-info-resource_title">
-                <mat-icon [svgIcon]="restrictedDatasetIcon" *ngIf="isRestricted"
-                          class="svg-style"></mat-icon>
-                {{ resourceTitle }}
-            </div>
-        </div>
-    </div>
+  }
+  <div class="text-container">
+    <div class="dataset-info">
+      @if (organizationName) {
+        <div class="dataset-info-organization_name"><span >{{ organizationName }}</span>
+      </div>
+    }
+    @if (resourceTitle) {
+      <div
+        class="dataset-info-resource_title">
+        @if (isRestricted) {
+          <mat-icon [svgIcon]="restrictedDatasetIcon"
+          class="svg-style"></mat-icon>
+        }
+        {{ resourceTitle }}
+      </div>
+    }
+  </div>
 </div>
-<mat-divider *ngIf="divider"></mat-divider>
+</div>
+@if (divider) {
+  <mat-divider></mat-divider>
+}

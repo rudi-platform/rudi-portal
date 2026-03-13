@@ -108,6 +108,6 @@ export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item
      * Prédicat pour filter les items qui ne sont pas cachés.
      */
     get filterItemsWithoutHiddenValuesPredicate(): FilterPredicate<I> {
-        return item => !this.hiddenValues || !this.hiddenValues.find(hiddenValue => hiddenValue === item.value);
+        return item => !this.hiddenValues?.find(hiddenValue => hiddenValue === item.value);
     }
 }

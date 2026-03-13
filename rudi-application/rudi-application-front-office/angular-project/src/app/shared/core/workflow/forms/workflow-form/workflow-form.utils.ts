@@ -15,7 +15,7 @@ const REQUIRED_WORKFLOW_VALIDATOR: WorkflowValidator = {
 })
 export class WorkflowFormUtils {
     constructor(
-        private logger: LogService
+        private readonly logger: LogService
     ) {
     }
 
@@ -59,7 +59,7 @@ export class WorkflowFormUtils {
             return Validators.required;
         }
         this.logger.warning(
-            `Le validateur \"${workflowValidator.type}\" du workflow n'a pas d'équivalent côté Angular.`,
+            `Le validateur "${workflowValidator.type}" du workflow n'a pas d'équivalent côté Angular.`,
             workflowValidator
         );
         return null;

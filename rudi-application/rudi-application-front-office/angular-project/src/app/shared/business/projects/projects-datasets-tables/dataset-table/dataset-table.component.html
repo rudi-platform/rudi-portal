@@ -1,100 +1,104 @@
 <div class="table-jdd">
-    <hr *ngIf="showHorizontalSeparator">
+  @if (showHorizontalSeparator) {
+    <hr>
+    }
     <span [translate]="title" class="table-title-style"></span>
     <app-loader [active]="tableLoading" [allPage]="false" [isLight]="true" [noText]="true"></app-loader>
-    <table
-        *ngIf="!tableLoading"
+    @if (!tableLoading) {
+      <table
         [attr.aria-label]="ariaLabel | translate" [dataSource]="dataSource"
         [hidden]="tableLoading || dataSource.data.length === 0"
         class="mat-table-demandes-acces"
         mat-table
-    >
+        >
         <!-- Date d'ajout du JDD -->
         <ng-container matColumnDef="addedDate">
-            <th *matHeaderCellDef class="table-header first-row" mat-header-cell>
-                {{ 'personalSpace.project.tabs.datasets.openDatasets.columnAddedData'|translate }}
-            </th>
-            <td *matCellDef="let element" class="text-center" mat-cell> {{ element.addedDate }}</td>
+          <th *matHeaderCellDef class="table-header first-row" mat-header-cell>
+            {{ 'personalSpace.project.tabs.datasets.openDatasets.columnAddedData'|translate }}
+          </th>
+          <td *matCellDef="let element" class="text-center" mat-cell> {{ element.addedDate }}</td>
         </ng-container>
-
         <!-- Title du JDD -->
         <ng-container matColumnDef="title">
-            <th *matHeaderCellDef class="table-header second-row text-start" mat-header-cell>
-                <div class="table-header-content">
-                    {{ 'personalSpace.project.tabs.datasets.openDatasets.columnDataset'|translate }}
+          <th *matHeaderCellDef class="table-header second-row text-start" mat-header-cell>
+            <div class="table-header-content">
+              {{ 'personalSpace.project.tabs.datasets.openDatasets.columnDataset'|translate }}
+            </div>
+          </th>
+          <td *matCellDef="let element" class="titre-jdd" mat-cell>
+            <app-dataset-infos
+              [autoClose]="true"
+              [ngbPopover]="myPopover"
+              [organizationId]="element?.datasetOrganizationId"
+              [organizationName]="element?.organization_name"
+              [resourceTitle]="element?.datasetTitle"
+              [showLogo]="true"
+              [defaultLogo]="defaultLogo"
+              [defaultAlt]="defaultAlt"
+              placement="bottom"
+              popoverClass="popover-content"
+              triggers="mouseenter:mouseleave"
+            ></app-dataset-infos>
+            <ng-template #myPopover>
+              <div class="popover-content-child">
+                <div class="popover-text-style">
+                  <p class="firstParagraph">{{ element?.datasetTitle }}</p>
                 </div>
-            </th>
-            <td *matCellDef="let element" class="titre-jdd" mat-cell>
-                <app-dataset-infos
-                    [autoClose]="true"
-                    [ngbPopover]="myPopover"
-                    [organizationId]="element?.datasetOrganizationId"
-                    [organizationName]="element?.organization_name"
-                    [resourceTitle]="element?.datasetTitle"
-                    [showLogo]="true"
-                    [defaultLogo]="defaultLogo"
-                    [defaultAlt]="defaultAlt"
-                    placement="bottom"
-                    popoverClass="popover-content"
-                    triggers="mouseenter:mouseleave"
-                ></app-dataset-infos>
-                <ng-template #myPopover>
-                    <div class="popover-content-child">
-                        <div class="popover-text-style">
-                            <p class="firstParagraph">{{ element?.datasetTitle }}</p>
-                        </div>
-                    </div>
-                </ng-template>
-
-            </td>
+              </div>
+            </ng-template>
+          </td>
         </ng-container>
-
         <!-- Status Column -->
         <ng-container matColumnDef="status">
-            <th *matHeaderCellDef class="table-header" mat-header-cell>
-                {{ 'personalSpace.project.tabs.datasets.openDatasets.columnStatus'|translate }}
-            </th>
-            <td *matCellDef="let element" class="text-center" mat-cell>
-                {{ element?.functional_status }}
-            </td>
+          <th *matHeaderCellDef class="table-header" mat-header-cell>
+            {{ 'personalSpace.project.tabs.datasets.openDatasets.columnStatus'|translate }}
+          </th>
+          <td *matCellDef="let element" class="text-center" mat-cell>
+            {{ element?.functional_status }}
+          </td>
         </ng-container>
-
         <!-- Delete-img Column -->
         <ng-container matColumnDef="delete-action">
-            <th *matHeaderCellDef class="table-header" mat-header-cell>
-            </th>
-            <td *matCellDef="let element" class="text-end" mat-cell>
-                <button (click)="deleteAction(element)" *ngIf="hasDeleteButton" class="action-btn-icon" mat-mini-fab>
-                    <mat-icon>delete</mat-icon>
-                </button>
-            </td>
+          <th *matHeaderCellDef class="table-header" mat-header-cell>
+          </th>
+          <td *matCellDef="let element" class="text-end" mat-cell>
+            @if (hasDeleteButton) {
+              <button (click)="deleteAction(element)" class="action-btn-icon" mat-mini-fab>
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
         </ng-container>
-
         <!-- Comment Column -->
         <ng-container matColumnDef="comment-action">
-            <th *matHeaderCellDef class="table-header" mat-header-cell>
-            </th>
-            <td *matCellDef="let element" class="text-end" mat-cell>
-                <button (click)="commentAction(element)" *ngIf="hasCommentButton" class="action-btn-icon" mat-mini-fab>
-                    <mat-icon>comment</mat-icon>
-                </button>
-            </td>
+          <th *matHeaderCellDef class="table-header" mat-header-cell>
+          </th>
+          <td *matCellDef="let element" class="text-end" mat-cell>
+            @if (hasCommentButton) {
+              <button (click)="commentAction(element)" class="action-btn-icon" mat-mini-fab>
+                <mat-icon>comment</mat-icon>
+              </button>
+            }
+          </td>
         </ng-container>
         <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
         <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-    </table>
+      </table>
+    }
 
-    <div *ngIf="hasAddButton">
+    @if (hasAddButton) {
+      <div>
         <button
-            (click)="addAction()"
-            (mouseenter)="onMouseEnterAddButton()"
-            (mouseleave)="onMouseLeaveAddButton()"
-            [disabled]="disableAddButton"
-            class="button mat-stroked-button add-link-button"
-            mat-raised-button
-        >
-            <mat-icon [svgIcon]="addButtonIcon"></mat-icon>
-            <span>{{ 'personalSpace.project.tabs.datasets.addButton' | translate }}</span>
+          (click)="addAction()"
+          (mouseenter)="onMouseEnterAddButton()"
+          (mouseleave)="onMouseLeaveAddButton()"
+          [disabled]="disableAddButton"
+          class="button mat-stroked-button add-link-button"
+          mat-raised-button
+          >
+          <mat-icon [svgIcon]="addButtonIcon"></mat-icon>
+          <span>{{ 'personalSpace.project.tabs.datasets.addButton' | translate }}</span>
         </button>
-    </div>
-</div>
+      </div>
+    }
+  </div>

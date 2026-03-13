@@ -21,7 +21,7 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/hero_section_default_pi
     imports: [LoaderComponent, SearchBoxComponent, AsyncPipe]
 })
 export class HeroSectionComponent implements OnInit, OnDestroy {
-    private destroy$: Subject<boolean>;
+    private readonly destroy$: Subject<boolean>;
 
     @Input() heroDescription: HeroDescription;
 
@@ -35,12 +35,12 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     searchbarPlaceholder: string;
 
     constructor(
-        private filtersService: FiltersService,
-        private konsultService: KonsultService,
-        private translateService: TranslateService,
-        private imageLogoService: ImageLogoService,
-        private logger: LogService,
-        private router: Router
+        private readonly filtersService: FiltersService,
+        private readonly konsultService: KonsultService,
+        private readonly translateService: TranslateService,
+        private readonly imageLogoService: ImageLogoService,
+        private readonly logger: LogService,
+        private readonly router: Router
     ) {
         this.destroy$ = new Subject<boolean>();
     }

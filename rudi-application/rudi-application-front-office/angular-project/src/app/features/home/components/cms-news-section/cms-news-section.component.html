@@ -1,21 +1,26 @@
-<div class="news-section-container" *ngIf="displayComponent">
+@if (displayComponent) {
+  <div class="news-section-container">
     <h2 class="title">{{ 'home.newsSection.title' | translate }}</h2>
-
     <div class="row">
+      <div
+        [ngClass]="{'col-6 news-with-image': displayNewsWithoutImage && mediaSize.isDeviceDesktop, 'col-12': mediaSize.isDeviceMobile || !displayNewsWithoutImage}"
+        [innerHTML]="news.contentNewsWithImage">
+      </div>
+      @if (displayNewsWithoutImage) {
         <div
-            [ngClass]="{'col-6 news-with-image': displayNewsWithoutImage && mediaSize.isDeviceDesktop, 'col-12': mediaSize.isDeviceMobile || !displayNewsWithoutImage}"
-            [innerHTML]="news.contentNewsWithImage">
+          [ngClass]="{'news-without-image col-6': mediaSize.isDeviceDesktop, 'col-12': mediaSize.isDeviceMobile}">
+          @for (newsWithoutImage of news.contentsNewsWithoutImage; track newsWithoutImage) {
+            <div
+              [ngClass]="{'divider': mediaSize.isDeviceMobile}"
+            [innerHTML]="newsWithoutImage"></div>
+          }
         </div>
-        <div *ngIf="displayNewsWithoutImage"
-             [ngClass]="{'news-without-image col-6': mediaSize.isDeviceDesktop, 'col-12': mediaSize.isDeviceMobile}">
-            <div *ngFor="let newsWithoutImage of news.contentsNewsWithoutImage"
-                 [ngClass]="{'divider': mediaSize.isDeviceMobile}"
-                 [innerHTML]="newsWithoutImage"></div>
-        </div>
+      }
     </div>
     <div class="text-center">
-        <button class="button-redirect" (click)="redirectToNews()">
-            <span>{{ 'home.newsSection.seeMoreNews' | translate }}</span>
-        </button>
+      <button class="button-redirect" (click)="redirectToNews()">
+        <span>{{ 'home.newsSection.seeMoreNews' | translate }}</span>
+      </button>
     </div>
-</div>
+  </div>
+}

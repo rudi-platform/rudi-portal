@@ -1,17 +1,16 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialogActions} from '@angular/material/dialog';
-import {MatIconRegistry, MatIcon} from '@angular/material/icon';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {ProjectDatasetPictoType} from '@features/project/model/project-dataset-picto-type';
-import {DataRequestItem} from '../../model/data-request-item';
-import {CdkScrollable} from '@angular/cdk/scrolling';
-import {MatIconButton, MatButton} from '@angular/material/button';
-import {MatLabel, MatHint, MatFormField, MatError} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
-import {NgIf} from '@angular/common';
+
 import {TranslatePipe} from '@ngx-translate/core';
+import {DataRequestItem} from '../../model/data-request-item';
 
 /**
  * Les données que peuvent accepter la Dialog
@@ -27,7 +26,7 @@ export interface NewDataSetDialogData {
     selector: 'app-edit-new-data-set-dialog',
     templateUrl: './edit-new-data-set-dialog.component.html',
     styleUrls: ['./edit-new-data-set-dialog.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatDialogClose, MatIcon, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, NgIf, MatError, MatDialogActions, MatButton, TranslatePipe]
+    imports: [MatDialogContent, MatIconButton, MatDialogClose, MatIcon, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MatDialogActions, MatButton, TranslatePipe]
 })
 export class EditNewDataSetDialogComponent implements OnInit {
 
@@ -61,8 +60,8 @@ export class EditNewDataSetDialogComponent implements OnInit {
     constructor(
         public dialogRef: MatDialogRef<EditNewDataSetDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public dialogData: NewDataSetDialogData,
-        private matIconRegistry: MatIconRegistry,
-        private domSanitizer: DomSanitizer,
+        private readonly matIconRegistry: MatIconRegistry,
+        private readonly domSanitizer: DomSanitizer,
         private readonly formBuilder: FormBuilder,
         private readonly breakpointObserver: BreakpointObserverService) {
         if (this.dialogData) {

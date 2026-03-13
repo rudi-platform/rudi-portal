@@ -1,4 +1,4 @@
-@import "responsive";
+@use "responsive";
 
 .project-values-section-container {
     margin: 30px auto 0 auto;
@@ -121,23 +121,23 @@
     }
 }
 
-@include xs() {
+@include responsive.xs() {
     @include mobile-screen;
 }
 
-@include sm() {
+@include responsive.sm() {
     @include mobile-screen;
 }
 
-@include md() {
+@include responsive.md() {
     @include tablet-screen;
 }
 
-@include lg() {
+@include responsive.lg() {
     @include desktop-screen;
 }
 
-@include xl() {
+@include responsive.xl() {
     @include desktop-screen;
 }
 

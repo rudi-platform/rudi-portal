@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
@@ -18,7 +18,7 @@ import {ProjectCatalogItem} from '../../model/project-catalog-item';
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, NgClass, ExtendedModule, PageTitleComponent, BannerComponent, NgIf, OrderComponent, ProjectListComponent, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, NgClass, ExtendedModule, PageTitleComponent, BannerComponent, OrderComponent, ProjectListComponent, TranslatePipe]
 })
 export class ListComponent implements OnInit {
     mediaSize: MediaSize;
@@ -26,8 +26,8 @@ export class ListComponent implements OnInit {
     projectListTotal = 0;
     order = DEFAULT_PROJECT_ORDER;
 
-    constructor(private projektMetierService: ProjektMetierService,
-                private aclService: AclService,
+    constructor(private readonly projektMetierService: ProjektMetierService,
+                private readonly aclService: AclService,
                 private readonly breakpointObserver: BreakpointObserverService,
                 private readonly router: Router,
                 private readonly uriComponentCodec: URIComponentCodec,

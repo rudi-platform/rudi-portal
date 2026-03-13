@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -11,12 +10,12 @@ import {ProjectDatasetPictoType} from '../../model/project-dataset-picto-type';
     selector: 'app-project-dataset-list',
     templateUrl: './project-dataset-list.component.html',
     styleUrls: ['./project-dataset-list.component.scss'],
-    imports: [NgFor, OrganizationLogoComponent, NgIf, MatIcon]
+    imports: [OrganizationLogoComponent, MatIcon]
 })
 export class ProjectDatasetListComponent {
 
-    private static DEFAULT_ORGANIZATION_LOGO: string = '/assets/images/rudi_default_picto_organization.png';
-    private static DEFAULT_NEW_DATASET_REQUEST_LOGO: string = '/assets/images/rudi_picto_nouvelle_demande.svg';
+    private static readonly DEFAULT_ORGANIZATION_LOGO: string = '/assets/images/rudi_default_picto_organization.png';
+    private static readonly DEFAULT_NEW_DATASET_REQUEST_LOGO: string = '/assets/images/rudi_picto_nouvelle_demande.svg';
 
     @Input()
     public items: ProjectDatasetItem[];

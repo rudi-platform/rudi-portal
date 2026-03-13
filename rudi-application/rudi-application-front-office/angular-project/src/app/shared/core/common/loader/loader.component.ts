@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {NgIf, NgClass} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 
 /**
@@ -8,9 +8,10 @@ import {ExtendedModule} from '@angular/flex-layout/extended';
  */
 @Component({
     selector: 'app-loader',
+    standalone: true,
     templateUrl: './loader.component.html',
     styleUrls: ['./loader.component.scss'],
-    imports: [NgIf, NgClass, ExtendedModule]
+    imports: [NgClass, ExtendedModule]
 })
 export class LoaderComponent implements OnInit {
     /**
@@ -49,7 +50,7 @@ export class LoaderComponent implements OnInit {
     description: string;
 
 
-    constructor(private translate: TranslateService) {
+    constructor(private readonly translate: TranslateService) {
     }
 
     ngOnInit(): void {

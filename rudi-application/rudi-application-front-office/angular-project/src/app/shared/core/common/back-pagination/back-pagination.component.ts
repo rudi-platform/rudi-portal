@@ -1,11 +1,11 @@
+import {NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ExtendedModule} from '@angular/flex-layout/extended';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
 import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {NgClass} from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
-import {TranslatePipe} from '@ngx-translate/core';
 
 
 const FIRST_PAGE = 1;
@@ -23,7 +23,7 @@ export class BackPaginationComponent {
     @Input() id: string;
     @Input() backPaginationSort = new BackPaginationSort();
     @Output()
-    private loadData: EventEmitter<SortTableInterface> = new EventEmitter<SortTableInterface>();
+    private readonly loadData: EventEmitter<SortTableInterface> = new EventEmitter<SortTableInterface>();
     @Input()
     addScrolling = true;
     mediaSize: MediaSize;

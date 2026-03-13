@@ -1,11 +1,11 @@
-@import "common-style";
+@use "common-style";
 
 .mat-drawer-content {
     overflow-x: hidden;
 }
 
 .bandeau-btn-access {
-    @include button-blue;
+    @include common-style.button-blue;
 
     .icon-style {
         color: white;
@@ -86,7 +86,7 @@
             }
 
             .button-contact {
-                @include button-blue;
+                @include common-style.button-blue;
             }
         }
 

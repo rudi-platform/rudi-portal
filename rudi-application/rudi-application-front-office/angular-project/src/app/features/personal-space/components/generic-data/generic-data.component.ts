@@ -1,4 +1,3 @@
-import {NgFor, NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {LanguageService} from '@core/i18n/language.service';
 import {GdataDataInterface} from '@core/services/selfdata-dataset/gdataData.interface';
@@ -10,7 +9,7 @@ import {DictionaryEntry} from 'micro_service_modules/api-kaccess';
     selector: 'app-generic-data',
     templateUrl: './generic-data.component.html',
     styleUrls: ['./generic-data.component.scss'],
-    imports: [CardComponent, LoaderComponent, NgIf, NgFor]
+    imports: [CardComponent, LoaderComponent]
 })
 export class GenericDataComponent {
     @Input() isLoading: boolean;

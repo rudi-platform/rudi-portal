@@ -2,7 +2,7 @@ import {PasswordStrengthCriterion} from '@shared/core/form/password-strength/pas
 
 export class PasswordStrengthCriteria implements Iterable<PasswordStrengthCriterion> {
 
-    constructor(private criterionList: PasswordStrengthCriterion[]) {
+    constructor(private readonly criterionList: PasswordStrengthCriterion[]) {
     }
 
     /**

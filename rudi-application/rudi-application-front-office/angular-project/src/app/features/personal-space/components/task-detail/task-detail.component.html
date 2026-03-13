@@ -1,26 +1,36 @@
 <div class="card-description-keyword">
-    <mat-card class="card">
-        <mat-card-title
-            class="card-demand-label">{{'personalSpace.requestDetail.title'|translate}}
-        </mat-card-title>
-        <app-loader [active]="loading" [allPage]="false" [noText]="true" [isLight]="true"></app-loader>
-        <mat-card-content *ngIf="!loading">
-            <div class="vertical-space" *ngIf="!isNewRequest">
-                <label class="data-label">{{'personalSpace.requestDetail.datasetTitle'|translate}}</label> <br>
-                <span class="data-value">{{requestDisplayData?.datasetTitle}}</span>
-            </div>
-            <div class="vertical-space" *ngIf="requestDisplayData?.receivedDate">
-                <label class="data-label">{{'personalSpace.requestDetail.requestDate'|translate}}</label> <br>
-                <span class="data-value">{{requestDisplayData?.receivedDate?.toLocaleDateString()}}</span>
-            </div>
-            <div class="vertical-space" *ngIf="!isNewRequest">
-                <label class="data-label">{{'personalSpace.requestDetail.endDate'|translate}}</label> <br>
-                <span class="data-value">{{formatEndDate(requestDisplayData?.endDate)}}</span>
-            </div>
-            <div class="vertical-space" *ngIf="requestDisplayData?.comment && requestDisplayData?.comment.trim() !== ''">
-                <label class="data-label">{{'personalSpace.requestDetail.comment'|translate}}</label> <br>
-                <span class="data-value">{{requestDisplayData?.comment}}</span>
-            </div>
-        </mat-card-content>
-    </mat-card>
+  <mat-card class="card">
+    <mat-card-title
+      class="card-demand-label">{{'personalSpace.requestDetail.title'|translate}}
+    </mat-card-title>
+    <app-loader [active]="loading" [allPage]="false" [noText]="true" [isLight]="true"></app-loader>
+    @if (!loading) {
+      <mat-card-content>
+        @if (!isNewRequest) {
+          <div class="vertical-space">
+            <label class="data-label">{{'personalSpace.requestDetail.datasetTitle'|translate}}</label> <br>
+            <span class="data-value">{{requestDisplayData?.datasetTitle}}</span>
+          </div>
+        }
+        @if (requestDisplayData?.receivedDate) {
+          <div class="vertical-space">
+            <label class="data-label">{{'personalSpace.requestDetail.requestDate'|translate}}</label> <br>
+            <span class="data-value">{{requestDisplayData?.receivedDate?.toLocaleDateString()}}</span>
+          </div>
+        }
+        @if (!isNewRequest) {
+          <div class="vertical-space">
+            <label class="data-label">{{'personalSpace.requestDetail.endDate'|translate}}</label> <br>
+            <span class="data-value">{{formatEndDate(requestDisplayData?.endDate)}}</span>
+          </div>
+        }
+        @if (requestDisplayData?.comment && requestDisplayData?.comment.trim() !== '') {
+          <div class="vertical-space">
+            <label class="data-label">{{'personalSpace.requestDetail.comment'|translate}}</label> <br>
+            <span class="data-value">{{requestDisplayData?.comment}}</span>
+          </div>
+        }
+      </mat-card-content>
+    }
+  </mat-card>
 </div>

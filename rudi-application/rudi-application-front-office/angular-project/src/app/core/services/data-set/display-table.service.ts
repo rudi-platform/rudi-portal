@@ -18,13 +18,13 @@ import {readFile} from './display.function';
 })
 export class DisplayTableService {
 
-    static FILE_SIZE_ERROR_CODE = 12;
+    static readonly FILE_SIZE_ERROR_CODE = 12;
 
     /**
      * le nom de la première "Feuille" de calcul d'un fichier CSV ou XLS importé dans SheetJS
      * @private
      */
-    private static FIRST_SHEET_NAME = 'Sheet1';
+    private static readonly FIRST_SHEET_NAME = 'Sheet1';
 
     constructor(
         private readonly konsultMetierService: KonsultMetierService,

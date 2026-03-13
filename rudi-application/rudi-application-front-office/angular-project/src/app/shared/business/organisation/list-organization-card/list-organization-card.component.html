@@ -1,18 +1,19 @@
 <div class="card-container">
+  @for (organisation of organizations | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }; track organisation) {
     <div
-        *ngFor="let organisation of organizations | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }"
-        class="card-organization">
-        <app-organization-card
-            [organizationBean]="organisation"
-            [datasetCountLoading]="datasetCountLoading"
-            [projectCountLoading]="projectCountLoading"
-        ></app-organization-card>
+      class="card-organization">
+      <app-organization-card
+        [organizationBean]="organisation"
+        [datasetCountLoading]="datasetCountLoading"
+        [projectCountLoading]="projectCountLoading"
+      ></app-organization-card>
     </div>
+  }
 </div>
 <pagination-controls
-    (pageChange)="onPageChange($event)"
-    class="d-flex justify-content-center mt-4 pagination-font-size pagination-container"
-    [ngClass]="paginationControlsNgClass"
-    [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
-    [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate">
+  (pageChange)="onPageChange($event)"
+  class="d-flex justify-content-center mt-4 pagination-font-size pagination-container"
+  [ngClass]="paginationControlsNgClass"
+  [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
+  [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate">
 </pagination-controls>

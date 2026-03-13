@@ -17,7 +17,7 @@ import {switchMap, tap} from 'rxjs/operators';
 export class ThemeCacheService {
     public isLoading$: Subject<boolean>;
 
-    private _themes: SimpleSkosConcept[] = [];
+    private readonly _themes: SimpleSkosConcept[] = [];
     private readonly themeLabelsByCode: { [key: string]: string } = {};
     private readonly themePictosByCode: { [key: string]: SafeResourceUrl } = {};
 

@@ -1,5 +1,6 @@
 import {Component, ElementRef, Input, OnInit} from '@angular/core';
-import * as d3 from 'd3';
+
+import {MatIcon} from '@angular/material/icon';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {MARGIN, WINDOWS_HEIGHT, WINDOWS_WIDTH} from '@core/services/selfdata-dataset/barchart.service';
 import {
@@ -9,37 +10,36 @@ import {
     LineAndPlotValue,
     TpbcDataInterface
 } from '@core/services/selfdata-dataset/tpbcData.interface';
-import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {NgFor, NgIf} from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
 import {TranslatePipe} from '@ngx-translate/core';
+import {ALL_TYPES} from '@shared/models/title-icon-type';
+import * as d3 from 'd3';
 
 @Component({
     selector: 'app-d3-line-and-plot-chart',
     templateUrl: './d3-line-and-plot-chart.component.html',
     styleUrls: ['./d3-line-and-plot-chart.component.scss'],
-    imports: [NgFor, NgIf, MatIcon, TranslatePipe]
+    imports: [MatIcon, TranslatePipe]
 })
 export class D3LineAndPlotChartComponent implements OnInit {
     @Input() graphBar: TpbcDataInterface;
 
-    private margin = MARGIN;
-    private w = WINDOWS_WIDTH;
-    private h = WINDOWS_HEIGHT;
+    private readonly margin = MARGIN;
+    private readonly w = WINDOWS_WIDTH;
+    private readonly h = WINDOWS_HEIGHT;
     private width: number;
-    private height = this.h - this.margin.top - this.margin.bottom;
+    private readonly height = this.h - this.margin.top - this.margin.bottom;
 
     private xScale: any;
     private yScale: any;
     private y_axis: any;
     private x_axis: any;
     private svg: any;
-    private g: any;
+    private readonly g: any;
     private chart: any;
 
 
     constructor(iconRegistryService: IconRegistryService,
-                private container: ElementRef) {
+                private readonly container: ElementRef) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
     }
 

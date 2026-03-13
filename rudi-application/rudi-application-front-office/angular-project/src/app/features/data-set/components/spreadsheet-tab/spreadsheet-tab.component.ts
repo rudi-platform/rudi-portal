@@ -1,4 +1,4 @@
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormsModule} from '@angular/forms';
@@ -26,7 +26,7 @@ const EMPTY_SEARCH = '';
     selector: 'app-spreadsheet-tab',
     templateUrl: './spreadsheet-tab.component.html',
     styleUrls: ['./spreadsheet-tab.component.scss'],
-    imports: [LoaderComponent, NgIf, FormsModule, MatIcon, NgClass, ExtendedModule, MatButton, MatCheckbox, ErrorBoxComponent, SpreadsheetComponent, TranslatePipe]
+    imports: [LoaderComponent, FormsModule, MatIcon, NgClass, ExtendedModule, MatButton, MatCheckbox, ErrorBoxComponent, SpreadsheetComponent, TranslatePipe]
 })
 export class SpreadsheetTabComponent implements OnInit {
 

@@ -1,4 +1,4 @@
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
@@ -33,7 +33,7 @@ import {RequestItem} from '../request-item';
     selector: 'app-my-linked-datasets',
     templateUrl: './my-linked-datasets.component.html',
     styleUrls: ['./my-linked-datasets.component.scss'],
-    imports: [SearchCountComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgIf, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
+    imports: [SearchCountComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
 })
 export class MyLinkedDatasetsComponent extends AbstractMyRequestTableComponent implements OnInit {
 

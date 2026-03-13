@@ -1,7 +1,7 @@
 /**
  * RUDI Portail
  */
-package org.rudi.microservice.gateway.facade.config;
+package org.rudi.common.facade.gateway.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,10 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
-import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
+import org.rudi.common.core.util.AnonymizerUtils;
+import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -63,36 +65,55 @@ public abstract class AbstractAuthenticationWebFilter implements WebFilter {
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		return requiresAuthenticationMatcher.matches(exchange).filter(MatchResult::isMatch)
-				.flatMap(matchResult -> authenticationConvert(exchange))
-				.switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
-				.flatMap(token -> onAuthenticationSuccess(token, new WebFilterExchange(exchange, chain)));
+				.flatMap(matchResult -> authenticationConvert(exchange)).switchIfEmpty(filterOrEmpty(exchange, chain))
+				.flatMap(token -> onAuthenticationSuccess(token, new WebFilterExchange(exchange, chain)))
+				.onErrorResume(e -> {
+					HttpBearerServerAuthenticationEntryPoint entryPoint = new HttpBearerServerAuthenticationEntryPoint();
+					if (e instanceof AuthenticationException authenticationException) {
+						return entryPoint.commence(exchange, authenticationException);
+					} else {
+						// Pour les autres exceptions, on les encapsule dans une AuthenticationException générique
+						return entryPoint.commence(exchange, new AuthenticationException(e.getMessage()) {
+						});
+					}
+				});
+	}
+
+	protected Mono<Authentication> filterOrEmpty(ServerWebExchange exchange, WebFilterChain chain) {
+		return chain.filter(exchange).then(Mono.empty());
 	}
 
 	protected Mono<Void> onAuthenticationSuccess(Authentication authentication, WebFilterExchange webFilterExchange) {
 		ServerWebExchange exchange = webFilterExchange.getExchange();
 		SecurityContextImpl securityContext = new SecurityContextImpl();
 		securityContext.setAuthentication(authentication);
-		return securityContextRepository.save(exchange, securityContext)
-				.then(authenticationSuccessHandler.onAuthenticationSuccess(webFilterExchange, authentication))
-				.contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+		if (authentication.isAuthenticated()) {
+			log.debug("Authentication success for user {}", authentication.getName());
+			return securityContextRepository.save(exchange, securityContext)
+					.then(authenticationSuccessHandler.onAuthenticationSuccess(webFilterExchange, authentication))
+					.contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+		} else {
+			log.debug("Authentication failed for user {}", authentication.getName());
+			return Mono.empty();
+		}
 	}
 
 	protected Mono<Authentication> authenticationConvert(ServerWebExchange exchange) {
 		// Request token header
 		String requestAuthentTokenHeader = exchange.getRequest().getHeaders()
-				.getFirst(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_AUTHENT_KEY);
+				.getFirst(CommonSecurityConstants.HEADER_TOKEN_JWT_AUTHENT_KEY);
 
 		if (log.isDebugEnabled()) {
-			log.debug("Header: {}", requestAuthentTokenHeader.substring(25));
+			log.debug("Header: {}", AnonymizerUtils.anonymize(requestAuthentTokenHeader));
 		}
 		if (requestAuthentTokenHeader == null) {
 			return Mono.empty();
-		} else if (!requestAuthentTokenHeader.startsWith(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX)) {
+		} else if (!requestAuthentTokenHeader.startsWith(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX)) {
 			log.error("Le token ne commence pas avec la chaine Bearer");
 			return Mono.empty();
 		} else {
 			final String token = requestAuthentTokenHeader
-					.substring(AbstractJwtTokenUtil.HEADER_TOKEN_JWT_PREFIX.length());
+					.substring(CommonSecurityConstants.HEADER_TOKEN_JWT_PREFIX.length());
 
 			return handleToken(token);
 		}

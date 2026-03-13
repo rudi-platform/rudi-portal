@@ -26,7 +26,8 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 	private final OrganizationMemberDataFactory organizationMemberDataFactory;
 	private final UserDataFactory userDataFactory;
 
-	public OrganizationDataFactory(OrganizationDao repository, OrganizationMemberDataFactory organizationMemberDataFactory, UserDataFactory userDataFactory) {
+	public OrganizationDataFactory(OrganizationDao repository,
+			OrganizationMemberDataFactory organizationMemberDataFactory, UserDataFactory userDataFactory) {
 		super(repository, OrganizationEntity.class);
 		this.organizationMemberDataFactory = organizationMemberDataFactory;
 		this.userDataFactory = userDataFactory;
@@ -37,12 +38,9 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		item.setOrganizationStatus(OrganizationStatus.VALIDATED);
 	}
 
-
-	public OrganizationEntity create(
-			UUID uuid, String processDefinitionKey, Status status, String functionnalStatus, String initiator,
-			LocalDateTime creationDate, String description, OrganizationStatus organizationStatus, LocalDateTime openingDate,
-			LocalDateTime closingDate, Geometry position, String name
-	) {
+	public OrganizationEntity create(UUID uuid, String processDefinitionKey, Status status, String functionnalStatus,
+			String initiator, LocalDateTime creationDate, String description, OrganizationStatus organizationStatus,
+			LocalDateTime openingDate, LocalDateTime closingDate, Geometry position, String name) {
 
 		try {
 			OrganizationEntity item = new OrganizationEntity();
@@ -67,14 +65,13 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 	}
 
 	public OrganizationEntity createTestOrganizationLinkedProducer(UUID uuid) {
-		if(uuid == null) {
+		if (uuid == null) {
 			uuid = UUID.randomUUID();
 		}
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime yesterday = now.minusDays(1);
-		return create(uuid, PROCESS_DEFINITION_KEY, Status.COMPLETED, FUNCTIONAL_STATUS_KEY, randomString(20),
-				now, randomString(60), OrganizationStatus.VALIDATED, yesterday, null, null,
-				randomString(20));
+		return create(uuid, PROCESS_DEFINITION_KEY, Status.COMPLETED, FUNCTIONAL_STATUS_KEY, randomString(20), now,
+				randomString(60), OrganizationStatus.VALIDATED, yesterday, null, null, randomString(20));
 	}
 
 	/**
@@ -103,12 +100,12 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		LocalDateTime date = LocalDateTime.of(1975, Month.JANUARY, 1, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 
-
 		return repository.save(organization);
 	}
 
 	/**
 	 * COMPLETED // VALIDATED
+	 * 
 	 * @param initiator (optional)
 	 * @return organization
 	 */
@@ -131,13 +128,13 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		LocalDateTime date = LocalDateTime.of(1989, Month.FEBRUARY, 1, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 
-
 		return repository.save(organization);
 
 	}
 
 	/**
 	 * COMPLETED // VALIDATED
+	 * 
 	 * @param initiator (optional)
 	 * @return organization
 	 */
@@ -165,6 +162,7 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 
 	/**
 	 * COMPLETED // VALIDATED
+	 * 
 	 * @param initiator (optional)
 	 * @return organization
 	 */
@@ -187,12 +185,12 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		LocalDateTime date = LocalDateTime.of(2009, Month.JUNE, 4, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 
-
 		return repository.save(organization);
 	}
 
 	/**
 	 * DELETED // DISENGAGED
+	 * 
 	 * @param initiator (optional)
 	 * @return organization
 	 */
@@ -223,6 +221,7 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 
 	/**
 	 * DRAFT // DRAFT
+	 * 
 	 * @param initiator (optional)
 	 * @return organization
 	 */
@@ -245,10 +244,28 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		LocalDateTime date = LocalDateTime.of(2024, Month.JUNE, 25, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
 
-
 		return repository.save(organization);
 	}
 
+	public void deleteAllOrganizationMembers() {
+		repository.findAll().forEach(organization -> {
+			if (organization.getMembers() != null) {
+				organization.getMembers().clear();
+				repository.save(organization);
+			}
+		});
+	}
+
+	public void deleteOrganizationMembers(UUID organizationUuid) {
+		OrganizationEntity organization = repository.findByUuid(organizationUuid);
+		if (organization != null && organization.getMembers() != null) {
+			organization.getMembers().clear();
+			repository.save(organization);
+		}
+	}
+
+	public void deleteAllOrganizations() {
+		repository.deleteAll();
+	}
 
 }
-

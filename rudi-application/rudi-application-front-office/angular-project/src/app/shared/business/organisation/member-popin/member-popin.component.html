@@ -1,51 +1,53 @@
 <div id="dialog-container">
-    <mat-dialog-content>
-        <div class="dialog-cross-button">
-            <button mat-icon-button (click)="handleClose()">
-                <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
-            </button>
-        </div>
-        <div class="dialog-content">
-            <div class="dialog-title">{{organizationMemberDialogData.title}}</div>
-            <div class="dialog-description"> {{organizationMemberDialogData.subTitle}}</div>
-            <div class="dialog-description">
-            <span
-                class="required-symbol">*</span> {{'metaData.administrationTab.membersTable.updatePopin.text2' |translate}}
-            </div>
+  <mat-dialog-content>
+    <div class="dialog-cross-button">
+      <button mat-icon-button (click)="handleClose()">
+        <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+      </button>
+    </div>
+    <div class="dialog-content">
+      <div class="dialog-title">{{organizationMemberDialogData.title}}</div>
+      <div class="dialog-description"> {{organizationMemberDialogData.subTitle}}</div>
+      <div class="dialog-description">
+        <span
+        class="required-symbol">*</span> {{'metaData.administrationTab.membersTable.updatePopin.text2' |translate}}
+      </div>
 
-            <div class="content-dialog">
-                <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.mail' |translate}}
-                    <span
-                        class="required-symbol">*</span></div>
-                <div
-                    class="dialog-description">{{organizationMemberDialogData.fieldLoginDescription}} </div>
+      <div class="content-dialog">
+        <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.mail' |translate}}
+          <span
+          class="required-symbol">*</span></div>
+          <div
+          class="dialog-description">{{organizationMemberDialogData.fieldLoginDescription}} </div>
 
-                <input matInput type="text" [disabled]="disableLoginField" class="mail-input"
-                       [(ngModel)]="loginValue">
+          <input matInput type="text" [disabled]="disableLoginField" class="mail-input"
+            [(ngModel)]="loginValue">
 
-                <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
-                    <span
-                        class="required-symbol">*</span></div>
-                <div
-                    class="dialog-description">{{organizationMemberDialogData.fieldRoleDescription}}</div>
+            <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
+              <span
+              class="required-symbol">*</span></div>
+              <div
+              class="dialog-description">{{organizationMemberDialogData.fieldRoleDescription}}</div>
 
-                <mat-form-field appearance="outline">
-                    <mat-select [(value)]="role">
-                        <mat-option *ngFor="let role of roles" [value]="role">
-                            {{computeRoleLabel(role)}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-select [(value)]="role">
+                  @for (role of roles; track role) {
+                    <mat-option [value]="role">
+                      {{computeRoleLabel(role)}}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             </div>
             <mat-dialog-actions class="dialog-buttons">
-                <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
-                    <span>{{'personalSpace.project.tabs.deletion.confirmationPopup.cancel'| translate}}</span>
-                </button>
-                <button class="primary-raised-button" mat-raised-button (click)="validate()"
-                        [disabled]="loginValue===''">
-                    <span>{{confirmationPopinText}}</span>
-                </button>
+              <button class="secondary-raised-button" mat-raised-button [mat-dialog-close]="null">
+                <span>{{'personalSpace.project.tabs.deletion.confirmationPopup.cancel'| translate}}</span>
+              </button>
+              <button class="primary-raised-button" mat-raised-button (click)="validate()"
+                [disabled]="loginValue===''">
+                <span>{{confirmationPopinText}}</span>
+              </button>
             </mat-dialog-actions>
-        </div>
-    </mat-dialog-content>
-</div>
+          </div>
+        </mat-dialog-content>
+      </div>

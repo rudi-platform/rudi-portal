@@ -1,4 +1,4 @@
-import {NgIf} from '@angular/common';
+
 import {Component, Input, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SelfdataDatasetLatestRequests} from '@core/services/selfdata-dataset/selfdata-dataset-latest-requests';
@@ -14,7 +14,7 @@ import {SelfdataRequestSectionComponent} from '../selfdata-request-section/selfd
 @Component({
     selector: 'app-selfdata-dataset-requests-tab',
     templateUrl: './selfdata-dataset-requests-tab.component.html',
-    imports: [CardComponent, NgIf, LoaderComponent, SelfdataRequestSectionComponent, ErrorBoxComponent, TranslatePipe]
+    imports: [CardComponent, LoaderComponent, SelfdataRequestSectionComponent, ErrorBoxComponent, TranslatePipe]
 })
 export class SelfdataDatasetRequestsTabComponent implements OnInit {
 

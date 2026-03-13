@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {DataSetAccessService} from '@core/services/data-set/data-set-access.service';
@@ -16,7 +15,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-map-tab',
     templateUrl: './map-tab.component.html',
     styleUrls: ['./map-tab.component.scss'],
-    imports: [MatCard, LoaderComponent, NgIf, MapComponent, ErrorBoxComponent, TranslatePipe]
+    imports: [MatCard, LoaderComponent, MapComponent, ErrorBoxComponent, TranslatePipe]
 })
 export class MapTabComponent implements OnInit {
 

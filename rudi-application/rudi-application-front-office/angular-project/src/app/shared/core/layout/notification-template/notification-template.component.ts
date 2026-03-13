@@ -58,10 +58,10 @@ export class NotificationTemplateComponent implements OnInit {
     readonly data?: Data;
 
     constructor(@Inject(MAT_SNACK_BAR_DATA) data: string | Data,
-                private breakpointObserver: BreakpointObserverService,
                 public snackBarRef: MatSnackBarRef<NotificationTemplateComponent>,
                 private readonly router: Router,
                 private readonly domSanitizer: DomSanitizer,
+                private readonly breakpointObserver: BreakpointObserverService,
     ) {
         if (typeof data === 'string') {
             this.data = {

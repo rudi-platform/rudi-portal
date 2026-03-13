@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {DataSetAccessService} from '@app/core/services/data-set/data-set-access.service';
 import {LanguageService} from '@core/i18n/language.service';
 import {LogService} from '@core/services/log.service';
 import {Licence, LicenceCustom, Media, Metadata} from 'micro_service_modules/api-kaccess';
@@ -6,7 +7,6 @@ import {Observable, of, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import LicenceTypeEnum = Licence.LicenceTypeEnum;
 import MediaTypeEnum = Media.MediaTypeEnum;
-import { DataSetAccessService } from '@app/core/services/data-set/data-set-access.service';
 
 const DWNL_INTERFACE_CONTRACT = 'dwnl';
 
@@ -55,23 +55,23 @@ export class DetailFunctions {
     }
 
     isMediaTypeFile(media: Media): boolean {
-        return media && media.media_type === MediaTypeEnum.File;
+        return media?.media_type === MediaTypeEnum.File;
     }
 
     isMediaTypeSeries(media: Media): boolean {
-        return media && media.media_type === MediaTypeEnum.Series;
+        return media?.media_type === MediaTypeEnum.Series;
     }
 
     isMediaTypeService(media: Media): boolean {
-        return media && media.media_type === MediaTypeEnum.Service;
+        return media?.media_type === MediaTypeEnum.Service;
     }
 
     isLicenceTypeStandard(licence: Licence): boolean {
-        return licence && licence.licence_type === LicenceTypeEnum.Standard;
+        return licence?.licence_type === LicenceTypeEnum.Standard;
     }
 
     isLicenceTypeCustom(licence: Licence): boolean {
-        return licence && licence.licence_type === LicenceTypeEnum.Custom;
+        return licence?.licence_type === LicenceTypeEnum.Custom;
     }
 
 }

@@ -1,102 +1,103 @@
 <div id="content">
 
-    <app-loader [active]="isLoading"></app-loader>
+  <app-loader [active]="isLoading"></app-loader>
 
-    <h1>
-        <span class="title-1">{{ 'project.stepper.submission.title.1' | translate }}</span>&nbsp;<span
-        class="title-2">{{ 'project.stepper.submission.title.2' | translate }}</span>
-    </h1>
-    <p class="description">{{ 'project.stepper.submission.description' | translate }}</p>
+  <h1>
+    <span class="title-1">{{ 'project.stepper.submission.title.1' | translate }}</span>&nbsp;<span
+  class="title-2">{{ 'project.stepper.submission.title.2' | translate }}</span>
+</h1>
+<p class="description">{{ 'project.stepper.submission.description' | translate }}</p>
 
-    <mat-stepper #submissionStepper orientation="horizontal" [disableRipple]="true" class="rudi-stepper"
-                 labelPosition="bottom" linear>
-        <ng-template matStepperIcon="edit">
-            <mat-icon>check</mat-icon>
-        </ng-template>
+<mat-stepper #submissionStepper orientation="horizontal" [disableRipple]="true" class="rudi-stepper"
+  labelPosition="bottom" linear>
+  <ng-template matStepperIcon="edit">
+    <mat-icon>check</mat-icon>
+  </ng-template>
 
-        <!-- Etape 1 -->
-        <mat-step [editable]="true" [stepControl]="step1FormGroup"
-                  label="{{'project.stepper.submission.step1.label' | translate}}">
+  <!-- Etape 1 -->
+  <mat-step [editable]="true" [stepControl]="step1FormGroup"
+    label="{{'project.stepper.submission.step1.label' | translate}}">
 
-            <!-- Formulaire de l'étape 1-->
-            <app-step1-project [step1FormGroup]="step1FormGroup"
-                               [suggestions]="suggestions"
-                               [publicCible]="publicCible"
-                               [reuseStatus]="reuseStatus"
-                               [territoireScale]="territorialScales"
-                               [supports]="supports"
-                               [projectType]="projectType"
-                               (imageModified)="handleImageChanged($event)"
-                               [isConfidentialityValid]="isConfidentialityValid"
-            >
-            </app-step1-project>
+    <!-- Formulaire de l'étape 1-->
+    <app-step1-project [step1FormGroup]="step1FormGroup"
+      [suggestions]="suggestions"
+      [publicCible]="publicCible"
+      [reuseStatus]="reuseStatus"
+      [territoireScale]="territorialScales"
+      [supports]="supports"
+      [projectType]="projectType"
+      (imageModified)="handleImageChanged($event)"
+      [isConfidentialityValid]="isConfidentialityValid"
+      >
+    </app-step1-project>
 
-            <!-- Boutons de gestion de l'étape -->
-            <div class="d-flex justify-content-between mt-5">
-                <button mat-stroked-button class="secondary-stroked-button" (click)="clickCancel()">
-                    <span>{{ 'project.stepper.cancel' | translate }}</span>
-                </button>
+    <!-- Boutons de gestion de l'étape -->
+    <div class="d-flex justify-content-between mt-5">
+      <button mat-stroked-button class="secondary-stroked-button" (click)="clickCancel()">
+        <span>{{ 'project.stepper.cancel' | translate }}</span>
+      </button>
 
-                <button mat-raised-button class="primary-raised-button" (click)="clickNext()">
-                    <span>{{ 'project.stepper.continue' | translate }}</span>
-                </button>
-            </div>
-        </mat-step>
+      <button mat-raised-button class="primary-raised-button" (click)="clickNext()">
+        <span>{{ 'project.stepper.continue' | translate }}</span>
+      </button>
+    </div>
+  </mat-step>
 
-        <!-- Etape 2 -->
-        <mat-step [editable]="true" [stepControl]="step2FormGroup"
-                  label="{{'project.stepper.submission.step2.label' | translate}}">
+  <!-- Etape 2 -->
+  <mat-step [editable]="true" [stepControl]="step2FormGroup"
+    label="{{'project.stepper.submission.step2.label' | translate}}">
 
-            <!-- Formulaire de l'étape 2 -->
-            <app-step2-project [step2FormGroup]="step2FormGroup" [organizationItems]="organizationItems">
-            </app-step2-project>
+    <!-- Formulaire de l'étape 2 -->
+    <app-step2-project [step2FormGroup]="step2FormGroup" [organizationItems]="organizationItems">
+    </app-step2-project>
 
-            <!-- Boutons de gestion de l'étape -->
-            <div class="d-flex justify-content-between mt-5">
-                <button mat-stroked-button class="secondary-stroked-button" matStepperPrevious>
-                    <span>{{ 'project.stepper.previous' | translate }}</span>
-                </button>
-                <button mat-raised-button class="primary-raised-button" matStepperNext>
-                    <span>{{ 'project.stepper.continue' | translate }}</span>
-                </button>
-            </div>
-        </mat-step>
+    <!-- Boutons de gestion de l'étape -->
+    <div class="d-flex justify-content-between mt-5">
+      <button mat-stroked-button class="secondary-stroked-button" matStepperPrevious>
+        <span>{{ 'project.stepper.previous' | translate }}</span>
+      </button>
+      <button mat-raised-button class="primary-raised-button" matStepperNext>
+        <span>{{ 'project.stepper.continue' | translate }}</span>
+      </button>
+    </div>
+  </mat-step>
 
 
-        <!-- Etape 3 -->
-        <mat-step [editable]="true" [stepControl]="step3FormGroup"
-                  label="{{'project.stepper.submission.step3.label' | translate}}">
+  <!-- Etape 3 -->
+  <mat-step [editable]="true" [stepControl]="step3FormGroup"
+    label="{{'project.stepper.submission.step3.label' | translate}}">
 
-            <!-- Formulaire de l'étape 3-->
-            <app-step3-project [isPublished]="isPublished"
-                               [isSubmitted]="isSubmitted"
-                               [createdProjectLink]="createdProjectLink"
-                               [step3FormGroup]="step3FormGroup"
-                               [datasetItems]="projectDatasetItems"
-                               (datasetsDialogOpened)="openDialogAddLinkedDataset()"
-                               (requestDatasetDialogOpened)="openDialogAskNewDatasetRequest()"
-                               (itemRemoved)="handleItemRemoved($event)"
-                               (itemEdited)="handleItemEdited($event)"
-            >
-            </app-step3-project>
-            <!-- Boutons de gestion de l'étape -->
-            <div class="d-flex justify-content-between mt-5" *ngIf="!isSubmitted">
-                <button mat-stroked-button class="secondary-stroked-button" matStepperPrevious>
-                    <span>{{ 'project.stepper.previous' | translate }}</span>
-                </button>
-
-                <span class="spacer"></span>
-
-                <!-----Masquer le bouton "Enregistrer" RUDI-3197 ----->
-                <button *ngIf="false" (click)="save()" mat-raised-button class="primary-raised-button" matStepperNext>
-                    <span>{{ 'project.stepper.submission.publish.enregistrer' | translate }}</span>
-                </button>
-
-                <button mat-raised-button class="primary-raised-button" [disabled]="!isSubmit"
-                        (click)="submit()" matStepperNext>
-                    <span>{{ 'project.stepper.submission.publish.submit' | translate }}</span>
-                </button>
-            </div>
-        </mat-step>
-    </mat-stepper>
+    <!-- Formulaire de l'étape 3-->
+    <app-step3-project [isPublished]="isPublished"
+      [isSubmitted]="isSubmitted"
+      [createdProjectLink]="createdProjectLink"
+      [step3FormGroup]="step3FormGroup"
+      [datasetItems]="projectDatasetItems"
+      (datasetsDialogOpened)="openDialogAddLinkedDataset()"
+      (requestDatasetDialogOpened)="openDialogAskNewDatasetRequest()"
+      (itemRemoved)="handleItemRemoved($event)"
+      (itemEdited)="handleItemEdited($event)"
+      >
+    </app-step3-project>
+    <!-- Boutons de gestion de l'étape -->
+    @if (!isSubmitted) {
+      <div class="d-flex justify-content-between mt-5">
+        <button mat-stroked-button class="secondary-stroked-button" matStepperPrevious>
+          <span>{{ 'project.stepper.previous' | translate }}</span>
+        </button>
+        <span class="spacer"></span>
+        <!-----Masquer le bouton "Enregistrer" RUDI-3197 ----->
+        @if (false) {
+          <button (click)="save()" mat-raised-button class="primary-raised-button" matStepperNext>
+            <span>{{ 'project.stepper.submission.publish.enregistrer' | translate }}</span>
+          </button>
+        }
+        <button mat-raised-button class="primary-raised-button" [disabled]="!isSubmit"
+          (click)="submit()" matStepperNext>
+          <span>{{ 'project.stepper.submission.publish.submit' | translate }}</span>
+        </button>
+      </div>
+    }
+  </mat-step>
+</mat-stepper>
 </div>

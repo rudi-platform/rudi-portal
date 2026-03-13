@@ -1,5 +1,4 @@
-@import "common-style";
-@import "bootstrap/scss/bootstrap-grid";
+@use "common-style";
 
 .rudi-card-title {
     margin-left: -16px;
@@ -304,20 +303,32 @@ table td {
 }
 
 .row-container {
-    @extend .row;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .libelle-key {
-    @extend .col-sm-12;
-    @extend .col-md-5;
-
     font-size: 14px;
     font-weight: 600;
+    flex: 0 0 100%;
+    max-width: 100%;
 }
 
 .libelle-value {
-    @extend .col-sm-12;
-    @extend .col-md-7;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .libelle-key {
+        flex: 0 0 41.6667%;
+        max-width: 41.6667%;
+    }
+
+    .libelle-value {
+        flex: 0 0 58.3333%;
+        max-width: 58.3333%;
+    }
 }
 
 .type-licence-libelle {

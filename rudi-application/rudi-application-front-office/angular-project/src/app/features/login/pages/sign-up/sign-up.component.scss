@@ -1,4 +1,4 @@
-@import "common-style";
+@use "common-style";
 
 input::-ms-reveal,
 input::-ms-clear {
@@ -7,21 +7,21 @@ input::-ms-clear {
 }
 
 .main-container {
-    @include card-container-bgcolor;
+    @include common-style.card-container-bgcolor;
 }
 
 .signup-header-title {
-    @include card-header-title;
+    @include common-style.card-header-title;
 }
 
 .signup-text-title {
-    @include card-text-title;
+    @include common-style.card-text-title;
     color: var(--secondary-text);
     margin-bottom: 33px;
 }
 
 .signup-form-container {
-    @include card-form-container;
+    @include common-style.card-form-container;
 }
 
 *:focus-visible {
@@ -43,7 +43,7 @@ div.p-mb {
 }
 
 mat-form-field {
-    @include card-form-field-my;
+    @include common-style.card-form-field-my;
 }
 
 ::ng-deep {
@@ -54,7 +54,7 @@ mat-form-field {
 }
 
 mat-error {
-    @include card-error-pb;
+    @include common-style.card-error-pb;
     font-size: 11px;
 }
 
@@ -74,12 +74,12 @@ mat-progress-spinner {
 }
 
 .p-19 {
-    @include card-px-19-mx-auto;
+    @include common-style.card-px-19-mx-auto;
     max-width: 640px;
 }
 
 .p-60 {
-    @include card-px-60-mx-auto;
+    @include common-style.card-px-60-mx-auto;
     width: 640px;
 }
 
@@ -100,15 +100,15 @@ mat-progress-spinner {
 }
 
 .signup-btn-inscription {
-    @include card-main-button;
+    @include common-style.card-main-button;
 }
 
 .signup-btn-desktop {
-    @include card-main-button-desktop;
+    @include common-style.card-main-button-desktop;
 }
 
 .signup-btn-mobile {
-    @include card-main-button-mobile;
+    @include common-style.card-main-button-mobile;
 }
 
 #rgpd {
@@ -124,7 +124,6 @@ mat-progress-spinner {
     }
 
     a {
-        //color: #71757e;
         font-weight: bold;
         text-decoration: underline;
     }

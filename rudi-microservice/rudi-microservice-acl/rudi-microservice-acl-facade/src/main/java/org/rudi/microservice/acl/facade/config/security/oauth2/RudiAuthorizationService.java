@@ -3,7 +3,6 @@
  */
 package org.rudi.microservice.acl.facade.config.security.oauth2;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +15,7 @@ import org.rudi.microservice.acl.core.bean.TokenSearchCritera;
 import org.rudi.microservice.acl.core.bean.TokenType;
 import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserSearchCriteria;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.rudi.microservice.acl.service.token.TokenService;
 import org.rudi.microservice.acl.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
-import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,10 +44,10 @@ public class RudiAuthorizationService implements OAuth2AuthorizationService {
 	private UserService userService;
 
 	@Autowired
-	private TokenService tokenService;
+	private TokenManager tokenManager;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	private TokenService tokenService;
 
 	@Override
 	public OAuth2Authorization findById(String id) {
@@ -155,7 +153,7 @@ public class RudiAuthorizationService implements OAuth2AuthorizationService {
 		org.springframework.security.oauth2.server.authorization.OAuth2Authorization.Token<OAuth2AccessToken> oauthToken = authorization
 				.getAccessToken();
 		if (oauthToken != null) {
-			Token token = saveToken(TokenType.ACCESS_TOKEN, user, authorization, oauthToken);
+			Token token = tokenManager.buildToken(TokenType.ACCESS_TOKEN, user, authorization, oauthToken);
 			tokenService.saveToken(token);
 		}
 	}
@@ -165,25 +163,9 @@ public class RudiAuthorizationService implements OAuth2AuthorizationService {
 		org.springframework.security.oauth2.server.authorization.OAuth2Authorization.Token<OAuth2RefreshToken> oauthToken = authorization
 				.getRefreshToken();
 		if (oauthToken != null) {
-			Token token = saveToken(TokenType.REFRESH_TOKEN, user, authorization, oauthToken);
+			Token token = tokenManager.buildToken(TokenType.REFRESH_TOKEN, user, authorization, oauthToken);
 			tokenService.saveToken(token);
 		}
-	}
-
-	protected Token saveToken(TokenType type, User user, OAuth2Authorization authorization,
-			org.springframework.security.oauth2.server.authorization.OAuth2Authorization.Token<? extends OAuth2Token> oauthToken)
-			throws JsonProcessingException {
-		Token token = new Token();
-		token.setUserId(user.getLogin());
-		token.setAuthorizationGrantType(authorization.getAuthorizationGrantType().getValue());
-		token.setType(type);
-		token.setRegisteredClientId(authorization.getRegisteredClientId());
-		token.setValue(oauthToken.getToken().getTokenValue());
-		token.setIssuedAt(LocalDateTime.ofInstant(oauthToken.getToken().getIssuedAt(), ZoneOffset.UTC));
-		token.setExpriresAt(LocalDateTime.ofInstant(oauthToken.getToken().getExpiresAt(), ZoneOffset.UTC));
-		token.setAttributes(objectMapper.writeValueAsString(authorization.getAttributes()));
-		token.setMetadata(objectMapper.writeValueAsString(oauthToken.getMetadata()));
-		return token;
 	}
 
 	@Override

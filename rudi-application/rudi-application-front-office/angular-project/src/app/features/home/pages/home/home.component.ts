@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Meta} from '@angular/platform-browser';
 import {Order, ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -32,10 +31,10 @@ const PROJECT_STATUS: ProjectStatus[] = [ProjectStatus.Validated];
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    imports: [LoaderComponent, NgIf, HeroSectionComponent, ThemesSectionComponent, CmsNewsSectionComponent, CmsProjectValuesSectionComponent, JddSectionComponent, ProjectsSectionComponent, KeyFiguresSectionComponent]
+    imports: [LoaderComponent, HeroSectionComponent, ThemesSectionComponent, CmsNewsSectionComponent, CmsProjectValuesSectionComponent, JddSectionComponent, ProjectsSectionComponent, KeyFiguresSectionComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
-    private destroyed$: Subject<boolean>;
+    private readonly destroyed$: Subject<boolean>;
 
     customizationDescription: CustomizationDescription;
     projects: ProjectCatalogItem[];
