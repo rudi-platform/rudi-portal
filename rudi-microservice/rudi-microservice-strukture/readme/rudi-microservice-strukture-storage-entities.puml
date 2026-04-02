@@ -332,6 +332,7 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
 --
 	{field} {static} +FIELD_ADDRESS : String
 	{field} {static} +FIELD_CREATION_DATE : String
+	{field} {static} +FIELD_DATA : String
 	{field} {static} +FIELD_DESCRIPTION : String
 	{field} {static} +FIELD_MEMBERS : String
 	{field} {static} +FIELD_NAME : String
@@ -389,6 +390,7 @@ class org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnti
 	{field} {static} +FIELD_ID : String
 	{field} {static} +FIELD_LINKED_PRODUCER_STATUS : String
 	{field} {static} +FIELD_ORGANIZATION : String
+	{field} {static} +FIELD_STATUS : String
 	{field} {static} +FIELD_UUID : String
 	{field} {static} +ORGANIZATION_FK : String
 	{field} {static} +PROVIDER_FK : String

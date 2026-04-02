@@ -38,6 +38,7 @@ import org.rudi.microservice.strukture.service.mapper.OrganizationMemberMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.service.organization.impl.fields.CreateOrganizationFieldProcessor;
 import org.rudi.microservice.strukture.service.organization.impl.fields.UpdateOrganizationFieldProcessor;
+import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
@@ -360,12 +361,21 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return organizationMemberMapper.entityToDto(member);
 	}
 
-	/**
-	 * @param criteria
-	 * @param pageable
-	 * @return
-	 * @throws AppServiceException
-	 */
+	@Override
+	public NodeOrganization getNodeOrganization(UUID uuid) throws AppServiceException {
+		// Récupération du provider concerné
+		ProviderEntity provider = providerHelper.getMyProvider();
+		if (provider == null) {
+			throw new AppServiceBadRequestException("No provider found");
+		}
+
+		NodeOrganizationSearchCriteria criteria = NodeOrganizationSearchCriteria.builder().uuid(uuid).providerUUID(provider.getUuid()).build();
+
+		NodeOrganizationProjectionBean nodeOrganizationProjectionBean = organizationCustomDao.searchNodeOrganizations(criteria, Pageable.unpaged()).stream().findFirst().orElseThrow(() -> new AppServiceBadRequestException("Organization not found"));
+
+		return nodeOrganizationMapper.beanToNodeDto(nodeOrganizationProjectionBean);
+	}
+
 	@Override
 	public Page<Organization> searchMyOrganizations(OrganizationSearchCriteria criteria, Pageable pageable) throws AppServiceException {
 		// On force les valeurs liées au contexte du "my".

@@ -13,8 +13,7 @@
 			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
 		}
 	},
-	"paths": {
-	},
+	"paths": {},
 	"components": {
 		"schemas": {
 			"Account": {
@@ -593,7 +592,8 @@
 				"enum": [
 					"LASTNAME",
 					"FIRSTNAME",
-					"EMAIL"]
+					"EMAIL"
+				]
 			},
 			"OAuth2AttributeMapping": {
 				"type": "object",
@@ -644,6 +644,19 @@
 					}
 				}
 			},
+			"Link": {
+				"type": "object",
+				"properties": {
+					"url": {
+						"type": "string",
+						"description": "url de la description"
+					},
+					"label": {
+						"type": "string",
+						"description": "alink affiché"
+					}
+				}
+			},
 			"ViewSettings": {
 				"type": "object",
 				"properties": {
@@ -658,6 +671,16 @@
 					"iconUrl": {
 						"type": "string",
 						"description": "URL de l'icône de l'authentification OAuth2"
+					},
+					"hoverIconUrl": {
+						"type": "string",
+						"description": "URL de l'icône de l'authentification OAuth2 au survol"
+					},
+					"links": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Link"
+						}
 					}
 				}
 			},
@@ -696,9 +719,9 @@
 						"description": "Méthode d'authentification du client OAuth2. Peut être laissée vide lors de l'utilisation d'un fournisseur pré-défini."
 					},
 					"requireProofKey": {
-                        "type": "boolean",
-                        "description": "Indique si la méthode d'autorisation OAuth2 nécessite une preuve de clé (PKCE)"
-                    },
+						"type": "boolean",
+						"description": "Indique si la méthode d'autorisation OAuth2 nécessite une preuve de clé (PKCE)"
+					},
 					"scope": {
 						"type": "string",
 						"description": "Liste des scopes séparés par des espaces"

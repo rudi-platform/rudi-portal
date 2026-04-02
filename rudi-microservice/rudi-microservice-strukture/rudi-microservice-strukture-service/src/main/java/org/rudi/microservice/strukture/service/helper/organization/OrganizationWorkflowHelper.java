@@ -2,6 +2,7 @@ package org.rudi.microservice.strukture.service.helper.organization;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.Strings;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
@@ -31,12 +32,20 @@ public class OrganizationWorkflowHelper extends AbstactAssetDescriptionHelper<Or
 
 
 	public String getDraftType(AssetDescriptionEntity assetDescriptionEntity) throws InvalidDataException {
+		return getDraftType(assetDescriptionEntity.getData());
+	}
+
+	public String getDraftType(String data) throws InvalidDataException {
 		FormHelper formHelper = getFormHelper();
-		Map<String, Object> hydrate = formHelper.hydrateData(assetDescriptionEntity.getData());
+		Map<String, Object> hydrate = formHelper.hydrateData(data);
 		if (hydrate.containsKey(DRAFT_TYPE_FORM_KEY)) {
 			return hydrate.get(DRAFT_TYPE_FORM_KEY).toString();
 		}
 		return null;
+	}
+
+	public boolean isDraftTypeArchive(String draftType) {
+		return Strings.CS.equals(DRAFT_TYPE_FORM_ARCHIVE_VALUE, draftType);
 	}
 
 }

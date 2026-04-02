@@ -271,7 +271,7 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
 	public ResponseEntity<NodeOrganization> getNodeOrganization(UUID uuid) throws Exception {
-		return ResponseEntity.ok(nodeOrganizationMapper.dtoToNodeDto(organizationService.getOrganization(uuid)));
+		return ResponseEntity.ok(organizationService.getNodeOrganization(uuid));
 	}
 
 	@Override

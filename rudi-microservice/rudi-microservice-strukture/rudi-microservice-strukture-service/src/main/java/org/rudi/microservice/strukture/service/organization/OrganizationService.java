@@ -65,4 +65,6 @@ public interface OrganizationService {
 			throws AppServiceException;
 
 	Page<Organization> searchMyOrganizations(OrganizationSearchCriteria criteria, Pageable pageable) throws AppServiceException;
+
+	NodeOrganization getNodeOrganization(UUID uuid) throws AppServiceException;
 }

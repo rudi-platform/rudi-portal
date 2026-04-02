@@ -27,14 +27,32 @@ public class LinkedProducerDataFactory
 		super(repository, LinkedProducerEntity.class);
 	}
 
+
 	public LinkedProducerEntity createValidatedLinkedProducer(UUID providerUuid, UUID orgnizationUuid,
 			UUID nodeProviderUuid) {
-		LocalDateTime now = LocalDateTime.now();
-		LinkedProducerEntity linkedProducer = create(UUID.randomUUID(), PROCESS_DEFINITION_KEY, Status.COMPLETED,
-				"Validé", nodeProviderUuid.toString(), now, randomString(100));
-		linkedProducer.setLinkedProducerStatus(LinkedProducerStatus.VALIDATED);
+		return createLinkedProducer(providerUuid, orgnizationUuid, nodeProviderUuid, Status.COMPLETED, LinkedProducerStatus.VALIDATED);
+	}
 
-		OrganizationEntity organization = organizationDataFactory.createTestOrganizationLinkedProducer(orgnizationUuid);
+	public LinkedProducerEntity createDraftLinkedProducer(UUID providerUuid, UUID orgnizationUuid, UUID nodeProviderUuid) {
+		return createLinkedProducer(providerUuid, orgnizationUuid, nodeProviderUuid, Status.DRAFT, LinkedProducerStatus.DRAFT);
+	}
+
+	public LinkedProducerEntity createAttachLinkedProducer(UUID providerUuid, UUID orgnizationUuid, UUID nodeProviderUuid) {
+		return createLinkedProducer(providerUuid, orgnizationUuid, nodeProviderUuid, Status.PENDING, LinkedProducerStatus.IN_PROGRESS);
+	}
+
+	public LinkedProducerEntity createDetachLinkedProducer(UUID providerUuid, UUID orgnizationUuid, UUID nodeProviderUuid) {
+		return createLinkedProducer(providerUuid, orgnizationUuid, nodeProviderUuid, Status.DRAFT, LinkedProducerStatus.VALIDATED);
+	}
+
+	public LinkedProducerEntity createLinkedProducer(UUID providerUuid, UUID orgnizationUuid, UUID nodeProviderUuid,
+			Status status, LinkedProducerStatus linkedProducerStatus) {
+		LocalDateTime now = LocalDateTime.now();
+		LinkedProducerEntity linkedProducer = create(UUID.randomUUID(), PROCESS_DEFINITION_KEY, status,
+				"En cours", nodeProviderUuid.toString(), now, randomString(100));
+		linkedProducer.setLinkedProducerStatus(linkedProducerStatus);
+
+		OrganizationEntity organization = organizationDataFactory.getOrCreateOrganization(orgnizationUuid);
 		linkedProducer.setOrganization(organization);
 
 		return repository.save(linkedProducer);

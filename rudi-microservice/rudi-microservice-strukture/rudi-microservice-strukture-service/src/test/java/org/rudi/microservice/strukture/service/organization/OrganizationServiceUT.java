@@ -1,17 +1,5 @@
 package org.rudi.microservice.strukture.service.organization;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -41,8 +29,9 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.Feature;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
-import org.rudi.microservice.strukture.core.bean.LinkedProducerStatus;
+import org.rudi.microservice.strukture.core.bean.NodeLinkedProducerStatus;
 import org.rudi.microservice.strukture.core.bean.NodeOrganization;
+import org.rudi.microservice.strukture.core.bean.NodeOrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.core.bean.OrganizationMember;
@@ -55,6 +44,7 @@ import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.organizationmember.OrganizationMemberDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.provider.LinkedProducerDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.provider.ProviderDataFactory;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
@@ -74,6 +64,17 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationServiceUT {
@@ -131,6 +132,9 @@ class OrganizationServiceUT {
 	@Autowired
 	private LinkedProducerDataFactory linkedProducerDataFactory;
 
+	@Autowired
+	private ProviderDataFactory providerDataFactory;
+
 	@BeforeEach
 	void init() {
 		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
@@ -142,6 +146,7 @@ class OrganizationServiceUT {
 		linkedProducerDataFactory.deleteAllLinkedProducer();
 		organizationDataFactory.deleteAllOrganizationMembers();
 		organizationDataFactory.deleteAllOrganizations();
+		providerDataFactory.deleteAllProviders();
 	}
 
 	private Organization createOrganizationDto() {
@@ -285,7 +290,7 @@ class OrganizationServiceUT {
 				.as("L'opening date ne doit pas être celle saisie, mais celle du jour")
 				.matches(o -> o.getOpeningDate() != organization.getOpeningDate()
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
 				.as("La date de cloture doit être égale à celle saisie")
 				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
 				.as("La description doit correspondre à celle saiaie")
@@ -338,7 +343,7 @@ class OrganizationServiceUT {
 				.as("Et la date ne doit pas être celle renseignée, mais celle du jour")
 				.matches(o -> !o.getOpeningDate().equals(openingDate)
 						&& (o.getOpeningDate().truncatedTo(ChronoUnit.MINUTES))
-								.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+						.equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
 	}
 
 	@Test
@@ -804,7 +809,11 @@ class OrganizationServiceUT {
 				.findFirst().orElse(null);
 		assertNotNull(no1);
 		// seule l'organisation 1 est liée au provider avec le statut VALIDATED
-		assertTrue(no1.getLinkedProducerStatus() == LinkedProducerStatus.VALIDATED);
+		assertThat(no1.getOrganizationStatus().getValue()).withFailMessage("""
+						nodeOrganization Status : %s
+						expected OrganizationStatus: %s
+						""", no1.getOrganizationStatus(), OrganizationStatus.VALIDATED)
+				.isEqualTo(OrganizationStatus.VALIDATED.getValue());
 
 		val no2 = organizationsNode.get().filter(collected -> collected.getOrganizationName().equals(organisation2Name))
 				.findFirst().orElse(null);
@@ -854,7 +863,11 @@ class OrganizationServiceUT {
 				.filter(collected -> collected.getOrganizationName().equals(organisation1Name)).findFirst()
 				.orElse(null);
 		assertNotNull(no1);
-		assertTrue(no1.getLinkedProducerStatus() == LinkedProducerStatus.VALIDATED);
+		assertThat(no1.getOrganizationStatus().getValue()).withFailMessage("""
+						nodeOrganization Status : %s
+						expected OrganizationStatus: %s
+						""", no1.getOrganizationStatus(), OrganizationStatus.VALIDATED)
+				.isEqualTo(OrganizationStatus.VALIDATED.getValue());
 
 		NodeOrganizationSearchCriteria criteriaNodeOrga2 = NodeOrganizationSearchCriteria.builder()
 				.uuid(orga2Created.getUuid()).build();
@@ -907,6 +920,165 @@ class OrganizationServiceUT {
 		Page<NodeOrganization> organizationsNode1 = organizationService.searchNodeOrganizations(criteriaNodeOrga1,
 				Pageable.unpaged());
 		assertEquals(0, organizationsNode1.getTotalElements());
+	}
+
+	@Test
+	@DisplayName("Noeud - Récupération d'une organisation par uuid")
+	void getNodeOrganizationByUuid() throws AppServiceException {
+		Organization organization = initOrganisation("Organisation getNode", OrganizationStatus.VALIDATED,
+				Status.COMPLETED);
+		ProviderEntity provider = initProvider("prov-get-node");
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+
+		NodeOrganization nodeOrganization = organizationService.getNodeOrganization(organization.getUuid());
+
+		assertNotNull(nodeOrganization);
+		assertEquals(organization.getUuid(), nodeOrganization.getOrganizationId());
+		assertEquals(organization.getName(), nodeOrganization.getOrganizationName());
+	}
+
+	@Test
+	@DisplayName("Noeud - getNodeOrganization en erreur quand le provider n'existe pas")
+	void getNodeOrganizationWhenNoProvider() throws AppServiceException {
+		Organization organization = initOrganisation("Organisation sans provider", OrganizationStatus.VALIDATED,
+				Status.COMPLETED);
+		when(providerHelper.getMyProvider()).thenReturn(null);
+
+		assertThrows(AppServiceBadRequestException.class,
+				() -> organizationService.getNodeOrganization(organization.getUuid()));
+	}
+
+	@Test
+	@DisplayName("Noeud - getNodeOrganization en erreur quand l'organisation n'existe pas")
+	void getNodeOrganizationWhenOrganizationNotFound() throws AppServiceException {
+		ProviderEntity provider = initProvider("prov-not-found");
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+
+		assertThrows(AppServiceBadRequestException.class,
+				() -> organizationService.getNodeOrganization(UUID.randomUUID()));
+	}
+
+	@Test
+	@DisplayName("Noeud - getNodeOrganization by UUID - VALIDATED COMPLETED")
+	void getNodeOrganizationValidatedCompleted() throws AppServiceException {
+		ProviderEntity provider = providerDataFactory.createTestProvider();
+		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
+		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createValidatedLinkedProducer(provider.getUuid(),
+				rmLinked.getUuid(),
+				nodeProviderUuid);
+
+		// Rajout du nouveau linkedProducer
+		provider.getLinkedProducers().add(linkedProducer);
+		providerDao.save(provider);
+
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+
+		NodeOrganization foundLinked = organizationService.getNodeOrganization(rmLinked.getUuid());
+
+		assertThat(foundLinked)
+				.as("L'organisation ne doit pas être nulle").withFailMessage("""
+						nodeOrganization : %s
+						""", foundLinked).isNotNull()
+				.as("L'uuid doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationId().equals(rmLinked.getUuid()))
+				.as("Le nom doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationName().equals(rmLinked.getName()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeOrganizationStatus : %s
+						expected NodeOrganizationStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeOrganizationStatus.VALIDATED)
+				.matches(o -> NodeOrganizationStatus.VALIDATED.equals(o.getOrganizationStatus()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeLinkedProducerStatus : %s
+						expected NodeLinkedProducerStatusLinkedProducerStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeLinkedProducerStatus.VALIDATED)
+				.matches(o -> NodeLinkedProducerStatus.VALIDATED.equals(o.getLinkedProducerStatus()))
+		;
+	}
+
+	@Test
+	@DisplayName("Noeud - getNodeOrganization by UUID - Attach IN_PROGRESS")
+	void getNodeOrganizationAttachInProgress() throws AppServiceException {
+		ProviderEntity provider = providerDataFactory.createTestProvider();
+		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
+		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createAttachLinkedProducer(provider.getUuid(),
+				rmLinked.getUuid(),
+				nodeProviderUuid);
+
+		// Rajout du nouveau linkedProducer
+		provider.getLinkedProducers().add(linkedProducer);
+		providerDao.save(provider);
+
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+
+		NodeOrganization foundLinked = organizationService.getNodeOrganization(rmLinked.getUuid());
+
+		assertThat(foundLinked)
+				.as("L'organisation ne doit pas être nulle").withFailMessage("""
+						nodeOrganization : %s
+						""", foundLinked).isNotNull()
+				.as("L'uuid doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationId().equals(rmLinked.getUuid()))
+				.as("Le nom doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationName().equals(rmLinked.getName()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeOrganizzationStatus : %s
+						expected OrganizationStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeOrganizationStatus.VALIDATED)
+				.matches(o -> NodeOrganizationStatus.VALIDATED.equals(o.getOrganizationStatus()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeLinkedProducerStatus : %s
+						expected LinkedProducerStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeLinkedProducerStatus.IN_PROGRESS)
+				.matches(o -> NodeLinkedProducerStatus.IN_PROGRESS.equals(o.getLinkedProducerStatus()))
+		;
+	}
+
+	@Test
+	@DisplayName("Noeud - getNodeOrganization by UUID - Detach IN_PROGRESS")
+	void getNodeOrganizationDetachInProgress() throws AppServiceException {
+		ProviderEntity provider = providerDataFactory.createTestProvider();
+		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
+		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createDetachLinkedProducer(provider.getUuid(),
+				rmLinked.getUuid(),
+				nodeProviderUuid);
+
+		// Rajout du nouveau linkedProducer
+		provider.getLinkedProducers().add(linkedProducer);
+		providerDao.save(provider);
+
+		when(providerHelper.getMyProvider()).thenReturn(provider);
+
+		NodeOrganization foundLinked = organizationService.getNodeOrganization(rmLinked.getUuid());
+
+		assertThat(foundLinked)
+				.as("L'organisation ne doit pas être nulle").withFailMessage("""
+						nodeOrganization : %s
+						""", foundLinked).isNotNull()
+				.as("L'uuid doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationId().equals(rmLinked.getUuid()))
+				.as("Le nom doit bien être celui de l'organisation concernée")
+				.matches(o -> o.getOrganizationName().equals(rmLinked.getName()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeOrganizzationStatus : %s
+						expected OrganizationStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeOrganizationStatus.VALIDATED)
+				.matches(o -> NodeOrganizationStatus.VALIDATED.equals(o.getOrganizationStatus()))
+				.withFailMessage("""
+						Le statut n'est pas correct :
+						foundLinked NodeLinkedProducerStatus : %s
+						expected NodeLinkedProducerStatus: %s
+						""", foundLinked.getLinkedProducerStatus(), NodeLinkedProducerStatus.DETACH_IN_PROGRESS)
+				.matches(o -> NodeLinkedProducerStatus.DETACH_IN_PROGRESS.equals(o.getLinkedProducerStatus()))
+		;
 	}
 
 	@Test
@@ -1029,6 +1201,7 @@ class OrganizationServiceUT {
 				.containsAll(expectedOrganizations.stream().map(o -> o.getUuid()).toList());
 		;
 	}
+
 
 	@Transactional
 	protected void attachWithStatus(Organization organization, ProviderEntity provider, NodeProvider nodeProvider,

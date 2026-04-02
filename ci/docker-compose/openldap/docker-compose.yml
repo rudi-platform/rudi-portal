@@ -1,0 +1,21 @@
+services:
+  openldap:
+    image: rudi/openldap
+    container_name: openldap
+    ports:
+      - "1389:1389"
+    environment:
+      - LDAP_PORT_NUMBER=1389
+      - LDAP_ROOT=dc=rudi,dc=fr
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=le_password
+      - LDAP_ADD_SCHEMAS=yes
+      - LDAP_SKIP_DEFAULT_TREE=yes
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
+      - LDAP_CUSTOM_SCHEMA_FILE=/schemas/schema.ldif
+      - LDAP_LOGLEVEL=256
+      - LDAP_ALLOW_ANON_BINDING=yes
+    volumes:
+      # Fichiers LDIF chargés au démarrage (structure organisationnelle, utilisateurs, groupes)
+      - ./ldifs:/ldifs
+    restart: unless-stopped

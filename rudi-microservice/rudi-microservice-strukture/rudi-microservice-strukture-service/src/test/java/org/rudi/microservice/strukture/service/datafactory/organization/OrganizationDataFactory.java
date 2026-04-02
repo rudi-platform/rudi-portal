@@ -64,9 +64,14 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		}
 	}
 
-	public OrganizationEntity createTestOrganizationLinkedProducer(UUID uuid) {
+	public OrganizationEntity getOrCreateOrganization(UUID uuid) {
 		if (uuid == null) {
 			uuid = UUID.randomUUID();
+		} else {
+			OrganizationEntity organization = repository.findByUuid(uuid);
+			if (organization != null) {
+				return organization;
+			}
 		}
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime yesterday = now.minusDays(1);

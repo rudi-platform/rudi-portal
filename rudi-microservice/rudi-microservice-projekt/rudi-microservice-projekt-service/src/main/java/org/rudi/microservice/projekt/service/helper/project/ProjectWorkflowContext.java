@@ -408,6 +408,22 @@ public class ProjectWorkflowContext
 		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
 	}
 
+	@Transactional
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void archiveRefusedProject(ScriptContext context, ExecutionEntity executionEntity) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		UUID uuid = UUID.fromString(processInstanceBusinessKey);
+		if (StringUtils.isNotEmpty(processInstanceBusinessKey)) {
+			ProjectEntity assetDescription = getAssetDescriptionDao().findByUuid(uuid);
+			if (assetDescription != null) {
+				// Archivage du projet et de ses JDD liés (linked datasets et nex dataset requests)
+				projectHelper.archiveProject(assetDescription, ProjectStatus.DISENGAGED, LinkedDatasetStatus.DISENGAGED);
+			}
+		} else {
+			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+		}
+	}
+
 	@Transactional(readOnly = false)
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void archiveProject(ScriptContext context, ExecutionEntity executionEntity, EMailData producerEmailData,

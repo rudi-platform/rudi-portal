@@ -99,6 +99,8 @@ export class LoginComponent implements OnInit {
      */
     oauth2Authenticators: OAuth2AuthenticatorDescription[] = [];
 
+    isolatedOauth2Authenticators: OAuth2AuthenticatorDescription[] = [];
+
     @ViewChild(RudiCaptchaComponent) rudiCaptcha: RudiCaptchaComponent;
 
     /**
@@ -161,7 +163,13 @@ export class LoginComponent implements OnInit {
         });
 
         this.authenticatorService.getOAuth2Authenticators().subscribe(authenticators => {
-            this.oauth2Authenticators = authenticators.filter(authenticator => authenticator.name != 'rudi');
+            authenticators.forEach(authenticator => authenticator['hovered'] = false);
+            this.oauth2Authenticators = authenticators.filter(
+                authenticator => authenticator.name !== 'rudi' && !authenticator.viewSettings?.isolated
+            );
+            this.isolatedOauth2Authenticators = authenticators.filter(
+                authenticator => authenticator.name !== 'rudi' && !!authenticator.viewSettings?.isolated
+            );
         });
 
         const snackBarParam = this.snackBarParam;

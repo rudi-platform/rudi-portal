@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-kalim</artifactId>
-		<version>3.3.9</version>
+		<version>3.3.10</version>
 	</parent>
 
 	<artifactId>rudi-microservice-kalim-service</artifactId>

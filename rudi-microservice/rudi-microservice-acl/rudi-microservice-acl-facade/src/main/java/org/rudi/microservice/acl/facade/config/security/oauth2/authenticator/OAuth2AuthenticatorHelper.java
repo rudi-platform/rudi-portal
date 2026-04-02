@@ -54,6 +54,12 @@ public class OAuth2AuthenticatorHelper {
 
 	private static final String AUTHENTICATORS_ICONS_URL = "/acl/v1/oauth2-authenticators/icons/";
 
+	private static final String RESOURCE_SEPARATOR = "@";
+
+	private static final String ICON_RESOURCE_TYPE = "icon";
+
+	private static final String HOVER_ICON_RESOURCE_TYPE = "hover_icon";
+
 	@Value("${rudi.oauth2.authenticator.configuration:authenticators/oauth2-authenticator.json}")
 	private String oauh2AuthenticatorConfigurationFile;
 
@@ -171,22 +177,47 @@ public class OAuth2AuthenticatorHelper {
 				item.getViewSettings().setIsolated(authenticator.getViewSettings().getIsolated());
 				item.getViewSettings().setCssClass(authenticator.getViewSettings().getCssClass());
 				if (StringUtils.isNotEmpty(authenticator.getViewSettings().getIconUrl())) {
-					item.getViewSettings().setIconUrl(AUTHENTICATORS_ICONS_URL + authenticator.getName());
+					item.getViewSettings().setIconUrl(AUTHENTICATORS_ICONS_URL + authenticator.getName()
+							+ RESOURCE_SEPARATOR + ICON_RESOURCE_TYPE);
+				}
+				if (StringUtils.isNotEmpty(authenticator.getViewSettings().getHoverIconUrl())) {
+					item.getViewSettings().setHoverIconUrl(AUTHENTICATORS_ICONS_URL + authenticator.getName()
+							+ RESOURCE_SEPARATOR + HOVER_ICON_RESOURCE_TYPE);
+				}
+				if (CollectionUtils.isNotEmpty(authenticator.getViewSettings().getLinks())) {
+					item.getViewSettings().setLinks(List.copyOf(authenticator.getViewSettings().getLinks()));
 				}
 			}
 			return item;
 		}).toList();
 	}
 
-	public DocumentContent getOAuth2AuthenticatorDescriptionIcon(String authenticatorName) throws IOException {
+	public DocumentContent getOAuth2AuthenticatorDescriptionIcon(String authenticatorResourceName) throws IOException {
+		String[] resourceParts = authenticatorResourceName.split(RESOURCE_SEPARATOR);
+		String authenticatorName;
+		String resourceType;
+		if (resourceParts.length >= 1) {
+			authenticatorName = resourceParts[0];
+			resourceType = resourceParts[1];
+		} else {
+			authenticatorName = authenticatorResourceName;
+			resourceType = ICON_RESOURCE_TYPE;
+		}
 		OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = getOAuth2AuthenticatorDescriptions().stream()
 				.filter(authenticator -> authenticator.getName().equalsIgnoreCase(authenticatorName)).findFirst()
 				.orElse(null);
-		if (oAuth2AuthenticatorDescription != null && oAuth2AuthenticatorDescription.getViewSettings() != null
-				&& StringUtils.isNotEmpty(oAuth2AuthenticatorDescription.getViewSettings().getIconUrl())) {
-			final Resource resource = resourceLoader
-					.getResource(oAuth2AuthenticatorDescription.getViewSettings().getIconUrl());
-			return DocumentContent.fromResource(resource, false);
+		if (oAuth2AuthenticatorDescription != null && oAuth2AuthenticatorDescription.getViewSettings() != null) {
+			if (HOVER_ICON_RESOURCE_TYPE.equalsIgnoreCase(resourceType)
+					&& StringUtils.isNotEmpty(oAuth2AuthenticatorDescription.getViewSettings().getHoverIconUrl())) {
+				Resource resource = resourceLoader
+						.getResource(oAuth2AuthenticatorDescription.getViewSettings().getHoverIconUrl());
+				return DocumentContent.fromResource(resource, false);
+			} else if (ICON_RESOURCE_TYPE.equalsIgnoreCase(resourceType)
+					&& StringUtils.isNotEmpty(oAuth2AuthenticatorDescription.getViewSettings().getIconUrl())) {
+				final Resource resource = resourceLoader
+						.getResource(oAuth2AuthenticatorDescription.getViewSettings().getIconUrl());
+				return DocumentContent.fromResource(resource, false);
+			}
 		}
 		return null;
 	}

@@ -847,11 +847,35 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"modified":  {
+					"modified": {
 						"type": "string",
 						"format": "date-time"
 					}
 				}
+			},
+			"NodeOrganizationStatus": {
+				"type": "string",
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"ARCHIVE_IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED",
+					"DISENGAGED"
+				]
+			},
+			"NodeLinkedProducerStatus": {
+				"type": "string",
+				"description": "Statut représentant l'état de création de l'orgnization",
+				"enum": [
+					"DRAFT",
+					"IN_PROGRESS",
+					"DETACH_IN_PROGRESS",
+					"CANCELLED",
+					"VALIDATED",
+					"DISENGAGED"
+				]
 			},
 			"NodeOrganization": {
 				"description": "Organisation",
@@ -871,7 +895,7 @@
 						"type": "string"
 					},
 					"organization_status": {
-						"$ref": "#/components/schemas/OrganizationStatus"
+						"$ref": "#/components/schemas/NodeOrganizationStatus"
 					},
 					"organization_opening_date": {
 						"type": "string",
@@ -899,7 +923,7 @@
 						"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"
 					},
 					"linked_producer_status": {
-						"$ref": "#/components/schemas/LinkedProducerStatus",
+						"$ref": "#/components/schemas/NodeLinkedProducerStatus",
 						"description": "Etat du lien entre le provider et l'organisation"
 					}
 				}

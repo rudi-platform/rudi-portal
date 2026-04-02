@@ -63,7 +63,7 @@ public class LinkedProducerServiceImplUT {
 		if (uuid == null) {
 			uuid = UUID.randomUUID();
 		}
-		return organizationDataFactory.createTestOrganizationLinkedProducer(uuid);
+		return organizationDataFactory.getOrCreateOrganization(uuid);
 	}
 
 	private ProviderEntity mockProviderEntity(UUID id) {

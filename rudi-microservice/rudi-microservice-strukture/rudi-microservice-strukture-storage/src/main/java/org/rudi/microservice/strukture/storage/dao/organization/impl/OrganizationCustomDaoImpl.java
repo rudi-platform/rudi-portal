@@ -111,7 +111,9 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		subQuery.select(
 				builder.function("concat", String.class, joinProviderLinkedProvider.get(RepositoryConstants.FIELD_UUID),
 						builder.literal(RepositoryConstants.QUERY_ITEM_SEPARATOR),
-						joinProviderLinkedProvider.get(LinkedProducerEntity.FIELD_LINKED_PRODUCER_STATUS)));
+						joinProviderLinkedProvider.get(LinkedProducerEntity.FIELD_LINKED_PRODUCER_STATUS),
+						builder.literal(RepositoryConstants.QUERY_ITEM_SEPARATOR),
+						joinProviderLinkedProvider.get(LinkedProducerEntity.FIELD_STATUS)));
 
 		subQuery.where(builder.and(
 				// jointure entre l'organisation de la requête principale et celle de la sous-requête
@@ -134,6 +136,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 				searchRoot.get(OrganizationEntity.FIELD_ADDRESS),
 				searchRoot.get(OrganizationEntity.FIELD_CREATION_DATE),
 				searchRoot.get(OrganizationEntity.FIELD_UPDATED_DATE),
+				searchRoot.get(OrganizationEntity.FIELD_DATA),
 				// infos du lien avec le producteur
 				subQuery.getSelection())).orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
 

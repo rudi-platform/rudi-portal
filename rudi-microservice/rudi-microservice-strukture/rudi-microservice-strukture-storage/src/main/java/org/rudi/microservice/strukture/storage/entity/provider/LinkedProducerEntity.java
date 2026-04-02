@@ -29,6 +29,7 @@ public class LinkedProducerEntity extends AbstractAssetDescriptionEntity {
 	public static final String FIELD_UUID = "uuid";
 	public static final String FIELD_ORGANIZATION = "organization";
 	public static final String FIELD_LINKED_PRODUCER_STATUS = "linkedProducerStatus";
+	public static final String FIELD_STATUS = "status";
 
 	public static final String PROVIDER_FK = "provider_fk";
 	public static final String ORGANIZATION_FK = "organization_fk";

@@ -147,7 +147,7 @@ class OwnerInfoHelperUT {
 		UUID nodeProviderUuid = UUID.randomUUID();
 		User user = mockAuthenticatedUserAsProvider(nodeProviderUuid);
 
-		OrganizationEntity organizationEntity = organizationDataFactory.createTestOrganizationLinkedProducer(null);
+		OrganizationEntity organizationEntity = organizationDataFactory.getOrCreateOrganization(null);
 		organizationEntity.setInitiator(user.getLogin());
 		AddressRoleEntity addressRoleEntity = emailAddressRoleDataFactory.getOrCreate(ProviderDataFactory.ADDRESS_ROLE_CODE, ProviderDataFactory.ADDRESS_ROLE_CODE.toLowerCase());
 		ProviderEntity providerEntity = providerDataFactory.createProvider("PROVIDER", nodeProviderUuid);

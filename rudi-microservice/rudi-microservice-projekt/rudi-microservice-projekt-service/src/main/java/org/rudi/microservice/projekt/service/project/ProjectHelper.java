@@ -61,7 +61,6 @@ public class ProjectHelper {
 			ld.setStatus(Status.DELETED);
 			ld.setFunctionalStatus(LINKED_DATASET_ARCHIVED_FUNCTIONAL_STATUS);
 			ld.setUpdatedDate(LocalDateTime.now());
-
 		}
 	}
 

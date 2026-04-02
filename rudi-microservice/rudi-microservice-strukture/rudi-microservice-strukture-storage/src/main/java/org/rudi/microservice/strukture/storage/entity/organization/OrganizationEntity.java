@@ -5,14 +5,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.locationtech.jts.geom.Geometry;
-import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -22,6 +14,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.locationtech.jts.geom.Geometry;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,6 +46,7 @@ public class OrganizationEntity extends AbstractAssetDescriptionEntity {
 	public static final String FIELD_DESCRIPTION = "description";
 	public static final String FIELD_CREATION_DATE = "creationDate";
 	public static final String FIELD_UPDATED_DATE = "updatedDate";
+	public static final String FIELD_DATA = "data";
 
 	private static final long serialVersionUID = -8031214852147803138L;
 

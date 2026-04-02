@@ -20,6 +20,7 @@ import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnt
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,18 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 	public ProviderDataFactory(ProviderDao repository, EmailAddressRoleDataFactory emailAddressRoleDataFactory) {
 		super(repository, ProviderEntity.class);
 		this.emailAddressRoleDataFactory = emailAddressRoleDataFactory;
+	}
+
+	public ProviderEntity getOrCreateTestProvider(UUID uuid) {
+		try {
+			ProviderEntity provider = repository.findByUUID(uuid);
+			if (provider != null) {
+				return provider;
+			}
+		} catch (EmptyResultDataAccessException e) {
+			// Do nothing
+		}
+		return createTestProvider();
 	}
 
 	private ProviderEntity create(String code, String label, int order, LocalDateTime openingDate, LocalDateTime closingDate, Set<NodeProviderEntity> nodeProviders, boolean needAddress) {
@@ -76,6 +89,14 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 		Set<NodeProviderEntity> nodeProviders = new HashSet<NodeProviderEntity>();
 		nodeProviders.add(nodeProviderDataFactory.getOrCreate(nodeProviderUuid, yesterday, null, "v1", "https://127.0.0.1/" + randomString(10), null, null, null, null));
 		return create(providerCode, "test", 0, now, null, nodeProviders, false);
+	}
+
+	public ProviderEntity createTestProvider() {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime yesterday = now.minusDays(1);
+		Set<NodeProviderEntity> nodeProviders = new HashSet<NodeProviderEntity>();
+		nodeProviders.add(nodeProviderDataFactory.getOrCreate(UUID.randomUUID(), yesterday, null, "v1", "https://127.0.0.1/" + randomString(10), null, null, null, null));
+		return create("TEST", "test", 0, now, null, nodeProviders, true);
 	}
 
 	/**
@@ -118,4 +139,8 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 		}
 	}
 
+
+	public void deleteAllProviders() {
+		repository.deleteAll();
+	}
 }

@@ -1,18 +1,15 @@
 package org.rudi.microservice.strukture.service.workflow;
 
-import static org.rudi.microservice.strukture.service.helper.organization.OrganizationWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
@@ -46,8 +43,8 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
 
 @Slf4j
 @Service
@@ -199,7 +196,7 @@ public class OrganizationTaskServiceImpl extends
 			return;
 		}
 
-		boolean isArchive = Strings.CS.equals(DRAFT_TYPE_FORM_ARCHIVE_VALUE, draftType);
+		boolean isArchive = organizationWorkflowHelper.isDraftTypeArchive(draftType);
 
 		if (isArchive) {
 			checkExistingDataset(assetDescriptionEntity); // refus si l'organisation a des JDD

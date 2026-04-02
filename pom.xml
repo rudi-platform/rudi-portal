@@ -6,7 +6,7 @@
 
 	<groupId>org.rudi</groupId>
 	<artifactId>rudi-parent</artifactId>
-	<version>3.3.9</version>
+	<version>3.3.10</version>
 	<packaging>pom</packaging>
 	<description>RUDI ${project.version}</description>
 
@@ -49,8 +49,8 @@
 		<openapi-web.version>2.8.14</openapi-web.version>
 		<openapi.plugin.version>7.20.0</openapi.plugin.version>
 		<openapi-generator-version>7.9.0</openapi-generator-version>	
-		<openapi.jackson.version>0.2.9</openapi.jackson.version>
-		<jackson-core.version>2.21.1</jackson-core.version>
+		<openapi.jackson.version>0.2.10</openapi.jackson.version>
+		<jackson-core.version>2.21.2</jackson-core.version>
 		<apache.directory.api.version>2.1.7</apache.directory.api.version>
 		<google.maps.version>0.2.7</google.maps.version>
 		<jasig.cas.client.version>3.6.4</jasig.cas.client.version>
@@ -68,12 +68,12 @@
 		<activiti.version>7.1.0.M6</activiti.version>
 		<graalvm.version>23.0.11</graalvm.version>
 		<nashorn.version>15.7</nashorn.version>
-		<log4j.version>2.25.3</log4j.version>
+		<log4j.version>2.25.4</log4j.version>
 		<jaxb-impl.version>2.3.1</jaxb-impl.version>
 		<jaxb-api.version>4.0.5</jaxb-api.version>
 		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
 		<geotools.version>26.7</geotools.version>
-		<tika.version>3.2.3</tika.version>
+		<tika.version>3.3.0</tika.version>
 		<s3.version>2.7.0</s3.version>
 		<gson.version>2.13.1</gson.version>
 		<xdocreport.version>2.2.0</xdocreport.version>
