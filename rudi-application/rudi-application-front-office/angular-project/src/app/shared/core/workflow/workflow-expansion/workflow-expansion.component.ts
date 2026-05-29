@@ -1,7 +1,9 @@
 import {Component, Input, signal} from '@angular/core';
 import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
+import {TranslatePipe} from '@ngx-translate/core';
 import {FieldType, Section} from 'micro_service_modules/projekt/projekt-api';
 import {WorkflowExpansionDateComponent} from './workflow-expansion-date/workflow-expansion-date.component';
+import {WorkflowExpansionImageComponent} from './workflow-expansion-image/workflow-expansion-image.component';
 import {WorkflowExpansionLabelComponent} from './workflow-expansion-label/workflow-expansion-label.component';
 import { WorklfowExpansionRichLabelComponent } from './worklfow-expansion-rich-label/worklfow-expansion-rich-label.component';
 
@@ -9,7 +11,17 @@ import { WorklfowExpansionRichLabelComponent } from './worklfow-expansion-rich-l
     selector: 'app-workflow-expansion',
     templateUrl: './workflow-expansion.component.html',
     styleUrl: './workflow-expansion.component.scss',
-    imports: [MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, WorkflowExpansionLabelComponent, WorkflowExpansionDateComponent, WorklfowExpansionRichLabelComponent]
+    imports: [
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        WorkflowExpansionLabelComponent,
+        WorkflowExpansionDateComponent,
+        WorkflowExpansionImageComponent,
+        WorklfowExpansionRichLabelComponent,
+        TranslatePipe
+    ]
 })
 export class WorkflowExpansionComponent {
 
@@ -17,6 +29,7 @@ export class WorkflowExpansionComponent {
     fieldType = FieldType;
     @Input() section: Section;
     @Input() title: string;
+    @Input() pictureUuid: string;
 
     getFieldListLabel(extendedType: string, values: string[]): any {
         // Convertir extendedType en tableau d'objets

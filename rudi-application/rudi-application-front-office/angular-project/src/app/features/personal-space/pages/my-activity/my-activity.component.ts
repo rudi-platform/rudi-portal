@@ -13,7 +13,16 @@ import {ReusesComponent} from '../../components/reuses/reuses.component';
 @Component({
     selector: 'app-my-activity',
     templateUrl: './my-activity.component.html',
-    imports: [PageComponent, LoaderComponent, PageTitleComponent, TabsComponent, TabComponent, ReusesComponent, MyRequestsComponent, TranslatePipe]
+    imports: [
+        PageComponent,
+        LoaderComponent,
+        PageTitleComponent,
+        TabsComponent,
+        TabComponent,
+        ReusesComponent,
+        MyRequestsComponent,
+        TranslatePipe,
+    ]
 })
 export class MyActivityComponent {
     urlToDoc: string;

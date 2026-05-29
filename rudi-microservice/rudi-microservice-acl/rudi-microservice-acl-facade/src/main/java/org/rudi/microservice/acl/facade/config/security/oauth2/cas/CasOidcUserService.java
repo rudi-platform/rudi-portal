@@ -20,10 +20,10 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -41,8 +41,11 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class CasOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
 	private static final String INVALID_USER_INFO_RESPONSE_ERROR_CODE = "invalid_user_info_response";
@@ -61,12 +63,30 @@ public class CasOidcUserService implements OAuth2UserService<OidcUserRequest, Oi
 	private static final Converter<Map<String, Object>, Map<String, Object>> DEFAULT_CLAIM_TYPE_CONVERTER = new ClaimTypeConverter(
 			createDefaultClaimTypeConverters());
 
+	@Getter(value = lombok.AccessLevel.PROTECTED)
 	private Set<String> accessibleScopes = new HashSet<>(
 			Arrays.asList(OidcScopes.PROFILE, OidcScopes.EMAIL, OidcScopes.ADDRESS, OidcScopes.PHONE));
 
-	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService = new DefaultOAuth2UserService();
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
 
 	private Function<ClientRegistration, Converter<Map<String, Object>, Map<String, Object>>> claimTypeConverterFactory = clientRegistration -> DEFAULT_CLAIM_TYPE_CONVERTER;
+
+	public CasOidcUserService(ObjectMapper objectMapper) {
+		this.oauth2UserService = new CasOAuth2UserService(objectMapper, createRestTemplate());
+	}
+
+	/**
+	 * 
+	 * Create a RestTemplate with a message converter that accepts JWT content type
+	 * 
+	 * @return
+	 */
+	protected RestTemplate createRestTemplate() {
+		// on ne récupère plus que du string donc pas besoin de message converter
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
+		return restTemplate;
+	}
 
 	/**
 	 * Returns the default {@link Converter}'s used for type conversion of claim values for an {@link OidcUserInfo}.

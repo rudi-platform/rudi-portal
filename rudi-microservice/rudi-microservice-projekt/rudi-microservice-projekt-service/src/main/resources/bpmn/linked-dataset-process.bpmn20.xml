@@ -11,7 +11,7 @@
   <bpmn:itemDefinition id="ItemDefinition_1499" isCollection="false" structureRef="xs:int"/>
   <bpmn:process id="linked-dataset-process" name="LinkedDatasetProcess" isExecutable="true">
     <bpmn:documentation id="Documentation_2"><![CDATA[Processus d'une demande]]></bpmn:documentation>
-    <bpmn:startEvent id="StartEvent_1" name="Draft">
+    <bpmn:startEvent id="StartEvent_1" name="Transmission de la demande d'accès à un jeu de données">
       <bpmn:outgoing>SequenceFlow_1</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>
     </bpmn:startEvent>
@@ -41,7 +41,7 @@
       <bpmn:documentation id="Documentation_13"><![CDATA[Accepter la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;validated&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_4" name="Demande annulée" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_3">
+    <bpmn:sequenceFlow id="SequenceFlow_4" name="canceled" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_3">
       <bpmn:documentation id="Documentation_11"><![CDATA[Refuser la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_6" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">${action == &quot;canceled&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>

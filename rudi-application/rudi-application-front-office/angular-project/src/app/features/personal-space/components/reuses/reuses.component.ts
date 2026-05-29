@@ -26,6 +26,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
 import {mapEach} from '@shared/utils/observable-utils';
+import {Status} from 'micro_service_modules/projekt/projekt-api';
 import {PagedProjectList} from 'micro_service_modules/projekt/projekt-model';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {Observable} from 'rxjs';
@@ -37,7 +38,7 @@ export interface ProjectSummary {
     projectTitle: string;
     confidentiality: string;
     status: string;
-    numberOfDatasets: number;
+    numberOfDatasets: number;clink
 }
 
 const DEFAULT_SORT_ORDER: string = 'updatedDate';
@@ -47,7 +48,27 @@ const DEFAULT_SORT_DIRECTION: SortDirection = 'desc';
     selector: 'app-reuses',
     templateUrl: './reuses.component.html',
     styleUrls: ['./reuses.component.scss'],
-    imports: [SearchCountComponent, RouterLink, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule]
+    imports: [
+        SearchCountComponent,
+        RouterLink,
+        LoaderComponent,
+        MatTable,
+        MatSort,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatSortHeader,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        BackPaginationComponent,
+        DatePipe,
+        TranslatePipe,
+        NgxPaginationModule,
+    ]
 })
 export class ReusesComponent implements OnInit {
 
@@ -103,9 +124,12 @@ export class ReusesComponent implements OnInit {
         if (!this.sortIsRunning) {
             this.searchIsRunning = true;
         }
+
+        const status: Status[] = [Status.Completed, Status.Pending, Status.Deleted, Status.Cancelled];
+
         // Observable de récupération des projets pipé sur la récupération du total d'éléments
         const observableMyProjects: Observable<PagedProjectList> = this.projectMetierService
-            .getMyAndOrganizationsProjects((this.page - 1) >= 0 ?
+            .getMyAndOrganizationsProjects(status, (this.page - 1) >= 0 ?
                 (this.page - 1) * this.ITEMS_PER_PAGE :
                 0, this.ITEMS_PER_PAGE, sortTableInterface.order)
             .pipe(

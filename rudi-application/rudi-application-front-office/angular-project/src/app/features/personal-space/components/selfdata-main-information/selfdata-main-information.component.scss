@@ -11,13 +11,8 @@
 }
 
 .card-demand-label {
-    height: 36px;
+    @include common-style.card-demand-label;
     margin: 0 105px 8px 2px;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 1.72;
-    text-align: left;
-    color: var(--black);
 }
 
 .vertical-space {
@@ -25,20 +20,9 @@
 }
 
 .data-label {
-    width: 520px;
-    height: 21px;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.54;
-    text-align: left;
-    color: var(--primary-color);
+    @include common-style.data-label;
 }
 
 .data-value {
-    width: 355px;
-    height: 27px;
-    font-size: 16px;
-    line-height: 1.5;
-    text-align: left;
-    color: var(--black);
+    @include common-style.data-value;
 }

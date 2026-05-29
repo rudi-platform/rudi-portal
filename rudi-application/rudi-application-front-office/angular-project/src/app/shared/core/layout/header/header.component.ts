@@ -146,14 +146,18 @@ export class HeaderComponent implements OnInit {
 
     handleClickLogout(): void {
         this.authenticationService.logout().subscribe({
-            next: () => {
+            next: (logoutUri: string) => {
                 AuthenticationService.clearTokens();
-                this.snackBarService.openSnackBar({
-                    message: this.translateService.instant('header.logOutSuccess'),
-                    level: Level.SUCCESS,
-                    keepBeforeSecondRouteChange: true
-                });
-                this.goToCatalogues();
+                if (logoutUri && logoutUri.startsWith('http')) {
+                    window.location.href = logoutUri;
+                } else {
+                    this.snackBarService.openSnackBar({
+                        message: this.translateService.instant('header.logOutSuccess'),
+                        level: Level.SUCCESS,
+                        keepBeforeSecondRouteChange: true
+                    });
+                    this.goToCatalogues();
+                }
             },
             error: (err) => {
                 console.error(err);

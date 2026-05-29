@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.LongId;
@@ -55,7 +54,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -63,6 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class UserServiceImpl implements UserService {
 
@@ -73,7 +75,6 @@ public class UserServiceImpl implements UserService {
 	private static final String ADDRESS_MISSING_MESSAGE = "Address missing";
 	private static final String ADDRESS_ROLE_INVALID_MESSAGE = "AddresseRole invalid";
 	private static final Map<String, Integer> LOGIN_ATTEMPTS = new HashMap<>();
-
 
 	@Value("${user.authentication.maxFailedAttempt:10}")
 	@Getter
@@ -90,47 +91,33 @@ public class UserServiceImpl implements UserService {
 	@Value("${application.role.user.code:USER}")
 	private String userRoleCode;
 
-	@Autowired
-	private UtilContextHelper utilContextHelper;
+	private final UtilContextHelper utilContextHelper;
 
-	@Autowired
-	private PasswordHelper passwordHelper;
+	private final PasswordHelper passwordHelper;
 
-	@Autowired
-	private UserDao userDao;
+	private final UserDao userDao;
 
-	@Autowired
-	private UserCustomDao userCustomDao;
+	private final UserCustomDao userCustomDao;
 
-	@Autowired
-	private AbstractAddressDao abstractAddressDao;
+	private final AbstractAddressDao abstractAddressDao;
 
-	@Autowired
-	private AddressRoleDao addressRoleDao;
+	private final AddressRoleDao addressRoleDao;
 
-	@Autowired
-	private RoleDao roleDao;
+	private final RoleDao roleDao;
 
-	@Autowired
-	private RoleCustomDao roleCustomDao;
+	private final RoleCustomDao roleCustomDao;
 
-	@Autowired
-	private UserMapper userMapper;
+	private final UserMapper userMapper;
 
-	@Autowired
-	private UserFullMapper userFullMapper;
+	private final UserFullMapper userFullMapper;
 
-	@Autowired
-	private UserLightMapper userLightMapper;
+	private final UserLightMapper userLightMapper;
 
-	@Autowired
-	private AbstractAddressMapper abstractAddressMapper;
+	private final AbstractAddressMapper abstractAddressMapper;
 
-	@Autowired
-	private PageableUtil pageableUtil;
+	private final PageableUtil pageableUtil;
 
-	@Autowired
-	private NonDaoUserSearchCriteriaMapper nonDaoUserSearchCriteriaMapper;
+	private final NonDaoUserSearchCriteriaMapper nonDaoUserSearchCriteriaMapper;
 
 	@Override
 	public Page<User> searchUsers(UserSearchCriteria searchCriteria, Pageable pageable) {
@@ -467,17 +454,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean mustValidateCaptcha(String login){
+	public boolean mustValidateCaptcha(String login) {
 		return LOGIN_ATTEMPTS.containsKey(login) && LOGIN_ATTEMPTS.get(login) >= maxFailedAttemptBeforeCaptcha;
 	}
 
 	@Override
-	public void addFailedAttempt(String login){
+	public void addFailedAttempt(String login) {
 		LOGIN_ATTEMPTS.put(login, LOGIN_ATTEMPTS.getOrDefault(login, 0) + 1);
 	}
 
 	@Override
-	public void resetFailedAttempts(String login){
+	public void resetFailedAttempts(String login) {
 		LOGIN_ATTEMPTS.remove(login);
 	}
 

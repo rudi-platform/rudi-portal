@@ -39,7 +39,7 @@ public class TokenManager {
 
 	private final TokenService tokenService;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
 
 	public void saveToken(TokenType type, AuthenticatedUser user, String tokenValue)
 			throws ParseException, JsonProcessingException, AppServiceException {

@@ -64,7 +64,6 @@ class SearchCriteriaMapperIT {
 		final SearchParams searchParams = searchCriteriaMapper
 				.datasetSearchCriteriaToSearchParams(datasetSearchCriteria, false);
 		assertThat(searchParams.getFilterQuery()).isEmpty();
-		;
 	}
 
 	@Test

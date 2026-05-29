@@ -14,7 +14,16 @@ import {OrganizationTabComponent} from '../../components/organization-tab/organi
     selector: 'app-my-account',
     templateUrl: './my-account.component.html',
     styleUrls: ['./my-account.component.scss'],
-    imports: [PageComponent, LoaderComponent, PageTitleComponent, TabsComponent, TabComponent, MyProfilComponent, OrganizationTabComponent, TranslatePipe]
+    imports: [
+        PageComponent,
+        LoaderComponent,
+        PageTitleComponent,
+        TabsComponent,
+        TabComponent,
+        MyProfilComponent,
+        OrganizationTabComponent,
+        TranslatePipe,
+    ]
 })
 export class MyAccountComponent implements OnInit {
     isLoading: boolean;

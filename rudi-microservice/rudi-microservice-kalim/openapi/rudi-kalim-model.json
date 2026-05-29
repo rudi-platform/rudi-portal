@@ -17,6 +17,68 @@
 	},
 	"components": {
 		"schemas": {
+			"RudiDate": {
+				"description": "Date in the ISO 8601 format",
+				"type": "string",
+				"format": "date-time"
+			},
+			"AbstractLongIdDto": {
+				"type": "object",
+				"properties": {
+					"uuid": {
+						"type": "string",
+						"format": "uuid",
+						"readOnly": true
+					}
+				}
+			},
+			"AbstractLabelizedDto": {
+				"type": "object",
+				"required": [
+					"code"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AbstractLongIdDto"
+					},
+					{
+						"properties": {
+							"code": {
+								"type": "string",
+								"maxLength": 30
+							},
+							"label": {
+								"type": "string",
+								"maxLength": 100
+							}
+						}
+					}
+				]
+			},
+			"AbstractStampedDto": {
+				"type": "object",
+				"required": [
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AbstractLabelizedDto"
+					},
+					{
+						"properties": {
+							"opening_date": {
+								"$ref": "#/components/schemas/RudiDate"
+							},
+							"closing_date": {
+								"$ref": "#/components/schemas/RudiDate"
+							},
+							"order": {
+								"type": "integer",
+								"description": "Ordre d'affichage dans l'interface"
+							}
+						}
+					}
+				]
+			},
 			"IntegrationStatus": {
 				"type": "string",
 				"enum": [
@@ -202,6 +264,31 @@
 						}
 					}
 				}
+			},
+			"MimeType": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AbstractStampedDto"
+					}
+				]
+			},
+			"PagedMimeTypes": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PageResult"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"elements": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/MimeType"
+								}
+							}
+						}
+					}
+				]
 			}
 		}
 	}

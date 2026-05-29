@@ -6,7 +6,9 @@ package org.rudi.microservice.projekt.service.workflow;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.PostConstruct;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -16,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceForbiddenException;
+import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.UtilContextHelper;
@@ -33,6 +37,7 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
+import org.rudi.microservice.projekt.service.helper.attachment.AttachmentsHelper;
 import org.rudi.microservice.projekt.service.helper.project.ProjectAssigmentHelper;
 import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowContext;
 import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper;
@@ -47,8 +52,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
 import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_FIELD_NAME;
 
 /**
  * @author FNI18300
@@ -73,6 +79,9 @@ public class ProjectTaskServiceImpl extends
 
 	@Autowired
 	private ProjektAuthorisationHelper projektAuthorisationHelper;
+
+	@Autowired
+	private AttachmentsHelper attachmentsHelper;
 
 	@Autowired
 	private FormService formService;
@@ -145,6 +154,37 @@ public class ProjectTaskServiceImpl extends
 		} catch (GetOrganizationMembersException | MissingParameterException | AppServiceUnauthorizedException e) {
 			throw new IllegalArgumentException(
 					"Erreur lors de la vérification des droits pour le traitement de la tache de projet", e);
+		}
+	}
+
+	/**
+	 * pour surcharge éventuelle
+	 *
+	 * @param assetDescriptionEntity
+	 */
+	@Override
+	protected void beforeStart(ProjectEntity assetDescriptionEntity) throws InvalidDataException {
+		boolean isDraft = assetDescriptionEntity.getStatus().equals(Status.DRAFT);
+		String draftType = projectWorkflowHelper.getDraftType(assetDescriptionEntity);
+
+		// Si on est dans le cas de la modification d'un projet
+		if (isDraft && StringUtils.isNotEmpty(draftType) && !DRAFT_TYPE_FORM_ARCHIVE_VALUE.equals(draftType)) {
+			log.debug("Modification d'un projet en cours, l'image est dans doks");
+
+			// On réhydrate les datas s'il y a une image
+			Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
+			try {
+				// Si l'image est présente on récupère ses metadatas
+				if (data != null && data.containsKey(PROJECT_PICTURE_FIELD_NAME)) {
+					UUID mediaUuid = UUID.fromString((String) data.get(PROJECT_PICTURE_FIELD_NAME));
+					// Vérifie que l'utilisateur connecté est bien le "créateur" de l'image ou un Moderator / Administrator
+					attachmentsHelper.checkIfAuthenticatedUserCanDeleteDocument(mediaUuid);
+				}
+			} catch (AppServiceNotFoundException e) {
+				throw new InvalidDataException("Image not found", e);
+			} catch (AppServiceForbiddenException | AppServiceUnauthorizedException e) {
+				throw new InvalidDataException("Unauthorized to add this image", e);
+			}
 		}
 	}
 

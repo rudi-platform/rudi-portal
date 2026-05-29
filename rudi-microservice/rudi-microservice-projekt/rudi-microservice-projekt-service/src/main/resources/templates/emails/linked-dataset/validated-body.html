@@ -23,8 +23,10 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        Le producteur de données ${producer.getName()} a accepté votre demande d'accès au jeu de données
-        ${asset.description}.
+        Le producteur de données <a
+            href="${urlServer}/organization/detail/${producer.getUuid()}">${producer.getName()}</a> a
+        accepté votre demande d'accès au jeu de données
+        <a href="${urlServer}/catalogue/detail/${asset.datasetUuid}">${asset.description}.</a>
     </p>
     <p>
         Vous pouvez dès à présent télécharger les différents médias associés depuis le catalogue des jeux de données

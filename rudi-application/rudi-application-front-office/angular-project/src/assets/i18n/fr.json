@@ -300,7 +300,8 @@
         "errorLoginLocked": "Votre compte a été bloqué pendant 20 minutes suite à 10 essais infructueux d'authentification. Passé ce délai vous pourrez de nouveau vous authentifier. Vous avez oublié votre mot de passe ? Cliquez ",
         "errorLoginLockedFooter": "ici",
         "error-captcha": "Le Captcha saisi n'est pas valide. Veuillez essayer de nouveau.",
-        "authenticators": "Authentifications externes"
+        "authenticators": "Authentifications externes",
+        "or": "ou"
     },
     "resetPassword": {
         "reset": "Page de réinitialisation du mot de passe",
@@ -1164,7 +1165,7 @@
             "linkedDataset": {
                 "singular": "demande d'accès à des jeux de données à accès restreint",
                 "plural": "demandes d'accès à des jeux de données à accès restreint",
-                "header": "Jeu de donnée"
+                "header": "Jeu de données"
             },
             "project": {
                 "singular": "demande de publication de réutilisation",
@@ -1183,6 +1184,15 @@
             },
             "noDate": "Inconnue",
             "noInitiator": "Non renseigné"
+        },
+        "taskHistoryDetail": {
+            "objectTab": {
+                "project": "Réutilisation",
+                "organization": "Organisation",
+                "linkedProducer": "Organisation",
+                "linkedDataset": "Demande",
+                "newDatasetRequest": "Demande"
+            }
         },
         "organizationDetails": {
             "declaration": "Déclaration d'organisation",
@@ -1241,6 +1251,7 @@
         "projectDetails": {
             "headerTitlePublication": "Demande de publication",
             "headerTitleModification": "Demande de modification",
+            "image": "Image",
             "projectTab": {
                 "title": "Réutilisation",
                 "modifiedProject": "Réutilisation modifiée",
@@ -1450,7 +1461,8 @@
             },
             "details": {
                 "new-data": "Demande de nouvelles données"
-            }
+            },
+            "linkedProject": "Réutilisation liée à la demande"
         },
         "selfdataDatasetRequestDetails": {
             "tabs": {

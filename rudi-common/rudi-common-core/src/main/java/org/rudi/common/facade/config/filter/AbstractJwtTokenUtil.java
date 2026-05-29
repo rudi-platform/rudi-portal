@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -17,8 +20,6 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 	public static final String ISSUER_RUDI = "Rudi#";
 
 	public static final String CONNECTED_USER = "connectedUser";
+
+	public static final String ORIGINAL_ISSUER = "original_issuer";
+
+	public static final String ORIGINAL_IDTOKEN = "original_idtoken";
 
 	/**
 	 * Validité du token par défaut. Valeur par défaut : 10 minutes

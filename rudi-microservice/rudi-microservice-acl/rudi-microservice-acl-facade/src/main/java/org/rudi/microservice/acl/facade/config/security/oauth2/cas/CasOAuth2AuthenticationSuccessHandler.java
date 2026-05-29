@@ -13,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.RoleCodes;
+import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
 import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.rudi.common.facade.config.filter.Tokens;
 import org.rudi.microservice.acl.core.bean.OAuth2AttributeMapping;
@@ -25,7 +26,6 @@ import org.rudi.microservice.acl.core.bean.User;
 import org.rudi.microservice.acl.core.bean.UserAttribute;
 import org.rudi.microservice.acl.core.bean.UserType;
 import org.rudi.microservice.acl.facade.config.security.AbstractAuthenticationSuccessHandler;
-import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.rudi.microservice.acl.facade.config.security.cache.AccessTokenManager;
 import org.rudi.microservice.acl.facade.config.security.oauth2.authenticator.OAuth2AuthenticatorHelper;
@@ -107,6 +107,9 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 				SecurityContextHolder.getContext().setAuthentication(customToken);
 				OAuth2AuthorizedClient authorizedClient = authorizedClientRepository
 						.loadAuthorizedClient(registrationId, customToken, request);
+				// On ajoute l'issuer d'origine dans les données de l'utilisateur pour pouvoir le réutiliser dans les autres services
+				assignOriginalIssuer(authorizedClient, authenticatedUser);
+				assignOriginalIdToken(authentication, authenticatedUser);
 
 				Tokens tokens = null;
 				// Si on utilise CAS avec gestion des tokens par le provider, on réutilise les tokens OIDC
@@ -143,6 +146,29 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 		}
 	}
 
+	protected void assignOriginalIssuer(OAuth2AuthorizedClient authorizedClient, AuthenticatedUser authenticatedUser) {
+		if (authorizedClient == null || authenticatedUser == null) {
+			return;
+		}
+		if (authorizedClient.getClientRegistration() == null
+				|| authorizedClient.getClientRegistration().getProviderDetails() == null) {
+			return;
+		}
+		String issuer = authorizedClient.getClientRegistration().getProviderDetails().getIssuerUri();
+		authenticatedUser.addData(AbstractJwtTokenUtil.ORIGINAL_ISSUER, issuer);
+
+	}
+
+	protected void assignOriginalIdToken(Authentication authentication, AuthenticatedUser authenticatedUser) {
+		if (authentication == null || authenticatedUser == null) {
+			return;
+		}
+		if (authentication.getPrincipal() instanceof DefaultOidcUser defaultOidcUser) {
+			String idToken = defaultOidcUser.getIdToken().getTokenValue();
+			authenticatedUser.addData(AbstractJwtTokenUtil.ORIGINAL_IDTOKEN, idToken);
+		}
+	}
+
 	protected AuthenticatedUser convert(OAuth2AuthenticationToken token, String registrationId) {
 		AuthenticatedUser authenticatedUser = new AuthenticatedUser(token.getPrincipal().getName());
 		OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = oAuth2AuthenticatorHelper
@@ -151,7 +177,7 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 				UserAttribute.FIRSTNAME, DEFAULT_FISRTNAME_OAUTH2_ATTRIBUTE));
 		authenticatedUser.setLastname(extractAttribute(String.class, oAuth2AuthenticatorDescription, token,
 				UserAttribute.LASTNAME, DEFAULT_LASTNAME_OAUTH2_ATTRIBUTE));
-		authenticatedUser.setFirstname(extractAttribute(String.class, oAuth2AuthenticatorDescription, token,
+		authenticatedUser.setEmail(extractAttribute(String.class, oAuth2AuthenticatorDescription, token,
 				UserAttribute.EMAIL, DEFAULT_EMAIL_OAUTH2_ATTRIBUTE));
 
 		authenticatedUser.setRoles(new ArrayList<>());

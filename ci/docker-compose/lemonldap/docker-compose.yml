@@ -1,0 +1,23 @@
+services:
+
+  lemonldap-ng:
+    container_name: lemonldap-ng
+    image: lemonldapng/lemonldap-ng:2.22.2
+    environment:
+      SSODOMAIN: myhost
+      PORTAL_HOSTNAME: auth.myhost
+      MANAGER_HOSTNAME: manager.myhost
+      HANDLER_HOSTNAME: reload.myhost
+      # Starts fast-cgi-server with a port rather than socket
+      #FASTCGI_LISTEN_PORT: 9000
+      PORT: 90
+      IPV4_ONLY: true
+      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled
+    ports:
+      # Needed only when using fast-cgi-server via port access
+      #- 9000:9000
+      - 90:90
+    volumes:
+      - ./lemonldap-ng/conf:/var/lib/lemonldap-ng/conf
+      - ./lemonldap-ng/sites-enabled:/etc/nginx/sites-enabled
+    restart: unless-stopped

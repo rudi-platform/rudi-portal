@@ -1,5 +1,10 @@
-<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card" (click)="clickCard()">
-    <img mat-card-image [src]="projectPicture" alt="Project image">
+<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card"
+    tabindex="0"
+    role="article"
+    [attr.aria-label]="projectTitle"
+    (click)="clickCard()"
+    (keydown.enter)="clickCard()">
+    <img mat-card-image [src]="projectPicture" [alt]="projectTitle">
     <mat-card-content>
         <div class="project-card-content">
             <span class="project-card-producer">{{projectOwnerInfo}}</span>

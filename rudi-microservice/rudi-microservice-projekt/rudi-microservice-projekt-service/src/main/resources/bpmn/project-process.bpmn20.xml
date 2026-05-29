@@ -27,9 +27,10 @@
       <bpmn:incoming>SequenceFlow_27</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Update status pending&quot;);
-        projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En
-        attente de validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;);
-        var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner);
+        projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;IN_PROGRESS&quot;, &quot;En attente de validation&quot;);
+        var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-body.html&quot;);
+        var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution);
+        emailData.addData(&quot;projectOwner&quot;,projectOwner);
         projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);
       </bpmn:script>
     </bpmn:scriptTask>
@@ -40,8 +41,7 @@
       <bpmn:outgoing>SequenceFlow_35</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Update status complete&quot;);
         var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution);
-        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;,
-        reuseStatus);
+        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus);
         projectWorkflowContext.startSubProcess(execution);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-body.html&quot;);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
@@ -193,8 +193,8 @@
       <bpmn:incoming>SequenceFlow_48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_42</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status pending&quot;);
-        projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de
-        validation&quot;); var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;);
+        projectWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;, &quot;&quot;, &quot;En attente de validation&quot;);
+        var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/moderator-notify-modif-subject.txt&quot;,&quot;file:templates/emails/project/moderator-notify-modif-body.html&quot;);
         var projectOwner = projectWorkflowContext.computeProjectOwnerName(context, execution); emailData.addData(&quot;projectOwner&quot;,projectOwner);
         projectWorkflowContext.sendEMailToRole(context, execution, emailData,&quot;MODERATOR&quot;);
       </bpmn:script>
@@ -227,8 +227,8 @@
       <bpmn:documentation id="Documentation_28"><![CDATA[Positionne le workflow dans l'état COMPLETED]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_39</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_44</bpmn:outgoing>
-      <bpmn:script>projectWorkflowContext.info(&quot;Modification : publication des modifications&quot;); var emailData
-        = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-modif-body.html&quot;);
+      <bpmn:script>projectWorkflowContext.info(&quot;Modification : publication des modifications&quot;);
+        var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/owner-accepted-modif-subject.txt&quot;,&quot;file:templates/emails/project/owner-accepted-modif-body.html&quot;);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.publishProjectModification(context, execution);
       </bpmn:script>
@@ -289,8 +289,8 @@
       <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Modif Form&quot;);
         var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution);
-        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;,
-        reuseStatus); projectWorkflowContext.resetDraftForm(context, execution);
+        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus);
+        projectWorkflowContext.resetDraftForm(context, execution);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;ok&quot;, &quot;validate-project-modification&quot;);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_11&quot;, &quot;refused&quot;, &quot;refused-project-modification&quot;);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_12&quot;, &quot;cancel&quot;, &quot;cancel-project-modification&quot;);
@@ -304,8 +304,7 @@
       <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
       <bpmn:script>projectWorkflowContext.info(&quot;Modification : Update status complete - Reset Creation Form&quot;);
         var reuseStatus = projectWorkflowContext.getReutilisationStatus(context, execution);
-        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;,
-        reuseStatus);
+        projectWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, reuseStatus);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_5&quot;, &quot;resubmit&quot;, &quot;resubmit-project&quot;);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;ok&quot;, &quot;validate-project&quot;);
         projectWorkflowContext.resetFormData(context, execution, &quot;UserTask_6&quot;, &quot;refused&quot;, &quot;refused-project&quot;);
@@ -324,8 +323,7 @@
         var moderatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/notify-moderator-archive-subject.txt&quot;,&quot;file:templates/emails/project/notify-moderator-archive-body.html&quot;);
         moderatorEmailData.addData(&quot;projectOwner&quot;,projectOwner);
         var projectOwnerEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/notify-project-owner-archive-subject.txt&quot;,&quot;file:templates/emails/project/notify-project-owner-archive-body.html&quot;);
-        projectWorkflowContext.archiveProject(context, execution, producerEmailData, moderatorEmailData,
-        projectOwnerEmailData);
+        projectWorkflowContext.archiveProject(context, execution, producerEmailData, moderatorEmailData, projectOwnerEmailData);
       </bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_11" name="Archivage" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_8">

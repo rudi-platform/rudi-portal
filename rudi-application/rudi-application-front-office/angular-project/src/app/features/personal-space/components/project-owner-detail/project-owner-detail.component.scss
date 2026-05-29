@@ -9,15 +9,7 @@
 }
 
 .card-demand-label {
-    height: 36px;
-    font-size: 18px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.72;
-    letter-spacing: normal;
-    text-align: left;
-    color: var(--black);
+    @include common-style.card-demand-label;
 }
 
 .organization-name {

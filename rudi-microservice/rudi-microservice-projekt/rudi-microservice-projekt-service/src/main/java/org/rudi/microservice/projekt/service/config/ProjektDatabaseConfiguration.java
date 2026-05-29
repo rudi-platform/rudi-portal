@@ -11,10 +11,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @EntityScan(basePackages = { "org.rudi.common.storage.entity", "org.rudi.facet.bpmn.entity",
-		"org.rudi.microservice.projekt.storage.entity" })
+		"org.rudi.microservice.projekt.storage.entity", "org.rudi.facet.doks.entity" })
 @EnableJpaRepositories(basePackages = { "org.rudi.common.storage.dao", "org.rudi.facet.bpmn.dao",
-		"org.rudi.microservice.projekt.storage.dao" }, repositoryBaseClass = StampedRepositoryImpl.class)
-public class ProjectDatabaseConfiguration implements HibernatePropertiesCustomizer {
+		"org.rudi.microservice.projekt.storage.dao", "org.rudi.facet.doks.dao" }, repositoryBaseClass = StampedRepositoryImpl.class)
+public class ProjektDatabaseConfiguration implements HibernatePropertiesCustomizer {
 
 	@Override
 	public void customize(Map<String, Object> hibernateProperties) {

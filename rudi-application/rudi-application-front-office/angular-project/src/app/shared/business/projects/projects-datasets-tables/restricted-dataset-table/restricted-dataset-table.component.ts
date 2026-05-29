@@ -20,6 +20,7 @@ import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
 @Component({
     selector: 'app-restricted-dataset-table',
     templateUrl: './restricted-dataset-table.component.html',
+    standalone: true,
     imports: [DatasetTableComponent]
 })
 export class RestrictedDatasetTableComponent {

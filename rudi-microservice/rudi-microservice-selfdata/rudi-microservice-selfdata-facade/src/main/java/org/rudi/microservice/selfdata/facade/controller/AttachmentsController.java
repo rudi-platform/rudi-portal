@@ -1,10 +1,17 @@
 package org.rudi.microservice.selfdata.facade.controller;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.rudi.common.facade.helper.ControllerHelper;
+import org.rudi.common.service.exception.AppServiceForbiddenException;
+import org.rudi.common.service.exception.AppServiceNotFoundException;
+import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.doks.core.bean.DocumentMetadata;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.doks.controller.AbstractAttachmentsController;
 import org.rudi.facet.doks.exceptions.DocumentNotFoundException;
 import org.rudi.facet.doks.helper.DocumentContentHelper;
 import org.rudi.facet.doks.helper.DocumentMetadataHelper;
@@ -16,53 +23,44 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @Controller
-@RequiredArgsConstructor
-public class AttachmentsController implements AttachmentsApi {
-	private final ControllerHelper controllerHelper;
-	private final DocumentContentHelper documentContentHelper;
-	private final AttachmentAuthorizationPolicy authorizationPolicy;
-	private final ACLHelper aclHelper;
-	private final DocumentMetadataHelper documentMetadataHelper;
+public class AttachmentsController extends AbstractAttachmentsController implements AttachmentsApi {
 	private final SelfdataInformationRequestHelper selfdataInformationRequestHelper;
+
+	public AttachmentsController(ACLHelper aclHelper, ControllerHelper controllerHelper, DocumentContentHelper documentContentHelper, DocumentMetadataHelper documentMetadataHelper, AttachmentAuthorizationPolicy attachmentsAuthorizationPolicy, SelfdataInformationRequestHelper selfdataInformationRequestHelper) {
+		super(aclHelper, controllerHelper, documentContentHelper, documentMetadataHelper, attachmentsAuthorizationPolicy);
+		this.selfdataInformationRequestHelper = selfdataInformationRequestHelper;
+	}
 
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODERATOR + "," + USER + ")")
 	public ResponseEntity<UUID> uploadAttachment(MultipartFile file) throws Exception {
-		final var authenticatedUserUuid = aclHelper.getAuthenticatedUserUuid();
-
+		// Check que le médiatype est bien autorisé sur ce champ
 		selfdataInformationRequestHelper.checkMediaType(file.getContentType());
 
-		val documentContent = controllerHelper.documentContentFrom(file);
-		val uuid = documentContentHelper.createDocumentContent(documentContent, true, authenticatedUserUuid);
-		return controllerHelper.uploadResponseEntity(uuid);
+		return super.upload(file);
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODERATOR + "," + USER + ")")
-	public ResponseEntity<Resource> downloadAttachment(UUID attachmentUuid) throws Exception {
-		final var documentContent = documentContentHelper.getDocumentContent(attachmentUuid, authorizationPolicy);
-		return controllerHelper.downloadableResponseEntity(documentContent);
+	public ResponseEntity<Resource> downloadAttachment(UUID attachmentUuid) throws AppServiceNotFoundException, AppServiceForbiddenException, SQLException, GeneralSecurityException, AppServiceUnauthorizedException, IOException {
+		return super.download(attachmentUuid);
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODERATOR + "," + USER + ")")
-	public ResponseEntity<Void> deleteAttachment(UUID attachmentUuid) throws Exception {
-		documentContentHelper.deleteAttachment(attachmentUuid, authorizationPolicy);
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<Void> deleteAttachment(UUID attachmentUuid) throws AppServiceNotFoundException, AppServiceForbiddenException, AppServiceUnauthorizedException {
+		return super.delete(attachmentUuid);
 	}
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + "," + MODERATOR + "," + USER + ")")
 	public ResponseEntity<DocumentMetadata> getAttachmentMetadata(UUID uuid) throws DocumentNotFoundException {
-		return ResponseEntity.ok(documentMetadataHelper.getDocumentMetadata(uuid));
+		return super.getMetadata(uuid);
 	}
-
 }

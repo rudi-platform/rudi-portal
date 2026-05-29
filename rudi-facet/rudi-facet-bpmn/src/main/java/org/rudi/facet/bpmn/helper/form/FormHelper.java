@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,11 +41,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -218,7 +217,7 @@ public class FormHelper {
 				&& sourceField.getValues() != null) {
 			// sanitize des champs richtext
 			targetField.setValues(
-					sourceField.getValues().stream().map(value -> sanitizerUtils.cleanupHtml(value)).toList());
+					sourceField.getValues().stream().map(sanitizerUtils::cleanupHtml).toList());
 		}
 	}
 

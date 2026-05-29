@@ -9,7 +9,7 @@ import {CmsNewsDescription, KonsultService, NewsPageDescription} from 'micro_ser
 import { NgClass } from '@angular/common';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 
-const DEFAULT_ORDER: string = '-mgnl:lastModified';
+const DEFAULT_ORDER: string = '-publishdate';
 const DEFAULT_CATEGORIES: string[] = ['/rudi/news/a-la-une'];
 
 const LIMIT_TEMPLATE_WITH_IMAGE: number = 1;

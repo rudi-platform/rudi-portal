@@ -17,6 +17,7 @@ import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
 @Component({
     selector: 'app-new-dataset-request-table',
     templateUrl: './new-dataset-request-table.component.html',
+    standalone: true,
     imports: [DatasetTableComponent, TranslatePipe]
 })
 export class NewDatasetRequestTableComponent {

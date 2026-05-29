@@ -25,6 +25,12 @@
                 [value]="getFieldListLabel(field.definition.extendedType, field.values)"
               ></app-workflow-expansion-label>
             }
+            @case (fieldType.Attachment) {
+              <app-workflow-expansion-image
+                [label]="field.definition.label"
+                [uuid]="field.values[0]"
+              ></app-workflow-expansion-image>
+            }
             @case (fieldType.Hidden) {
             }
             @case (fieldType.Richtext) {
@@ -41,6 +47,12 @@
             }
           }
         }
+      }
+      @if (pictureUuid) {
+        <app-workflow-expansion-image
+          [label]="'personalSpace.projectDetails.image' | translate"
+          [uuid]="pictureUuid"
+        ></app-workflow-expansion-image>
       }
     </mat-expansion-panel>
   </mat-accordion>

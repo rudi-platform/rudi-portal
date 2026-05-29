@@ -1,0 +1,25 @@
+@use "common-style";
+
+.card {
+  padding: 16px;
+
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.card-demand-label {
+  @include common-style.card-demand-label;
+}
+
+.data-label {
+  @include common-style.data-label;
+}
+
+.data-value {
+  @include common-style.data-value;
+}
+
+.vertical-space {
+  margin-bottom: 20px;
+}

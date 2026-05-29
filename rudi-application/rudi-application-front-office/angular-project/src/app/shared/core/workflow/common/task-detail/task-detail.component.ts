@@ -62,6 +62,7 @@ export abstract class TaskDetailComponent<A extends AssetDescription, D, T exten
         dialogConfig.data = {
             title: action.label,
             form: action.form || this.task.asset.form,
+            processDefinitionKey: this.task?.asset?.process_definition_key,
         };
 
         this.dialog

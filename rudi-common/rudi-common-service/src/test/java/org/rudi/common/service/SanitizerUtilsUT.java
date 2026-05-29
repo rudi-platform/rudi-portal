@@ -1,12 +1,12 @@
 package org.rudi.common.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.rudi.common.service.util.SanitizerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @CommonServiceSpringBootTest
 class SanitizerUtilsUT {
@@ -28,7 +28,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<b>Hello</b> <script>alert('xss')</script>World" + SEPARATOR + "1<b>Hello</b> World2" + SEPARATOR + "1Hello World2",
 			"<script>alert('XSS')</script>" + SEPARATOR + "12"+ SEPARATOR + "12",
 			"<svg onload=\"alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
@@ -59,10 +59,10 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<a href=\"http://www.example.com\">Click me</a>" + SEPARATOR + "<a href=\"http://www.example.com\" rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
 			"<a href=\"https://www.bigbuckbunny.org/\" target=\"_blank\" rel=\"nofollow\">Big Buck Bunny</a>" +
-					SEPARATOR + "<a href=\"https://www.bigbuckbunny.org/\" target=\"_blank\" rel=\"nofollow\">Big Buck Bunny</a>" + SEPARATOR + "Big Buck Bunny",
+					SEPARATOR + "<a href=\"https://www.bigbuckbunny.org/\" rel=\"nofollow\" target=\"_blank\">Big Buck Bunny</a>" + SEPARATOR + "Big Buck Bunny",
 			//@formatter:on
 	}, delimiter = SEPARATOR)
 	void testTranform_validHref(String inputText, String expectedHtml, String expectedText) {
@@ -72,7 +72,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<a href=\"javascript:alert('XSS')\">Click me</a>" + SEPARATOR + "<a rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
 			"<a href=\"&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;\">Click me</a>"
 					+ SEPARATOR + "<a rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
@@ -92,7 +92,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<i><b>a<style=\"color: red;\">Red Text</style>b</b></i>" + SEPARATOR + "<i><b>aRed Textb</b></i>" + SEPARATOR + "aRed Textb",
 			//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -102,7 +102,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<p align=\"right\">text</p>" + SEPARATOR + "<p align=\"right\">text</p>" + SEPARATOR + "text",
 			"<p style=\"text-align:right;\">text</p>" + SEPARATOR + "<p style=\"text-align:right;\">text</p>" + SEPARATOR + "text",
 			"<p style=\"text-color:red;\">text</p>" + SEPARATOR + "<p>text</p>" + SEPARATOR + "text",
@@ -115,7 +115,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<div style=\"background-image:url(javascript:alert('XSS'))\">" + SEPARATOR + "12" + SEPARATOR + "12",
 			"<div></div>" + SEPARATOR + "12" + SEPARATOR + "12",
 			//@formatter:on
@@ -126,7 +126,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<TABLE><TD BACKGROUND=\"javascript:alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
 			//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -137,7 +137,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<figure><img src=\"image.jpg\" alt=\"Image\"><figcaption>Caption</figcaption></figure>" + SEPARATOR + "Caption" + SEPARATOR + "Caption",
 			//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -157,7 +157,7 @@ class SanitizerUtilsUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<img src=\"x\" onerror=\"alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
 			"a<script>alert('XSS')</script>b<img src=\"x\" onerror=\"alert('XSS')\">c" + SEPARATOR + "1abc2"+ SEPARATOR + "1abc2",
 			//@formatter:on
@@ -177,7 +177,6 @@ class SanitizerUtilsUT {
 		// tag video non autorisé
 		cleanUpAndAssert(inputText, expectedHtml, expectedText);
 	}
-
 
 	private void cleanUpAndAssert(String inputHtml, String expectedOutput, String expectedText) {
 		String sanitizedHtml = sanitizerUtils.cleanupHtml(inputHtml);

@@ -44,15 +44,16 @@ import org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegis
 import org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity;
 import org.rudi.microservice.acl.storage.entity.role.RoleEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
@@ -66,35 +67,25 @@ public class AccountServiceImpl implements AccountService {
 	@Value("${application.role.user.code:USER}")
 	private String userRoleCode;
 
-	@Autowired
-	private UserDao userDao;
+	private final UserDao userDao;
 
-	@Autowired
-	private AccountRegistrationDao accountRegistrationDao;
+	private final AccountRegistrationDao accountRegistrationDao;
 
-	@Autowired
-	private AccountRegistrationMapper accountRegistrationMapper;
+	private final AccountRegistrationMapper accountRegistrationMapper;
 
-	@Autowired
-	private UserMapper userMapper;
+	private final UserMapper userMapper;
 
-	@Autowired
-	private RoleCustomDao roleCustomDao;
+	private final RoleCustomDao roleCustomDao;
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	private EmailHelper emailHelper;
+	private final EmailHelper emailHelper;
 
-	@Autowired
-	private PasswordHelper passwordHelper;
+	private final PasswordHelper passwordHelper;
 
-	@Autowired
-	private ResetPasswordRequestDao resetPasswordRequestDao;
+	private final ResetPasswordRequestDao resetPasswordRequestDao;
 
-	@Autowired
-	private UpdatePasswordTokenHelper updatePasswordTokenHelper;
+	private final UpdatePasswordTokenHelper updatePasswordTokenHelper;
 
 	@Override
 	public void checkAccountCreation(Account account)

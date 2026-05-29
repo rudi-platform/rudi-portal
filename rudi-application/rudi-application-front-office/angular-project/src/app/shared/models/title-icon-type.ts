@@ -33,6 +33,7 @@ export type TitleIconType =
     'filter-icon' |
     'search' |
     'icon_tab_organization' |
+    'organizationTabIcon' |
     'map'|
     'icon-consentement'|
     'icon-administration-tab'|
@@ -42,7 +43,8 @@ export type TitleIconType =
     'icon-historique' |
     'icon-delete' |
     'icon-close' |
-    'icon-comment';
+    'icon-comment' |
+    'icon-new-dataset-request';
 
 
 export const ALL_TYPES: TitleIconType[] = [
@@ -75,6 +77,7 @@ export const ALL_TYPES: TitleIconType[] = [
     'filter-icon',
     'search',
     'icon_tab_organization',
+    'organizationTabIcon',
     'map',
     'icon-consentement',
     'icon-administration-tab',
@@ -84,7 +87,8 @@ export const ALL_TYPES: TitleIconType[] = [
     'icon-historique',
     'icon-delete',
     'icon-close',
-    'icon-comment'
+    'icon-comment',
+    'icon-new-dataset-request'
 ];
 
 export const PROCESS_DEFINITION_KEY_TYPES: TitleIconType[] = [

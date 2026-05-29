@@ -24,7 +24,7 @@ public class DistributionJsonLdMapper extends AbstractJsonLdMapper<MediaFile> {
 		JsonObject result = getMediaAsJsonObject(media, "Distribution", context);
 
 		result.addProperty("downloadURL", rewriteMediaUrl(media, context.getCurentMetadata()));
-		result.addProperty("mediaType", media.getFileType().getValue());
+		result.addProperty("mediaType", media.getFileType());
 		result.addProperty("byteSize", media.getFileSize());
 		result.addProperty("format", media.getConnector().getInterfaceContract());
 

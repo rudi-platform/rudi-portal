@@ -7,6 +7,10 @@
 		{
 			"name": "project-process-draft/modified-project",
 			"readonly": false
+		},
+		{
+			"name": "project-process-draft/modified-project-picture",
+			"readonly": false
 		}
 	]
 }

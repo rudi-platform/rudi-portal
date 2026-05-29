@@ -35,6 +35,7 @@ import {
     Project,
     ProjectFormType,
     ProjectStatus,
+    ProjektService,
     Task,
     TaskService
 } from 'micro_service_modules/projekt/projekt-api';
@@ -51,7 +52,23 @@ import {ProjectDatasetsTabComponent} from '../../components/project-datasets-tab
     selector: 'app-my-project-details',
     templateUrl: './my-project-details.component.html',
     styleUrls: ['./my-project-details.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, ProjectHeadingComponent, TabsComponent_1, TabComponent_1, MatCard, ProjectMainInformationsComponent, ProjectDatasetsTabComponent, ProjectApiTabComponent, BannerButtonComponent, TabsLayoutDirective, TabContentDirective, ProjectBasicDetailsComponent, TranslatePipe]
+    imports: [
+        MatSidenavContainer,
+        MatSidenavContent,
+        LoaderComponent,
+        ProjectHeadingComponent,
+        TabsComponent_1,
+        TabComponent_1,
+        MatCard,
+        ProjectMainInformationsComponent,
+        ProjectDatasetsTabComponent,
+        ProjectApiTabComponent,
+        BannerButtonComponent,
+        TabsLayoutDirective,
+        TabContentDirective,
+        ProjectBasicDetailsComponent,
+        TranslatePipe
+    ]
 })
 export class MyProjectDetailsComponent implements OnInit {
     public childrenIsLoading: boolean;
@@ -80,7 +97,8 @@ export class MyProjectDetailsComponent implements OnInit {
                 private readonly snackBarService: SnackBarService,
                 private readonly dialog: MatDialog,
                 private readonly projectTaskMetierService: ProjectTaskMetierService,
-                private readonly getBackendProperty: GetBackendPropertyPipe) {
+                private readonly getBackendProperty: GetBackendPropertyPipe,
+                private readonly projektService: ProjektService) {
         this.loading = false;
         this.isLoading = false;
         this._displayApiTab = false;
@@ -117,7 +135,7 @@ export class MyProjectDetailsComponent implements OnInit {
                 loadProjectData(data);
             },
             error: (error) => {
-                console.error(error);
+                this.logService.error(error);
                 this.loading = false;
             }
         });
@@ -177,12 +195,17 @@ export class MyProjectDetailsComponent implements OnInit {
     }
 
     isProjectUpdatable(): boolean {
-        const containsLinkedDatasetsRestricted = this.project?.linked_datasets?.filter((linkedDataset) => linkedDataset?.dataset_confidentiality === DatasetConfidentiality.Restricted).length > 0;
+        const containsLinkedDatasetsRestricted = this.project?.linked_datasets
+            ?.filter((linkedDataset) => linkedDataset?.dataset_confidentiality === DatasetConfidentiality.Restricted)
+            .length > 0;
         return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsRestricted;
     }
 
     isProjectArchived(): boolean {
-        const containsLinkedDatasetsInProgress = this.project?.linked_datasets?.filter((linkedDataset) => linkedDataset?.linked_dataset_status === LinkedDatasetStatus.InProgress || linkedDataset?.linked_dataset_status === LinkedDatasetStatus.Draft).length > 0;
+        const containsLinkedDatasetsInProgress = this.project?.linked_datasets?.filter((linkedDataset) =>
+            linkedDataset?.linked_dataset_status === LinkedDatasetStatus.InProgress ||
+            linkedDataset?.linked_dataset_status === LinkedDatasetStatus.Draft
+        ).length > 0;
         return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsInProgress;
     }
 
@@ -202,7 +225,10 @@ export class MyProjectDetailsComponent implements OnInit {
                         description: this.getFieldValue(formModified.form.value?.description),
                         expectedCompletionStartDate: this.getFieldValue(formModified.form.value.begin_date, this.formatDate),
                         expectedCompletionEndDate: this.getFieldValue(formModified.form.value.end_date, this.formatDate),
-                        targetAudiences: this.getFieldList(formModified.form.value.publicCible, (audience: TargetAudience) => audience?.code),
+                        targetAudiences: this.getFieldList(
+                            formModified.form.value.publicCible,
+                            (audience: TargetAudience) => audience?.code
+                        ),
                         territorialScale: this.getFieldList([formModified.form.value?.echelle], (scale: TerritorialScale) => scale?.code),
                         detailedTerritorialScale: this.getFieldValue(formModified.form.value?.territoire),
                         desiredSupports: this.getFieldList(formModified.form.value.accompagnement, (support: Support) => support?.code),
@@ -220,17 +246,44 @@ export class MyProjectDetailsComponent implements OnInit {
                         return {...field, values: resultMap[field.definition.name]};
                     });
 
-                    const draftTaskModified = {
-                        ...this.draftTask, asset: {
-                            ...this.draftTask.asset, form: {
-                                ...this.draftTask.asset.form, sections: [
-                                    {...this.draftTask.asset.form.sections[0], fields: firstSection},
-                                    {...this.draftTask.asset.form.sections[1], fields: secondSection}
-                                ]
-                            }
-                        }
-                    };
-                    return this.taskService.startProjectTask(draftTaskModified);
+                    const sections = [
+                        {...this.draftTask.asset.form.sections[0], fields: firstSection},
+                        {...this.draftTask.asset.form.sections[1], fields: secondSection},
+                    ];
+                    const imageBlob: Blob = formModified.form.value?.image?.file ?? null;
+                    const pictureSections$ = (this.draftTask.asset.form.sections[2] && imageBlob)
+                        ? this.projektService.uploadAttachment(imageBlob, 'body').pipe(
+                            map((uuid: string) => {
+                                const pictureSection = this.draftTask.asset.form.sections[2];
+                                sections.push({
+                                    ...pictureSection,
+                                    fields: pictureSection.fields?.map(f => ({...f, values: [uuid]})) ?? []
+                                });
+                            })
+                        )
+                        : of(null).pipe(
+                            map(() => {
+                                if (this.draftTask.asset.form.sections[2]) {
+                                    const pictureSection = this.draftTask.asset.form.sections[2];
+                                    sections.push({
+                                        ...pictureSection,
+                                        fields: pictureSection.fields?.map(f => ({...f, values: f.values ?? []})) ?? []
+                                    });
+                                }
+                            })
+                        );
+                    return pictureSections$.pipe(
+                        switchMap(() => {
+                            const draftTaskModified = {
+                                ...this.draftTask, asset: {
+                                    ...this.draftTask.asset, form: {
+                                        ...this.draftTask.asset.form, sections
+                                    }
+                                }
+                            };
+                            return this.taskService.startProjectTask(draftTaskModified);
+                        })
+                    );
                 })
             ).subscribe({
                 next: (task) => {
@@ -240,7 +293,7 @@ export class MyProjectDetailsComponent implements OnInit {
                     this.isUpdateInProgress = false;
                 },
                 error: (error) => {
-                    console.log(error);
+                    this.logService.error(error);
                     this.snackBarService.add(this.translateService.instant('personalSpace.project.tabs.update.error'));
                     this.childrenIsLoading = false;
                     this.isUpdateInProgress = false;

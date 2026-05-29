@@ -3,6 +3,7 @@ import {MatButton} from '@angular/material/button';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {DomSanitizer} from '@angular/platform-browser';
+import {FileTypes} from '@core/file-types';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService, GPS_PROJECTION} from '@core/services/data-set/display-map.service';
 import {LogService} from '@core/services/log.service';
 import {MAP_PROTOCOLS} from '@core/services/map/map-protocols';
@@ -14,7 +15,7 @@ import {createWmtsBaseLayer, MapLayerFunction} from '@shared/core/maps/map/map.l
 import {getDefaultCrs} from '@shared/core/maps/map/map.media.layer.function';
 import {ADDRESS_STYLE, getHoveredStyle, LINE_STYLE, POINT_STYLE, POLYGON_STYLE} from '@shared/core/maps/map/map.style.function';
 import {SearchAutocompleteItem} from '@shared/core/search/search-autocomplete/search-autocomplete-item.interface';
-import {Media, MediaFile, MediaType, Metadata} from 'micro_service_modules/api-kaccess';
+import {Media, MediaFile, Metadata} from 'micro_service_modules/api-kaccess';
 import {Address} from 'micro_service_modules/api-rva';
 import {LayerInformation} from 'micro_service_modules/konsult/konsult-model';
 import {Feature, Overlay} from 'ol';
@@ -426,7 +427,7 @@ export class MapComponent implements AfterViewInit, OnInit {
                 this.addFeatureInteraction(layer);
             } else if (this.media.media_type === MediaTypeEnum.File) {
                 const mediaFile: MediaFile = this.media as MediaFile;
-                if (mediaFile.file_type === MediaType.ApplicationGeojson) {
+                if (mediaFile.file_type === FileTypes.GEO_JSON) {
                     this.mapLayerFunction.createGeojsonDataLayer(this.media).subscribe({
                         next: (baseLayer: BaseLayer) => {
                             this.map.getLayers().push(baseLayer);

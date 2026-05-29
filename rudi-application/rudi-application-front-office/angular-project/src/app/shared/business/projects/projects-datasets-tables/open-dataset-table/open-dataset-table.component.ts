@@ -20,6 +20,7 @@ import {DatasetTableComponent} from '../dataset-table/dataset-table.component';
 @Component({
     selector: 'app-open-dataset-table',
     templateUrl: './open-dataset-table.component.html',
+    standalone: true,
     imports: [DatasetTableComponent]
 })
 export class OpenDatasetTableComponent {

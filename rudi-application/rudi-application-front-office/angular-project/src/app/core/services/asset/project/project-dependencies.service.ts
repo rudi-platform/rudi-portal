@@ -98,7 +98,9 @@ export class ProjectDependenciesFetchers {
         return {
             hasPrerequisites: (input: ProjectWithDependencies) => ProjectDependenciesFetchers.hasProjectUuid(input),
             getKey: projectWithDependencies => projectWithDependencies.project.uuid,
-            getValue: projectUuid => this.projektMetierService.getProjectLogo(projectUuid)
+            getValue: projectUuid => this.projektMetierService.getProjectLogo(projectUuid).pipe(
+                catchError(() => of('/assets/images/logo_projet_par_defaut.png'))
+            )
         };
     }
 

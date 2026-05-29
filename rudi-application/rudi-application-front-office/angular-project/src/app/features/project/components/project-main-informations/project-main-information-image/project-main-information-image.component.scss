@@ -1,0 +1,26 @@
+@use "common-style";
+
+.project-detail-label {
+    padding-bottom: 0.25rem;
+
+    color: var(--primary-color);
+    font-size: 13px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.54;
+    letter-spacing: normal;
+}
+
+.project-detail-label-title {
+    display: flex;
+}
+
+.project-detail-image {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    max-width: 200px;
+    max-height: 150px;
+    object-fit: contain;
+}

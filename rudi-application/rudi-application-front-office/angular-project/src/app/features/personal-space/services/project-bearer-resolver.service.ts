@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { ProcessHistoricInformation } from 'micro_service_modules/api-bpmn';
 import { ProjektService, OwnerInfo, OwnerType, Project } from 'micro_service_modules/projekt/projekt-api';
-import { OrganizationService, User as StruktureUser, Organization } from 'micro_service_modules/strukture/api-strukture';
+import { OrganizationService, LinkedProducersService, User as StruktureUser, Organization } from 'micro_service_modules/strukture/api-strukture';
 import { AclService } from 'micro_service_modules/acl/acl-api';
 
 export interface ProjectBearer {
@@ -19,6 +19,7 @@ export class ProjectBearerResolverService {
     constructor(
         private readonly projektService: ProjektService,
         private readonly organizationService: OrganizationService,
+        private readonly linkedProducersService: LinkedProducersService,
         private readonly aclService: AclService,
     ) {}
 
@@ -39,11 +40,19 @@ export class ProjectBearerResolverService {
             case 'linked-dataset-process':
                 return this.resolveFromLinkedDatasetUuid(businessKey);
             case 'organization-process':
+                return this.resolveFromStartUser(processHistoricInformation);
             case 'linked-producer-process':
-                return this.resolveFromOrganizationUuid(businessKey);
+                return this.resolveFromLinkedProducerUuid(businessKey);
             default:
                 return of(null);
         }
+    }
+
+    private resolveFromStartUser(processHistoricInformation: ProcessHistoricInformation | null): Observable<ProjectBearer | null> {
+        const name = (processHistoricInformation?.startUserName ?? '').trim();
+        const login = (processHistoricInformation?.startUserLogin ?? '').trim();
+        if (!name && !login) return of(null);
+        return of({ name: name || login, email: login });
     }
 
     private resolveFromOrganizationUuid(organizationUuid: string): Observable<ProjectBearer | null> {
@@ -60,6 +69,17 @@ export class ProjectBearerResolverService {
                     })),
                 )
             ),
+            catchError(() => of(null)),
+        );
+    }
+
+    private resolveFromLinkedProducerUuid(linkedProducerUuid: string): Observable<ProjectBearer | null> {
+        return this.linkedProducersService.getLinkedProducer(linkedProducerUuid).pipe(
+            switchMap(linkedProducer => {
+                const organizationUuid = linkedProducer?.organization?.uuid;
+                if (!organizationUuid) return of(null);
+                return this.resolveFromOrganizationUuid(organizationUuid);
+            }),
             catchError(() => of(null)),
         );
     }

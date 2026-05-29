@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
+import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.common.facade.helper.ControllerHelper;
@@ -283,11 +284,14 @@ public class ProjectController implements ProjectsApi {
 		return ResponseEntity.ok(projectService.getNumberOfRequests(projectUuid));
 	}
 
-	@Override
-	public ResponseEntity<PagedProjectList> getMyProjects(Integer offset, Integer limit, String order)
+//	@Override
+	public ResponseEntity<PagedProjectList> getMyProjects(List<Status> status,Integer offset, Integer limit, String order)
 			throws Exception {
 
-		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria.builder().build();
+		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria
+				.builder()
+				.status(status)
+				.build();
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		val page = projectService.getMyProjects(searchCriteria, pageable);

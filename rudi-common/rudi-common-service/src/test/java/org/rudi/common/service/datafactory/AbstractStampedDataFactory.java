@@ -24,7 +24,7 @@ public class AbstractStampedDataFactory<E extends AbstractStampedEntity, R exten
 	public E getOrCreate(String code, String label, int order, LocalDateTime openingDate, LocalDateTime closingDate) {
 		List<E> items = repository.findByCode(code, null);
 		if (CollectionUtils.isNotEmpty(items)) {
-			return items.get(0);
+			return items.getFirst();
 		}
 		try {
 			Constructor<E> constructor = type.getConstructor(new Class<?>[0]);

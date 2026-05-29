@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -125,7 +124,7 @@ public class OAuthCheckTokenController {
 	}
 
 	private void initAuthenticatedUser(Jwt jwt, OAuth2TokenData.OAuth2TokenDataBuilder builder)
-			throws JsonMappingException, JsonProcessingException {
+			throws JsonProcessingException {
 		if (jwt.hasClaim(CONNECTED_USER_CLAIM)) {
 			String connectedUser = jwt.getClaim(CONNECTED_USER_CLAIM);
 			AuthenticatedUser authenticatedUser = objectMapper.readerFor(AuthenticatedUser.class)

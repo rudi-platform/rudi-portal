@@ -5,36 +5,13 @@
    "SMTPTLS" : "",
    "SMTPTLSOpts" : {},
    "SSLAuthnLevel" : 5,
+   "SSLIssuerVar" : "SSL_CLIENT_I_DN",
    "SSLVar" : "SSL_CLIENT_S_DN_Email",
    "SSLVarIf" : {},
    "activeTimer" : 1,
    "adaptativeAuthenticationLevelRules" : {},
    "apacheAuthnLevel" : 3,
    "applicationList" : {
-      "1sample" : {
-         "catname" : "Sample applications",
-         "test1" : {
-            "options" : {
-               "description" : "A simple application displaying authenticated user",
-               "display" : "auto",
-               "logo" : "demo.png",
-               "name" : "Application Test 1",
-               "uri" : "https://test1.rennes-metropole-rudi.karbon.open.global/"
-            },
-            "type" : "application"
-         },
-         "test2" : {
-            "options" : {
-               "description" : "The same simple application displaying authenticated user",
-               "display" : "auto",
-               "logo" : "thumbnail.png",
-               "name" : "Application Test 2",
-               "uri" : "https://test2.rennes-metropole-rudi.karbon.open.global/"
-            },
-            "type" : "application"
-         },
-         "type" : "category"
-      },
       "2administration" : {
          "catname" : "Administration",
          "manager" : {
@@ -43,8 +20,9 @@
                "display" : "auto",
                "logo" : "configure.png",
                "name" : "WebSSO Manager",
-               "uri" : "https://manager.rennes-metropole-rudi.karbon.open.global/manager.html"
+               "uri" : "http://manager.example.com:91/manager.html"
             },
+            "order" : 7,
             "type" : "application"
          },
          "notifications" : {
@@ -52,19 +30,22 @@
                "description" : "Explore WebSSO notifications",
                "display" : "auto",
                "logo" : "database.png",
-               "name" : "Notifications explorer",
-               "uri" : "https://manager.rennes-metropole-rudi.karbon.open.global/notifications.html"
+               "name" : "Notifications Explorer",
+               "uri" : "http://manager.example.com:91/notifications.html"
             },
+            "order" : 8,
             "type" : "application"
          },
+         "order" : 6,
          "sessions" : {
             "options" : {
                "description" : "Explore WebSSO sessions",
                "display" : "auto",
                "logo" : "database.png",
-               "name" : "Sessions explorer",
-               "uri" : "https://manager.rennes-metropole-rudi.karbon.open.global/sessions.html"
+               "name" : "Sessions Explorer",
+               "uri" : "http://manager.example.com:91/sessions.html"
             },
+            "order" : 9,
             "type" : "application"
          },
          "type" : "category"
@@ -77,8 +58,9 @@
                "display" : "on",
                "logo" : "help.png",
                "name" : "Local documentation",
-               "uri" : "http://manager.rennes-metropole-rudi.karbon.open.global/doc/"
+               "uri" : "http://manager.example.com:91/doc/"
             },
+            "order" : 11,
             "type" : "application"
          },
          "officialwebsite" : {
@@ -87,8 +69,27 @@
                "display" : "on",
                "logo" : "network.png",
                "name" : "Official Website",
-               "uri" : "http://lemonldap-ng.org/"
+               "uri" : "https://lemonldap-ng.org/"
             },
+            "order" : 12,
+            "type" : "application"
+         },
+         "order" : 10,
+         "type" : "category"
+      },
+      "applicationsrudi" : {
+         "catname" : "Applications RUDI",
+         "order" : 1,
+         "portailrudi" : {
+            "options" : {
+               "description" : "Portail rudi",
+               "display" : "on",
+               "logo" : "network.png",
+               "name" : "Portail RUDI",
+               "tooltip" : "New app tooltip",
+               "uri" : "http://example.com:91"
+            },
+            "order" : 2,
             "type" : "application"
          },
          "type" : "category"
@@ -103,25 +104,29 @@
    "bruteForceProtectionMaxFailed" : 3,
    "bruteForceProtectionMaxLockTime" : 900,
    "bruteForceProtectionTempo" : 30,
+   "captchaOptions" : {},
    "captcha_login_enabled" : 0,
-   "captcha_mail_enabled" : 0,
-   "captcha_register_enabled" : 0,
-   "captcha_size" : 8,
+   "captcha_mail_enabled" : 1,
+   "captcha_register_enabled" : 1,
+   "captcha_size" : 6,
    "casAccessControlPolicy" : "none",
    "casAppMetaDataExportedVars" : {
       "rudi" : {
          "cn" : "cn",
          "dn" : "dn",
+         "groups" : "groups",
          "mail" : "mail",
-         "uid" : "uid",
-         "groups": "groups"
+         "uid" : "uid"
       }
    },
    "casAppMetaDataMacros" : {
       "rudi" : {}
    },
    "casAppMetaDataOptions" : {
-      "rudi" : {}
+      "rudi" : {
+         "casAppMetaDataOptionsAllowProxy" : 1,
+         "casAppMetaDataOptionsLogout" : -1
+      }
    },
    "casAttributes" : {},
    "casAuthnLevel" : 1,
@@ -129,20 +134,20 @@
    "casSrvMetaDataOptions" : {},
    "casStorageOptions" : {},
    "casTicketExpiration" : 0,
-   "cda" : 1,
    "certificateResetByMailCeaAttribute" : "description",
    "certificateResetByMailCertificateAttribute" : "userCertificate;binary",
-   "certificateResetByMailURL" : "http://auth.example.com/certificateReset",
    "certificateResetByMailValidityDelay" : 0,
-   "cfgAuthor" : "dwho",
-   "cfgAuthorIP" : "172.20.4.86 (maybe 172.20.4.1)",
-   "cfgDate" : 1651146565,
-   "cfgLog" : "",
-   "cfgNum" : 4,
-   "cfgVersion" : "2.0.14",
+   "cfgAuthor" : "test1",
+   "cfgAuthorIP" : "127.0.0.1",
+   "cfgDate" : 1776270607,
+   "cfgLog" : "Configuration application rudi",
+   "cfgNum" : 1,
+   "cfgVersion" : "2.22.2",
    "checkDevOpsCheckSessionAttributes" : 1,
    "checkDevOpsDisplayNormalizedHeaders" : 1,
    "checkDevOpsDownload" : 1,
+   "checkHIBPRequired" : 1,
+   "checkHIBPURL" : "https://api.pwnedpasswords.com/range/",
    "checkUserDisplayComputedSession" : 1,
    "checkUserDisplayEmptyHeaders" : 0,
    "checkUserDisplayEmptyValues" : 0,
@@ -162,12 +167,15 @@
    "cookieName" : "lemonldap",
    "corsAllow_Credentials" : "true",
    "corsAllow_Headers" : "*",
-   "corsAllow_Methods" : "POST,GET,PUT",
+   "corsAllow_Methods" : "POST,GET",
    "corsAllow_Origin" : "*",
    "corsEnabled" : 1,
    "corsExpose_Headers" : "*",
    "corsMax_Age" : "86400",
+   "crowdSecAgentResponseCode" : 404,
+   "crowdsec" : 0,
    "crowdsecAction" : "reject",
+   "crowdsecAgent" : 0,
    "cspConnect" : "'self'",
    "cspDefault" : "'self'",
    "cspFont" : "'self'",
@@ -187,25 +195,16 @@
       "uid" : "uid"
    },
    "displaySessionId" : 1,
-   "domain" : "rennes-metropole-rudi.karbon.open.global",
+   "domain" : "example.com",
+   "eventQueueName" : "llng_events",
    "exportedHeaders" : {
-      "auth.rennes-metropole-rudi.karbon.open.global" : {},
-      "manager.rennes-metropole-rudi.karbon.open.global" : {},
-      "rudi.rennes-metropole-rudi.karbon.open.global" : {
+      "auth.example.com" : {},
+      "manager.example.com" : {},
+      "example.com" : {
          "Auth-Groups" : "$groups",
          "Auth-User" : "$uid",
-         "employeNumber" : "$employeeNumber",
-         "CRPF" : "$bdd",
-         "cn" : "$cn",
-         "Cle" : "$droitsMerlin"
-      },
-      "test1.rennes-metropole-rudi.karbon.open.global" : {
-         "Auth-Groups" : "$groups",
-         "Auth-User" : "$uid"
-      },
-      "test2.rennes-metropole-rudi.karbon.open.global" : {
-         "Auth-Groups" : "$groups",
-         "Auth-User" : "$uid"
+         "Cle" : "$droitsMerlin",
+         "cn" : "$cn"
       }
    },
    "exportedVars" : {},
@@ -235,63 +234,64 @@
    "gpgDb" : "",
    "grantSessionRules" : {},
    "groups" : {},
-   "hiddenAttributes" : "_password, _2fDevices",
-   "httpOnly" : 0,
-   "https" : 1,
+   "hiddenAttributes" : "_password _2fDevices",
+   "hideOldPassword" : 1,
+   "httpOnly" : 1,
+   "https" : -1,
    "impersonationHiddenAttributes" : "_2fDevices, _loginHistory",
    "impersonationIdRule" : 1,
    "impersonationMergeSSOgroups" : 0,
    "impersonationRule" : 0,
    "impersonationSkipEmptyValues" : 1,
    "infoFormMethod" : "get",
-   "issuerDBCASActivation" : 1,
+   "issuerDBCASActivation" : 0,
    "issuerDBCASPath" : "^/cas/",
    "issuerDBCASRule" : 1,
    "issuerDBGetParameters" : {},
    "issuerDBGetPath" : "^/get/",
    "issuerDBGetRule" : 1,
+   "issuerDBJitsiMeetTokensPath" : "^/jitsi/",
+   "issuerDBJitsiMeetTokensRule" : 1,
+   "issuerDBOpenIDActivation" : 0,
    "issuerDBOpenIDConnectActivation" : 1,
    "issuerDBOpenIDConnectPath" : "^/oauth2/",
    "issuerDBOpenIDConnectRule" : 1,
    "issuerDBOpenIDPath" : "^/openidserver/",
    "issuerDBOpenIDRule" : 1,
-   "issuerDBSAMLActivation" : 1,
    "issuerDBSAMLPath" : "^/saml/",
    "issuerDBSAMLRule" : 1,
    "issuersTimeout" : 120,
+   "jitsiExpiration" : "300",
+   "jitsiSigningAlg" : "RS256",
+   "jitsiSigningKey" : "default-oidc-sig, old-oidc-sig, new-oidc-sig",
    "jsRedirect" : 0,
-   "key" : "426\\%:1g>a[`?KB=",
+   "key" : "ahW[Deq_0#QL#TTO",
+   "keys" : {},
    "krbAuthnLevel" : 3,
    "krbRemoveDomain" : 1,
    "ldapAuthnLevel" : 2,
    "ldapBase" : "dc=rudi,dc=fr",
-   "ldapGroupBase": "ou=groups,ou=internes,dc=rudi,dc=fr",
    "ldapExportedVars" : {
-      "uid" : "uid",
-      "dn": "dn",
       "cn" : "cn",
-      "sn" : "sn",
-      "givenName": "givenName",
       "mail" : "mail",
-      "groups": "groups",
-      "telephone" : "telephoneNumber",
-      "postalAddress": "postalAddress",
-      "entryUUID" : "entryUUID"
+      "uid" : "uid"
    },
    "ldapGroupAttributeName" : "member",
    "ldapGroupAttributeNameGroup" : "dn",
    "ldapGroupAttributeNameSearch" : "cn",
    "ldapGroupAttributeNameUser" : "dn",
+   "ldapGroupBase" : "ou=groups,ou=internes,dc=rudi,dc=fr",
    "ldapGroupObjectClass" : "groupOfNames",
    "ldapIOTimeout" : 10,
    "ldapPasswordResetAttribute" : "pwdReset",
-   "ldapPasswordResetAttributeValue" : "FALSE",
+   "ldapPasswordResetAttributeValue" : "TRUE",
+   "ldapPort" : "1389",
    "ldapPwdEnc" : "utf-8",
    "ldapSearchDeref" : "find",
-   "ldapServer" : "ldap://openldap-dev-karbon:1389",
+   "ldapServer" : "ldap://openldap",
    "ldapTimeout" : 10,
    "ldapUsePasswordResetAttribute" : 1,
-   "ldapVerify" : "none",
+   "ldapVerify" : "require",
    "ldapVersion" : 3,
    "linkedInAuthnLevel" : 1,
    "linkedInFields" : "id,first-name,last-name,email-address",
@@ -305,34 +305,32 @@
       "directory_umask" : "007",
       "namespace" : "lemonldap-ng-sessions"
    },
+   "locationDetectGeoIpLanguages" : "en, fr",
    "locationRules" : {
-      "auth.rennes-metropole-rudi.karbon.open.global" : {
+      "auth.example.com" : {
          "(?#checkUser)^/checkuser" : "inGroup(\"timelords\")",
          "(?#errors)^/lmerror/" : "accept",
          "default" : "accept"
       },
-      "manager.rennes-metropole-rudi.karbon.open.global" : {
-         "(?#Configuration)^/(.*?\\.(fcgi|psgi)/)?(manager\\.html|confs|prx/|$)" : "inGroup(\"timelords\") or $uid eq \"test1\" or inGroup(\"administrator\") ",
-         "(?#Notifications)/(.*?\\.(fcgi|psgi)/)?notifications" : "inGroup(\"timelords\") or $uid eq \"test1\" or inGroup(\"administrator\") ",
-         "(?#Sessions)/(.*?\\.(fcgi|psgi)/)?sessions" : "inGroup(\"timelords\") or $uid eq \"test1\" or inGroup(\"administrator\") ",
-         "default" : "inGroup(\"timelords\") or inGroup(\"administrator\") or $uid eq \"test1\" or $groups =~ /\\bLLNG_managers\\b/"
+      "manager.example.com" : {
+         "(?#Configuration)^/(.*?\\.(fcgi|psgi)/)?(manager\\.html|confs|prx/|$)" : "inGroup(\"timelords\")  or inGroup(\"administrator\") ",
+         "(?#Notifications)/(.*?\\.(fcgi|psgi)/)?notifications" : "inGroup(\"timelords\") or inGroup(\"administrator\") ",
+         "(?#Sessions)/(.*?\\.(fcgi|psgi)/)?sessions" : "inGroup(\"timelords\") or inGroup(\"administrator\") ",
+         "default" : "inGroup(\"timelords\")  or inGroup(\"administrator\")  or $groups =~ /\\bLLNG_managers\\b/"
       },
-      "dev-karbon.rennes-metropole-rudi.karbon.open.global" : {
-         "^/logout" : "logout_sso",
-         "default" : "accept"
-      },
-      "test1.rennes-metropole-rudi.karbon.open.global" : {
+      "example.com" : {
          "^/logout" : "logout_sso",
          "default" : "accept"
       }
    },
    "loginHistoryEnabled" : 1,
    "logoutServices" : {},
-   "lwpOpts" : {},
+   "lwpOpts" : {
+      "timeout" : 10
+   },
    "lwpSslOpts" : {},
    "macros" : {
       "UA" : "$ENV{HTTP_USER_AGENT}",
-      "IP_interne" : "($ipAddr =~ /^10\\./ ? \"true\" : \"false\")",
       "_whatToTrace" : "$_auth eq 'SAML' ? lc($_user.'@'.$_idpConfKey) : $_auth eq 'OpenIDConnect' ? lc($_user.'@'.$_oidc_OP) : lc($_user)"
    },
    "mail2fActivation" : 0,
@@ -341,9 +339,9 @@
    "mailFrom" : "noreply@example.com",
    "mailSessionKey" : "mail",
    "mailTimeout" : 0,
-   "mailUrl" : "https://auth.rennes-metropole-rudi.karbon.open.global/resetpwd",
    "managerDn" : "cn=admin,dc=rudi,dc=fr",
-   "managerPassword" : "rudi@123",
+   "managerPassword" : "managerpassword",
+   "messageBrokerOptions" : {},
    "multiValuesSeparator" : "; ",
    "newLocationWarningLocationAttribute" : "ipAddr",
    "newLocationWarningLocationDisplayAttribute" : "",
@@ -368,15 +366,15 @@
    "oidcRPCallbackGetParam" : "openidconnectcallback",
    "oidcRPMetaDataExportedVars" : {
       "rudi-application" : {
-         "uid" : "uid",
          "dn" : "dn",
+         "email" : "mail",
          "family_name" : "sn",
          "given_name" : "givenName",
          "name" : "cn",
-         "email" : "mail",
-         "phone_number": "telephone",
+         "phone_number" : "telephone",
+         "postal_address" : "postalAddress",
          "profile" : "groups",
-         "postal_address": "postalAddress"
+         "uid" : "uid"
       }
    },
    "oidcRPMetaDataMacros" : {
@@ -385,30 +383,46 @@
    "oidcRPMetaDataOptions" : {
       "rudi-application" : {
          "oidcRPMetaDataOptionsAccessTokenClaims" : 1,
+         "oidcRPMetaDataOptionsAccessTokenEncContentEncAlg" : "A256GCM",
+         "oidcRPMetaDataOptionsAccessTokenEncKeyMgtAlg" : "",
          "oidcRPMetaDataOptionsAccessTokenJWT" : 1,
          "oidcRPMetaDataOptionsAccessTokenSignAlg" : "RS256",
          "oidcRPMetaDataOptionsAllowClientCredentialsGrant" : 1,
+         "oidcRPMetaDataOptionsAllowNativeSso" : 0,
          "oidcRPMetaDataOptionsAllowOffline" : 0,
          "oidcRPMetaDataOptionsAllowPasswordGrant" : 1,
+         "oidcRPMetaDataOptionsAuthMethod" : "",
+         "oidcRPMetaDataOptionsAuthRequiredForAuthorize" : 0,
+         "oidcRPMetaDataOptionsAuthnRequireNonce" : 0,
+         "oidcRPMetaDataOptionsAuthnRequireState" : 0,
          "oidcRPMetaDataOptionsBypassConsent" : 1,
-         "oidcRPMetaDataOptionsClientID" : "66044585-0bbc-49fd-837e-ce6f22d8824a",
-         "oidcRPMetaDataOptionsClientSecret" : "9d9d0b6a-310a-46c8-9fbb-402d41e4a939",
+         "oidcRPMetaDataOptionsClientID" : "4525c815-06b5-4f8e-b5a6-d11a0c5a4c01",
+         "oidcRPMetaDataOptionsClientSecret" : "fa27d185-3c80-446d-9a6b-253601b9de59",
          "oidcRPMetaDataOptionsDisplayName" : "RUDI !",
          "oidcRPMetaDataOptionsIDTokenForceClaims" : 1,
          "oidcRPMetaDataOptionsIDTokenSignAlg" : "RS256",
+         "oidcRPMetaDataOptionsIdTokenEncContentEncAlg" : "A256GCM",
+         "oidcRPMetaDataOptionsIdTokenEncKeyMgtAlg" : "",
+         "oidcRPMetaDataOptionsLogoutBypassConfirm" : 0,
+         "oidcRPMetaDataOptionsLogoutEncContentEncAlg" : "A256GCM",
+         "oidcRPMetaDataOptionsLogoutEncKeyMgtAlg" : "",
          "oidcRPMetaDataOptionsLogoutSessionRequired" : 0,
          "oidcRPMetaDataOptionsLogoutType" : "front",
+         "oidcRPMetaDataOptionsNoJwtHeader" : 0,
          "oidcRPMetaDataOptionsPublic" : 0,
-         "oidcRPMetaDataOptionsRedirectUris" : "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/login/oauth2/code/ http://localhost:8085/login/oauth2/code/ http://localhost:4200/login/oauth2/code/",
+         "oidcRPMetaDataOptionsRedirectUris" : "https://example.com/login/oauth2/code/ http://localhost:8085/login/oauth2/code/",
          "oidcRPMetaDataOptionsRefreshToken" : 1,
+         "oidcRPMetaDataOptionsRefreshTokenRotation" : 0,
          "oidcRPMetaDataOptionsRequirePKCE" : 0,
-         "oidcRPMetaDataOptionsUserInfoSignAlg" : ""
+         "oidcRPMetaDataOptionsRtActivity" : 0,
+         "oidcRPMetaDataOptionsUserInfoEncContentEncAlg" : "A256GCM",
+         "oidcRPMetaDataOptionsUserInfoEncKeyMgtAlg" : "",
+         "oidcRPMetaDataOptionsUserInfoSignAlg" : "",
+         "oidcRPMetaDataOptionsUserinfoRequireHeaderToken" : 0
       }
    },
    "oidcRPMetaDataOptionsExtraClaims" : {
-      "rudi-application" : {
-		"rudi_profile": "dn"
-	  }
+      "rudi-application" : {}
    },
    "oidcRPMetaDataScopeRules" : {
       "rudi-application" : {}
@@ -423,8 +437,20 @@
    "oidcServiceAuthorizationCodeExpiration" : 60,
    "oidcServiceDynamicRegistrationExportedVars" : {},
    "oidcServiceDynamicRegistrationExtraClaims" : {},
+   "oidcServiceEncAlgorithmAlg" : "RSA-OAEP",
+   "oidcServiceEncAlgorithmEnc" : "A256GCM",
+   "oidcServiceEncryptionKey" : "default-oidc-enc",
    "oidcServiceIDTokenExpiration" : 3600,
-   "oidcServiceKeyIdSig" : "FMCzuQ7U9mOtcFQzGChuRg",
+   "oidcServiceIgnoreScopeForClaims" : 1,
+   "oidcServiceKeyIdSig" : "randomstring",
+   "oidcServiceKeyTypeEnc" : "RSA",
+   "oidcServiceKeyTypeSig" : "RSA",
+   "oidcServiceMetaDataAmrRules" : {
+      "mfa" : "$_2f",
+      "otp" : "$_2f eq \"TOTP\"",
+      "pop" : "$_auth eq \"WebAuthn\" or $_auth eq \"SSL\"",
+      "pwd" : "$authenticationLevel == 2"
+   },
    "oidcServiceMetaDataAuthnContext" : {
       "loa-1" : 1,
       "loa-2" : 2,
@@ -438,15 +464,22 @@
    "oidcServiceMetaDataEndSessionURI" : "logout",
    "oidcServiceMetaDataFrontChannelURI" : "flogout",
    "oidcServiceMetaDataIntrospectionURI" : "introspect",
-   "oidcServiceMetaDataIssuer" : "https://auth.rennes-metropole-rudi.karbon.open.global",
+   "oidcServiceMetaDataIssuer" : "http://auth.example.com:91",
    "oidcServiceMetaDataJWKSURI" : "jwks",
    "oidcServiceMetaDataRegistrationURI" : "register",
+   "oidcServiceMetaDataRevokeURI" : "revoke",
+   "oidcServiceMetaDataRpLogoutReturnURI" : "rlogoutreturn",
    "oidcServiceMetaDataTokenURI" : "token",
    "oidcServiceMetaDataUserInfoURI" : "userinfo",
+   "oidcServiceNewKeyTypeSig" : "RSA",
    "oidcServiceOfflineSessionExpiration" : 2592000,
-   "oidcServicePrivateKeySig" : "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEAsOYtHzaFqyYr0pIBf53jhbAGKi6cQJ7GZuG2xrn7JpPDJvOZ\n4ZnHY3h/cVczbK7D1wu/CZZHm7ln6i/R27QXVVhh4ThgwMPUc0ixfxEHoIG3N8fF\niEYwqO45Zle3kYL62R5GcC7oi27Zd0v5gxq1MEio7ETd37UkF1suCw4DnURNo0LM\nKxxIlVnA8yFwjBthSvhX37NC8rhYv2zdS0Ap2VN8otOQtZ87Y/g+GADKlefD8V47\n5BqHFuludqz6uVQfIfzdEq/kiB3DPuqf12PDn8MeCyPCwrIDSn5LJ83Ofw8IzIil\nZvxoTq4Ka+3i7LHeD72Eo7OnITPYmdMnLtT8kQIDAQABAoIBAFNPE1DvzGOdxmWU\nfUAsi0oaa8zRxqRoIeexxPIyBCVW0UE21/F3Cn+978bg2kcExxYvYfiR3Ydo+ZdA\njgR5+8MlrHL0qhweHZ9tTKoaywy8Ch0q58wVwjTMfBvGk5zjol898s5CSSHhQmj8\nTrV/jnT+ww8CH7uLA0Q8nKJ4JxuYlm2U3jAPrJZ9+fDjFVl1XzoqqTR3kWYn0H9o\nSq5lJMbg01tEyWx5MdjbT5q9cEqHKvIgB80+587oZOasNmbD1kyx0JfO9qrHblSA\nwElaovJ800s+x8j8R0c9RuLzl47EllolrLgvzu1Tx2Rn75z7yYiNrXcpNOveHfKY\nTet4jwECgYEA4byVulqARVva0p8YcORg+LL1agjGC/TF4GTnKeRHjN786W/agZ18\nU7MwO6kgkQRGLXXUUZC2Os9NS0VHOUfFz59jPMfNOiz9djbBz6Gec8/1xrTqKKH/\nA5VqPJ2KDCDRg3KIdgmZy3+e9VwOVj5RyyfqnZM5hHwLSASePq/rpT0CgYEAyJ11\nXa9RDvwYeWtIx/H1IKsKM0E4z8LyajnvY1JnAK1RtmZltebg9iOZn4NWgwZa8KYu\nQyHVuWLyXkHYLVApE4Uv4LXatyXsu78tBTXyEO4x42m3Yx7wtRgtBaWEK3SzU3Zv\nEx1yepfUHoygnG7YQZV7qVBBgAgixtsX+Q2nseUCgYBLXuY3VKRjhCnqDUjh2L8w\nCsC6aLeHonC3Xbl5WUkylfmoD7rLcEPkxn2iTfQbt2ufHiqIGWNe+3x5V2ZSj85S\nZouB7cxuUjtGzz2jD/mR/au4bwuICZ7WGXthRdCkAAk0dHdvwgDh23i9v8Dhtukk\nhe1mM5QO0kQKBdC4aZCqmQKBgHqN1nkY9MfWsYzbQWcEJN+EHYMaQP6K9VR3eAqQ\n+GOtfdGT1Ga/WIaFUP/lWCBK7Zs9qd1Q+iN6kt2KE+n6ol1Oa+U2sxpXjLtVGseo\nIOy+1rM6jdF7wUigMEDW0FtLu5EtNMXUo27I+ch/2E44WNwX2aehY6I3VidtCMQY\n120RAoGAH2nOhsQLmvEifKwO8wpkOirTr6pgBSJ+vdLg4g14JU1/C578QD4s/uWm\nrrJ/CmID6WcsiC12frGj3SqTWyAobIk3qTacn5m5HxL6yd9H6x1hXvEa8Rb1eLGf\nhGJ4UJ9iOXz/d6KIoypJ8lgWWTAAPDcF/09eeEukodNLKKWKqMM=\n-----END RSA PRIVATE KEY-----\n",
-   "oidcServicePublicKeySig" : "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsOYtHzaFqyYr0pIBf53j\nhbAGKi6cQJ7GZuG2xrn7JpPDJvOZ4ZnHY3h/cVczbK7D1wu/CZZHm7ln6i/R27QX\nVVhh4ThgwMPUc0ixfxEHoIG3N8fFiEYwqO45Zle3kYL62R5GcC7oi27Zd0v5gxq1\nMEio7ETd37UkF1suCw4DnURNo0LMKxxIlVnA8yFwjBthSvhX37NC8rhYv2zdS0Ap\n2VN8otOQtZ87Y/g+GADKlefD8V475BqHFuludqz6uVQfIfzdEq/kiB3DPuqf12PD\nn8MeCyPCwrIDSn5LJ83Ofw8IzIilZvxoTq4Ka+3i7LHeD72Eo7OnITPYmdMnLtT8\nkQIDAQAB\n-----END PUBLIC KEY-----\n",
+   "oidcServiceOldKeyTypeEnc" : "RSA",
+   "oidcServiceOldKeyTypeSig" : "RSA",
+   "oidcServicePrivateKeySig" : "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA4K7uX0Pb6CX2HXfyMcnOSobIx+1g/lxURAfmxkV/qVxmpFQC\nyXz1F38m6Riy8DG94uq53fueqwhmsgRkylfFvYvOYH5cV6uOse036HSGl9e6HfTD\npwBPG60DRgLCg9g8Mg9WzWqsv28iw8pWAU/YiCYBkuTrI9fzh5TZbtS7CbnnFOmP\nKA+WMKKp5XbzdQ1WtKCyLfHm8ZxmSEJUtrbSVsXE2aKzxU0K9e0SqjfTvMkOSbiO\n8NbeXkH7gwHke93CPMSPyyC/o9lRhSaMQGbNHqRkVWa3SeLiFY5wAUmPU7w2Mwsn\nITs2KS3zKEkLO6DP8QWC/3Ue7CB5ZvcdY8EAJQIDAQABAoIBAD7eA5nJUYNL9+j3\n8l8nAd9NhmmWjJCvge6FLXfl41oeniO11A/PtH5uGBOZ0xutN14CYp5vtM5Ta/S8\nkP0jARPPxh+uy6TGPoefggi7bhuXg561KXeVeQ0b5HIW/JlKjFFPhHC2u/5WmOoi\nt9znHAXAaKlS/05Isv4JUquVv33xLa2M4HsfIRZ8HZ9VIyMeXdS86PtRIW/MFQJ9\nv1IAQeRatSIsVBGScf61Ib/odeElXzU8mska3lJehYfXjZbcyFipHROubw8QPpOf\nSw3SFjS52p+vketTHh/K5eBgBpYHqmmsdsb/itOv/Ydu2vJWt4fl7/Ji9kKOSBrx\nR+/0A4MCgYEA9U2M2KR14GEwi0tJf5mo6z198oUsO5VbT/BM27ofzAxDQNrr6ScD\n3ms1/sM9Pn/T0CDrUq7xAhn0SxPrNROAkUaz70AeboEIiI5kmNutzUU1xgtw6Lmm\nOnAdEsxs5JfLjmpv1AH3SDSNd4t6TanWw1ow53EqOLp8TObH/baip/MCgYEA6nsx\nb2DoOlenuenDNPYniCxxotzWDGaK9//fKpopHYbU47WnCKHPh0+HKoDyI80Gxa+g\no2wcuBW/XRlOsER1ohOeq+jhCfALSpayjo/6KNU44S4Ot8ZBpX2Zb2vMOqF+1F5c\nwvW+EnHssm3qft7OjaGRCMADmBW6DfriWY9elYcCgYEAphr/Vuv2jhwB3TD78hXB\nFporIQAgtbArhvP3d4qPYYKkP9R+jwDGU+RRSdQ3Mo0ohvTjpLelp4Cftf8k9Gni\nU32G9ml6seVaO+4AHKoVBLzq7tJsgIrGDyg/56zZx+kqA6P7WZqDMjez29Fs3g41\nyU7XcsFkj8lnxkM4BYuYlRUCgYEA2991Nam7WaoEX3LyV2FTJH/4du150dr+CRto\nGrzAPS3Hx1b5MED7JzjN2G9dn3CMHydXDKc+LuhFr3khrmwjmj2nljAjhXwQOnsh\nKEmeHFgEpDLaHj3MJPCnxjFhKsFw+pcZiL+C4izt9UrYjutC6NBN/dSACkalVqKh\nSbYEzVUCgYAbNj+VjJhRARoE24ycNPqaVoFSBhgV3Hxx/FVx/+gEtyZ4EFVafn6K\n/Ogm/dhfwzQ6pOz8F/I5DdKcMw4wWy2tfx3QCPT601P6RYnVZvT/dZMEt8LRNTnz\niBj//npJwh7SwtBCwFbH1cnJSx655fpQWBGsRQn+qzK5dhiDbQjUsQ==\n-----END RSA PRIVATE KEY-----\n",
+   "oidcServicePublicKeySig" : "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4K7uX0Pb6CX2HXfyMcnO\nSobIx+1g/lxURAfmxkV/qVxmpFQCyXz1F38m6Riy8DG94uq53fueqwhmsgRkylfF\nvYvOYH5cV6uOse036HSGl9e6HfTDpwBPG60DRgLCg9g8Mg9WzWqsv28iw8pWAU/Y\niCYBkuTrI9fzh5TZbtS7CbnnFOmPKA+WMKKp5XbzdQ1WtKCyLfHm8ZxmSEJUtrbS\nVsXE2aKzxU0K9e0SqjfTvMkOSbiO8NbeXkH7gwHke93CPMSPyyC/o9lRhSaMQGbN\nHqRkVWa3SeLiFY5wAUmPU7w2MwsnITs2KS3zKEkLO6DP8QWC/3Ue7CB5ZvcdY8EA\nJQIDAQAB\n-----END PUBLIC KEY-----\n",
+   "oidcServiceSignatureKey" : "default-oidc-sig, old-oidc-sig, new-oidc-sig",
    "oidcStorageOptions" : {},
+   "okta2fActivation" : 0,
    "openIdAuthnLevel" : 1,
    "openIdExportedVars" : {},
    "openIdIDPList" : "0;",
@@ -457,8 +490,12 @@
    "openIdSreg_timezone" : "_timezone",
    "pamAuthnLevel" : 2,
    "pamService" : "login",
-   "passwordDB" : "Demo",
+   "password2fActivation" : 0,
+   "password2fSelfRegistration" : 0,
+   "password2fUserCanRemoveKey" : 1,
+   "passwordDB" : "LDAP",
    "passwordPolicyActivation" : 1,
+   "passwordPolicyMaxSize" : 0,
    "passwordPolicyMinDigit" : 0,
    "passwordPolicyMinLower" : 0,
    "passwordPolicyMinSize" : 0,
@@ -472,47 +509,55 @@
       "LockDirectory" : "/var/lib/lemonldap-ng/psessions/lock"
    },
    "port" : -1,
-   "portal" : "https://auth.rennes-metropole-rudi.karbon.open.global/",
+   "portal" : "http://auth.example.com:91/",
    "portalAntiFrame" : 1,
    "portalCheckLogins" : 1,
+   "portalCustomTplParams" : {},
    "portalDisplayAppslist" : 1,
    "portalDisplayChangePassword" : "$_auth =~ /^(LDAP|DBI|Demo)$/",
    "portalDisplayGeneratePassword" : 1,
    "portalDisplayLoginHistory" : 1,
    "portalDisplayLogout" : 1,
+   "portalDisplayOfflineTokens" : "$_auth eq 'OIDC'",
    "portalDisplayOidcConsents" : "$_oidcConsents && $_oidcConsents =~ /\\w+/",
+   "portalDisplayOrder" : "Appslist ChangePassword LoginHistory OidcConsents Logout",
    "portalDisplayRefreshMyRights" : 1,
    "portalDisplayRegister" : 1,
    "portalErrorOnExpiredSession" : 1,
-   "portalForceAuthnInterval" : 5,
+   "portalFavicon" : "common/favicon.ico",
+   "portalForceAuthnInterval" : 30,
    "portalMainLogo" : "common/logos/logo_llng_400px.png",
    "portalPingInterval" : 60000,
    "portalRequireOldPassword" : 1,
    "portalSkin" : "bootstrap",
    "portalSkinBackground" : "1280px-Cedar_Breaks_National_Monument_partially.jpg",
    "portalSkinRules" : {},
-   "portalStatus" : 0,
    "portalUserAttr" : "_user",
    "post" : {
-      "auth.rennes-metropole-rudi.karbon.open.global" : {},
-      "manager.rennes-metropole-rudi.karbon.open.global" : {},
-      "dev-karbon.rennes-metropole-rudi.karbon.open.global" : {},
-      "test1.rennes-metropole-rudi.karbon.open.global" : {}
+      "auth.example.com" : {},
+      "manager.example.com" : {},
+      "example.com" : {}
    },
    "proxyAuthServiceChoiceParam" : "lmAuth",
    "proxyAuthnLevel" : 2,
    "radius2fActivation" : 0,
+   "radius2fRequestAttributes" : {},
    "radius2fTimeout" : 20,
    "radiusAuthnLevel" : 3,
+   "radiusExportedVars" : {},
+   "radiusRequestAttributes" : {},
    "randomPasswordRegexp" : "[A-Z]{3}[a-z]{5}.\\d{2}",
    "redirectFormMethod" : "get",
-   "registerDB" : "Demo",
+   "registerDB" : "LDAP",
    "registerTimeout" : 0,
-   "registerUrl" : "https://auth.rennes-metropole-rudi.karbon.open.global/register",
    "reloadTimeout" : 5,
    "reloadUrls" : {
-      "localhost" : "https://reload.rennes-metropole-rudi.karbon.open.global/reload"
+      "localhost" : "http://reload.example.com:91/reload"
    },
+   "rememberAuthChoiceRule" : 0,
+   "rememberCookieName" : "llngrememberauthchoice",
+   "rememberCookieTimeout" : 31536000,
+   "rememberTimer" : 5,
    "remoteGlobalStorage" : "Lemonldap::NG::Common::Apache::Session::SOAP",
    "remoteGlobalStorageOptions" : {
       "ns" : "http://auth.example.com/Lemonldap/NG/Common/PSGI/SOAPService",
@@ -524,13 +569,13 @@
    "rest2fVerifyArgs" : {},
    "restAuthnLevel" : 2,
    "restClockTolerance" : 15,
-   "sameSite" : "None",
+   "sameSite" : "",
    "samlAttributeAuthorityDescriptorAttributeServiceSOAP" : "urn:oasis:names:tc:SAML:2.0:bindings:SOAP;#PORTAL#/saml/AA/SOAP;",
+   "samlAuthnContextMapExtra" : {},
    "samlAuthnContextMapKerberos" : 4,
    "samlAuthnContextMapPassword" : 2,
    "samlAuthnContextMapPasswordProtectedTransport" : 3,
    "samlAuthnContextMapTLSClient" : 5,
-   "samlCommonDomainCookieActivation" : 0,
    "samlEntityID" : "#PORTAL#/saml/metadata",
    "samlIDPMetaDataExportedAttributes" : null,
    "samlIDPMetaDataOptions" : {},
@@ -548,9 +593,9 @@
    "samlNameIDFormatMapKerberos" : "uid",
    "samlNameIDFormatMapWindows" : "uid",
    "samlNameIDFormatMapX509" : "mail",
-   "samlOrganizationDisplayName" : "RUDI",
-   "samlOrganizationName" : "RUDI",
-   "samlOrganizationURL" : "http://rudi.rennesmetropole.fr",
+   "samlOrganizationDisplayName" : "Example",
+   "samlOrganizationName" : "Example",
+   "samlOrganizationURL" : "http://www.example.com",
    "samlOverrideIDPEntityID" : "",
    "samlRelayStateTimeout" : 600,
    "samlSPMetaDataExportedAttributes" : null,
@@ -565,12 +610,12 @@
    "samlSPSSODescriptorSingleLogoutServiceHTTPRedirect" : "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect;#PORTAL#/saml/proxySingleLogout;#PORTAL#/saml/proxySingleLogoutReturn",
    "samlSPSSODescriptorSingleLogoutServiceSOAP" : "urn:oasis:names:tc:SAML:2.0:bindings:SOAP;#PORTAL#/saml/proxySingleLogoutSOAP;",
    "samlSPSSODescriptorWantAssertionsSigned" : 1,
-   "samlServicePrivateKeySig" : "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDHrYmi+rwj/MpC\nn9PVLJAg5ebEb1+SCfw13f9NmmueQ27xUueK4ilhc5dYK1tQ7bi5G/IqmWui854p\n2/m/5ArHXU3gb6a5vPeOM8YxOB2usOwASrQoO9QeXFG3EUegrIwERDLY09Kk+SWW\n3eZe3/QCYiUDU5ddEKH+/rvpo+wlkZrUra3XjfWi9isTyQzdoQTi8XLo7OeGojJF\nArD6Lyn2Do/PLmjwH2Ym7e43RHQfOYhd7F+IA+J3gIH8UfRK2z5qjnoFRdM7PpE5\nNsG4PJ2UYxliw1D7G/qHlcHASWoYDrAH1wg0Zejlbz7P6eF/JzgUOd/0fd98Jddf\nc68c7nR1AgMBAAECggEBAKlm4M4USml9nVrInb7M/7npUc51bm9HaWGJ5X7A82xh\naU3zN9zr4o96sXtrzRzrkTv6KYlaf6bPZ++7YDccEMjyr48pKhmJ57wM0KgRI52B\nG7djqVQ47cyUJf9Z+ZqmyGMWOM0baCnt9aX4u+jhtvIOsbgQwumBou3izyl4mG+F\nhhzt65U0EOoBju42elSMlNoAlUCTTBqjageba1/6Kk67asH0XLr2BRUotl3vOFhf\nvoAZ/PSusCve5eXwJ75uBKXEjHdPPMnqPQ3nLToty0jTXngn+zXM5baGB7Ya+7UW\nvHJnaowKIEyutlhDsfvWPvzaquNUu1vUiq2gsYdppEECgYEA/CJSuYPScU8Q4fyN\nbzVg0QaP6c7/AWwIIXaKgU4FbhkrgG4ncGkaKmmIWCohA34FUvXYAJ8uoD1K3q8R\n8W+47K03omwPH1JBf1TNiiVsR3L575tQ3E1brCyXMen4IWjdLa4s1Pn8X8vh8ejK\noAUCpfi7DVmtJWCsdFAz8ySwRrsCgYEAyr1QO7Kxix04yPs2tt/8h/XrTNWsIK4p\nxcK7Iz5e4CQGYKXpb4GOZ6s18V7Py/HCugL3bq5JQ9+G9dzNnSAirGimsGz1VuXJ\n1no8AbcU+IpSXamns/h862byyG7M0Y+m21/C94pSWL3WqS2TwMeH+WCNcnnQN6MG\nlKD82Lyqto8CgYEA2Zr97qK405Y7qe8AWkSlZIHXXyGJsL5+XfMjIuolgZozk0p+\nu2Pac1RVmlHx4EO5cJpBbHf2E9ISdhJ+1/NmlM4CwCmm+49QfAbCxkH6K8gtsgBI\nT3psbjKl4yxdPOh2S+CRTNbcXAlo3hHeHzFz0a7UMXd+Gk5PSKuXyneVs9UCgYEA\nvlWjOJiXlCoYAJ/QCzoXpDEc+eJ0Ga5Iq1AZTookmjtX/W5lzHiOEAetufAwF6De\nFrHoR/G5+M2mr7XfF09vHfuV2nZAkpdiuUfChD20o22AzEwVlKGJ7ZqV/dP/2BIM\nLVInASzMCGIZYHTYjRkGL/oUcU+pSkJ0UB8fof7mKkMCgYBqWxYCrWOzSkhiJKG4\nGERIixMNAN5MAW9aJq2RztgDab1eg7i4c6RGKk/RV2DCC39nigr8rddoT/DJ7o7Q\nztHf61LIGL+DzLrkjAGsokTKUlhPw3ZRBVAmFn2Rwc7IkNgBGHWVY/Pp6zPeJ6QA\nvJsdRA28VAlfdcF/k6BwLTJcag==\n-----END PRIVATE KEY-----\n",
-   "samlServicePublicKeySig" : "-----BEGIN CERTIFICATE-----\nMIIC3zCCAcegAwIBAgIFAMLs+lcwDQYJKoZIhvcNAQELBQAwMTEvMC0GA1UEAwwm\nYXV0aC5jbnBmLXNtYXJ0Y25wZi5rYXJib24ub3Blbi5nbG9iYWwwHhcNMjIwNDI2\nMTUxMTAyWhcNNDIwNDIxMTUxMTAyWjAxMS8wLQYDVQQDDCZhdXRoLmNucGYtc21h\ncnRjbnBmLmthcmJvbi5vcGVuLmdsb2JhbDCCASIwDQYJKoZIhvcNAQEBBQADggEP\nADCCAQoCggEBAMetiaL6vCP8ykKf09UskCDl5sRvX5IJ/DXd/02aa55DbvFS54ri\nKWFzl1grW1DtuLkb8iqZa6Lzninb+b/kCsddTeBvprm8944zxjE4Ha6w7ABKtCg7\n1B5cUbcRR6CsjAREMtjT0qT5JZbd5l7f9AJiJQNTl10Qof7+u+mj7CWRmtStrdeN\n9aL2KxPJDN2hBOLxcujs54aiMkUCsPovKfYOj88uaPAfZibt7jdEdB85iF3sX4gD\n4neAgfxR9ErbPmqOegVF0zs+kTk2wbg8nZRjGWLDUPsb+oeVwcBJahgOsAfXCDRl\n6OVvPs/p4X8nOBQ53/R933wl119zrxzudHUCAwEAATANBgkqhkiG9w0BAQsFAAOC\nAQEAwvbs63grWCoD/5Btpw3rqCelUuYXkR6hq3fYGFFcuqo+100tdHIBBkxtPQ5n\n2DS5Ay87qHxoNul9C+jNEqJLpIVShK0sWP/depYxTUisnrEWj6gUCqF2P9rLSfFS\nAqfE6wmkGe0fdTnlSJtfPkZthZ05mfapyDqCZKQNbd2qMf6drfTsglCHyGfcoWR7\nIsLpxYqGlIxfBxJHZqMJHt8c4vIx8tfNRsWfAm2GvogTRxjpvbewlyyCsaKWLRVM\nzcxUUflRKw7C93yiGmlmgTnaA/QViWdfZxVIOxiQuIe88ZuEbVlG48v7ECHgo3DC\n17alBCBM96i2CgM7yBJaTr1cEw==\n-----END CERTIFICATE-----\n",
+   "samlServiceEncryptionKey" : "default-saml-enc",
+   "samlServiceSignatureKey" : "default-saml-sig",
    "samlServiceSignatureMethod" : "RSA_SHA256",
-   "samlServiceUseCertificateInResponse" : 1,
    "samlStorageOptions" : {},
-   "securedCookie" : "1",
+   "scrollTop" : 400,
+   "securedCookie" : 0,
    "sessionDataToRemember" : {},
    "sfExtra" : {},
    "sfManagerRule" : 1,
@@ -598,43 +643,40 @@
    "totp2fRange" : 1,
    "totp2fSelfRegistration" : 0,
    "totp2fUserCanRemoveKey" : 1,
+   "trustedBrowserRule" : 0,
+   "trustedBrowserUseTotp" : 1,
    "twitterAuthnLevel" : 1,
    "twitterUserField" : "screen_name",
-   "u2fActivation" : 0,
-   "u2fSelfRegistration" : 0,
-   "u2fUserCanRemoveKey" : 1,
    "upgradeSession" : 1,
-   "useRedirectOnError" : 0,
-   "useRedirectOnForbidden" : 1,
+   "useRedirectAjaxOnUnauthorized" : 1,
+   "useRedirectOnError" : 1,
    "useSafeJail" : 1,
    "userControl" : "^[\\w\\.\\-@]+$",
-   "userDB" : "Same",
-   "utotp2fActivation" : 0,
+   "userDB" : "LDAP",
    "vhostOptions" : {
-       "auth.rennes-metropole-rudi.karbon.open.global" : {
-       },
-       "manager.rennes-metropole-rudi.karbon.open.global" : {
-         "vhostMaintenance" : "0",
-         "vhostHttps" : "-1",
-         "vhostPort" : "-1"
-       },
-      "test1.rennes-metropole-rudi.karbon.open.global" : {
-    	   "vhostMaintenance" : "0",
-           "vhostHttps" : "-1",
-           "vhostPort" : "-1"
-      },                           
-      "dev-karbon.rennes-metropole-rudi.karbon.open.global" : {
-      	   "vhostMaintenance" : "0",
-           "vhostHttps" : "-1",
-           "vhostPort" : "-1"
+      "auth.example.com" : {},
+      "manager.example.com" : {},
+      "example.com" : {
+         "vhostAccessToTrace" : "",
+         "vhostAliases" : "",
+         "vhostComment" : "",
+         "vhostHttps" : 0,
+         "vhostMaintenance" : 0,
+         "vhostPort" : -1,
+         "vhostServiceTokenTTL" : -1,
+         "vhostType" : "Main"
       }
    },
    "webIDAuthnLevel" : 1,
    "webIDExportedVars" : {},
    "webauthn2fActivation" : 0,
+   "webauthn2fAttestation" : "none",
    "webauthn2fSelfRegistration" : 0,
    "webauthn2fUserCanRemoveKey" : 1,
    "webauthn2fUserVerification" : "preferred",
+   "webauthnAppId" : 1,
+   "webauthnAuthnLevel" : 3,
+   "webauthnDefaultTransports" : "usb, nfc, ble, internal",
    "whatToTrace" : "_whatToTrace",
    "yubikey2fActivation" : 0,
    "yubikey2fPublicIDSize" : 12,

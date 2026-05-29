@@ -1,0 +1,10 @@
+@if (imageBase64) {
+  <p class="workflow-label">
+    <mat-label class="workflow-label-title">
+      {{ label }}
+    </mat-label>
+    <mat-label class="workflow-label-subtitle">
+      <img class="workflow-expansion-image" [src]="imageBase64" [alt]="label">
+    </mat-label>
+  </p>
+}

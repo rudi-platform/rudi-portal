@@ -1,5 +1,9 @@
 package org.rudi.microservice.kalim.service.integration.impl.transformer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,10 +13,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.rudi.facet.kaccess.bean.Language;
 import org.rudi.facet.kaccess.bean.RichDictionaryEntry;
 import org.rudi.microservice.kalim.service.integration.impl.transformer.metadata.SummaryFormatMetadataTransformer;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SummaryFormatMetadataTransformerUT {
 
@@ -48,7 +48,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<b>Hello</b> <script>alert('xss')</script>World" + SEPARATOR + "1<b>Hello</b> World2" + SEPARATOR + "1Hello World2",
 		"<script>alert('XSS')</script>" + SEPARATOR + "12"+ SEPARATOR + "12",
 		"<svg onload=\"alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
@@ -79,10 +79,10 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<a href=\"http://www.example.com\">Click me</a>" + SEPARATOR + "<a href=\"http://www.example.com\" rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
-		"<a href=\"https://www.bigbuckbunny.org/\" target=\"_blank\" rel=\"nofollow\">Big Buck Bunny</a>" + 
-				SEPARATOR + "<a href=\"https://www.bigbuckbunny.org/\" target=\"_blank\" rel=\"nofollow\">Big Buck Bunny</a>" + SEPARATOR + "Big Buck Bunny",
+		"<a href=\"https://www.bigbuckbunny.org/\" rel=\"nofollow\" target=\"_blank\">Big Buck Bunny</a>" + 
+				SEPARATOR + "<a href=\"https://www.bigbuckbunny.org/\" rel=\"nofollow\" target=\"_blank\">Big Buck Bunny</a>" + SEPARATOR + "Big Buck Bunny",
 		//@formatter:on
 	}, delimiter = SEPARATOR)
 	void testTranform_validHref(String inputText, String expectedHtml, String expectedText) {
@@ -92,7 +92,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<a href=\"javascript:alert('XSS')\">Click me</a>" + SEPARATOR + "<a rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
 		"<a href=\"&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;\">Click me</a>" 
 				+ SEPARATOR + "<a rel=\"nofollow\" target=\"_blank\">Click me</a>" + SEPARATOR + "Click me",
@@ -112,7 +112,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<i><b>a<style=\"color: red;\">Red Text</style>b</b></i>" + SEPARATOR + "<i><b>aRed Textb</b></i>" + SEPARATOR + "aRed Textb",
 		//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -122,7 +122,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<p align=\"right\">text</p>" + SEPARATOR + "<p align=\"right\">text</p>" + SEPARATOR + "text",
 		"<p style=\"text-align:right;\">text</p>" + SEPARATOR + "<p style=\"text-align:right;\">text</p>" + SEPARATOR + "text",
 		"<p style=\"text-color:red;\">text</p>" + SEPARATOR + "<p>text</p>" + SEPARATOR + "text",
@@ -135,7 +135,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<div style=\"background-image:url(javascript:alert('XSS'))\">" + SEPARATOR + "12" + SEPARATOR + "12",
 		"<div></div>" + SEPARATOR + "12" + SEPARATOR + "12",
 		//@formatter:on
@@ -146,7 +146,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<TABLE><TD BACKGROUND=\"javascript:alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
 		//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -157,7 +157,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 			"<figure><img src=\"image.jpg\" alt=\"Image\"><figcaption>Caption</figcaption></figure>" + SEPARATOR + "Caption" + SEPARATOR + "Caption",
 		//@formatter:on
 	}, delimiter = SEPARATOR)
@@ -177,7 +177,7 @@ class SummaryFormatMetadataTransformerUT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			//@formatter:off
+	//@formatter:off
 		"<img src=\"x\" onerror=\"alert('XSS')\">" + SEPARATOR + "12" + SEPARATOR + "12",
 		"a<script>alert('XSS')</script>b<img src=\"x\" onerror=\"alert('XSS')\">c" + SEPARATOR + "1abc2"+ SEPARATOR + "1abc2",
 		//@formatter:on

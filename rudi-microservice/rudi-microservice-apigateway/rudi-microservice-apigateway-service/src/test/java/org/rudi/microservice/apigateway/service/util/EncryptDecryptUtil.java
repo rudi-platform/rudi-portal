@@ -3,6 +3,9 @@
  */
 package org.rudi.microservice.apigateway.service.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -32,8 +35,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.RequiredArgsConstructor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author FNI18300
@@ -98,7 +99,7 @@ class EncryptDecryptUtil {
 
 	@Test
 	@Disabled("This test is build to produce data to test decryption dataset with a specific public key")
-	void encrypt_file_with_specific_public_key() throws AppServiceException, IOException, GeneralSecurityException {
+	void encrypt_file_with_specific_public_key() throws IOException, GeneralSecurityException {
 
 		// *** Paramètres à adapter *** //
 		// ** fichier à déposer dans src/test/resources par exemple, le temps du chiffrement

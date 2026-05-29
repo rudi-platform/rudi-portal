@@ -25,26 +25,27 @@
             <div>
               <mat-card [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
                 <!-- Titre du bloc -->
+              @for (authenticator of isolatedOauth2Authenticators; track authenticator) {
                 <mat-card-title class="d-flex justify-content-center">
-                  <p class="login-text-title" [translate]="'authentification.authenticators'"></p>
+                  <p class="login-text-title">{{authenticator.label}}</p>
                 </mat-card-title>
                 <mat-card-content>
-                  @for (authenticator of isolatedOauth2Authenticators; track authenticator) {
                     <div class="authenticator-item">
                       <div [ngClass]="authenticator?.viewSettings?.cssClass ? authenticator.viewSettings.cssClass : ''">
+                        <p class="login-text-description">{{authenticator.description}}</p>
                         <button class="button-login button-external-login" (click)="handleClickOAuth2Login(authenticator)"
                           (mouseenter)="authenticator['hovered'] = true" (mouseleave)="authenticator['hovered'] = false">
                           @if (authenticator?.viewSettings?.hoverIconUrl && authenticator['hovered']) {
-                            <img src="{{authenticator.viewSettings.hoverIconUrl}}" alt="{{authenticator.name}} hover icon" class="oauth2-icon">
+                            <img src="{{authenticator.viewSettings.hoverIconUrl}}" alt="{{authenticator.description}} hover icon" class="oauth2-icon">
                           } @else if (authenticator?.viewSettings?.iconUrl) {
-                            <img src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.name}} icon" class="oauth2-icon">
+                            <img src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.description}} icon" class="oauth2-icon">
                           }
                           <span class="oauth2-name">{{authenticator.label}}</span>
                         </button>
                         @if (authenticator?.viewSettings?.links?.length) {
                           <div class="authenticator-links">
                             @for (link of authenticator.viewSettings.links; track link) {
-                              <a class="authenticator-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+                              <a class="authenticator-link" [href]="link.url | safeUrl" target="_blank" rel="noopener noreferrer" title="{{link.label}}">
                                 {{link.label}}
                               </a>
                             }
@@ -52,9 +53,12 @@
                         }
                       </div>
                     </div>
-                  }
                 </mat-card-content>
+              }
               </mat-card>
+            </div>
+            <div class="fr-hr">
+              <p class="fr-hr-or">{{'authentification.or'|translate}}</p>
             </div>
         }
         <!-- Le bloc formulaire authent -->
@@ -194,16 +198,16 @@
                         <button mat-raised-button class="button-login button-external-login" (click)="handleClickOAuth2Login(authenticator)"
                           (mouseenter)="authenticator['hovered'] = true" (mouseleave)="authenticator['hovered'] = false">
                           @if (authenticator?.viewSettings?.hoverIconUrl && authenticator['hovered']) {
-                            <img src="{{authenticator.viewSettings.hoverIconUrl}}" alt="{{authenticator.name}} hover icon" class="oauth2-icon">
+                            <img src="{{authenticator.viewSettings.hoverIconUrl}}" alt="{{authenticator.description}} hover icon" class="oauth2-icon">
                           } @else if (authenticator?.viewSettings?.iconUrl) {
-                            <img src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.name}} icon" class="oauth2-icon">
+                            <img src="{{authenticator.viewSettings.iconUrl}}" alt="{{authenticator.description}} icon" class="oauth2-icon">
                           }
                           <span class="oauth2-name">{{authenticator.label}}</span>
                         </button>
                         @if (authenticator?.viewSettings?.links?.length) {
                           <div class="authenticator-links">
                             @for (link of authenticator.viewSettings.links; track link) {
-                              <a class="authenticator-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+                              <a class="authenticator-link" [href]="link.url | safeUrl" target="_blank" rel="noopener noreferrer">
                                 {{link.label}}
                               </a>
                             }

@@ -25,6 +25,9 @@ export class WorkflowFormUtils {
 
     isFormReadonly(form: Form): boolean {
         // form is readonly only if all section are readonly
+        if (!form?.sections) {
+            return false;
+        }
         for (const section of form.sections) {
             if (!section.readOnly) {
                 return false;

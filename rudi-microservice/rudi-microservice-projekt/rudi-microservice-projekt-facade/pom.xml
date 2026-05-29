@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-projekt</artifactId>
-		<version>3.3.10</version>
+		<version>3.3.12</version>
 	</parent>
 
 	<artifactId>rudi-microservice-projekt-facade</artifactId>
@@ -183,6 +183,7 @@
 					<modelPackage>org.rudi.microservice.projekt.core.bean</modelPackage>
 					<typeMappings>
 						<typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
+						<typeMapping>DocumentMetadata=org.rudi.doks.core.bean.DocumentMetadata</typeMapping>
 					</typeMappings>
 					<schemaMappings>
 						KindOfData=org.rudi.facet.kmedia.bean.KindOfData,

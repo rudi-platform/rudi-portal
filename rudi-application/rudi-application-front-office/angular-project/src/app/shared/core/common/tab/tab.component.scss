@@ -17,6 +17,12 @@ button, .button {
     border: solid 1px var(--4-contours-blocs-menus);
     background-color: var(--secondary-color);
 
+    .mat-icon {
+        font-size: 1.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
+    }
+
     &.active {
         color: var(--secondary-color);
         --mat-icon-color: var(--secondary-color);

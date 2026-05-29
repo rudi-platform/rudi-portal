@@ -60,7 +60,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 	@Override
 	protected void addPredicates(OrganizationSearchCriteria searchCriteria, CriteriaBuilder builder,
 			CriteriaQuery<?> criteriaQuery, Root<OrganizationEntity> root, List<Predicate> predicates) {
-		predicateStringCriteria(searchCriteria.getUuid(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getUuid(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
 		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
 	}
 

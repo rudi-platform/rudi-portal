@@ -22,6 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		"org.rudi.facet.strukture",
 		"org.rudi.facet.organization",
 		"org.rudi.facet.bpmn",
+		"org.rudi.facet.crypto",
+		"org.rudi.facet.doks",
 		"org.rudi.facet.email",
 		"org.rudi.facet.generator",
 		"org.rudi.facet.kaccess",

@@ -1,5 +1,28 @@
 package org.rudi.facet.kaccess.helper.dataset.metadatablock.mapper.fields;
 
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.NotImplementedException;
+import org.rudi.facet.dataverse.api.exceptions.DataverseMappingException;
+import org.rudi.facet.dataverse.fields.generators.FieldGenerator;
+import org.rudi.facet.dataverse.helper.dataset.metadatablock.mapper.DateTimeMapper;
+import org.rudi.facet.dataverse.utils.MessageUtils;
+import org.rudi.facet.kaccess.bean.Connector;
+import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
+import org.rudi.facet.kaccess.bean.HashAlgorithm;
+import org.rudi.facet.kaccess.bean.Media;
+import org.rudi.facet.kaccess.bean.MediaFile;
+import org.rudi.facet.kaccess.bean.MediaFileAllOfChecksum;
+import org.rudi.facet.kaccess.bean.MediaSeries;
+import org.rudi.facet.kaccess.bean.MediaService;
+import org.rudi.facet.kaccess.bean.ReferenceDates;
+import org.springframework.stereotype.Component;
+
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.FILE_CHECKSUM_ALGO;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.FILE_CHECKSUM_HASH;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.FILE_ENCODING;
@@ -27,31 +50,6 @@ import static org.rudi.facet.kaccess.constant.RudiMetadataField.SERIES_PERIOD;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SERIES_TOTAL_NUMBER_OF_RECORDS;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SERIES_TOTAL_SIZE;
 import static org.rudi.facet.kaccess.constant.RudiMetadataField.SERVICE_API_DOCUMENTATION_URL;
-
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.rudi.facet.dataverse.api.exceptions.DataverseMappingException;
-import org.rudi.facet.dataverse.fields.generators.FieldGenerator;
-import org.rudi.facet.dataverse.helper.dataset.metadatablock.mapper.DateTimeMapper;
-import org.rudi.facet.dataverse.utils.MessageUtils;
-import org.rudi.facet.kaccess.bean.Connector;
-import org.rudi.facet.kaccess.bean.ConnectorConnectorParametersInner;
-import org.rudi.facet.kaccess.bean.HashAlgorithm;
-import org.rudi.facet.kaccess.bean.Media;
-import org.rudi.facet.kaccess.bean.MediaFile;
-import org.rudi.facet.kaccess.bean.MediaFileAllOfChecksum;
-import org.rudi.facet.kaccess.bean.MediaSeries;
-import org.rudi.facet.kaccess.bean.MediaService;
-import org.rudi.facet.kaccess.bean.MediaType;
-import org.rudi.facet.kaccess.bean.ReferenceDates;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 class MediaPrimitiveFieldsMapper extends PrimitiveFieldsMapper<Media> {
@@ -96,7 +94,7 @@ class MediaPrimitiveFieldsMapper extends PrimitiveFieldsMapper<Media> {
 			createField(FILE_STRUCTURE, file.getFileStructure(), fields);
 		}
 		createField(FILE_SIZE, file.getFileSize(), fields);
-		createField(FILE_TYPE, file.getFileType().getValue(), fields);
+		createField(FILE_TYPE, file.getFileType(), fields);
 		createField(FILE_ENCODING, file.getFileEncoding(), fields);
 
 		// propriétés de Checksum
@@ -173,7 +171,7 @@ class MediaPrimitiveFieldsMapper extends PrimitiveFieldsMapper<Media> {
 	private MediaFile getMediaFile(MapOfFields fields) {
 		return new MediaFile().fileStructure(fields.get(FILE_STRUCTURE).getValueAsString())
 				.fileSize(fields.get(FILE_SIZE).getValueAsLong())
-				.fileType(fields.get(FILE_TYPE).getValueAsEnumWith(MediaType::fromValue))
+				.fileType(fields.get(FILE_TYPE).getValueAsString())
 				.fileEncoding(fields.get(FILE_ENCODING).getValueAsString()).checksum(getFileChecksum(fields));
 	}
 

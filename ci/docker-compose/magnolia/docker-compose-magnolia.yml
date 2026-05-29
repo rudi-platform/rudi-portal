@@ -1,8 +1,4 @@
 ---
-volumes:
-  postgresql_data:
-  magnolia_data:
-
 services:
   magnolia-database:
     image: magnolia-postgres
@@ -12,8 +8,7 @@ services:
       - "POSTGRES_PASSWORD=magnolia-password"
       - "POSTGRES_PORT=5432"
     volumes:
-      - postgresql_data:/var/lib/postgresql/data
-      #- ./postgresql_data:/var/lib/postgresql/data
+      - ./postgresql_data/data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
 

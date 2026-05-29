@@ -22,6 +22,7 @@ import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.compone
 import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
+import {SafeUrlPipe} from '@app/shared/utils/pipes/safe-url.pipe';
 import {AuthenticatorService, OAuth2AuthenticatorDescription} from 'micro_service_modules/acl/acl-api';
 import {Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -30,7 +31,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe, SafeUrlPipe]
 })
 export class LoginComponent implements OnInit {
 

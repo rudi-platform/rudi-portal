@@ -20,13 +20,13 @@ import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.stereotype.Component;
 
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_DRAFT_TYPE;
+
 /**
  * @author FNI18300
  */
 @Component
 public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<ProjectEntity, Project, ProjectMapper> {
-	public static final String DRAFT_TYPE_FORM_ARCHIVE_VALUE = "archive";
-	private static final String DRAFT_TYPE_FORM_KEY = "draftType";
 	private final List<ProjectValidator> projectValidators;
 	private final List<ProjectTaskUpdateProcessor> projectTaskUpdateProcessors;
 
@@ -67,8 +67,8 @@ public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<Project
 	public String getDraftType(AssetDescriptionEntity assetDescriptionEntity) throws InvalidDataException {
 		FormHelper formHelper = getFormHelper();
 		Map<String, Object> hydrate = formHelper.hydrateData(assetDescriptionEntity.getData());
-		if (hydrate.containsKey(DRAFT_TYPE_FORM_KEY)) {
-			return hydrate.get(DRAFT_TYPE_FORM_KEY).toString();
+		if (hydrate.containsKey(PROJECT_DRAFT_TYPE)) {
+			return hydrate.get(PROJECT_DRAFT_TYPE).toString();
 		}
 		return null;
 	}

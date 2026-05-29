@@ -15,6 +15,7 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -63,6 +64,8 @@ public class WebSecurityConfig {
 			// Url pour le harvester
 			"/konsult/v1/datasets/metadatas/dcat" };
 
+	private static final String ALLOWED_MIME_TYPES_URL = "/kalim/v1/media/allowed-mime-types";
+
 	private static final List<String> SB_INCLUDE_URLS = List.of("\\/medias\\/.*", "\\/apigateway\\/datasets\\/.*",
 			"\\/konsult\\/v1\\/datasets\\/.*");
 
@@ -89,6 +92,8 @@ public class WebSecurityConfig {
 			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
 			if (!disableAuthentification) {
 				exchanges.pathMatchers(SB_PERMIT_ALL_URL).permitAll();
+				exchanges.pathMatchers(HttpMethod.GET, ALLOWED_MIME_TYPES_URL).permitAll();
+				exchanges.pathMatchers(HttpMethod.POST, ALLOWED_MIME_TYPES_URL).authenticated();
 				exchanges.anyExchange().authenticated();
 			} else {
 				log.warn("/!\\ Authentification is disabled");

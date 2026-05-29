@@ -78,7 +78,14 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 
 	}
 
-	private Authentication authenticateCasToken(BearerTokenAuthenticationToken bearer, Jwt jwt) {
+	/**
+	 * Authentification d'un token JWT d'un autre issuer que RUDI
+	 * 
+	 * @param bearer token d'authentification
+	 * @param jwt    token JWT décodé
+	 * @return
+	 */
+	protected Authentication authenticateCasToken(BearerTokenAuthenticationToken bearer, Jwt jwt) {
 		log.debug("Token with unknown issuer: {}", jwt.getIssuer());
 
 		return null;

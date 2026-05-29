@@ -9,7 +9,7 @@ import {DateTimeUtils} from '@shared/utils/date-time-utils';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {DatasetConfidentiality, OwnerInfo, ProjectByOwner, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {DatasetConfidentiality, OwnerInfo, ProjectByOwner, ProjektService, Status} from 'micro_service_modules/projekt/projekt-api';
 import {
     Confidentiality,
     FrontOfficeProperties,
@@ -102,6 +102,7 @@ export class ProjektMetierService {
 
     /**
      * Récupération des projets de l'utilisateur fourni
+     * @param status liste des status de projet souhaité
      * @param offset ou commencer la recherche paginée,
      *      - valeur par défaut : 0
      * @param limit nombre de données renvoyées,
@@ -109,16 +110,20 @@ export class ProjektMetierService {
      * @param order string pour le sort des données,
      *      - valeur par défaut : order by date desc
      */
-    getMyAndOrganizationsProjects(offset: number = 0, limit: number = 10, order: string = DEFAULT_PROJECT_ORDER): Observable<PagedProjectList> {
-        return this.projektService.getMyProjects(offset, limit, order);
+    getMyAndOrganizationsProjects(
+        status: Status[],
+        offset: number = 0,
+        limit: number = 10,
+        order: string = DEFAULT_PROJECT_ORDER): Observable<PagedProjectList> {
+        return this.projektService.getMyProjects(status, offset, limit, order);
     }
 
     /**
      * Récupération des projets de l'utilisateur connecté et ceux de son(ses) organisation(s) sans pagination
      */
-    getMyAndOrganizationsProjectsWithoutPagination(): Observable<Project[]> {
+    getMyAndOrganizationsProjectsWithoutPagination(status: Status[] = []): Observable<Project[]> {
         return PageResultUtils.fetchAllElementsUsing(offset =>
-            this.getMyAndOrganizationsProjects(offset));
+            this.getMyAndOrganizationsProjects(status, offset));
     }
 
     /**

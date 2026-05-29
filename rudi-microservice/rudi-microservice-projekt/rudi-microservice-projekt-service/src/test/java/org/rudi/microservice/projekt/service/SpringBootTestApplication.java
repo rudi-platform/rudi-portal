@@ -1,6 +1,9 @@
 package org.rudi.microservice.projekt.service;
 
+import org.rudi.common.core.json.DefaultJackson2ObjectMapperBuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * Classe application pour les tests unitaires de la couche service
@@ -23,6 +26,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		"org.rudi.facet.bpmn.helper",
 		"org.rudi.facet.bpmn.mapper",
 		"org.rudi.facet.bpmn.service",
+		"org.rudi.facet.crypto",
+		"org.rudi.facet.doks",
 		"org.rudi.facet.email", 
 		"org.rudi.facet.generator",
 		"org.rudi.facet.kaccess",
@@ -31,4 +36,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		"org.rudi.microservice.projekt.storage"
 })
 public class SpringBootTestApplication {
+
+	@Bean
+	public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
+		return new DefaultJackson2ObjectMapperBuilder();
+	}
 }

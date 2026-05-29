@@ -71,7 +71,7 @@
             </app-tab>
           }
           <!-- Boutton télécharger -->
-            @if (!isSelfdata && hasMedia) {
+            @if (!isSelfdata && hasDownloadableMedia) {
             <app-banner-button>
               <div>
                 <div #clickMenuFormatTrigger="matMenuTrigger"
@@ -130,7 +130,7 @@
             </app-banner-button>
           }
           <!-- Demander l'accès à un JDD restreint -->
-            @if (!isSelfdata && isRestricted && hasMedia) {
+            @if (!isSelfdata && isRestricted && hasDownloadableMedia) {
             <app-banner-button
               (click)="handleClickRequestAccess()">
               <div class="d-flex align-items-center">

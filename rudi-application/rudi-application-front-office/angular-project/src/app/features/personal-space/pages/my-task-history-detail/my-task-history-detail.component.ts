@@ -1,5 +1,6 @@
 import {AsyncPipe} from '@angular/common';
-import {Component, OnDestroy, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -17,12 +18,22 @@ import {TabComponent} from '@shared/core/common/tab/tab.component';
 import {Subject, Observable, of} from 'rxjs';
 import {catchError, map, switchMap, takeUntil, tap, shareReplay, distinctUntilChanged} from 'rxjs/operators';
 import {ProjectBearerResolverService, ProjectBearer} from '@features/personal-space/services/project-bearer-resolver.service';
+import {AssetResolverService, ResolvedAsset} from '@features/personal-space/services/asset-resolver.service';
+import {TitleIconType} from '@shared/models/title-icon-type';
+import {ProjectMainInformationsComponent} from '@features/project/components/project-main-informations/project-main-informations.component';
+import {OrganizationInformationComponent} from '@features/personal-space/components/organization-information/organization-information.component';
+import {LinkedDatasetInfoComponent} from '@features/personal-space/components/linked-dataset-info/linked-dataset-info.component';
+import {NewDatasetRequestInfoComponent} from '@features/personal-space/components/new-dataset-request-info/new-dataset-request-info.component';
+import {OpenDatasetTableComponent} from '@shared/business/projects/projects-datasets-tables/open-dataset-table/open-dataset-table.component';
+import {RestrictedDatasetTableComponent} from '@shared/business/projects/projects-datasets-tables/restricted-dataset-table/restricted-dataset-table.component';
+import {NewDatasetRequestTableComponent} from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
 
 @Component({
     selector: 'app-my-task-history-detail',
     templateUrl: './my-task-history-detail.component.html',
     styleUrls: ['./my-task-history-detail.component.scss'],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         PageComponent,
         TaskDetailHeaderComponent,
@@ -33,6 +44,16 @@ import {ProjectBearerResolverService, ProjectBearer} from '@features/personal-sp
         OwnerInformationComponent,
         TabsComponent,
         TabComponent,
+        ProjectMainInformationsComponent,
+        OrganizationInformationComponent,
+        LinkedDatasetInfoComponent,
+        NewDatasetRequestInfoComponent,
+        MatCard,
+        MatCardContent,
+        MatCardTitle,
+        OpenDatasetTableComponent,
+        RestrictedDatasetTableComponent,
+        NewDatasetRequestTableComponent,
     ]
 })
 export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
@@ -42,7 +63,12 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
     processHistoricInformation$: Observable<ProcessHistoricInformation | null>;
 
     pageTitle: string;
+    objectTabLabel: string;
+    objectTabIcon: TitleIconType;
     bearer$: Observable<ProjectBearer | null>;
+    resolvedAsset$: Observable<ResolvedAsset | null>;
+    resolvedAssetLoading = true;
+    processDefinitionKey: string | null = null;
     icon: string;
 
     private readonly destroyed$ = new Subject<void>();
@@ -57,6 +83,26 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
         'selfdata-process': 'selfdataTasksIcon',
     };
     private readonly defaultPageTitleKey = 'personalSpace.projectDetails.headerTitlePublication';
+    private readonly defaultObjectTabLabelKey = 'personalSpace.taskHistoryDetail.objectTab.project';
+    private readonly defaultObjectTabIcon: TitleIconType = 'icon-reutilisation';
+    private readonly objectTabIconByProcessDefinitionKey: Record<string, TitleIconType> = {
+        'project-process': 'icon-reutilisation',
+        'organization-process': 'organizationTabIcon',
+        'linked-producer-process': 'organizationTabIcon',
+        'linked-dataset-process': 'key_icon_circle',
+        'new-dataset-request-process': 'icon-new-dataset-request',
+        'selfdata-information-request-process': 'icone_donnees_personnelles',
+        'selfdata-process': 'icone_donnees_personnelles',
+    };
+    private readonly objectTabLabelByProcessDefinitionKey: Record<string, string> = {
+        'project-process': 'personalSpace.taskHistoryDetail.objectTab.project',
+        'organization-process': 'personalSpace.taskHistoryDetail.objectTab.organization',
+        'linked-producer-process': 'personalSpace.taskHistoryDetail.objectTab.linkedProducer',
+        'linked-dataset-process': 'personalSpace.taskHistoryDetail.objectTab.linkedDataset',
+        'new-dataset-request-process': 'personalSpace.taskHistoryDetail.objectTab.newDatasetRequest',
+        'selfdata-information-request-process': 'personalSpace.taskHistoryDetail.objectTab.selfdata',
+        'selfdata-process': 'personalSpace.taskHistoryDetail.objectTab.selfdata',
+    };
     private readonly pageTitleByProcessDefinitionKey: Record<string, (info: ProcessHistoricInformation | null) => string> = {
         // Réutilisations
         'project-process': () => this.translateService.instant(this.defaultPageTitleKey),
@@ -81,31 +127,35 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
         'selfdata-process': () => this.translateService.instant('metaData.selfdataInformationRequest.consultation.pageTitle'),
     };
 
+    private readonly cdr = inject(ChangeDetectorRef);
     private readonly taskHistoryDetailService = inject(TaskHistoryDetailService);
     private readonly projectBearerResolverService = inject(ProjectBearerResolverService);
+    private readonly assetResolverService = inject(AssetResolverService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly translateService = inject(TranslateService);
+    private readonly htmlService = inject(HtmlService);
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly sanitizer = inject(DomSanitizer);
 
-    constructor(
-        private readonly route: ActivatedRoute,
-        private readonly translateService: TranslateService,
-        private readonly htmlService: HtmlService,
-        iconRegistry: MatIconRegistry,
-        sanitizer: DomSanitizer,
-    ) {
+    constructor() {
         // Default title, will be updated once the historic is loaded.
         this.pageTitle = this.translateService.instant(this.defaultPageTitleKey);
 
 
         // Reuse the same icons as MyTasksHistoriesTab so the header is consistent.
-        iconRegistry.addSvgIcon('organizationTasksIcon', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
-        iconRegistry.addSvgIcon('linkedProducerTasksIcon', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
-        iconRegistry.addSvgIcon('projectTasksIcon', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
-        iconRegistry.addSvgIcon('selfdataTasksIcon', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/self_data_icon_definition_key.svg'));
-        iconRegistry.addSvgIcon('newDatasetRequestTasksIcon', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/nouvelles_donnees_definition_key.svg'));
-        iconRegistry.addSvgIcon('key_icon_88_secondary-color', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/key_icon_88_secondary-color.svg'));
+        this.iconRegistry.addSvgIcon('organizationTasksIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
+        this.iconRegistry.addSvgIcon('organizationTabIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key_tab.svg'));
+        this.iconRegistry.addSvgIcon('linkedProducerTasksIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/organization_definition_key.svg'));
+        this.iconRegistry.addSvgIcon('projectTasksIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
+        this.iconRegistry.addSvgIcon('selfdataTasksIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/self_data_icon_definition_key.svg'));
+        this.iconRegistry.addSvgIcon('newDatasetRequestTasksIcon', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/nouvelles_donnees_definition_key.svg'));
+        this.iconRegistry.addSvgIcon('key_icon_88_secondary-color', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/key_icon_88_secondary-color.svg'));
+        this.iconRegistry.addSvgIcon('key_icon_circle', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/key_icon_circle.svg'));
 
         this.processHistoricInformation$ = of(null);
         this.icon = this.defaultIconKey;
         this.bearer$ = of(null);
+        this.resolvedAsset$ = of(null);
     }
 
     ngOnInit(): void {
@@ -139,12 +189,17 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
                 return this.taskHistoryDetailService.findHistoricAcrossServices(historicId).pipe(map(clean));
             }),
             tap((value) => {
-                this.icon = this.getIcon(value?.processDefinitionKey ?? null);
+                this.processDefinitionKey = value?.processDefinitionKey ?? null;
+                this.icon = this.getIcon(this.processDefinitionKey);
                 this.pageTitle = this.getPageTitle(value);
+                this.objectTabLabel = this.getObjectTabLabel(this.processDefinitionKey);
+                this.objectTabIcon = this.getObjectTabIcon(this.processDefinitionKey);
                 this.loading = false;
+                this.cdr.markForCheck();
             }),
             catchError(() => {
                 this.loading = false;
+                this.cdr.markForCheck();
                 return of(null);
             }),
             takeUntil(this.destroyed$),
@@ -155,6 +210,16 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
             switchMap(info => this.projectBearerResolverService.resolve(info)),
             catchError(() => of(null)),
             distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+            shareReplay({bufferSize: 1, refCount: true})
+        );
+        this.resolvedAssetLoading = true;
+        this.resolvedAsset$ = processHistoricInformation$.pipe(
+            switchMap(info => this.assetResolverService.resolve(info)),
+            catchError(() => of(null)),
+            tap(() => {
+                this.resolvedAssetLoading = false;
+                this.cdr.markForCheck();
+            }),
             shareReplay({bufferSize: 1, refCount: true})
         );
     }
@@ -180,6 +245,20 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
 
         return this.pageTitleByProcessDefinitionKey[processDefinitionKey]?.(processHistoricInformation)
             ?? this.translateService.instant(this.defaultPageTitleKey);
+    }
+
+    private getObjectTabLabel(processDefinitionKey: string | null): string {
+        const key = processDefinitionKey
+            ? (this.objectTabLabelByProcessDefinitionKey[processDefinitionKey] ?? this.defaultObjectTabLabelKey)
+            : this.defaultObjectTabLabelKey;
+        return this.translateService.instant(key);
+    }
+
+    private getObjectTabIcon(processDefinitionKey: string | null): TitleIconType {
+        if (!processDefinitionKey) {
+            return this.defaultObjectTabIcon;
+        }
+        return this.objectTabIconByProcessDefinitionKey[processDefinitionKey] ?? this.defaultObjectTabIcon;
     }
 
     private isOrganizationArchive(processHistoricInformation: ProcessHistoricInformation | null): boolean {

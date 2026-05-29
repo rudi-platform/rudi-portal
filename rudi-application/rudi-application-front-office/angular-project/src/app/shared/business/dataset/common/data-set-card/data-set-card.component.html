@@ -1,9 +1,12 @@
 <mat-card
   [ngClass]="ngClass"
   class="mat-elevation-z4 data-set-card"
-  [attr.tabindex]="isSelectable ? 0 : null"
+  tabindex="0"
+  role="article"
+  [attr.aria-label]="metadata.resource_title"
   (focusin)="singleClickSelect(true)"
   (click)="ifNotSelectableGoToDetail()"
+  (keydown.enter)="ifNotSelectableGoToDetail()"
   (dblclick)="doubleClickSelect()"
   (focusout)="singleClickSelect(false)"
   >
@@ -37,21 +40,23 @@
       [matTooltip]="themeLabel"
       class="rudi-btn-sm rudi-btn-theme"
       mat-flat-button
+      tabindex="-1"
       >
       <mat-icon [svgIcon]="themePicto"></mat-icon>
     </button>
     @if (metadata.keywords.length <= 2) {
       @for (keyword of metadata.keywords | slice:0:metadata.keywords.length; track keyword) {
-        <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>{{ keyword }}</button>
+        <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">{{ keyword }}</button>
       }
     }
     @if (metadata.keywords.length > 2) {
       @for (keyword of metadata.keywords | slice:0:1; track keyword) {
-        <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>{{ keyword }}</button>
+        <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">{{ keyword }}</button>
       }
       <button
         class="rudi-btn-sm d-flex align-items-center"
         mat-flat-button
+        tabindex="-1"
         matTooltip="{{metadata.keywords | split: ', ' }}">
         + {{ metadata.keywords.length - 1}} autre{{(metadata.keywords.length - 1) > 1 ? 's' : ''}}
       </button>

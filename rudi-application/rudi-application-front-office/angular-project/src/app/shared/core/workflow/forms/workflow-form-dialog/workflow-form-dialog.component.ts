@@ -26,6 +26,10 @@ export class WorkflowFormDialogComponent {
     ) {
     }
 
+    get properties(): { processDefinitionKey?: string } {
+        return { processDefinitionKey: this.dialogData.processDefinitionKey };
+    }
+
     get hasRequiredFields(): boolean {
         if (this.dialogData.form?.sections == null || this.dialogData.form.sections.length === 0) {
             return false;
@@ -41,6 +45,10 @@ export class WorkflowFormDialogComponent {
     }
 
     onClickConfirm(): void {
+        if (!this.dialogData.form) {
+            this.handleFormSubmit();
+            return;
+        }
         this.workflowFormComponent.submit();
     }
 

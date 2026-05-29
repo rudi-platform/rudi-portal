@@ -61,6 +61,17 @@ public class AbstractCustomDaoImpl<E, C> {
 		}
 	}
 
+	protected void predicateUuidCriteria(List<UUID> criterias, String type, List<Predicate> predicates,
+			CriteriaBuilder builder, From<?, ?> root) {
+		if (CollectionUtils.isNotEmpty(criterias)) {
+			List<Predicate> predicateOrList = new ArrayList<>();
+			for (UUID criteria : criterias) {
+				predicateOrList.add(buildPredicateUuidCriteria(criteria, type, builder, root));
+			}
+			predicates.add(builder.or(predicateOrList.toArray(Predicate[]::new)));
+		}
+	}
+
 	protected <T extends Enum<T>> void predicateStringCriteria(T criteria, String type, List<Predicate> predicates,
 			CriteriaBuilder builder, From<?, ?> root) {
 		if (criteria != null) {
@@ -68,10 +79,10 @@ public class AbstractCustomDaoImpl<E, C> {
 		}
 	}
 
-	protected void predicateStringCriteria(UUID criteria, String type, List<Predicate> predicates,
+	protected void predicateUuidCriteria(UUID criteria, String type, List<Predicate> predicates,
 			CriteriaBuilder builder, From<?, ?> root) {
 		if (criteria != null) {
-			predicates.add(buildPredicateStringCriteria(criteria, type, builder, root));
+			predicates.add(buildPredicateUuidCriteria(criteria, type, builder, root));
 		}
 	}
 
@@ -178,7 +189,7 @@ public class AbstractCustomDaoImpl<E, C> {
 		return null;
 	}
 
-	protected Predicate buildPredicateStringCriteria(UUID criteria, String type, CriteriaBuilder builder,
+	protected Predicate buildPredicateUuidCriteria(UUID criteria, String type, CriteriaBuilder builder,
 			From<?, ?> root) {
 		if (criteria != null) {
 			return builder.equal(root.get(type), criteria);
@@ -198,6 +209,22 @@ public class AbstractCustomDaoImpl<E, C> {
 	 */
 	protected <T extends Enum<T>> void predicateEnumCollectionCriteria(List<T> criteria, String type,
 			List<Predicate> predicates, CriteriaBuilder builder, From<?, ?> root) {
+		if (!CollectionUtils.isEmpty(criteria)) {
+			predicates.add(root.get(type).in(criteria));
+		}
+	}
+
+	/**
+	 * 
+	 * @param <T>        le type d'énuméré
+	 * @param criteria   le critère
+	 * @param type       le type
+	 * @param predicates la liste des prédicats
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 */
+	protected <T> void predicateCollectionCriteria(List<T> criteria, String type, List<Predicate> predicates,
+			CriteriaBuilder builder, From<?, ?> root) {
 		if (!CollectionUtils.isEmpty(criteria)) {
 			predicates.add(root.get(type).in(criteria));
 		}

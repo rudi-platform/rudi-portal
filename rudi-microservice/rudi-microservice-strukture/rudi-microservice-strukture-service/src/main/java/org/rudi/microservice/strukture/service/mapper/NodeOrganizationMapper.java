@@ -111,30 +111,38 @@ public abstract class NodeOrganizationMapper {
 	@AfterMapping
 	public void handleStatus(NodeOrganizationProjectionBean bean, @MappingTarget NodeOrganization nodeDto) {
 		if (bean.getOrganizationStatus() != null) {
-			// Cas d'un workflow relancé sur un objet déjà validé
-			if (bean.getOrganizationStatus().equals(OrganizationStatus.VALIDATED) && !bean.getStatus().equals(Status.COMPLETED)) {
-				try {
-					// Récupération du type de draft (différence entre archivage et modification)
-					String draftType = organizationWorkflowHelper.getDraftType(bean.getData());
+			handleOrganizationStatus(bean, nodeDto);
 
-					// Cas de l'archivage
-					if (organizationWorkflowHelper.isDraftTypeArchive(draftType)) {
-						nodeDto.setOrganizationStatus(NodeOrganizationStatus.ARCHIVE_IN_PROGRESS);
-					}
-				} catch (InvalidDataException e) {
-					log.error("Error while getting draft type for organization status", e);
+			handleLinkedProducerStatus(bean, nodeDto);
+		}
+	}
+
+	private void handleOrganizationStatus(NodeOrganizationProjectionBean bean, NodeOrganization nodeDto){
+		// Cas d'un workflow relancé sur un objet déjà validé
+		if (bean.getOrganizationStatus().equals(OrganizationStatus.VALIDATED) && !bean.getStatus().equals(Status.COMPLETED)) {
+			try {
+				// Récupération du type de draft (différence entre archivage et modification)
+				String draftType = organizationWorkflowHelper.getDraftType(bean.getData());
+
+				// Cas de l'archivage
+				if (organizationWorkflowHelper.isDraftTypeArchive(draftType)) {
+					nodeDto.setOrganizationStatus(NodeOrganizationStatus.ARCHIVE_IN_PROGRESS);
 				}
-			} else {
-				nodeDto.setOrganizationStatus(NodeOrganizationStatus.valueOf(bean.getOrganizationStatus().name()));
+			} catch (InvalidDataException e) {
+				log.error("Error while getting draft type for organization status", e);
 			}
+		} else {
+			nodeDto.setOrganizationStatus(NodeOrganizationStatus.valueOf(bean.getOrganizationStatus().name()));
+		}
+	}
 
-			if (bean.getLinkedProducerStatus() != null) {
-				// Cas d'un workflow relancé sur un objet déjà validé : ici cas du detach uniquement
-				if (bean.getLinkedProducerStatus().equals(LinkedProducerStatus.VALIDATED) && !bean.getLinkedStatus().equals(Status.COMPLETED)) {
-					nodeDto.setLinkedProducerStatus(NodeLinkedProducerStatus.DETACH_IN_PROGRESS);
-				} else {
-					nodeDto.setLinkedProducerStatus(NodeLinkedProducerStatus.valueOf(bean.getLinkedProducerStatus().name()));
-				}
+	private void handleLinkedProducerStatus(NodeOrganizationProjectionBean bean, NodeOrganization nodeDto){
+		if (bean.getLinkedProducerStatus() != null) {
+			// Cas d'un workflow relancé sur un objet déjà validé : ici cas du detach uniquement
+			if (bean.getLinkedProducerStatus().equals(LinkedProducerStatus.VALIDATED) && !bean.getLinkedStatus().equals(Status.COMPLETED)) {
+				nodeDto.setLinkedProducerStatus(NodeLinkedProducerStatus.DETACH_IN_PROGRESS);
+			} else {
+				nodeDto.setLinkedProducerStatus(NodeLinkedProducerStatus.valueOf(bean.getLinkedProducerStatus().name()));
 			}
 		}
 	}

@@ -1,5 +1,11 @@
 package org.rudi.microservice.konsult.service.metadata;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -26,12 +32,6 @@ import org.rudi.microservice.konsult.service.KonsultSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
 
 /**
  * Class de test de MetadataService
@@ -63,7 +63,7 @@ class MetadataServiceIT {
 	}
 
 	@AfterEach
-	public void cleanData() {
+	void cleanData() {
 		jddCrees.forEach(jdd -> {
 			try {
 				supprimerJdd(jdd);
@@ -74,7 +74,7 @@ class MetadataServiceIT {
 	}
 
 	@Test
-	void testSearchMetadata_searchByProducerUUID() throws DataverseAPIException, IOException, InterruptedException {
+	void testSearchMetadata_searchByProducerUUID() throws DataverseAPIException, IOException {
 
 		String username = "rudi";
 		mockUserData(username);
@@ -140,7 +140,8 @@ class MetadataServiceIT {
 
 		jddCrees.add(jddCree);
 
-		await().timeout(10, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS)).until(() ->  datasetService.getDataset(doi) != null);
+		await().timeout(10, TimeUnit.SECONDS).pollInterval(Duration.of(1, ChronoUnit.SECONDS))
+				.until(() -> datasetService.getDataset(doi) != null);
 		return jddCree;
 	}
 

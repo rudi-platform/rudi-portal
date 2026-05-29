@@ -33,11 +33,11 @@ public class ApiCustomDaoImpl extends AbstractCustomDaoImpl<ApiEntity, ApiSearch
 	@Override
 	protected void addPredicates(ApiSearchCriteria searchCriteria, CriteriaBuilder builder,
 			CriteriaQuery<?> criteriaQuery, Root<ApiEntity> root, List<Predicate> predicates) {
-		predicateStringCriteria(searchCriteria.getGlobalId(), "globalId", predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getGlobalId(), "globalId", predicates, builder, root);
 		predicateStringCriteria(searchCriteria.getContract(), "contract", predicates, builder, root);
-		predicateStringCriteria(searchCriteria.getMediaId(), "mediaId", predicates, builder, root);
-		predicateStringCriteria(searchCriteria.getProviderId(), "providerId", predicates, builder, root);
-		predicateStringCriteria(searchCriteria.getProducerId(), "producerId", predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getMediaId(), "mediaId", predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getProviderId(), "providerId", predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getProducerId(), "producerId", predicates, builder, root);
 	}
 
 }

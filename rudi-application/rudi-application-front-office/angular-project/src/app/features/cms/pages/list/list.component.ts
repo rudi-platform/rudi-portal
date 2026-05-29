@@ -33,10 +33,12 @@ interface OrderItem extends Item {
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, PageTitleComponent, NgClass, ExtendedModule, CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent,
+        LoaderComponent, PageTitleComponent, NgClass, ExtendedModule,
+        CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
 })
 export class ListComponent implements OnInit {
-    isLoading: boolean = false;
+    isLoading = false;
     mediaSize: MediaSize;
     order = DEFAULT_NEWS_ORDER;
     orderItems: OrderItem[] = [];
@@ -63,7 +65,6 @@ export class ListComponent implements OnInit {
     displayComponent: boolean;
     newsList: SafeHtml[];
 
-    maxResultsPerPage = 4;
     disableScrollOnPageChange = false;
 
     readonly maxPageDesktop = 9;
@@ -206,7 +207,7 @@ export class ListComponent implements OnInit {
             value = FIRST_PAGE;
         }
         this.currentPage = value;
-        this.offset = (this.currentPage - 1) * this.maxResultsPerPage;
+        this.offset = (this.currentPage - 1) * this.limit;
 
         this.initCmsAssets();
     }

@@ -60,6 +60,15 @@
 # [1.4.1]
 #   - 'RichDictionaryEntry' with an 'html' field for formatted description.
 #   - Added 'dataset_update_frequency' as an UpdateFrequency enum.
+#
+# [1.4.2]
+#   - Removed 'minItems: 1' constraint from 'available_formats' property
+#   - Restructured IntegrationReport with specialized schemas:
+#       - 'ResourceIntegrationReport' for resource integration/attachment reports
+#       - 'OrganizationIntegrationReport' for organization integration/attachment reports
+#   - Updated documentation reference from 'rudi-documentation' to 'rudi_documentation'
+#   - Added 'text/markdown' MIME type for .md files
+#   - Added 'md' extension to FileExtension enum
 
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0

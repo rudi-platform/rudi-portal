@@ -18,6 +18,7 @@
       <app-workflow-form
         #workflowForm
         [workflowForm]="dialogData.form"
+        [properties]="{ processDefinitionKey: dialogData.processDefinitionKey }"
         (submitEvent)="handleFormSubmit()"
       ></app-workflow-form>
 

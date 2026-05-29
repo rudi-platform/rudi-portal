@@ -1,6 +1,11 @@
 <mat-card
-  class="organization-card" [ngClass]="{'archived': isArchived()}">
-  <mat-card-content (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)" class="card-content">
+  class="organization-card" [ngClass]="{'archived': isArchived()}"
+  tabindex="0"
+  role="article"
+  [attr.aria-label]="organizationBean.name"
+  (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)"
+  (keydown.enter)="onClickOrganization(organizationBean.uuid, organizationBean.name)">
+  <mat-card-content class="card-content">
     <div class="d-flex my-3">
       <div class="align-items-center">
         <app-organization-logo [organizationId]="organizationBean.uuid"
@@ -20,14 +25,14 @@
   </mat-card-content>
   <div class="d-flex d-table-cell ">
     @if (!datasetCountLoading) {
-      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>
+      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">
         {{ datasetsCountTranslationKey | translate: {number: organizationBean.datasetCount} }}
       </button>
     } @else {
       <app-loader [allPage]="false" [isTransparent]="true" [noText]="true" [active]="true"></app-loader>
     }
     @if (!projectCountLoading) {
-      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button>
+      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">
         {{ projectsCountTranslationKey | translate: {number: organizationBean.projectCount} }}
       </button>
     } @else {

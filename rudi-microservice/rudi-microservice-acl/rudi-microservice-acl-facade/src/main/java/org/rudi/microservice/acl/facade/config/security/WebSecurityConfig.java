@@ -41,6 +41,7 @@ import org.rudi.microservice.acl.facade.config.security.oauth2.RudiRegisteredCli
 import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasBearerTokenAuthenticationFilter;
 import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AccessTokenResponseClient;
 import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AuthenticationSuccessHandler;
+import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AuthorizationAdditionalParameterCustomizer;
 import org.rudi.microservice.acl.facade.config.security.oauth2.cas.CasOAuth2AuthorizationCodeTokenResponseClient;
 import org.rudi.microservice.acl.facade.config.security.oauth2.configurer.ClientSecretBasicAuthenticationConverter;
 import org.rudi.microservice.acl.service.user.UserService;
@@ -50,6 +51,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,6 +70,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -192,6 +198,8 @@ public class WebSecurityConfig {
 
 	private final RestTemplate oAuth2RestTemplate;
 
+	private final CasOAuth2AuthorizationAdditionalParameterCustomizer casOAuth2AuthorizationAdditionalParameterCustomizer;
+
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.debug(webSecurityDebug);
@@ -199,8 +207,9 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager,
-			RegisteredClientRepository registeredClientRepository, JwtAuthenticationProvider jwtAuthenticationProvider)
-			throws Exception {
+			RegisteredClientRepository registeredClientRepository,
+			ClientRegistrationRepository clientRegistrationRepository,
+			JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
 		log.debug("RudiAcl-filterChain...");
 		if (!disableAuthentification) {
 
@@ -245,7 +254,9 @@ public class WebSecurityConfig {
 					} catch (Exception e) {
 						log.error("Failed to configure", e);
 					}
-				}).successHandler(casSuccessHandler)).addFilterAfter(createOAuth2Filter(), LogoutFilter.class)
+				}).authorizationEndpoint(endpoint -> endpoint.authorizationRequestResolver(
+						createOAuth2AuthorizationRequestResolver(clientRegistrationRepository, http)))
+						.successHandler(casSuccessHandler)).addFilterAfter(createOAuth2Filter(), LogoutFilter.class)
 						.addFilterAfter(createAnonymousFilter(authenticationManager), LogoutFilter.class)
 						.addFilterAfter(createJwtAuthenticationFilter(authenticationManager, jwtAuthenticationProvider),
 								LogoutFilter.class)
@@ -268,6 +279,30 @@ public class WebSecurityConfig {
 					.authorizeHttpRequests(authorizeHttpReq -> authorizeHttpReq.anyRequest().permitAll());
 		}
 		return http.build();
+	}
+
+	protected OAuth2AuthorizationRequestResolver createOAuth2AuthorizationRequestResolver(
+			ClientRegistrationRepository clientRegistrationRepository, HttpSecurity http) {
+		ResolvableType resolvableType = ResolvableType.forClass(OAuth2AuthorizationRequestResolver.class);
+		OAuth2AuthorizationRequestResolver bean = getBeanOrNull(http, resolvableType);
+		if (bean != null) {
+			return bean;
+		}
+		DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
+				clientRegistrationRepository,
+				OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);
+		resolver.setAuthorizationRequestCustomizer(
+				casOAuth2AuthorizationAdditionalParameterCustomizer::handleAdditionnalParameters);
+		return resolver;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getBeanOrNull(HttpSecurity http, ResolvableType type) {
+		ApplicationContext context = http.getSharedObject(ApplicationContext.class);
+		if (context == null) {
+			return null;
+		}
+		return (T) context.getBeanProvider(type).getIfUnique();
 	}
 
 	protected RequestMatcher permitAllRequestMatcher() {

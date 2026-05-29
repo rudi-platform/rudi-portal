@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-projekt</artifactId>
-		<version>3.3.10</version>
+		<version>3.3.12</version>
 	</parent>
 
 	<artifactId>rudi-microservice-projekt-core</artifactId>
@@ -75,6 +75,11 @@
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-doks</artifactId>
 		</dependency>
 
 	</dependencies>

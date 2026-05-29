@@ -1,5 +1,5 @@
 
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, OnInit, inject, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
@@ -43,6 +43,7 @@ import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
+import {WorkflowExpansionImageComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion-image/workflow-expansion-image.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
@@ -57,12 +58,32 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
     selector: 'app-project-task-detail',
     templateUrl: './project-task-detail.component.html',
     styleUrls: ['./project-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, ProjectMainInformationsComponent, MatCard, MatCardContent, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, OwnerInformationComponent, ProjectTaskHistoricComponent, BannerButtonComponent, TranslatePipe]
+    imports: [
+        PageComponent,
+        TaskDetailHeaderComponent,
+        TabsComponent,
+        TabComponent,
+        WorkflowExpansionComponent,
+        WorkflowExpansionImageComponent,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        ProjectMainInformationsComponent,
+        MatCard,
+        MatCardContent,
+        OpenDatasetTableComponent,
+        RestrictedDatasetTableComponent,
+        NewDatasetRequestTableComponent,
+        OwnerInformationComponent,
+        ProjectTaskHistoricComponent,
+        BannerButtonComponent,
+        TranslatePipe
+    ]
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>
     implements OnInit {
-
     isLoading: boolean;
     childrenIsLoading: boolean;
     isLoadingOpenDataset: boolean;
@@ -71,6 +92,7 @@ export class ProjectTaskDetailComponent
     headerLibelle: string;
     isUpdateInProgress = false;
     idTask: string;
+    projectPictureUuid: string;
 
     currentTask: Task;
 
@@ -83,30 +105,39 @@ export class ProjectTaskDetailComponent
     readonly panelInitialTaskOpenState = signal(false);
     hasSections = false;
     linkError: string;
+    protected readonly ProjectStatus = ProjectStatus;
 
-    constructor(
-        private readonly route: ActivatedRoute,
-        private readonly router: Router,
-        private readonly projectTaskDependencyFetcher: ProjectTaskDependencyFetcher,
-        private readonly iconRegistry: MatIconRegistry,
-        private readonly sanitizer: DomSanitizer,
-        private readonly projektService: ProjektService,
-        private readonly dataSetActionsAuthorizationService: DataSetActionsAuthorizationService,
-        protected logger: LogService,
-        readonly dialog: MatDialog,
-        readonly translateService: TranslateService,
-        readonly snackBarService: SnackBarService,
-        readonly taskWithDependenciesService: ProjectTaskDependenciesService,
-        readonly projectTaskMetierService: ProjectTaskMetierService,
-        readonly projektMetierService: ProjektMetierService,
-        readonly projectSubmissionService: ProjectSubmissionService,
-        readonly projectConsultService: ProjectConsultationService,
-        private readonly pageTitleService: PageTitleService,
-        private readonly propertiesMetierService: PropertiesMetierService,
-    ) {
-        super(dialog, translateService, snackBarService, taskWithDependenciesService, projectTaskMetierService, logger);
-        iconRegistry.addSvgIcon('project-svg-icon',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
+    private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
+    private readonly projectTaskDependencyFetcher = inject(ProjectTaskDependencyFetcher);
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly sanitizer = inject(DomSanitizer);
+    private readonly projektService = inject(ProjektService);
+    private readonly dataSetActionsAuthorizationService = inject(DataSetActionsAuthorizationService);
+    private readonly projektMetierService = inject(ProjektMetierService);
+    private readonly projectSubmissionService = inject(ProjectSubmissionService);
+    private readonly projectConsultService = inject(ProjectConsultationService);
+    private readonly pageTitleService = inject(PageTitleService);
+    private readonly propertiesMetierService = inject(PropertiesMetierService);
+    protected override readonly logger = inject(LogService);
+    protected override readonly dialog = inject(MatDialog);
+    protected override readonly translateService = inject(TranslateService);
+    protected override readonly snackBarService = inject(SnackBarService);
+    protected override readonly taskWithDependenciesService = inject(ProjectTaskDependenciesService);
+    protected override readonly taskMetierService = inject(ProjectTaskMetierService);
+    private readonly projectTaskMetierService = this.taskMetierService;
+
+    constructor() {
+        super(
+            inject(MatDialog),
+            inject(TranslateService),
+            inject(SnackBarService),
+            inject(ProjectTaskDependenciesService),
+            inject(ProjectTaskMetierService),
+            inject(LogService),
+        );
+        this.iconRegistry.addSvgIcon('project-svg-icon',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
         this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitlePublication');
     }
 
@@ -129,9 +160,11 @@ export class ProjectTaskDetailComponent
                 next: (task: Task) => {
                     this.currentTask = task;
                     this.hasSections = !!task?.asset?.form?.sections;
-
+                    this.projectPictureUuid = task?.asset?.form?.sections
+                        ?.find(s => s.name?.includes('modified-project-picture'))
+                        ?.fields?.[0]?.values?.[0];
                 },
-                error: (err) => console.error('Error fetching task:', err)
+                error: (err) => this.logger.error('Error fetching task:', err)
             });
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
@@ -174,13 +207,15 @@ export class ProjectTaskDetailComponent
                     this.dependencies = dependencies;
                     this.isLoading = false;
                     this.projektService.isAuthenticatedUserProjectOwner(dependencies.project.uuid).subscribe(isOwner => {
-                        this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromTask(dependencies.project);
-                        this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProjectFromTask(dependencies.project);
+                        this.addActionAuthorized = isOwner &&
+                            this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromTask(dependencies.project);
+                        this.deleteActionAuthorized = isOwner &&
+                            this.dataSetActionsAuthorizationService.canDeleteDatasetFromProjectFromTask(dependencies.project);
                     });
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    console.error(error);
+                    this.logger.error('Error loading project dependencies:', error);
                 }
             });
         }
@@ -223,7 +258,7 @@ export class ProjectTaskDetailComponent
             }),
         ).subscribe({
             error: err => {
-                console.error(err);
+                this.logger.error('Error adding linked dataset:', err);
                 this.isLoadingRestrictedDataset = false;
                 this.isLoadingOpenDataset = false;
                 this.addingInProgress = false;
@@ -242,7 +277,7 @@ export class ProjectTaskDetailComponent
             })
         ).subscribe({
             error: err => {
-                console.error(err);
+                this.logger.error('Error deleting open dataset request:', err);
                 this.isLoadingOpenDataset = false;
                 this.snackBarService.openSnackBar({
                     message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
@@ -263,7 +298,7 @@ export class ProjectTaskDetailComponent
             })
         ).subscribe({
             error: err => {
-                console.error(err);
+                this.logger.error('Error deleting restricted dataset request:', err);
                 this.isLoadingRestrictedDataset = false;
                 this.snackBarService.openSnackBar({
                     message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
@@ -287,7 +322,7 @@ export class ProjectTaskDetailComponent
             })
         ).subscribe({
             error: err => {
-                console.error(err);
+                this.logger.error('Error adding new dataset request:', err);
                 this.isLoadingNewDatasetRequest = false;
                 this.updateAddButtonStatus(false);
             }
@@ -305,7 +340,7 @@ export class ProjectTaskDetailComponent
             })
         ).subscribe({
             error: err => {
-                console.error(err);
+                this.logger.error('Error deleting new dataset request:', err);
                 this.isLoadingNewDatasetRequest = false;
                 this.snackBarService.openSnackBar({
                     message: `${this.translateService.instant('personalSpace.projectDatasets.delete.error')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
@@ -345,12 +380,10 @@ export class ProjectTaskDetailComponent
                 this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.successUpdate'));
             },
             error: (e) => {
-                console.error(e);
+                this.logger.error(e);
                 this.snackBarService.add(this.translateService.instant('personalSpace.project.tabs.update.error'));
                 this.childrenIsLoading = false;
             }
         });
     }
-
-    protected readonly ProjectStatus = ProjectStatus;
 }

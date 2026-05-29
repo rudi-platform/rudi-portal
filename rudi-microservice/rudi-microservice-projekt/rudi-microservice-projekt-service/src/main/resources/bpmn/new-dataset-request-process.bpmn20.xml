@@ -38,7 +38,7 @@
         </bpmn:resourceAssignmentExpression>
       </bpmn:potentialOwner>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_3" name="Demande traitée" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_2">
+    <bpmn:sequenceFlow id="SequenceFlow_3" name="done" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_2">
       <bpmn:documentation id="Documentation_13"><![CDATA[Accepter la demande]]></bpmn:documentation>
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_5" evaluatesToTypeRef="ItemDefinition_18" language="http://www.java.com/java">
 				${action == &quot;done&quot;}
@@ -134,7 +134,7 @@ newDatasetRequestWorkflowContext.sendEMailToInitiator(context,execution,localEma
       </bpmn:potentialOwner>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_9" sourceRef="ScriptTask_2" targetRef="UserTask_2"/>
-    <bpmn:sequenceFlow id="SequenceFlow_10" sourceRef="UserTask_2" targetRef="ScriptTask_5">
+    <bpmn:sequenceFlow id="SequenceFlow_10" name="close" sourceRef="UserTask_2" targetRef="ScriptTask_5">
       <bpmn:documentation id="Documentation_1"><![CDATA[Clôturer la demande]]></bpmn:documentation>
     </bpmn:sequenceFlow>
   </bpmn:process>

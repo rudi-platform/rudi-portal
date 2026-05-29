@@ -118,8 +118,8 @@ export class AccountService {
      * Surppirme le refresh token pour finaliser la déconnexion
      * @param token le refresh token a supprimer du BE
      */
-    accoutLogout(token: string): Observable<void> {
-        return this.aclService.accountLogout(token);
+    accountLogout(token: string, authorization: string,): Observable<string> {
+        return this.aclService.accountLogout(token, authorization);
     }
 
     mustValidateCaptcha(login: string): Observable<boolean> {

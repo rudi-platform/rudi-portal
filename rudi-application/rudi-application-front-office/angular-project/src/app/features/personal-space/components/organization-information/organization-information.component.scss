@@ -1,3 +1,5 @@
+@use "common-style";
+
 .card {
   padding: 16px;
 
@@ -7,41 +9,15 @@
 }
 
 .card-demand-label {
-  height: 36px;
-  font-size: 18px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.72;
-  letter-spacing: normal;
-  text-align: left;
-  color: var(--black);
+  @include common-style.card-demand-label;
 }
 
 .data-label {
-  width: 520px;
-  height: 21px;
-  font-size: 13px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.54;
-  letter-spacing: normal;
-  text-align: left;
-  color: var(--primary-color);
+  @include common-style.data-label;
 }
 
 .data-value {
-  width: 355px;
-  height: 27px;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  text-align: left;
-  color: var(--black);
+  @include common-style.data-value;
 }
 
 .vertical-space {

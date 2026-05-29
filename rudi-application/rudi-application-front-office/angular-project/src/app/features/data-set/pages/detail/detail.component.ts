@@ -11,6 +11,7 @@ import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Params, Router, RouterOutlet} from '@angular/router';
+import {FileTypes} from '@core/file-types';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {AuthenticationService} from '@core/services/authentication.service';
@@ -49,15 +50,7 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
 import {ObservableUtils} from '@shared/utils/observable-utils';
 import saveAs from 'file-saver';
-import {
-    ConnectorConnectorParameters,
-    Licence,
-    LicenceStandard,
-    Media,
-    MediaFile,
-    MediaType,
-    Metadata
-} from 'micro_service_modules/api-kaccess';
+import {ConnectorConnectorParameters, Licence, LicenceStandard, Media, MediaFile, Metadata} from 'micro_service_modules/api-kaccess';
 import * as mediaType from 'micro_service_modules/api-kaccess/model/media';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import moment from 'moment';
@@ -183,16 +176,15 @@ export class DetailComponent implements OnInit {
         return MetadataUtils.isSelfdata(this.metadata);
     }
 
-    get hasMedia(): boolean {
-        return this.metadata?.available_formats?.length > 0;
+    get hasDownloadableMedia(): boolean {
+        return this.downloadableMedias?.length > 0;
     }
-
 
     get isSpreadsheetDisplayed(): boolean {
         for (const item of this.metadata.available_formats) {
             const objet: MediaFile = item as MediaFile;
-            if (objet.file_type === MediaType.TextCsv ||
-                objet.file_type === MediaType.ApplicationVndMsExcel) {
+            if (objet.file_type === FileTypes.TEXT_CSV ||
+                objet.file_type === FileTypes.VND_MS_EXCEL) {
                 this.mediaToDisplayTable = item;
                 return true;
             }
@@ -204,7 +196,7 @@ export class DetailComponent implements OnInit {
     get isMapDisplayed(): boolean {
         for (const item of this.metadata.available_formats) {
             const objet: MediaFile = item as MediaFile;
-            if (objet.file_type === MediaType.ApplicationGeojson ||
+            if (objet.file_type === FileTypes.GEO_JSON ||
                 MAP_PROTOCOLS_SUPPORTED.includes(objet.connector.interface_contract)) {
                 this.mediaToDisplayMap = item;
                 return true;

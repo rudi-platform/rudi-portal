@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,6 +53,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OAuth2AuthenticatorHelper {
 
+	public static final String SERVER_URL_PARAMETER = "serverUrl";
+
+	public static final String STATE_PARAMETER = "state";
+
+	public static final String ID_TOKEN_PARAMETER = "idtoken";
+
 	private static final String AUTHENTICATORS_ICONS_URL = "/acl/v1/oauth2-authenticators/icons/";
 
 	private static final String RESOURCE_SEPARATOR = "@";
@@ -84,6 +91,11 @@ public class OAuth2AuthenticatorHelper {
 				.orElse(null);
 	}
 
+	public OAuth2AuthenticatorDescription getOAuth2AuthenticatorDescriptionByIssuer(String issuer, boolean full) {
+		return filterValues(oAuth2AuthenticatorDescriptions, full).stream()
+				.filter(authenticator -> authenticator.getServerUrl().startsWith(issuer)).findFirst().orElse(null);
+	}
+
 	protected List<OAuth2AuthenticatorDescription> getOAuth2AuthenticatorDescriptions() {
 		if (oAuth2AuthenticatorDescriptions == null) {
 			try {
@@ -101,11 +113,14 @@ public class OAuth2AuthenticatorHelper {
 		File f = new File(oauh2AuthenticatorConfigurationFile);
 
 		if (f.exists() && f.isFile()) {
+			log.info("Loading OAuth2 authenticator descriptions from file system: {}", f.getAbsolutePath());
 			try (JsonParser p = objectMapper.createParser(f)) {
 				result = p.readValueAs(new TypeReference<List<OAuth2AuthenticatorDescription>>() {
 				});
 			}
 		} else {
+			log.info("Loading OAuth2 authenticator descriptions from classpath resource: {}",
+					oauh2AuthenticatorConfigurationFile);
 			try (JsonParser p = objectMapper.createParser(Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(oauh2AuthenticatorConfigurationFile))) {
 				result = p.readValueAs(new TypeReference<List<OAuth2AuthenticatorDescription>>() {
@@ -146,6 +161,9 @@ public class OAuth2AuthenticatorHelper {
 		}
 		if (authenticator.getProvider().getJwkSetUri() == null) {
 			authenticator.getProvider().setJwkSetUri("${serverUrl}/oauth2/jwks");
+		}
+		if (authenticator.getProvider().getLogoutUri() == null) {
+			authenticator.getProvider().setLogoutUri("${serverUrl}/logout");
 		}
 		if (authenticator.getProvider().getUserNameAttribute() == null) {
 			authenticator.getProvider().setUserNameAttribute("sub");
@@ -226,20 +244,25 @@ public class OAuth2AuthenticatorHelper {
 		OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = getOAuth2AuthenticatorDescriptions().stream()
 				.filter(authenticator -> authenticator.getName().equalsIgnoreCase(authenticatorName)).findFirst()
 				.orElse(null);
+		log.info("Authenticating through authenticator '{}'...", authenticatorName);
 		if (oAuth2AuthenticatorDescription != null) {
 			ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder
 					.getRequestAttributes();
 			if (servletRequestAttributes == null || servletRequestAttributes.getResponse() == null) {
 				throw new IllegalStateException("No HTTP response available to redirect");
 			}
+			log.info("Redirecting to authenticator '{}' server URL: {}", authenticatorName,
+					oAuth2AuthenticatorDescription.getServerUrl());
 			servletRequestAttributes.getResponse().sendRedirect(oAuth2AuthenticatorDescription.getServerUrl());
 		} else {
 			throw new IllegalArgumentException("Authenticator not found: " + authenticatorName);
 		}
+		log.info("Authenticating through authenticator '{}' started", authenticatorName);
 	}
 
 	@Bean
 	public InMemoryClientRegistrationRepository createClientRegistrationRepository() {
+		log.info("Initializing OAuth2 Client Registration Repository...");
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		// récupère les descriptions des authentificateurs pour initialiser les providers et registrations à partir de ces descriptions. Les descriptions sont
 		// ensuite utilisées pour construire les ClientRegistration à partir des propriétés.
@@ -249,6 +272,8 @@ public class OAuth2AuthenticatorHelper {
 			initializeProviders(auth2AuthenticatorDescriptions, properties);
 			initializeRegistrations(auth2AuthenticatorDescriptions, properties);
 		}
+		log.info("OAuth2 Client Registration Repository initialized with {} registrations",
+				auth2AuthenticatorDescriptions.size());
 		// on reparcourt la liste des descriptions des authentificateurs pour prendre en compte les éventuelles exigences de PKCE et construire les
 		// ClientRegistration en conséquence.
 		Map<String, ClientRegistration> registrationMaps = new OAuth2ClientPropertiesMapper(properties)
@@ -257,6 +282,7 @@ public class OAuth2AuthenticatorHelper {
 		for (Map.Entry<String, ClientRegistration> registration : registrationMaps.entrySet()) {
 			OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = getOAuth2AuthenticatorDescription(
 					registration.getKey(), true);
+			log.info("Processing Client Registration for authenticator '{}'", registration.getKey());
 			if (oAuth2AuthenticatorDescription != null
 					&& Boolean.TRUE.equals(oAuth2AuthenticatorDescription.getRequireProofKey())) {
 				ClientRegistration original = registration.getValue();
@@ -266,6 +292,7 @@ public class OAuth2AuthenticatorHelper {
 				registrations.add(registration.getValue());
 			}
 		}
+		log.info("OAuth2 Client Registration Repository created with {} registrations", registrations.size());
 		return new InMemoryClientRegistrationRepository(registrations);
 	}
 
@@ -317,21 +344,38 @@ public class OAuth2AuthenticatorHelper {
 		});
 	}
 
-	protected String convertUrl(String url, String serverUrl) {
+	public String convertUrl(String url, String serverUrl) {
+		return convertUrl(url, Map.of(SERVER_URL_PARAMETER, serverUrl));
+	}
+
+	public String convertUrl(String url, Map<String, String> parameters) {
 		String result = url;
+		String serverUrl = parameters.get(SERVER_URL_PARAMETER);
+		String idtoken = parameters.get(ID_TOKEN_PARAMETER);
+		String state = parameters.get(STATE_PARAMETER);
 		if (StringUtils.isNotEmpty(result)) {
 			if (StringUtils.isNotEmpty(getLocalServerUrl())) {
 				result = result.replace("${localServerUrl}", getLocalServerUrl());
 				serverUrl = serverUrl.replace("${localServerUrl}", getLocalServerUrl());
 			}
-			if (StringUtils.isNotEmpty(serverUrl)) {
-				result = result.replace("${serverUrl}", serverUrl);
-			}
+			result = replaceValue(result, SERVER_URL_PARAMETER, serverUrl, "");
+			// dans franceconnect il faut fournir un state différent à chaque requête, on génère donc un UUID pour remplacer le ${state} dans les urls.
+			result = replaceValue(result, STATE_PARAMETER, state, UUID.randomUUID().toString());
+			result = replaceValue(result, ID_TOKEN_PARAMETER, idtoken, "");
+
 			if (result != null && !(result.startsWith("http") || result.startsWith("https"))) {
 				result = serverUrl + result;
 			}
 		}
 		return result;
+	}
+
+	protected String replaceValue(String input, String placeholder, String value, String defaultValue) {
+		String placeholderWithBraces = "${" + placeholder + "}";
+		if (input.contains(placeholderWithBraces)) {
+			return input.replace("${idtoken}", value == null ? defaultValue : value);
+		}
+		return input;
 	}
 
 	protected Set<String> convertScope(String scope) {

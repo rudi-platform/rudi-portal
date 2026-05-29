@@ -282,6 +282,16 @@ class org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestE
 }
 
 
+class org.rudi.microservice.kalim.storage.entity.mimetype.MimeTypeEntity <<Entity>>  <<Table>>  {
+ {TableName=mime_type}
+ {TableSchema=kalim_data}
+--
+	{field} {static} +FIELD_CODE : String
+	{field} {static} +FIELD_UUID : String
+	{method} +toString () : String
+}
+
+
 
 
 org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
@@ -302,6 +312,7 @@ org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity 
 org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder "1" o-- "0..*"  org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity : errors
 org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestEntity$IntegrationRequestEntityBuilder --|>  org.rudi.common.storage.entity.AbstractLongIdEntity$AbstractLongIdEntityBuilder
 org.rudi.microservice.kalim.storage.entity.integration.IntegrationRequestErrorEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
+org.rudi.microservice.kalim.storage.entity.mimetype.MimeTypeEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity
 
 hide methods
 

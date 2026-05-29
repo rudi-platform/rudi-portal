@@ -42,7 +42,6 @@ public class RudiAlgorithmSpec implements AlgorithmParameterSpec {
 			// On utilise exactement le même paramétrage que la librairie JavaScript "SubtleCrypto" :
 			// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#aes-gcm
 			.secretKeyAlgorithm("AES").secretKeySize(256).cipherAlgorithm("AES/GCM/NoPadding") // https://fr.wikipedia.org/wiki/Galois/Counter_Mode
-	// TODO checksum SHA384
 	;
 
 	public static final RudiAlgorithmSpec DEFAULT = TLS_AES_256_GCM_SHA384_TEMPLATE

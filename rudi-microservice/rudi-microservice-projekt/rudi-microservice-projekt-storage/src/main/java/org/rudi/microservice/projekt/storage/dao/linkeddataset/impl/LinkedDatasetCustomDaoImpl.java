@@ -45,7 +45,7 @@ public class LinkedDatasetCustomDaoImpl extends AbstractCustomDaoImpl<LinkedData
 
 	@Override
 	protected void addPredicates(LinkedDatasetSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery, Root<LinkedDatasetEntity> root, List<Predicate> predicates) {
-		predicateStringCriteria(searchCriteria.getDatasetUuid(), DATASET_UUID_FIELD, predicates, builder, root);
+		predicateUuidCriteria(searchCriteria.getDatasetUuid(), DATASET_UUID_FIELD, predicates, builder, root);
    		// Les demandes non expirées
 		if (isTrue(searchCriteria.getEndDateIsNotOver())) {
 			final var endDateIsNotOver = builder.greaterThan(root.get(END_DATE_FIELD), LocalDateTime.now());

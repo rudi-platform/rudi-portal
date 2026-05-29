@@ -2,12 +2,14 @@ package org.rudi.microservice.kalim.facade.config.security;
 
 import java.util.Arrays;
 
+import jakarta.servlet.Filter;
 import org.rudi.common.facade.config.filter.OAuth2RequestFilter;
 import org.rudi.common.facade.config.filter.PreAuthenticationFilter;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,7 +24,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSecurityConfig {
 
 	private static final String ACTUATOR_URL = "/actuator/**";
-
+	private static final String ALLOWED_MIME_TYPES_URL = "/kalim/v1/media/allowed-mime-types";
 	private static final String[] SB_PERMIT_ALL_URL = {
 			// URL public
 			"/kalim/v1/application-information", "/kalim/v1/healthCheck",
@@ -64,6 +65,8 @@ public class WebSecurityConfig {
 					.authorizeHttpRequests(authorizeHttpReq -> {
 						// starts authorizing configurations
 						authorizeHttpReq.requestMatchers(SB_PERMIT_ALL_URL).permitAll();
+						authorizeHttpReq.requestMatchers(HttpMethod.GET, ALLOWED_MIME_TYPES_URL).permitAll();
+						authorizeHttpReq.requestMatchers(HttpMethod.POST, ALLOWED_MIME_TYPES_URL).fullyAuthenticated();
 						// autorisatio des actuators aux seuls role admin
 						authorizeHttpReq.requestMatchers(ACTUATOR_URL).hasRole(administrateurRoleCode);
 						// authenticate all remaining URLS
@@ -71,7 +74,6 @@ public class WebSecurityConfig {
 					}).exceptionHandling(exception -> exception.configure(http))
 					// installation du filtre de type header
 					.addFilterBefore(createOAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
-					.addFilterAfter(createPreAuthenticationFilter(), BasicAuthenticationFilter.class)
 					// configuring the session on the server
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 			if (!disablePreAuthentification) {

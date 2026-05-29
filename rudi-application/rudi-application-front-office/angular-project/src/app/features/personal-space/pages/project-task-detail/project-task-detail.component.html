@@ -6,7 +6,7 @@
     [status]="dependencies?.project?.functional_status" [icon]="'project-svg-icon'"
   ></app-task-detail-header>
 
-  @if (!isLoading) {
+  @if (!isLoading && dependencies?.project) {
     <div>
       <app-tabs>
         <app-tab [icon]="'icon-reutilisation'"
@@ -16,7 +16,14 @@
               <div class="project-metadata-container">
                 @if (hasSections) {
                   @for (section of currentTask?.asset?.form?.sections; track section) {
-                    <app-workflow-expansion [section]="section"></app-workflow-expansion>
+                    <!-- La section modified-project-picture est masquée : son uuid est passé
+                         à la section modified-project qui l'affiche via [pictureUuid]. -->
+                    @if (!section.name?.includes('modified-project-picture')) {
+                      <app-workflow-expansion
+                        [section]="section"
+                        [pictureUuid]="section.name?.includes('modified-project') ? projectPictureUuid : undefined"
+                      ></app-workflow-expansion>
+                    }
                   }
                 }
                 <mat-accordion>
@@ -31,6 +38,7 @@
                     <hr>
                       <app-project-main-informations
                         [project]="dependencies.project"
+                        [logo]="dependencies?.logo"
                         (updateForm)="updateProjectTask($event)"
                         (updateInProgress)="updateInProgress($event)"
                         [isProjectUpdatable]="dependencies.project?.project_status === ProjectStatus.Rejected"

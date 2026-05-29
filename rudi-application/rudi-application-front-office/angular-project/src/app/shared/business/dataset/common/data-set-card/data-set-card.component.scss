@@ -9,11 +9,18 @@
     padding: 17px;
     overflow: hidden;
     min-height: 270px;
-    // card sélectionnée
+    // card sélectionnée ou focus souris
     &:focus {
         box-shadow: 0 0 10px 0 var(--focus-background);
         border-color: var(--primary-color);
         background-color: var(--focus-background);
+        outline: none;
+    }
+
+    // focus clavier uniquement (navigation Tab)
+    &:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 2px;
     }
 
     mat-card-content {

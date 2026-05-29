@@ -60,11 +60,26 @@
 # [1.4.1]
 #   - 'RichDictionaryEntry' with an 'html' field for formatted description.
 #   - Added 'dataset_update_frequency' as an UpdateFrequency enum.
+#
+# [1.4.2]
+#   - Removed 'minItems: 1' constraint from 'available_formats' property
+#   - Restructured IntegrationReport with specialized schemas:
+#       - 'ResourceIntegrationReport' for resource integration/attachment reports
+#       - 'OrganizationIntegrationReport' for organization integration/attachment reports
+#   - Updated documentation reference from 'rudi-documentation' to 'rudi_documentation'
+#   - Added 'text/markdown' MIME type for .md files
+#   - Added 'md' extension to FileExtension enum
+#
+# [1.4.3]
+#   - 'MediaType' changed from an enum to a simple string field to support
+#     custom and proprietary MIME types without requiring API updates
+#   - Removed enum list (61 predefined MIME types) to allow flexible type definitions
+#
 
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 openapi: 3.0.0
 info:
-  version: 1.4.2
+  version: 1.4.3
   title: Public API for RUDI producer node
   description: "API pour l'accès aux données au niveau du nœud producteur RUDI"
   termsOfService: 'no'
@@ -857,85 +872,6 @@ components:
         Most common Media types formerly known as MIME types, as definied in 
         RFC 2049
       type: string
-      enum:
-        - 'application/geo+json' # Type supprimé en V0.3 mais utilisés par certains JDD de production créés avant la V0.3
-        - 'application/x-executable'
-        - 'application/graphql'
-        - 'application/javascript' # (.js)
-        - 'application/json' # (.json)
-        - 'application/ld+json'
-        - 'application/msword' # (.doc)
-        - 'application/pdf' # (.pdf)
-        - 'application/sql'
-        - 'application/vnd.api+json'
-        - 'application/vnd.ms-excel' # (.xls)
-        - 'application/vnd.ms-powerpoint' # (.ppt)
-        - 'application/vnd.oasis.opendocument.text' # (.odt)
-        - 'application/vnd.openxmlformats-officedocument.presentationml.presentation' # (.pptx)
-        - 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' # (.xlsx)
-        - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' # (.docx)
-        - 'application/x-www-form-urlencoded'
-        - 'application/xml'
-        - 'application/zip' # (.zip)
-        - 'application/zstd' # (.zst)
-        - 'audio/mpeg' # (.mpeg | .mpg)
-        - 'audio/ogg' # (.ogg)
-        - 'image/gif' # (.gif)
-        - 'image/apng'
-        - 'image/flif'
-        - 'image/webp'
-        - 'image/x-mng'
-        - 'image/jpeg' # (.jpeg)
-        - 'image/png' # (.png)
-        - 'multipart/form-data'
-        - 'text/css' # (.css)
-        - 'text/csv' # (.csv)
-        - 'text/html' # (.html | .htm)
-        - 'text/markdown' # (.md)
-        - 'text/php' # (.php)
-        - 'text/plain' # (.txt)
-        - 'text/xml' # (.xml)
-        - 'text/x-yaml' # (.yaml | .yml)
-        - 'application/geo+json+crypt'
-        - 'application/geopackage+sqlite3'
-        - 'application/geopackage+sqlite3+crypt'
-        - 'application/x-executable+crypt' # Unconventionnal MIME types for encypted files
-        - 'application/graphql+crypt'
-        - 'application/javascript+crypt' # (.js)
-        - 'application/json+crypt' # (.json)
-        - 'application/ld+json+crypt'
-        - 'application/msword+crypt' # (.doc)
-        - 'application/pdf+crypt' # (.pdf)
-        - 'application/sql+crypt'
-        - 'application/vnd.api+json+crypt'
-        - 'application/vnd.ms-excel+crypt' # (.xls)
-        - 'application/vnd.ms-powerpoint+crypt' # (.ppt)
-        - 'application/vnd.oasis.opendocument.text+crypt' # (.odt)
-        - 'application/vnd.openxmlformats-officedocument.presentationml.presentation+crypt' # (.pptx)
-        - 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet+crypt' # (.xlsx)
-        - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document+crypt' # (.docx)
-        - 'application/x-www-form-urlencoded+crypt'
-        - 'application/xml+crypt'
-        - 'application/zip+crypt' # (.zip)
-        - 'application/zstd+crypt' # (.zst)
-        - 'audio/mpeg+crypt' # (.mpeg | .mpg)
-        - 'audio/ogg+crypt' # (.ogg)
-        - 'image/gif+crypt' # (.gif)
-        - 'image/apng+crypt'
-        - 'image/flif+crypt'
-        - 'image/webp+crypt'
-        - 'image/x-mng+crypt'
-        - 'image/jpeg+crypt' # (.jpeg)
-        - 'image/png+crypt' # (.png)
-        - 'multipart/form-data+crypt'
-        - 'text/css+crypt' # (.css)
-        - 'text/csv+crypt' # (.csv)
-        - 'text/html+crypt' # (.html | .htm)
-        - 'text/php+crypt' # (.php)
-        - 'text/plain+crypt' # (.txt)
-        - 'text/xml+crypt' # (.xml)
-        - 'text/x-yaml+crypt' # (.yaml | .yml)
-
     #---------------------------------------------------------------------------
     'FileExtension':
       description: Source format of the data

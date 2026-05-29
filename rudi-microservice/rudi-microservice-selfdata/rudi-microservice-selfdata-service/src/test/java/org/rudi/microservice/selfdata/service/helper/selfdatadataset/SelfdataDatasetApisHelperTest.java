@@ -1,11 +1,5 @@
 package org.rudi.microservice.selfdata.service.helper.selfdatadataset;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -28,7 +22,6 @@ import org.rudi.facet.apigateway.helper.ApiGatewayHelper;
 import org.rudi.facet.dataset.bean.InterfaceContract;
 import org.rudi.facet.kaccess.bean.Connector;
 import org.rudi.facet.kaccess.bean.Media;
-import org.rudi.facet.kaccess.bean.MediaType;
 import org.rudi.facet.kaccess.bean.Metadata;
 import org.rudi.facet.kaccess.bean.MetadataAccessCondition;
 import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
@@ -49,6 +42,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 import lombok.RequiredArgsConstructor;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SelfdataSpringBootTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -212,7 +210,7 @@ class SelfdataDatasetApisHelperTest {
 		}
 
 		ClientResponse successfulResponse = ClientResponse.create(HttpStatus.OK)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.getValue()).body(mock).build();
+				.header(HttpHeaders.CONTENT_TYPE, "application/json").body(mock).build();
 
 		Api api = new Api().methods(List.of(ApiMethod.GET));
 
@@ -239,7 +237,7 @@ class SelfdataDatasetApisHelperTest {
 		}
 
 		ClientResponse successfulResponse = ClientResponse.create(HttpStatus.OK)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.getValue()).body(mock).build();
+				.header(HttpHeaders.CONTENT_TYPE, "application/json").body(mock).build();
 		Api api = new Api().methods(List.of(ApiMethod.GET));
 
 		SelfdataApiParameters parameters = createValidParameters();

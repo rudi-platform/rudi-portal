@@ -1,0 +1,12 @@
+{
+	"help": "Zone pour la définition de l'image",
+	"fieldDefinitions": [
+		{
+			"name": "projectPicture",
+			"label": "Nous vous conseillons de choisir une image représentant votre réutilisation. Cette image est visible depuis le catalogue. Si vous n'en avez pas, une image par défaut sera utilisée.",
+			"type": "ATTACHMENT",
+			"required": false,
+			"extendedType": "{\"maxSize\":\"10\",\"types\":[{\"mediaType\":\"image/jpeg\",\"associatedExtensions\":[\"jpeg\",\"jpg\"]},{\"mediaType\":\"image/png\",\"associatedExtensions\":[\"png\"]}]}"
+		}
+	]
+}

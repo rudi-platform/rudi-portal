@@ -37,7 +37,16 @@ import {OwnerInformationComponent} from '../../components/owner-information/owne
     selector: 'app-producer-link-task-detail',
     templateUrl: './linked-producer-task-detail.component.html',
     styleUrls: ['./linked-producer-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
+    imports: [
+        PageComponent,
+        TaskDetailHeaderComponent,
+        TabsComponent,
+        TabComponent,
+        OrganizationInformationComponent,
+        OwnerInformationComponent,
+        BannerButtonComponent,
+        AsyncPipe,
+        TranslatePipe]
 })
 export class LinkedProducerTaskDetailComponent
     extends TaskDetailComponent<LinkedProducer, LinkedProducerDependencies, LinkedProducerTask, LinkedProducerTaskSearchCriteria>
@@ -47,7 +56,7 @@ export class LinkedProducerTaskDetailComponent
     dependencies: LinkedProducerDependencies;
     idTask: string;
     currentTask: Task;
-    hasSections: boolean = false;
+    hasSections = false;
     ownerInfo: Observable<OwnerInfo>;
     headerLibelle: string;
     protected readonly ProjectStatus = ProjectStatus;

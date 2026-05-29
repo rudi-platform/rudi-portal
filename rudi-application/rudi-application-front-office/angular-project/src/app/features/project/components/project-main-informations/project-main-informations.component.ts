@@ -29,6 +29,7 @@ import moment from 'moment';
 import {switchMap} from 'rxjs/operators';
 import {Step1ProjectComponent} from '../step1-project/step1-project.component';
 import {ProjectMainInformationDateComponent} from './project-main-information-date/project-main-information-date.component';
+import {ProjectMainInformationImageComponent} from './project-main-information-image/project-main-information-image.component';
 import {ProjectMainInformationLabelComponent} from './project-main-information-label/project-main-information-label.component';
 import {
     ProjectMainInformationRichLabelComponent
@@ -38,15 +39,33 @@ import {
     selector: 'app-project-main-informations',
     templateUrl: './project-main-informations.component.html',
     styleUrls: ['./project-main-informations.component.scss'],
-    imports: [LoaderComponent, MatCardTitle, MatButton, MatCardContent, ProjectMainInformationLabelComponent, ProjectMainInformationDateComponent, FormsModule, ReactiveFormsModule, MatFormField, MatInput, Step1ProjectComponent, TranslatePipe, ToStringPipe, ProjectMainInformationRichLabelComponent]
+    standalone: true,
+    imports: [
+        LoaderComponent,
+        MatCardTitle,
+        MatButton,
+        MatCardContent,
+        ProjectMainInformationLabelComponent,
+        ProjectMainInformationDateComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        Step1ProjectComponent,
+        TranslatePipe,
+        ToStringPipe,
+        ProjectMainInformationRichLabelComponent,
+        ProjectMainInformationImageComponent
+    ]
 })
 export class ProjectMainInformationsComponent implements OnInit {
     @Input() project: Project;
+    @Input() logo: string;
     @Input() isProjectUpdatable = false;
     @Input() isUpdating = false;
     @Input() dialogDescription: string;
     @Input() isLoading: boolean;
-    @Input() showTitle: boolean = true;
+    @Input() showTitle = true;
 
     @Output() updateForm = new EventEmitter<{ confidentialities: Confidentiality[], form: FormGroup, messageToModerator?: string }>();
     @Output() updateInProgress = new EventEmitter<boolean>();

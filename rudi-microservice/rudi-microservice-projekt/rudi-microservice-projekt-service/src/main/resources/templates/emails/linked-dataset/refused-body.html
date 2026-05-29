@@ -23,8 +23,11 @@
 <div>
     <p>Bonjour, </p>
     <p>
-        Le producteur de données ${producer.getName()} a refusé votre demande d'accès au jeu de données
-        ${asset.description} pour cette raison : ${messageToProjectOwner}
+        Le producteur de données <a
+            href="${urlServer}/organization/detail/${producer.getUuid()}">${producer.getName()}</a> a
+        refusé votre demande d'accès au jeu de données
+        <a href="${urlServer}/catalogue/detail/${asset.datasetUuid}">${asset.description}</a> pour cette raison :
+        ${messageToProjectOwner}
     <p>
     <p>
         Vous pouvez contacter l'équipe ${teamName} afin d'échanger sur la procédure à suivre pour reformuler une demande

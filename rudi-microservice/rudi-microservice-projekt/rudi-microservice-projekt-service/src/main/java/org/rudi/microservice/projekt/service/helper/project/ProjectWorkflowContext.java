@@ -24,6 +24,7 @@ import org.rudi.bpmn.core.bean.Field;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
@@ -45,6 +46,7 @@ import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.service.helper.AbstractProjektWorkflowContext;
+import org.rudi.microservice.projekt.service.helper.attachment.AttachmentsHelper;
 import org.rudi.microservice.projekt.service.helper.project.processor.ProjectTaskUpdateProjectProcessor;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
 import org.rudi.microservice.projekt.service.mapper.NewDatasetRequestMapper;
@@ -61,6 +63,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_FIELD_NAME;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -72,6 +76,7 @@ public class ProjectWorkflowContext
 		extends AbstractProjektWorkflowContext<ProjectEntity, ProjectDao, ProjectAssigmentHelper> {
 
 	private static final String WKC_UNKNOWN_SKIPPED = "WkC - Unkown {} skipped.";
+	private static final String WKC_UNLINK_SKIPPED = "WkC - Unlink {} to project skipped.";
 
 	private final TaskService<NewDatasetRequest> newDatasetRequestTaskService;
 
@@ -89,6 +94,7 @@ public class ProjectWorkflowContext
 
 	private final ProjectHelper projectHelper;
 	private final DatasetService datasetService;
+	private final AttachmentsHelper attachmentsHelper;
 
 	public ProjectWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			ProjectDao assetDescriptionDao, ProjectAssigmentHelper assignmentHelper, ACLHelper aclHelper,
@@ -96,7 +102,7 @@ public class ProjectWorkflowContext
 			NewDatasetRequestMapper newDatasetRequestMapper, TaskService<LinkedDataset> linkedDatasetTaskService,
 			LinkedDatasetMapper linkedDatasetMapper, ACLHelper aclHelper1, OrganizationHelper organizationHelper,
 			List<ProjectTaskUpdateProjectProcessor> projectTaskUpdateProjectProcessors, RolesHelper rolesHelper,
-			ProjectHelper projectHelper, DatasetService datasetService) {
+			ProjectHelper projectHelper, DatasetService datasetService, AttachmentsHelper attachmentsHelper) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper,
 				rolesHelper);
 		this.newDatasetRequestTaskService = newDatasetRequestTaskService;
@@ -108,6 +114,7 @@ public class ProjectWorkflowContext
 		this.projectTaskUpdateProjectProcessors = projectTaskUpdateProjectProcessors;
 		this.projectHelper = projectHelper;
 		this.datasetService = datasetService;
+		this.attachmentsHelper = attachmentsHelper;
 	}
 
 	@Transactional(readOnly = true)
@@ -260,7 +267,7 @@ public class ProjectWorkflowContext
 	}
 
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
-	public void publishProjectModification(ScriptContext context, ExecutionEntity executionEntity) {
+	public void publishProjectModification(ScriptContext context, ExecutionEntity executionEntity) throws AppServiceException {
 		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
 		if (processInstanceBusinessKey != null) {
 			UUID uuid = UUID.fromString(processInstanceBusinessKey);
@@ -278,6 +285,13 @@ public class ProjectWorkflowContext
 								throw new NoSuchElementException(String.format(
 										"Update project : No section found draft form: %s", DRAFT_FORM_SECTION_NAME));
 							});
+
+
+					// On modifie l'image si la donnée est présente
+					if (data.containsKey(PROJECT_PICTURE_FIELD_NAME)) {
+						UUID mediaUuid = UUID.fromString((String) data.get(PROJECT_PICTURE_FIELD_NAME));
+						attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescriptionEntity.getUuid());
+					}
 
 				} catch (InvalidDataException e) {
 					log.error("Failed to hydrate data for {}", assetDescriptionEntity.getInitiator());
@@ -406,6 +420,7 @@ public class ProjectWorkflowContext
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void resetDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
+		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, PROJECT_PICTURE_SECTION_NAME);
 	}
 
 	@Transactional
@@ -420,7 +435,7 @@ public class ProjectWorkflowContext
 				projectHelper.archiveProject(assetDescription, ProjectStatus.DISENGAGED, LinkedDatasetStatus.DISENGAGED);
 			}
 		} else {
-			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+			log.debug(WKC_UNLINK_SKIPPED, processInstanceBusinessKey);
 		}
 	}
 
@@ -457,7 +472,7 @@ public class ProjectWorkflowContext
 				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
 			}
 		} else {
-			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+			log.debug(WKC_UNLINK_SKIPPED, processInstanceBusinessKey);
 		}
 	}
 
@@ -484,7 +499,7 @@ public class ProjectWorkflowContext
 				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
 			}
 		} else {
-			log.debug("WkC - Unlink {} to project skipped.", processInstanceBusinessKey);
+			log.debug(WKC_UNLINK_SKIPPED, processInstanceBusinessKey);
 		}
 	}
 

@@ -45,12 +45,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HistoricHelper {
 
 	public static final String USER_TASK_TYPE = "userTask";
@@ -422,11 +424,16 @@ public class HistoricHelper {
 	protected String translateAction(String processDefinitionKey, HistoricActivityInstance historicActivityInstance,
 			HistoricDetailVariableInstanceUpdateEntity item) {
 		String value = null;
-		List<Action> actions = bpmnHelper.extractActions(processDefinitionKey,
-				historicActivityInstance.getProcessDefinitionId(), historicActivityInstance.getActivityId());
-		if (CollectionUtils.isNotEmpty(actions)) {
-			value = actions.stream().filter(action -> action.getName().equalsIgnoreCase(item.getTextValue()))
-					.findFirst().map(Action::getLabel).orElse(null);
+		try {
+			List<Action> actions = bpmnHelper.extractActions(processDefinitionKey,
+					historicActivityInstance.getProcessDefinitionId(), historicActivityInstance.getActivityId());
+			if (CollectionUtils.isNotEmpty(actions)) {
+				value = actions.stream().filter(action -> action.getName().equalsIgnoreCase(item.getTextValue()))
+						.findFirst().map(Action::getLabel).orElse(null);
+			}
+		} catch (Exception e) {
+			log.warn("Failed to translate action for process definition {}: {}", 
+					historicActivityInstance.getProcessDefinitionId(), e.getMessage());
 		}
 		if (value == null) {
 			value = item.getValue().toString();
@@ -486,8 +493,14 @@ public class HistoricHelper {
 
 	public void enhancedProcessHistoricInformation(ProcessHistoricInformation processHistoricInformation) {
 		String processInstanceId = processHistoricInformation.getId();
-		Page<HistoricDetail> historicDetails = collectHistoricDetailByProcessInstanceId(processInstanceId,
-				Pageable.unpaged());
+		Page<HistoricDetail> historicDetails;
+		try {
+			historicDetails = collectHistoricDetailByProcessInstanceId(processInstanceId, Pageable.unpaged());
+		} catch (Exception e) {
+			log.warn("Failed to collect historic details for process instance {}: {}", processInstanceId,
+					e.getMessage());
+			return;
+		}
 
 		// initialisation de la description et du statut fonctionnel
 		HistoricDetailVariableInstanceUpdateEntity detailTitre = lookupHistoricDetail(historicDetails.getContent(),
@@ -521,6 +534,35 @@ public class HistoricHelper {
 				processHistoricInformation.getHistoricInformations());
 		Map<String, String> userNames = convertAssignees(processHistoricInformation.getHistoricInformations(),
 				processHistoricInformation.getStartUser());
-		processHistoricInformation.setStartUser(convertAssignee(userNames, processHistoricInformation.getStartUser()));
+		String startUserLogin = processHistoricInformation.getStartUser();
+		processHistoricInformation.setStartUser(convertAssignee(userNames, startUserLogin));
+		populateStartUserDetails(processHistoricInformation, startUserLogin);
+	}
+
+	private void populateStartUserDetails(ProcessHistoricInformation processHistoricInformation, String login) {
+		if (StringUtils.isEmpty(login)) {
+			return;
+		}
+		try {
+			User user = aclHelper.getUserByLogin(login);
+			if (user != null) {
+				processHistoricInformation.setStartUserLogin(user.getLogin());
+				StringBuilder name = new StringBuilder();
+				if (StringUtils.isNotEmpty(user.getFirstname())) {
+					name.append(user.getFirstname());
+				}
+				if (StringUtils.isNotEmpty(user.getLastname())) {
+					if (name.length() > 0) {
+						name.append(' ');
+					}
+					name.append(user.getLastname());
+				}
+				processHistoricInformation.setStartUserName(name.toString());
+			} else {
+				processHistoricInformation.setStartUserLogin(login);
+			}
+		} catch (Exception e) {
+			processHistoricInformation.setStartUserLogin(login);
+		}
 	}
 }

@@ -310,10 +310,12 @@ export class AuthenticationService {
     /**
      * Déconnexion de l'utilisateur
      */
-    logout(): Observable<void> {
-        return this.accountService.accoutLogout(AuthenticationService.getXToken())
+    logout(): Observable<string> {
+        return this.accountService.accountLogout(AuthenticationService.getXToken(), AuthenticationService.getToken())
             .pipe(
-                tap(() => this.authenticationState = this.anonymousAuthenticationService.getTargetState()),
+                tap(() => {
+                    this.authenticationState = this.anonymousAuthenticationService.getTargetState()
+                }),
             );
     }
 

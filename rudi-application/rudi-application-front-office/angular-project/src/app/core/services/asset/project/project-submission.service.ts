@@ -584,26 +584,9 @@ export class ProjectSubmissionService {
             }),
             switchMap(updatedProject => {
                 return this.manageLinkedDatasetsToProjects(updatedProject, linkedDatasets, mapRequestDetailsByDatasetUuid).pipe(
+                    switchMap(() => imageAction === UpdateAction.AJOUT ? this.uploadImage(updatedProject, image) : of(null)),
                     map(() => updatedProject)
                 );
-            }),
-            switchMap(updatedProject => {
-                if (imageAction === UpdateAction.AJOUT) {
-                    return this.uploadImage(updatedProject, image).pipe(
-                        map(() => updatedProject)
-                    );
-                } else if (imageAction === UpdateAction.SUPPRESSION) {
-                    return this.projektMetierService.removeLogo(updatedProject.uuid).pipe(
-                        map(() => updatedProject)
-                    );
-                } else if (imageAction === UpdateAction.MISE_A_JOUR) {
-                    return this.projektMetierService.removeLogo(updatedProject.uuid).pipe(
-                        switchMap(() => this.uploadImage(updatedProject, image)),
-                        map(() => updatedProject)
-                    );
-                } else {
-                    return of(updatedProject);
-                }
             })
         );
     }

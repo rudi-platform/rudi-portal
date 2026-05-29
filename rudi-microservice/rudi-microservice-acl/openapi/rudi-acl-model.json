@@ -630,6 +630,9 @@
 					"issuerUri": {
 						"type": "string"
 					},
+					"logoutUri": {
+					    "type": "string"
+					},
 					"attributeMappings": {
 						"type": "array",
 						"items": {
@@ -641,7 +644,13 @@
 					},
 					"roleConvertExpression": {
 						"type": "string"
-					}
+					},
+					"additionalParameters": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
 				}
 			},
 			"Link": {

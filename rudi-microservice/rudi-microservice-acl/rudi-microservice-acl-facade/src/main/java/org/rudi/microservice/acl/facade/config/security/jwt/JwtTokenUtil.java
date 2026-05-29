@@ -58,7 +58,7 @@ public class JwtTokenUtil extends AbstractJwtTokenUtil implements Serializable {
 			throws JOSEException {
 		JwtClaimsSet.Builder jwtClaimsSetBuilder = JwtClaimsSet.builder().subject(subject).issuer(ISSUER_RUDI)
 				.issuedAt(Instant.now()).id(UUID.randomUUID().toString())
-				.expiresAt(Instant.now().plusMillis(validity * 1000));
+				.expiresAt(Instant.now().plusMillis(validity * 1000L));
 		if (MapUtils.isNotEmpty(claims)) {
 			for (Map.Entry<String, Object> claim : claims.entrySet()) {
 				jwtClaimsSetBuilder.claim(claim.getKey(), claim.getValue());

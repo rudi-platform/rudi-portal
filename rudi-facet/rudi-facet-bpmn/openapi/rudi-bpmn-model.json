@@ -487,6 +487,12 @@
 					"startUser": {
 						"type": "string"
 					},
+					"startUserLogin": {
+						"type": "string"
+					},
+					"startUserName": {
+						"type": "string"
+					},
 					"deleteReason": {
 						"type": "string"
 					},

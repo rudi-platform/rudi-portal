@@ -86,6 +86,13 @@
           [label]="'personalSpace.project.url'|translate"
           [value]="project.access_url | toString"
         ></app-project-main-information-label>
+        <!--image de la réutilisation-->
+        @if (logo) {
+          <app-project-main-information-image
+            [label]="'personalSpace.projectDetails.image'|translate"
+            [src]="logo"
+          ></app-project-main-information-image>
+        }
       } @else {
         <!--Section de message au modérateur-->
         <form class="msg-to-moderator-form" [formGroup]="messageToModeratorFormGroup">

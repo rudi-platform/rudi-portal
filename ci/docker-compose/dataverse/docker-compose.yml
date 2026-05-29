@@ -209,11 +209,6 @@ services:
       - "traefik.http.routers.dataverse.rule=Host(`dv.${traefikhost}`)"
       - "traefik.http.services.dataverse.loadbalancer.server.port=8080"
 
-volumes:
-  database-data:
-  solr-data:
-  dataverse-data:
-
 networks:
   traefik:
     external: true

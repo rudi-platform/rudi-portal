@@ -15,8 +15,164 @@
   ></app-loader>
 
   @if (!loading) {
-    @if (processHistoricInformation$ | async; as processHistoricInformation) {
       <app-tabs>
+        <app-tab [label]="objectTabLabel"
+          [icon]="objectTabIcon">
+          <ng-template>
+            @if (resolvedAsset$ | async; as resolvedAsset) {
+              @switch (processDefinitionKey) {
+                @case ('project-process') {
+                  @if (resolvedAsset.type == 'project') {
+                    <div class="project-details-container">
+                      <div class="project-metadata-container">
+                        <mat-card class="project-metadata">
+                          <mat-card-content>
+                            <app-project-main-informations
+                              [project]="resolvedAsset.project"
+                              [isProjectUpdatable]="false">
+                            </app-project-main-informations>
+                          </mat-card-content>
+                        </mat-card>
+                        <mat-card class="project-metadata">
+                          <mat-card-content>
+                            <app-open-dataset-table
+                              [openDatasetsList]="resolvedAsset.openLinkedDatasets"
+                              [tableLoading]="false">
+                            </app-open-dataset-table>
+                            <app-restricted-dataset-table
+                              [restrictedDatasetsList]="resolvedAsset.restrictedLinkedDatasets"
+                              [tableLoading]="false">
+                            </app-restricted-dataset-table>
+                            <app-new-dataset-request-table
+                              [newDatasetRequestList]="resolvedAsset.newDatasetsRequest"
+                              [tableLoading]="false">
+                            </app-new-dataset-request-table>
+                          </mat-card-content>
+                        </mat-card>
+                      </div>
+                      <app-owner-information
+                        [title]="'personalSpace.projectDetails.projectOwner' | translate"
+                        [name]="(bearer$ | async)?.name"
+                        [email]="(bearer$ | async)?.email">
+                      </app-owner-information>
+                    </div>
+                  }
+                }
+                @case ('organization-process') {
+                  @if (resolvedAsset.type == 'organization') {
+                    <div class="producer-link-details-container">
+                      <div class="producer-link-information-container">
+                        <app-organization-information
+                          [organization]="resolvedAsset.organization"
+                          [loading]="false">
+                        </app-organization-information>
+                      </div>
+                      <div class="owner-information-container">
+                        <app-owner-information
+                          [title]="'personalSpace.myTasksHistories.initiator' | translate"
+                          [name]="(bearer$ | async)?.name"
+                          [email]="(bearer$ | async)?.email">
+                        </app-owner-information>
+                      </div>
+                    </div>
+                  }
+                }
+                @case ('linked-producer-process') {
+                  @if (resolvedAsset.type == 'organization') {
+                    <div class="producer-link-details-container">
+                      <div class="producer-link-information-container">
+                        <app-organization-information
+                          [organization]="resolvedAsset.organization"
+                          [loading]="false">
+                        </app-organization-information>
+                      </div>
+                      <div class="owner-information-container">
+                        <app-owner-information
+                          [title]="'personalSpace.myTasksHistories.initiator' | translate"
+                          [name]="(bearer$ | async)?.name"
+                          [email]="(bearer$ | async)?.email">
+                        </app-owner-information>
+                      </div>
+                    </div>
+                  }
+                }
+                @case ('linked-dataset-process') {
+                  <div class="linked-dataset-details-container">
+                    <div class="linked-dataset-information-container">
+                      <app-linked-dataset-info
+                        [linkedDataset]="resolvedAsset.type == 'linked-dataset' ? resolvedAsset.linkedDataset : null"
+                        [loading]="false">
+                      </app-linked-dataset-info>
+                    </div>
+                    <div class="owner-information-container">
+                      <app-owner-information
+                        [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
+                        [name]="(bearer$ | async)?.name"
+                        [email]="(bearer$ | async)?.email">
+                      </app-owner-information>
+                    </div>
+                  </div>
+                }
+                @case ('new-dataset-request-process') {
+                  <div class="new-dataset-request-details-container">
+                    <div class="new-dataset-request-information-container">
+                      <app-new-dataset-request-info
+                        [newDatasetRequest]="resolvedAsset.type == 'new-dataset-request' ? resolvedAsset.newDatasetRequest : null"
+                        [loading]="false">
+                      </app-new-dataset-request-info>
+                    </div>
+                    <div class="owner-information-container">
+                      <app-owner-information
+                        [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
+                        [name]="(bearer$ | async)?.name"
+                        [email]="(bearer$ | async)?.email">
+                      </app-owner-information>
+                    </div>
+                  </div>
+                }
+              }
+            } @else if (resolvedAssetLoading) {
+              <app-loader
+                [allPage]="false"
+                [isTransparent]="true"
+                [noText]="true"
+                [active]="true"
+              ></app-loader>
+            }
+          </ng-template>
+
+        </app-tab>
+        @if (resolvedAsset$ | async; as resolvedAsset) {
+          @if (resolvedAsset.type == 'linked-dataset' || resolvedAsset.type == 'new-dataset-request') {
+            <app-tab [icon]="'icon-reutilisation'" [label]="'personalSpace.requestDetail.tabs.project' | translate">
+              <ng-template>
+                <div class="project-tab-details-container">
+                  <div class="project-tab-main">
+                    <mat-card class="project-tab-card">
+                      <mat-card-title class="card-demand-label">{{ 'personalSpace.requestDetail.linkedProject' | translate }}</mat-card-title>
+                      <mat-card-content>
+                        <app-project-main-informations
+                          [project]="resolvedAsset.project"
+                          [logo]="resolvedAsset.projectLogo"
+                          [isProjectUpdatable]="false"
+                          [showTitle]="false">
+                        </app-project-main-informations>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                  <div class="project-tab-side">
+                    <app-owner-information
+                      [title]="'personalSpace.projectDetails.projectOwner' | translate"
+                      [name]="(bearer$ | async)?.name"
+                      [email]="(bearer$ | async)?.email">
+                    </app-owner-information>
+                  </div>
+                </div>
+              </ng-template>
+            </app-tab>
+          }
+        }
+        @if (processHistoricInformation$ | async; as processHistoricInformation) {
         <app-tab [icon]="'icon-historique'" [label]="'personalSpace.projectDetails.projectHistorique' | translate">
           <ng-template>
             <div class="task-history-detail-container">
@@ -33,7 +189,7 @@
             </div>
           </ng-template>
         </app-tab>
+        }
       </app-tabs>
-    }
 }
 </app-page>

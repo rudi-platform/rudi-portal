@@ -100,7 +100,7 @@
 							"application/json": {
 								"schema": {
 									"type": "string",
-									"format": "uuid"	
+									"format": "uuid"
 								}
 							}
 						}
@@ -412,7 +412,7 @@
 				}
 			}
 		},
-		"/id_generation":{
+		"/id_generation": {
 			"get": {
 				"tags": [
 					"kalim"
@@ -857,9 +857,196 @@
 					}
 				}
 			}
+		},
+		"/media/allowed-mime-types": {
+			"get": {
+				"tags": [
+					"kalim"
+				],
+				"summary": "Liste des types MIME autorisés pour les médias",
+				"description": "Récupère la liste des types MIME autorisés pour les médias associés aux jeux de données",
+				"operationId": "searchAllowedMimeTypes",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "active",
+						"description": "Filtre les types MIME actifs ou inactifs",
+						"schema": {
+							"type": "boolean",
+							"default": true
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-kalim-model.json#/components/schemas/PagedMimeTypes"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"kalim"
+				],
+				"summary": "Ajouter un type MIME autorisé pour les médias",
+				"description": "Ajoute un type MIME à la liste des types autorisés pour les médias associés aux jeux de données",
+				"operationId": "createAllowedMimeType",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./rudi-kalim-model.json#/components/schemas/MimeType"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Type MIME ajouté avec succès",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-kalim-model.json#/components/schemas/MimeType"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/media/allowed-mime-types/{uuid}": {
+			"put": {
+				"tags": [
+					"kalim"
+				],
+				"summary": "Mettre à jour un type MIME autorisé pour les médias",
+				"description": "Met à jour un type MIME dans la liste des types autorisés pour les médias associés aux jeux de données",
+				"operationId": "updateAllowedMimeType",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./rudi-kalim-model.json#/components/schemas/MimeType"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Mime-Type modifié avec succès",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./rudi-kalim-model.json#/components/schemas/MimeType"
+								}
+							}
+						}
+					},
+					"404": {
+					    "description": "La ressource demandée est introuvable",
+					    "content": {
+					        "application/json": {
+					            "schema": {
+					                "$ref": "#/components/schemas/ApiError"
+					            }
+					        }
+					    }
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"kalim"
+				],
+				"summary": "Supprimer un type MIME autorisé pour les médias",
+				"description": "Supprime un type MIME de la liste des types autorisés pour les médias associés aux jeux de données",
+				"operationId": "deleteAllowedMimeType",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Type MIME supprimé avec succès"
+					},
+					"404": {
+					    "description": "La ressource demandée est introuvable",
+					    "content": {
+					        "application/json": {
+					            "schema": {
+					                "$ref": "#/components/schemas/ApiError"
+					            }
+					        }
+					    }
+					}
+				}
+			}
 		}
 	},
 	"components": {
+		"parameters": {
+			"LimitParam": {
+				"in": "query",
+				"name": "limit",
+				"description": "Le nombre de résultats à retourner par page",
+				"required": false,
+				"schema": {
+					"type": "integer",
+					"format": "int32"
+				}
+			},
+			"OffsetParam": {
+				"in": "query",
+				"name": "offset",
+				"description": "Index de début (positionne le curseur pour parcourir les résultats de la recherche)",
+				"required": false,
+				"schema": {
+					"type": "integer",
+					"format": "int32"
+				}
+			},
+			"OrderParam": {
+				"in": "query",
+				"name": "order",
+				"required": false,
+				"schema": {
+					"type": "string"
+				}
+			}
+		},
 		"responses": {
 			"InternalServerError": {
 				"description": "Internal server error",
