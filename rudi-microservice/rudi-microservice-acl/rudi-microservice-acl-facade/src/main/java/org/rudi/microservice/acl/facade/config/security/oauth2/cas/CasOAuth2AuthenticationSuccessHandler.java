@@ -164,7 +164,7 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 			return;
 		}
 		if (authentication.getPrincipal() instanceof DefaultOidcUser defaultOidcUser) {
-			String idToken = defaultOidcUser.getIdToken().getTokenValue();
+			String idToken = defaultOidcUser.getIdToken().getAccessTokenHash();
 			authenticatedUser.addData(AbstractJwtTokenUtil.ORIGINAL_IDTOKEN, idToken);
 		}
 	}

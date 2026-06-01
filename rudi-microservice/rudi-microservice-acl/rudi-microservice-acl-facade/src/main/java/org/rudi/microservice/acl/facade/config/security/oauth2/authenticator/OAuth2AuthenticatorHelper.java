@@ -373,7 +373,7 @@ public class OAuth2AuthenticatorHelper {
 	protected String replaceValue(String input, String placeholder, String value, String defaultValue) {
 		String placeholderWithBraces = "${" + placeholder + "}";
 		if (input.contains(placeholderWithBraces)) {
-			return input.replace("${idtoken}", value == null ? defaultValue : value);
+			return input.replace(placeholderWithBraces, value == null ? defaultValue : value);
 		}
 		return input;
 	}

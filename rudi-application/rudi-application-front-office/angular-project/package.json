@@ -15,7 +15,7 @@
     "e2e": "ng e2e",
     "generate:mydy": "openapi-generator-cli help",
     "generate:help": "openapi-generator-cli config-help --instantiation-types -g typescript-angular",
-    "generate:all": "mkdirp node_modules/@openapitools/openapi-generator-cli/versions && ncp ../../../rudi-tools/rudi-tools-repository/node_modules/@openapitools/openapi-generator-cli/versions/5.0.0.jar node_modules/@openapitools/openapi-generator-cli/versions/preloaded-5.0.0.jar && npm run generate:all-facets && npm run generate:all-microservices",
+    "generate:all": "mkdirp node_modules/@openapitools/openapi-generator-cli/versions && ncp ../../../rudi-tools/rudi-tools-repository/preloaded_node_modules/@openapitools/openapi-generator-cli/versions/5.0.0.jar node_modules/@openapitools/openapi-generator-cli/versions/preloaded-5.0.0.jar && npm run generate:all-facets && npm run generate:all-microservices",
     "generate:all-facets": "npm run generate:kmedia && npm run generate:kaccess && npm run generate:bpmn && npm run generate:rva && npm run generate:cms",
     "generate:bpmn": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json -o micro_service_modules/api-bpmn",
     "generate:kaccess": "openapi-generator-cli generate -g typescript-angular -i ../../../rudi-facet/rudi-facet-kaccess/src/main/resources/openapi/rudi-kaccess-model.yml -o micro_service_modules/api-kaccess",
