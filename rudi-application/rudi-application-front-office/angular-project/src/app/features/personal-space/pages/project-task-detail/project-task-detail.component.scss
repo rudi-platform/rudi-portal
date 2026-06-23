@@ -39,7 +39,7 @@
         }
     }
 
-    app-owner-information {
+    app-contact-card {
         padding: 16px 0;
         flex: 0 0 100%;
         max-width: 100%;
@@ -56,21 +56,11 @@
             padding-right: 1.5rem;
         }
 
-        app-owner-information {
+        app-contact-card {
             flex: 0 0 33.3333%;
             max-width: 33.3333%;
         }
     }
-}
-
-.expansion-title {
-    color: var(--secondary-text);
-    font-size: 18px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.72;
-    margin-bottom: 8px;
 }
 
 ::ng-deep.mat-expansion-panel-body {

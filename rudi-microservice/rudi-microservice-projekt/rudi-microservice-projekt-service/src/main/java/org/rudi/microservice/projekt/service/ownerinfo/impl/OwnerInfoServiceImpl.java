@@ -14,6 +14,7 @@ import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.OwnerInfo;
+import org.rudi.microservice.projekt.core.bean.OwnerInfoRequest;
 import org.rudi.microservice.projekt.core.bean.OwnerType;
 import org.rudi.microservice.projekt.service.ownerinfo.OwnerInfoService;
 import org.rudi.microservice.projekt.service.project.LinkedDatasetService;
@@ -79,5 +80,14 @@ public class OwnerInfoServiceImpl implements OwnerInfoService {
 		}
 
 		return projectCustomDao.findProjectByLinkedDatasetUuid(linkedDatasetUuid).getOwnerUuid();
+	}
+
+	@Override
+	public List<OwnerInfo> getOwnersInfos(List<OwnerInfoRequest> ownerInfoRequests) throws AppServiceException {
+		List<OwnerInfo> ownersInfos = new ArrayList<>();
+		for(OwnerInfoRequest ownerInfoRequest : ownerInfoRequests) {
+			ownersInfos.add(getOwnerInfo(ownerInfoRequest.getOwnerType(), ownerInfoRequest.getOwnerUuid()));
+		}
+		return ownersInfos;
 	}
 }

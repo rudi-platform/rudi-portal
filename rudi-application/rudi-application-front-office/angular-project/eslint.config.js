@@ -3,6 +3,7 @@ const tsParser = require('@typescript-eslint/parser');
 const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const angularPlugin = require('@angular-eslint/eslint-plugin');
 const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
+const rudiPlugin = require('./eslint-plugin-rudi');
 
 
 module.exports = [
@@ -73,14 +74,42 @@ module.exports = [
     {
         files: ['**/*.html'],
         plugins: {
-            '@angular-eslint/template': angularTemplatePlugin
+            '@angular-eslint/template': angularTemplatePlugin,
+            'rudi': rudiPlugin,
         },
         languageOptions: {
             parser: require('@angular-eslint/template-parser')
         },
         rules: {
             '@angular-eslint/template/banana-in-box': 'error',
-            '@angular-eslint/template/no-negated-async': 'error'
+            '@angular-eslint/template/no-negated-async': 'error',
+
+            // ── Règles d'accessibilité RGAA ──────────────────────────────────
+            // Images : alt obligatoire (RGAA 1.1.1)
+            '@angular-eslint/template/alt-text': 'error',
+            // Éléments interactifs : contenu accessible (RGAA 11.1, 11.2)
+            '@angular-eslint/template/elements-content': 'error',
+            // Liens : intitulé explicite (RGAA 6.1)
+            '@angular-eslint/template/valid-aria': 'error',
+            // Rôles ARIA valides (RGAA 7.1)
+            '@angular-eslint/template/role-has-required-aria': 'error',
+            // Labels de formulaires (RGAA 11.1)
+            '@angular-eslint/template/label-has-associated-control': 'error',
+            // Pas de tabindex positif (RGAA 12.8)
+            '@angular-eslint/template/no-positive-tabindex': 'error',
+            // Interactivité clavier : pas de gestionnaire de clic sans clavier (RGAA 7.1, 12.13)
+            '@angular-eslint/template/click-events-have-key-events': 'error',
+            '@angular-eslint/template/mouse-events-have-key-events': 'error',
+            // Éléments interactifs accessibles au focus (RGAA 12.13)
+            '@angular-eslint/template/interactive-supports-focus': 'error',
+            // Structure : pas d'éléments dupliqués (RGAA 8.2)
+            '@angular-eslint/template/no-duplicate-attributes': 'error',
+            // Table : en-têtes accessibles (RGAA 5.7)
+            '@angular-eslint/template/table-scope': 'error',
+            // Autocomplétion sur les champs utilisateur (RGAA 11.13)
+            '@angular-eslint/template/no-autofocus': 'warn',
+            // Icônes : aria-hidden="true" (décoratif) ou aria-label (informatif) (RGAA 1.1)
+            'rudi/mat-icon-requires-aria': 'warn',
         }
     }
 

@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
@@ -116,5 +116,9 @@ export class WorkflowFormComponent implements OnInit {
         }
 
         return this.formBuilder.group(controlsConfig);
+    }
+
+    public isValid(): boolean {
+        return !this.invalid;
     }
 }

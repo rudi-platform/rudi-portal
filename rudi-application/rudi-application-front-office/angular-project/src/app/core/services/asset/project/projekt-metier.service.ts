@@ -9,7 +9,14 @@ import {DateTimeUtils} from '@shared/utils/date-time-utils';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {DatasetConfidentiality, OwnerInfo, ProjectByOwner, ProjektService, Status} from 'micro_service_modules/projekt/projekt-api';
+import {
+    DatasetConfidentiality,
+    OwnerInfo,
+    OwnerInfoRequest,
+    ProjectByOwner,
+    ProjektService,
+    Status
+} from 'micro_service_modules/projekt/projekt-api';
 import {
     Confidentiality,
     FrontOfficeProperties,
@@ -575,5 +582,13 @@ export class ProjektMetierService {
             criteria.limit,
             order
         );
+    }
+
+    /**
+     * Récupère les informations minimales sur des porteurs de projet (utilisateurs ou organisations).
+     * @param ownerInfoRequests Liste des demandes d'informations sur les porteurs
+     */
+    getOwnersInfos(ownerInfoRequests: OwnerInfoRequest[]): Observable<OwnerInfo[]> {
+        return this.projektService.getOwnersInfos(ownerInfoRequests);
     }
 }

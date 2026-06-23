@@ -61,6 +61,12 @@ public class TokenServiceImpl implements TokenService {
 	}
 
 	@Override
+	public Token getToken(long id) {
+		TokenEntity token = tokenRepository.findById(id).orElse(null);
+		return tokenMapper.entityToDto(token);
+	}
+
+	@Override
 	@Transactional(readOnly = false)
 	public void removeToken(long id) {
 		TokenEntity entity = tokenRepository.findById(id).orElse(null);
@@ -111,6 +117,7 @@ public class TokenServiceImpl implements TokenService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public boolean removeTokenByValue(String value) {
 		TokenEntity token = tokenRepository.findByValue(value);
 		if (token != null) {
@@ -119,5 +126,4 @@ public class TokenServiceImpl implements TokenService {
 		}
 		return false;
 	}
-
 }

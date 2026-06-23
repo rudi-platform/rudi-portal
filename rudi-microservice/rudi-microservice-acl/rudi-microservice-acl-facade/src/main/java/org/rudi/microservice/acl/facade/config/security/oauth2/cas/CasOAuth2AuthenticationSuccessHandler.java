@@ -4,6 +4,7 @@
 package org.rudi.microservice.acl.facade.config.security.oauth2.cas;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,10 +17,12 @@ import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.facade.config.filter.AbstractJwtTokenUtil;
 import org.rudi.common.facade.config.filter.CommonSecurityConstants;
 import org.rudi.common.facade.config.filter.Tokens;
+import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.acl.core.bean.OAuth2AttributeMapping;
 import org.rudi.microservice.acl.core.bean.OAuth2AuthenticatorDescription;
 import org.rudi.microservice.acl.core.bean.Role;
 import org.rudi.microservice.acl.core.bean.RoleSearchCriteria;
+import org.rudi.microservice.acl.core.bean.Token;
 import org.rudi.microservice.acl.core.bean.TokenManagement;
 import org.rudi.microservice.acl.core.bean.TokenType;
 import org.rudi.microservice.acl.core.bean.User;
@@ -40,6 +43,8 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,7 +114,7 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 						.loadAuthorizedClient(registrationId, customToken, request);
 				// On ajoute l'issuer d'origine dans les données de l'utilisateur pour pouvoir le réutiliser dans les autres services
 				assignOriginalIssuer(authorizedClient, authenticatedUser);
-				assignOriginalIdToken(authentication, authenticatedUser);
+				assignOriginalToken(authentication, authenticatedUser);
 
 				Tokens tokens = null;
 				// Si on utilise CAS avec gestion des tokens par le provider, on réutilise les tokens OIDC
@@ -159,13 +164,15 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 
 	}
 
-	protected void assignOriginalIdToken(Authentication authentication, AuthenticatedUser authenticatedUser) {
+	protected void assignOriginalToken(Authentication authentication, AuthenticatedUser authenticatedUser)
+			throws JsonProcessingException, ParseException, AppServiceException {
 		if (authentication == null || authenticatedUser == null) {
 			return;
 		}
 		if (authentication.getPrincipal() instanceof DefaultOidcUser defaultOidcUser) {
-			String idToken = defaultOidcUser.getIdToken().getAccessTokenHash();
-			authenticatedUser.addData(AbstractJwtTokenUtil.ORIGINAL_IDTOKEN, idToken);
+			String tokenValue = defaultOidcUser.getIdToken().getTokenValue();
+			Token token = tokenManager.saveToken(TokenType.AUTHORIZATION_TOKEN, authenticatedUser, tokenValue);
+			authenticatedUser.addData(AbstractJwtTokenUtil.ORIGINAL_TOKEN_ID, String.valueOf(token.getId()));
 		}
 	}
 

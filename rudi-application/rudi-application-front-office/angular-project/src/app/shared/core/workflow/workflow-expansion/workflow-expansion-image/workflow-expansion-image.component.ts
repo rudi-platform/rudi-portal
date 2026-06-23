@@ -1,7 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import {MatLabel} from '@angular/material/form-field';
+import {AttachmentService} from '@core/services/attachment.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
-import {ProjectAttachmentService} from '@core/services/project-attachment.service';
 import {switchMap} from 'rxjs/operators';
 
 declare let console;
@@ -18,15 +18,12 @@ export class WorkflowExpansionImageComponent implements OnInit {
 
     imageBase64: Base64EncodedLogo;
 
-    constructor(
-        private readonly projectAttachmentService: ProjectAttachmentService,
-        private readonly imageLogoService: ImageLogoService
-    ) {
-    }
+    private readonly attachmentService = inject(AttachmentService);
+    private readonly imageLogoService = inject(ImageLogoService);
 
     ngOnInit(): void {
         if (this.uuid) {
-            this.projectAttachmentService.downloadAttachement(this.uuid).pipe(
+            this.attachmentService.downloadAttachement(this.uuid).pipe(
                 switchMap((blob: Blob) => this.imageLogoService.createImageFromBlob(blob))
             ).subscribe({
                 next: (base64: Base64EncodedLogo) => {

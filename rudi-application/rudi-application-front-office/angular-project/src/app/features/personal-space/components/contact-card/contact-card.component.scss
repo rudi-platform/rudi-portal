@@ -1,0 +1,24 @@
+.contact-card {
+    padding: 16px 24px;
+
+    .section-title {
+        font-weight: bold;
+        display: block;
+        font-size: 18px;
+    }
+
+    .related-organizations-divider {
+        margin-top: 30px;
+        margin-bottom: 0;
+        border: none;
+        border-top: 1px solid var(--primary-separator-light);
+    }
+
+    .related-organizations-title {
+        margin-top: 12px;
+    }
+
+    app-contact-information {
+        margin-top: 20px;
+    }
+}

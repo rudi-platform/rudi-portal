@@ -1,5 +1,6 @@
 package org.rudi.microservice.projekt.service.ownerinfo;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -8,6 +9,7 @@ import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.microservice.projekt.core.bean.OwnerInfo;
+import org.rudi.microservice.projekt.core.bean.OwnerInfoRequest;
 import org.rudi.microservice.projekt.core.bean.OwnerType;
 
 public interface OwnerInfoService {
@@ -19,4 +21,5 @@ public interface OwnerInfoService {
 
 	UUID getLinkedDatasetOwner(UUID linkedDatasetUuid) throws AppServiceNotFoundException;
 
+	List<OwnerInfo> getOwnersInfos(List<OwnerInfoRequest> ownerInfoRequests) throws AppServiceException;
 }

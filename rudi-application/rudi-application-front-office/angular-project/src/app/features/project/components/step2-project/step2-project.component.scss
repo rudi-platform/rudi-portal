@@ -11,4 +11,37 @@
     cursor: pointer;
 }
 
+// Le radio group n'a plus son propre cadre, c'est le .step-form-card parent qui l'englobe
+.step-form-card-radio-group {
+    display: flex;
+    flex-direction: column;
+}
 
+// Section organisations partenaires
+// .step-form-card ajouté pour égaler la spécificité de create-project-stepper.scss
+.step-form-card .related-organizations-section {
+
+    // Slide toggle en bleu primaire (même couleur que les radio buttons)
+    .mat-mdc-slide-toggle {
+        margin-left: 10px;
+        --mdc-switch-selected-handle-color: var(--focus);
+        --mdc-switch-selected-track-color: var(--focus);
+        --mdc-switch-selected-pressed-handle-color: var(--focus);
+        --mdc-switch-selected-focus-handle-color: var(--focus);
+        --mdc-switch-selected-hover-handle-color: var(--focus);
+        --mdc-switch-selected-hover-track-color: var(--focus);
+        --mdc-switch-selected-focus-track-color: var(--focus);
+        --mdc-switch-selected-pressed-track-color: var(--focus);
+    }
+
+    .related-organizations-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #1e1e1e;
+    }
+
+    .mat-radio-button-description {
+        margin-top: 12px;
+    }
+
+}

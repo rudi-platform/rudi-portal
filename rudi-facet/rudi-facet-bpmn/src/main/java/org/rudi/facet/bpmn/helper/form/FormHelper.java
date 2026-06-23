@@ -55,6 +55,7 @@ public class FormHelper {
 
 	public static final String DRAFT_USER_TASK_ID = "DRAFT";
 	public static final String DRAFT_ARCHIVE_USER_TASK_ID = "DRAFT_ARCHIVE";
+	public static final String DRAFT_UPDATE_USER_TASK_ID = "DRAFT_UPDATE";
 
 	private final FormMapper formMapper;
 
@@ -168,8 +169,12 @@ public class FormHelper {
 		return result;
 	}
 
+	public Form lookupDraftForm(String processDefinitionKey, String userKey) throws FormDefinitionException {
+		return lookupForm(processDefinitionKey, userKey, null);
+	}
+
 	public Form lookupDraftForm(String processDefinitionKey) throws FormDefinitionException {
-		return lookupViewForm(processDefinitionKey, DRAFT_USER_TASK_ID);
+		return lookupDraftForm(processDefinitionKey, DRAFT_USER_TASK_ID);
 	}
 
 	public Form lookupViewForm(String processDefinitionKey, String userKey) throws FormDefinitionException {

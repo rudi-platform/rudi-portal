@@ -20,6 +20,9 @@ import {IconRegistryService} from '@core/services/icon-registry.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
+import {
+    OrganizationUpdateFormDialogComponent
+} from '@features/personal-space/components/organization-update-form-dialog/organization-update-form-dialog.component';
 import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
@@ -43,7 +46,9 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-organization-table',
     templateUrl: './organization-table.component.html',
     styleUrls: ['./organization-table.component.scss'],
-    imports: [TranslateDirective, LoaderComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
+    imports: [TranslateDirective, LoaderComponent, MatTable, MatColumnDef,
+        MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton,
+        MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
 export class OrganizationTableComponent implements OnInit {
     @Input() isLoading: boolean;
@@ -52,6 +57,7 @@ export class OrganizationTableComponent implements OnInit {
     private urlToRedirectIfError: string;
 
     public form: Form;
+    public modificationForm: Form;
 
     displayedColumns: string[] = ['name', 'id'];
     dataSource: MatTableDataSource<Organization> = new MatTableDataSource([]);
@@ -74,7 +80,7 @@ export class OrganizationTableComponent implements OnInit {
             next: url => {
                 this.urlToRedirectIfError = url;
             },
-            error: err => {
+            error: _err => {
                 this.urlToRedirectIfError = 'https://rudi.fr/contact';
             }
         });
@@ -83,7 +89,7 @@ export class OrganizationTableComponent implements OnInit {
         if (this.organization.organizationStatus == OrganizationStatus.Validated) {
             this.displayedColumns = ['name', 'id', 'dash'];
             this.getArchiveForm();
-
+            this.getModificationForm();
         }
     }
 
@@ -113,7 +119,7 @@ export class OrganizationTableComponent implements OnInit {
         }).afterClosed().subscribe(result => {
             if (result?.closeEvent == CloseEvent.VALIDATION) {
                 this.archiveOrganization().subscribe({
-                    next: (task: Task) => {
+                    next: (_task: Task) => {
                         this.snackBarService.openSnackBar({
                             level: Level.SUCCESS,
                             message: this.translateService.instant('personalSpace.organization.archive.success')
@@ -152,6 +158,64 @@ export class OrganizationTableComponent implements OnInit {
             }),
         );
 
+    }
+
+    getModificationForm(): void {
+        this.taskService.lookupOrganizationDraftForm(OrganizationFormType.DraftUpdate).subscribe({
+            next: (form) => {
+                this.modificationForm = form;
+            },
+        });
+    }
+
+    openPopinModification(): void {
+        this.dialog.open(OrganizationUpdateFormDialogComponent, {
+            data: {
+                draftForm: this.modificationForm,
+                title: this.translateService.instant('personalSpace.organization.update.dialog.title'),
+                description: this.translateService.instant('personalSpace.organization.update.dialog.description'),
+                organization: this.organization,
+            }
+        }).afterClosed().subscribe(result => {
+            if (result?.closeEvent == CloseEvent.VALIDATION) {
+                this.modifyOrganization(result.data).subscribe({
+                    next: (_task: Task) => {
+                        this.snackBarService.openSnackBar({
+                            level: Level.SUCCESS,
+                            message: this.translateService.instant('personalSpace.organization.update.success')
+                        });
+                    },
+                    error: (err) => {
+                        if (err.status == 400) {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
+                                message: this.translateService.instant('personalSpace.organization.update.errorAlreadyInProgress')
+                            });
+                        } else if (err.status == 409) {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
+                                message: this.translateService.instant('personalSpace.organization.update.errorTaskInProgress')
+                            });
+                        } else {
+                            this.snackBarService.openSnackBar({
+                                level: Level.ERROR,
+                                message: `${this.translateService.instant('personalSpace.organization.update.error')} <a href="${this.urlToRedirectIfError}" target="_blank">${this.translateService.instant('common.ici')}</a>`,
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    modifyOrganization(modifiedOrganization: Organization): Observable<Task> {
+        modifiedOrganization.uuid = this.organization.uuid;
+        modifiedOrganization.form = this.modificationForm;
+        return this.organizationTaskMetierService.createDraft(modifiedOrganization).pipe(
+            switchMap((task: Task) => {
+                return this.organizationTaskMetierService.startTask(task);
+            }),
+        );
     }
 
 }

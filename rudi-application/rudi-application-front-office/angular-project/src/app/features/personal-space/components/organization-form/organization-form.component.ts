@@ -1,5 +1,5 @@
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
@@ -16,6 +16,7 @@ const MAX_NAME_LENGTH = 100;
 const MAX_DESCRIPTION_LENGTH = 800;
 const MAX_URL_LENGTH = 80;
 const MAX_ADDRESS_LENGTH = 255;
+const MAX_MESSAGE_LENGTH = 3000;
 
 @Component({
     selector: 'app-organization-form',
@@ -24,8 +25,11 @@ const MAX_ADDRESS_LENGTH = 255;
     imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, WorkflowFormComponent, TranslatePipe]
 })
 export class OrganizationFormComponent implements OnInit {
+    @ViewChild(WorkflowFormComponent) workflowFormComponent: WorkflowFormComponent;
     @Input() draftForm: Form;
+    @Input() organization: Organization;
     form: FormGroup;
+    FORM_CONTROL_NAME_MESSAGE = 'messageToModerator';
     FORM_CONTROL_NAME_NAME = 'name';
     FORM_CONTROL_NAME_DESCRIPTION = 'description';
     FORM_CONTROL_NAME_URL = 'url';
@@ -37,8 +41,15 @@ export class OrganizationFormComponent implements OnInit {
     ) {
     }
 
+    get isModification(): boolean {
+        return !!this.organization;
+    }
+
     ngOnInit(): void {
         const formFields = [
+            ...(this.isModification
+                ? [{name: this.FORM_CONTROL_NAME_MESSAGE, validators: [Validators.maxLength(MAX_MESSAGE_LENGTH)]}]
+                : []),
             {name: this.FORM_CONTROL_NAME_NAME, validators: [Validators.required, Validators.maxLength(MAX_NAME_LENGTH)]},
             {name: this.FORM_CONTROL_NAME_DESCRIPTION, validators: [Validators.required, Validators.maxLength(MAX_DESCRIPTION_LENGTH)]},
             {
@@ -54,10 +65,27 @@ export class OrganizationFormComponent implements OnInit {
                 return acc;
             }, {})
         );
+
+        if (this.organization) {
+            this.form.patchValue({
+                [this.FORM_CONTROL_NAME_NAME]: this.organization.name || '',
+                [this.FORM_CONTROL_NAME_DESCRIPTION]: this.organization.description || '',
+                [this.FORM_CONTROL_NAME_URL]: this.organization.url || '',
+                [this.FORM_CONTROL_NAME_ADDRESS]: this.organization.address || '',
+            });
+        }
     }
 
     isValidForm(): boolean {
         return this.form.valid;
+    }
+
+    get messageToModerator(): string {
+        return this.form.get(this.FORM_CONTROL_NAME_MESSAGE)?.value || null;
+    }
+
+    submitWorkflowForm(): boolean {
+        return this.workflowFormComponent?.submit() ?? true;
     }
 
     getOrganization(): Organization {
@@ -104,6 +132,8 @@ export class OrganizationFormComponent implements OnInit {
                 return MAX_URL_LENGTH;
             case this.FORM_CONTROL_NAME_ADDRESS:
                 return MAX_ADDRESS_LENGTH;
+            case this.FORM_CONTROL_NAME_MESSAGE:
+                return MAX_MESSAGE_LENGTH;
             default:
                 return 0;
         }

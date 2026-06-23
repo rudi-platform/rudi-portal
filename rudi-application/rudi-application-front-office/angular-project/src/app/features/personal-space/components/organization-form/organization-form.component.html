@@ -1,4 +1,23 @@
 <form [formGroup]="form">
+  <!-- Message to moderator (modification only) -->
+  @if (isModification) {
+    <ng-container>
+      <div class="label-container">
+        <mat-label>{{ 'personalSpace.organization.form.messageToModerator'|translate }}</mat-label>
+      </div>
+      <mat-hint>{{ 'personalSpace.organization.form.messageToModeratorHint'|translate }}</mat-hint>
+      <mat-form-field appearance="outline" hideRequiredMarker>
+        <textarea [formControlName]="FORM_CONTROL_NAME_MESSAGE" matInput
+          autocomplete="off" class="text-area-height"></textarea>
+        @if (isErrorOnField(FORM_CONTROL_NAME_MESSAGE)) {
+          <mat-error class="stepper-mat-error">
+            <em class="fa fa-info-circle fa-2x me-2"></em>{{ getErrorMessage(FORM_CONTROL_NAME_MESSAGE) }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </ng-container>
+  }
+
   <!-- Name Field-->
   <ng-container>
     <div class="label-container">

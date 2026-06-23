@@ -12,7 +12,7 @@ import {OrganizationFormComponent} from '@features/personal-space/components/org
 import {
     OrganizationInformationComponent
 } from '@features/personal-space/components/organization-information/organization-information.component';
-import {OwnerInformationComponent} from '@features/personal-space/components/owner-information/owner-information.component';
+import {ContactCardComponent} from '@features/personal-space/components/contact-card/contact-card.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {
@@ -82,7 +82,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         OrganizationFormComponent,
         OrganizationFormDialogComponent,
         LinkedProducerTaskDetailComponent,
-        OwnerInformationComponent,
+        ContactCardComponent,
         OrganizationInformationComponent,
         RemoveKeysDialogComponent,
         MyAccountComponent,

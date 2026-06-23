@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class OrganizationWorkflowHelper extends AbstactAssetDescriptionHelper<OrganizationEntity, Organization, OrganizationMapper> {
 
 	public static final String DRAFT_TYPE_FORM_ARCHIVE_VALUE = "archive";
+	public static final String DRAFT_TYPE_FORM_UPDATE_VALUE = "update";
 	private static final String DRAFT_TYPE_FORM_KEY = "draftType";
 
 	public OrganizationWorkflowHelper(UtilContextHelper utilContextHelper, FormHelper formHelper, BpmnHelper bpmnHelper, OrganizationMapper assetDescriptionMapper) {
@@ -46,6 +47,10 @@ public class OrganizationWorkflowHelper extends AbstactAssetDescriptionHelper<Or
 
 	public boolean isDraftTypeArchive(String draftType) {
 		return Strings.CS.equals(DRAFT_TYPE_FORM_ARCHIVE_VALUE, draftType);
+	}
+
+	public boolean isDraftTypeUpdate(String draftType) {
+		return Strings.CS.equals(DRAFT_TYPE_FORM_UPDATE_VALUE, draftType);
 	}
 
 }

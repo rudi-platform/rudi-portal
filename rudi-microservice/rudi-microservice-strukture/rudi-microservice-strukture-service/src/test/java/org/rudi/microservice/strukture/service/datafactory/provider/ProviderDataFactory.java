@@ -20,7 +20,6 @@ import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnt
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,18 +41,6 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 	public ProviderDataFactory(ProviderDao repository, EmailAddressRoleDataFactory emailAddressRoleDataFactory) {
 		super(repository, ProviderEntity.class);
 		this.emailAddressRoleDataFactory = emailAddressRoleDataFactory;
-	}
-
-	public ProviderEntity getOrCreateTestProvider(UUID uuid) {
-		try {
-			ProviderEntity provider = repository.findByUUID(uuid);
-			if (provider != null) {
-				return provider;
-			}
-		} catch (EmptyResultDataAccessException e) {
-			// Do nothing
-		}
-		return createTestProvider();
 	}
 
 	private ProviderEntity create(String code, String label, int order, LocalDateTime openingDate, LocalDateTime closingDate, Set<NodeProviderEntity> nodeProviders, boolean needAddress) {
@@ -99,6 +86,15 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 		return create("TEST", "test", 0, now, null, nodeProviders, true);
 	}
 
+	public ProviderEntity getOrCreateTestProvider() {
+		ProviderEntity provider = repository.findByCode("TEST");
+		if (provider == null) {
+			return createTestProvider();
+		}
+		assignMissingDatas(provider, true);
+		return repository.save(provider);
+	}
+
 	/**
 	 * @param item
 	 */
@@ -138,6 +134,7 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 			}
 		}
 	}
+
 
 
 	public void deleteAllProviders() {

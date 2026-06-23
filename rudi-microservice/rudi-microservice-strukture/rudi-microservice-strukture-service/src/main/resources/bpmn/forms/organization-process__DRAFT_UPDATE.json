@@ -1,0 +1,16 @@
+{
+	"sections": [
+		{
+			"name": "organization-process-draft/update-message-to-moderator",
+			"readOnly": false
+		},
+		{
+			"name": "organization-process-draft/update-organization",
+			"readOnly": false
+		},
+		{
+			"name": "organization-process-draft/update-image-organization",
+			"readOnly": false
+		}
+	]
+}

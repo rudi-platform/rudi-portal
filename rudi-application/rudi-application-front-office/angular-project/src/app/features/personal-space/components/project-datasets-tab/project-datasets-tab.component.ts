@@ -382,7 +382,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 }
             });
         } else {
-            this.snackBarService.showInfo('personalSpace.projectDatasets.show-comment.error');
+            this.snackBarService.showSuccess(this.translateService.instant('personalSpace.projectDatasets.show-comment.error'));
         }
     }
 }

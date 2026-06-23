@@ -16,7 +16,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
@@ -60,8 +59,16 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 	@Override
 	protected void addPredicates(OrganizationSearchCriteria searchCriteria, CriteriaBuilder builder,
 			CriteriaQuery<?> criteriaQuery, Root<OrganizationEntity> root, List<Predicate> predicates) {
-		predicateUuidCriteria(searchCriteria.getUuid(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
+
+		predicateCollectionCriteria(searchCriteria.getUuids(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
 		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
+		addExcludedOrganizationPredicates(searchCriteria.getExcludeOrganizationUuids(), predicates, builder, root);
+
+		if (BooleanUtils.isTrue(searchCriteria.getActive())) {
+			final LocalDateTime actualDate = LocalDateTime.now();
+			predicateDateCriteriaLessThan(actualDate, RepositoryConstants.FIELD_OPENING_DATE, predicates, builder, root);
+			predicateDateCriteriaGreaterThan(actualDate, RepositoryConstants.FIELD_CLOSING_DATE, predicates, builder, root);
+		}
 	}
 
 	@Override
@@ -235,13 +242,10 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		Predicate member = builder.equal(memberJoin.get(OrganizationMemberEntity.FIELD_USER_UUID), searchCriteria.getUserUuid());
 		predicates.add(member);
 
-		if (searchCriteria.getUuid() != null) {
-			predicates.add(builder.equal(root.get(RepositoryConstants.FIELD_UUID), searchCriteria.getUuid()));
-		}
 
-		if (StringUtils.isNotEmpty(searchCriteria.getName())) {
-			predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
-		}
+		predicateCollectionCriteria(searchCriteria.getUuids(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
+		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
+		addExcludedOrganizationPredicates(searchCriteria.getExcludeOrganizationUuids(), predicates, builder, root);
 
 		if (searchCriteria.getStatus() != null) {
 			predicates.add(builder.equal(root.get(OrganizationEntity.FIELD_STATUS), searchCriteria.getStatus()));
@@ -253,7 +257,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 			predicateDateCriteriaGreaterThan(actualDate, RepositoryConstants.FIELD_CLOSING_DATE, predicates, builder, root);
 		}
 
-		// Pour s'assurer qu'on ait au moins un élement pour qu ele or puisse fonctionner correctement.
+		// Pour s'assurer qu'on ait au moins un élement pour que le "or" puisse fonctionner correctement.
 		if (CollectionUtils.isNotEmpty(searchCriteria.getOrganizationStatus()) || CollectionUtils.isNotEmpty(searchCriteria.getAdminMemberAllowedStatus())) {
 			List<Predicate> organizationStatusPredicates = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(searchCriteria.getOrganizationStatus())) {
@@ -280,6 +284,13 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 
 		if (CollectionUtils.isNotEmpty(predicates)) {
 			query.where(builder.and(predicates.toArray(new Predicate[0])));
+		}
+	}
+
+	private void addExcludedOrganizationPredicates(List<?> excludedUuids, List<Predicate> predicates,
+			CriteriaBuilder builder, Root<OrganizationEntity> root) {
+		if (CollectionUtils.isNotEmpty(excludedUuids)) {
+			excludedUuids.forEach(uuid -> predicates.add(builder.notEqual(root.get(RepositoryConstants.FIELD_UUID), uuid)));
 		}
 	}
 }

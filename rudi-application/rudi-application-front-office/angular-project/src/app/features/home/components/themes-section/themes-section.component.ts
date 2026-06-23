@@ -19,6 +19,7 @@ export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];
     @Input() isLoading: boolean;
     mediaSize: MediaSize;
+    selectedThemeCode: string | null = null;
     cardSwiperBreakpoints: SwiperBreakpoint = {
         380: {
             slidesPerView: 3,
@@ -53,6 +54,7 @@ export class ThemesSectionComponent implements OnInit {
     }
 
     onClickThemeCard(themeCode: string): void {
+        this.selectedThemeCode = themeCode;
         this.filtersService.deleteAllFilters();
         this.filtersService.themesFilter.value = [themeCode];
         this.router.navigate(['/catalogue']);

@@ -12,7 +12,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
-import {OwnerInformationComponent} from '@features/personal-space/components/owner-information/owner-information.component';
+import {ContactCardComponent} from '@features/personal-space/components/contact-card/contact-card.component';
 import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {TabComponent} from '@shared/core/common/tab/tab.component';
 import {Subject, Observable, of} from 'rxjs';
@@ -41,7 +41,7 @@ import {NewDatasetRequestTableComponent} from '@shared/business/projects/project
         AsyncPipe,
         TranslatePipe,
         ProjectTaskHistoricComponent,
-        OwnerInformationComponent,
+        ContactCardComponent,
         TabsComponent,
         TabComponent,
         ProjectMainInformationsComponent,

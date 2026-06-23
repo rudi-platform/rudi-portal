@@ -203,7 +203,12 @@ public class OrganizationTaskServiceImpl extends
 			checkStatusLinkedProducers(assetDescriptionEntity); // refus si l'organisation a des sous workflow en cours
 			hasProjectOwnerRunningTask(assetDescriptionEntity); // refus si l'organisation a des projets en cours ou en attente de validation
 		}
-		// Else cas de la modification
+
+		boolean isUpdate = organizationWorkflowHelper.isDraftTypeUpdate(draftType);
+
+		if (isUpdate) {
+			checkStatusLinkedProducers(assetDescriptionEntity); // refus si l'organisation a des sous workflow en cours
+		}
 	}
 
 	private void hasProjectOwnerRunningTask(OrganizationEntity assetDescriptionEntity) throws InvalidStateException {

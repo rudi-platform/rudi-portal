@@ -161,6 +161,13 @@
                     "contactEmail": {
                         "title": "Adresse e-mail de contact pour cette réutilisation",
                         "description": "Cette adresse sera accessible depuis le catalogue. Vous pouvez indiquer une adresse spécifique sur laquelle vous souhaitez être contacté."
+                    },
+                    "relatedOrganizations": {
+                        "title": "Organisations partenaires",
+                        "description": "Vous réalisez cette réutilisation en partenariat avec une ou plusieurs organisations. Celles-ci devront accepter d’y être associées afin d’accéder aux données et d’apparaître comme partenaire.",
+                        "placeholder": "Sélectionner une option",
+                        "label": "Nom de la ou des organisations partenaires",
+                        "maxReached": "Vous avez sélectionné le nombre maximal d'organisations partenaires (9)."
                     }
                 },
                 "step3": {
@@ -315,6 +322,7 @@
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
+        "sessionExpired": "Votre session a expiré, veuillez vous reconnecter.",
         "technicalError": "Le portail {projectName} est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée."
     },
     "common": {
@@ -690,6 +698,7 @@
                 "id": "Identifiant",
                 "dash": "",
                 "changePassword": "Modifier le mot de passe",
+"modify": "Modifier les informations",
                 "archive": "Archiver votre organisation"
             },
             "membersTable": {
@@ -1205,11 +1214,19 @@
             "identifiant": "Identifiant de l'organisation",
             "nom": "Nom de l'organisation",
             "supplier": "Demandeur",
-            "organizationInformations": "Informations de l'organisation",
+            "organizationInformations": "Information de l'organisation",
+            "image": "Image de l'organisation",
+            "imageAlt": "Image de l'organisation {{name}}",
             "archive": {
                 "task": {
                     "title": "Demande d'archivage d'organisation",
                     "accordionTitle": "Demande d'archivage d'organisation"
+                }
+            },
+            "update": {
+                "task": {
+                    "title": "Demande de modification d'organisation",
+                    "accordionTitle": "Demande de modification d'organisation"
                 }
             }
         },
@@ -1229,6 +1246,8 @@
                 "description": "Description",
                 "descriptionHint": "Dites-nous en plus sur votre organisation ! Cette description sera visible depuis le catalogue des organisations.",
                 "image": "Image",
+                "messageToModerator": "Message à l'attention de l'équipe {projectName}",
+                "messageToModeratorHint": "Vous pouvez ajouter un message à l'attention de l'équipe {projectName} pour expliquer les modifications apportées.",
                 "url": "Url d'accès",
                 "urlHint": "Cette url est le chemin d'accès à la page officielle de votre organisation.",
                 "address": "Adresse postale",
@@ -1242,6 +1261,16 @@
                 "error": "Une erreur est survenue lors de l'archivage de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
                 "errorArchiveAlreadyInProgress": "L'archivage de votre organisation ne peut être effectuée pour la raison suivante : une demande d'archivage de votre organisation est déjà en cours.",
                 "errorTaskInProgress": "Votre organisation ne peut pas être archivée car des actions qui lui sont associées sont en cours. Assurez-vous de clôturer l'ensemble des actions sous-jacentes qui peuvent être liées aux : réutilisations, aux demandes d'accès à des jeux de données à accès restreint, à des demandes de nouvelles données."
+            },
+"update": {
+                "dialog": {
+                    "title": "Modifier les informations",
+                    "description": "Vous vous apprêtez à modifier les informations de votre organisation. Celles-ci vont être soumises à modération avant d'être publiées sur le catalogue des organisations."
+                },
+                "success": "Vos modifications ont été soumises avant publication.",
+                "error": "Une erreur est survenue lors de la modification de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
+                "errorAlreadyInProgress": "La modification de votre organisation ne peut être effectuée pour la raison suivante : une demande de modification de votre organisation est déjà en cours.",
+                "errorTaskInProgress": "Vous ne pouvez pas modifier les informations de votre organisation car une action rattachée à celle-ci est en cours."
             }
         },
         "linkedProducerDetails": {
@@ -1258,7 +1287,9 @@
                 "currentProject": "Réutilisation actuelle"
             },
             "projectHistorique": "Historique",
-            "projectOwner": "Réutilisateur"
+            "projectOwner": "Réutilisateur",
+            "relatedOrganization": "Organisation partenaire",
+            "relatedOrganizations": "Organisations partenaires"
         },
         "projectTaskHistoric": {
             "title": "Historique de la demande",

@@ -31,7 +31,7 @@ import {LinkedProducerStatus, OwnerInfo} from 'micro_service_modules/strukture/s
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
-import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
+import {ContactCardComponent} from '../../components/contact-card/contact-card.component';
 
 @Component({
     selector: 'app-producer-link-task-detail',
@@ -43,7 +43,7 @@ import {OwnerInformationComponent} from '../../components/owner-information/owne
         TabsComponent,
         TabComponent,
         OrganizationInformationComponent,
-        OwnerInformationComponent,
+        ContactCardComponent,
         BannerButtonComponent,
         AsyncPipe,
         TranslatePipe]

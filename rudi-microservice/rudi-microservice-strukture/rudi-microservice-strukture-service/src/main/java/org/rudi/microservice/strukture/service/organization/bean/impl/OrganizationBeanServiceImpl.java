@@ -10,7 +10,6 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
-import org.rudi.facet.kaccess.bean.MetadataFacet;
 import org.rudi.facet.kaccess.bean.MetadataFacetValues;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
@@ -36,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 
-	private static final String ORGANIZATION_UUID_FACET = "producer_organization_id";
+	public static final String ORGANIZATION_UUID_FACET = "producer_organization_id";
 
 	private final OrganizationCustomDao organizationCustomDao;
 	private final OrganizationBeanMapper organizationBeanMapper;
@@ -101,30 +100,16 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 				&& metadataListFacets.getFacets() != null
 				&& CollectionUtils.isNotEmpty(metadataListFacets.getFacets().getItems())) {
 
-			// Récupère les données de la facet dataset sur les organisations ayant produit des données
-			// C'est à dire une liste mettant en corélation des organizationUuid
-			//  et le nombre de jdd produit par ces organisations.
-			Optional<MetadataFacet> targettedFacet = metadataListFacets
-					.getFacets()
-					.getItems()
-					.stream()
-					.filter(f -> f.getPropertyName().equals(OrganizationBeanServiceImpl.ORGANIZATION_UUID_FACET)).findFirst();
+			final String beanUuid = bean.getUuid().toString();
 
-			if(targettedFacet.isPresent()){
+			Optional<MetadataFacetValues> metadataFacetValue = metadataListFacets.getFacets().getItems().stream()
+					.filter(f -> OrganizationBeanServiceImpl.ORGANIZATION_UUID_FACET.equals(f.getPropertyName()))
+					.flatMap(f -> f.getValues().stream())
+					.filter(v -> beanUuid.equals(v.getValue()))
+					.findFirst();
 
-				// Si l'oganisation est présente dans la liste c'est qu'elle a produit au moins un jdd
-				//  alors, on récupère le nombre de jdd produit par cette organisation.
-				Optional<MetadataFacetValues> metadataFacetValue = targettedFacet
-						.get()
-						.getValues()
-						.stream()
-						.filter(v -> v.getValue().equals(bean.getUuid().toString())).findFirst();
+			datasetCount = metadataFacetValue.map(MetadataFacetValues::getCount).orElse(0);
 
-				if (metadataFacetValue.isPresent()){
-					datasetCount = metadataFacetValue.get().getCount();
-
-				}
-			}
 		}
 		bean.setDatasetCount(datasetCount);
 	}
@@ -186,7 +171,7 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 				.stream()
 				.filter(p -> p.getOwnerUUID().equals(bean.getUuid())).findFirst();
 
-		bean.setDatasetCount(projectByOwner.map(byOwner -> byOwner.getProjectCount().intValue()).orElse(0));
+		bean.setProjectCount(projectByOwner.map(byOwner -> byOwner.getProjectCount().intValue()).orElse(0));
 	}
 
 

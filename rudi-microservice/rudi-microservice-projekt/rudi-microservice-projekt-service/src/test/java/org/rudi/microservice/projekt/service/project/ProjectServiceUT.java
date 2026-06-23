@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -57,7 +59,9 @@ import org.rudi.microservice.projekt.core.bean.TargetAudience;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.service.confidentiality.impl.ConfidentialityHelper;
+import org.rudi.microservice.projekt.service.datafactory.ProjectDataFactory;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
+import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.service.mapper.ReutilisationStatusMapper;
 import org.rudi.microservice.projekt.service.replacer.TransientDtoReplacerTest;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
@@ -125,6 +129,8 @@ class ProjectServiceUT {
 	private final SupportDao supportDao;
 	private final ReutilisationStatusDao reutilisationStatusDao;
 	private final LinkedDatasetService linkedDatasetService;
+	private final ProjectDataFactory projectDataFactory;
+	private final ProjectMapper projectMapper;
 
 	private final JsonResourceReader jsonResourceReader;
 	private final List<TransientDtoReplacerTest> transientDtoReplacers;
@@ -488,7 +494,7 @@ class ProjectServiceUT {
 		final Project updatedProject = projectService.updateProject(project);
 
 		assertThat(updatedProject).as("Aucun champ n'a été modifié à part le titre").usingRecursiveComparison()
-				.ignoringFields("datasetRequests", "linkedDatasets", "creationDate", "updatedDate").isEqualTo(project);
+				.ignoringFields("datasetRequests", "linkedDatasets", "creationDate", "updatedDate", "relatedOrganizations").isEqualTo(project);
 	}
 
 	@Test
@@ -547,7 +553,7 @@ class ProjectServiceUT {
 				.sorted(Comparator.comparing(TargetAudience::getUuid)).collect(Collectors.toList()));
 
 		assertThat(updatedProject).as("Aucun champ n'a été modifié à part le titre").usingRecursiveComparison()
-				.ignoringFields("datasetRequests", "linkedDatasets", "creationDate", "updatedDate").isEqualTo(project);
+				.ignoringFields("datasetRequests", "linkedDatasets", "creationDate", "updatedDate", "relatedOrganizations").isEqualTo(project);
 	}
 
 	@Test
@@ -1450,6 +1456,63 @@ class ProjectServiceUT {
 				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
 	}
 
+	@Test
+	@DisplayName("Créer un projet avec des organisations partenaires")
+	void createProjectWithRelatedOrganizations() throws AppServiceException {
+		// Arrange : 3 organisations liées
+		UUID orgUuid1 = UUID.randomUUID();
+		UUID orgUuid2 = UUID.randomUUID();
+		UUID orgUuid3 = UUID.randomUUID();
+		Set<UUID> expectedOrgUuids = new HashSet<>(List.of(orgUuid1, orgUuid2, orgUuid3));
+
+		UUID ownerUuid = UUID.randomUUID();
+		var projectEntity = projectDataFactory.getParkBikeWithLinkedAndOrganizations(
+				ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER,
+				expectedOrgUuids,
+				null);
+		Project projectToCreate = projectMapper.entityToDto(projectEntity);
+		mockAuthenticatedUserToCreateProject(projectToCreate);
+
+		// Act : Créer le projet via le service
+		Project createdProject = projectService.createProject(projectToCreate);
+
+		// Assert : Vérifier que le projet a bien été créé avec ses organisations liées
+		assertThat(createdProject).as("Le projet doit être créé").isNotNull();
+		assertThat(createdProject.getUuid()).as("Le projet doit avoir un UUID").isNotNull();
+		assertThat(createdProject.getRelatedOrganizations())
+				.as("Le projet doit avoir 3 organisations liées")
+				.hasSize(3);
+
+		Set<UUID> savedOrgUuids = createdProject.getRelatedOrganizations().stream()
+				.map(org.rudi.microservice.projekt.core.bean.RelatedOrganization::getOrganizationUuid)
+				.collect(Collectors.toSet());
+
+		assertThat(savedOrgUuids)
+				.as("Les UUIDs des organisations liées doivent correspondre aux UUIDs fournis")
+				.containsExactlyInAnyOrderElementsOf(expectedOrgUuids);
+	}
+
+	@Test
+	@DisplayName("Créer un projet invalide : owner organisation présent dans relatedOrganizations")
+	void createProjectWithOwnerOrganizationInRelatedOrganizations() throws AppServiceException {
+		// Arrange
+		UUID ownerOrganizationUuid = UUID.randomUUID();
+		UUID partnerOrganizationUuid = UUID.randomUUID();
+		Set<UUID> relatedOrganizationUuids = new HashSet<>(List.of(partnerOrganizationUuid));
+		var projectEntity = projectDataFactory.getPoubelleWithRelatedOrganizations(
+				ownerOrganizationUuid,
+				relatedOrganizationUuids,
+				null);
+		Project projectToCreate = projectMapper.entityToDto(projectEntity);
+		mockAuthenticatedUserToCreateProject(projectToCreate);
+
+		// Act + Assert : la création via service doit rejeter ce cas invalide
+		assertThatThrownBy(() -> projectService.createProject(projectToCreate))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("RelatedOrganization cannot be the owner of the project");
+	}
+
 	private ProjectKeyCredential createKeyCredential(String name) {
 		ProjectKey projectKey = new ProjectKey();
 		projectKey.setName(name);
@@ -1468,5 +1531,4 @@ class ProjectServiceUT {
 			return "projects/" + file + ".json";
 		}
 	}
-
 }

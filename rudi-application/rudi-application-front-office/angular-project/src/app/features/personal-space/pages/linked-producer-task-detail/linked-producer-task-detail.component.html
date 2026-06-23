@@ -18,10 +18,10 @@
               </div>
               @if (ownerInfo | async; as ownerInformation) {
                 <div class="owner-information-container">
-                  <app-owner-information [email]="ownerInformation?.contact"
+                  <app-contact-card [email]="ownerInformation?.contact"
                     [name]="ownerInformation?.name"
                     [title]="'personalSpace.organizationDetails.nodeProvider' | translate"
-                  ></app-owner-information>
+                  ></app-contact-card>
                 </div>
               }
             </div>

@@ -7,12 +7,12 @@
         </div>
       }
       @if (section | isSectionDisplayed) {
-        <label class="section-title-container">
+        <div class="section-title-container">
           <span class="title">{{section.label}}</span>
           @if (section.help != null) {
             <span class="description">{{section.help}}</span>
           }
-        </label>
+        </div>
       }
       <ng-container>
         <ng-container *ngTemplateOutlet="fields"></ng-container>

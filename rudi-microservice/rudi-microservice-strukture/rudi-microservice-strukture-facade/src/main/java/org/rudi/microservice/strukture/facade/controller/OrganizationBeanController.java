@@ -55,18 +55,25 @@ public class OrganizationBeanController implements OrganizationBeansApi, PublicO
 		return ResponseEntity.ok(pagedOrganizationBeans);
 	}
 
+
 	@Override
-	public ResponseEntity<PagedOrganizationBeanList> searchPublicOrganizationsBeans(Boolean active, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationBeanList> searchPublicOrganizationsBeans(String name, List<UUID> uuids, List<UUID> excludedOrganizationUuids ,Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().active(active).build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
+				.name(name)
+				.active(active)
+				.uuids(uuids)
+				.excludeOrganizationUuids(excludedOrganizationUuids)
+				.loadAllInformations(full)
+				.build();
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchPublicOrganizationBeans(criteria, pageable);
 		return ResponseEntity.ok(new PagedOrganizationBeanList().elements(organizationBeans.getContent()).total(organizationBeans.getTotalElements()));
 	}
 
 	@Override
-	public ResponseEntity<PagedOrganizationBeanList> searchMyOrganizationBeans(UUID uuid, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationBeanList> searchMyOrganizationBeans(List<UUID> uuids, String name, Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().active(active).build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuids(uuids).name(name).loadAllInformations(Boolean.TRUE.equals(full)).active(active).build();
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
 		return ResponseEntity.ok(new PagedOrganizationBeanList().elements(organizationBeans.getContent()).total(organizationBeans.getTotalElements()));
 	}

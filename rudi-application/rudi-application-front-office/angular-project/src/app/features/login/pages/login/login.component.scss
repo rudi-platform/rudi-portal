@@ -72,9 +72,24 @@ mat-error {
 }
 
 .button-login {
-    @include common-style.card-main-button;
-    
+    --mdc-protected-button-container-color: #004680;
+    --mdc-protected-button-label-text-color: #ffffff;
+    --mdc-filled-button-container-color: #004680;
+    --mdc-filled-button-label-text-color: #ffffff;
+    background-color: #004680;
+    color: #ffffff;
+
+    &:not(:disabled):hover {
+        --mdc-protected-button-container-color: #0270e7;
+        --mdc-filled-button-container-color: #0270e7;
+        background-color: #0270e7;
+    }
 }
+
+.button-external-login.button-login {
+    @include common-style.card-main-button;
+}
+
 
 .button-external-login {
     margin-bottom: 1em;
@@ -113,13 +128,13 @@ mat-error {
 }
 
 .authenticator-item {
-    
+
     .franceconnect  {
 
         .login-text-description {
             margin-bottom: 24px;
         }
-        
+
         .authenticator-links {
             display: grid;
             text-align: center;

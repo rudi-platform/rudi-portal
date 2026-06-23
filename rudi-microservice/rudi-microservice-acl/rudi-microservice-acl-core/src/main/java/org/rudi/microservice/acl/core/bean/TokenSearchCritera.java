@@ -22,4 +22,6 @@ public class TokenSearchCritera {
 	private String token;
 
 	private String userId;
+
+	private String userLogin;
 }

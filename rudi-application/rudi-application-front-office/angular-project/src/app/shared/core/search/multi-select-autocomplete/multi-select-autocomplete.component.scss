@@ -1,0 +1,66 @@
+@use "app/styles/common-style";
+
+.multi-select-autocomplete {
+  position: relative;
+  display: block;
+}
+
+// Label externe (identique au label du select d'organisation)
+.multi-select-label {
+  display: block;
+  font-size: 14px;
+  margin: 0 0 4px 4px;
+  color: var(--primary-text);
+}
+
+// Champ Material pleine largeur
+.multi-select-field {
+  width: 100%;
+}
+
+// Wrapper flex qui contient les chips + input sur la même ligne
+.field-inner-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 24px;
+}
+
+.inline-input {
+  flex: 1;
+  min-width: 60px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+// Option de chargement centrée
+.loading-option {
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+// Flèche dropdown cliquable
+.dropdown-arrow {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+// Message de limite atteinte
+.max-selection-message {
+  padding: 12px 16px;
+  color: var(--warn-color, #f44336);
+  font-size: 0.85em;
+  font-style: italic;
+  text-align: center;
+}
+
+// Option sélectionnée dans le dropdown
+.option-selected {
+  color: rgba(0, 0, 0, 0.38);
+}

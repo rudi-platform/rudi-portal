@@ -22,6 +22,7 @@ Pour démarrer rapidement, une **instance prête à démarrer** de RUDI est disp
    - [Commandes frontend](./demarrage/demarrage-frontend.md) - Commandes utiles de génération de code et le démarrage du frontend Angular.
    - [Installation et configuration de Dataverse](./demarrage/demarrage-dataverse.md)
    - [Installation et configuration de Magnolia](./demarrage/demarrage-magnolia.md)
+   
 
 1. Procédures spécifiques
 
@@ -32,6 +33,7 @@ Pour démarrer rapidement, une **instance prête à démarrer** de RUDI est disp
    - [Comment modifier les mots de passe et token de Dataverse ?](./cookbook/modifier-mot-de-passe-dataverse.md)
    - [Comment modifier les mots de passe et token de Magnolia ?](./cookbook/modifier-mot-de-passe-magnolia.md)
    - [(Hors production) Comment modifier le mot de passe de mailhog ?](./cookbook/modifier-mot-de-passe-mailhog.md)
+   - [Configuration du service d'authentification externe](./cookbook/configuration-services-authentification.md)
 
 ## Conventions de documentation
 

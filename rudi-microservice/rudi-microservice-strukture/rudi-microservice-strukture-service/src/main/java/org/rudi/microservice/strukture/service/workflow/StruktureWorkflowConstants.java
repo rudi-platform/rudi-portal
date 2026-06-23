@@ -17,4 +17,5 @@ public final class StruktureWorkflowConstants {
 	public static final String FIELD_NAME_IMAGE_ORGANIZATION = "organizationImage";
 
 	public static final String DRAFT_ARCHIVE_FORM_SECTION_NAME = "organization-process-draft/archive-organization";
+	public static final String DRAFT_UPDATE_FORM_SECTION_NAME = "organization-process-draft/update-organization";
 }

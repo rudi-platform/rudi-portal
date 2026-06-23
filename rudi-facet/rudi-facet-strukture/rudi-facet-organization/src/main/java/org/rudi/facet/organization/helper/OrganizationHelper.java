@@ -113,7 +113,7 @@ public class OrganizationHelper {
 	public Organization getOrganization(UUID organizationUuid) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
-						.queryParam("uuid", organizationUuid).build())
+						.queryParam("uuids", List.of(organizationUuid)).build())
 				.retrieve().bodyToMono(PagedOrganizationList.class);
 		final var pagedOrganizationList = MonoUtils.blockOrThrow(mono, GetOrganizationException.class);
 		if (pagedOrganizationList != null) {
@@ -126,10 +126,10 @@ public class OrganizationHelper {
 	}
 
 	@Nonnull
-	public PagedOrganizationList searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
+	public PagedOrganizationList searchOrganizations(List<UUID> uuids, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
-						.queryParamIfPresent("uuid", Optional.ofNullable(uuid))
+						.queryParamIfPresent("uuids", Optional.ofNullable(uuids))
 						.queryParamIfPresent("name", Optional.ofNullable(name))
 						.queryParamIfPresent("active", Optional.ofNullable(active))
 						.queryParamIfPresent("user_uuid", Optional.ofNullable(userUuid))
@@ -201,5 +201,21 @@ public class OrganizationHelper {
 		}
 
 		return page.getElements().stream().map(Organization::getUuid).toList();
+	}
+
+	public boolean hasOrganizationCompletedWorkflow(UUID ownerUuid) {
+		// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
+		// L'organisation ne doit pas avoir de Workflow en cours
+		try {
+			PagedOrganizationList organizations = searchOrganizations(List.of(ownerUuid), null, null, null, null,
+					Status.COMPLETED, 0, 1, null);
+
+			// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
+			// Soit qu'elle a un workflow en cours
+			// On empêche donc le lancement du workflow
+			return organizations.getElements() != null && !organizations.getElements().isEmpty();
+		} catch (GetOrganizationException e) {
+			throw new IllegalArgumentException("Invalid organization uuid " + ownerUuid, e);
+		}
 	}
 }

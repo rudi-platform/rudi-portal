@@ -3072,6 +3072,46 @@
 				}
 			}
 		},
+		"/owners-infos": {
+			"post": {
+				"tags": [
+					"projekt"
+				],
+				"summary": "Informations minimales sur un porteur de projet et ses organisation partenaires",
+				"description": "Un porteur de projet peut être un utilisateur ou une organisation.",
+				"operationId": "getOwnersInfos",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "./rudi-projekt-model.json#/components/schemas/OwnerInfoRequest"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "rudi-projekt-model.json#/components/schemas/OwnerInfo"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
 		"/owner-info/{ownerType}/{ownerUuid}": {
 			"get": {
 				"tags": [

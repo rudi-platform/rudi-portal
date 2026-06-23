@@ -1,6 +1,7 @@
 package org.rudi.microservice.acl.facade.controller;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import org.rudi.microservice.acl.core.bean.OAuth2AuthenticatorDescription;
 import org.rudi.microservice.acl.core.bean.PasswordChange;
 import org.rudi.microservice.acl.core.bean.Tokens;
 import org.rudi.microservice.acl.core.bean.User;
+import org.rudi.microservice.acl.facade.config.security.TokenManager;
 import org.rudi.microservice.acl.facade.config.security.cache.AccessTokenManager;
 import org.rudi.microservice.acl.facade.config.security.jwt.JwtTokenUtil;
 import org.rudi.microservice.acl.facade.config.security.oauth2.authenticator.OAuth2AuthenticatorHelper;
@@ -24,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -38,6 +42,7 @@ public class AccountController implements AccountApi {
 	private final AccountService accountService;
 	private final UserService userService;
 	private final AccessTokenManager accessTokenManager;
+	private final TokenManager tokenManager;
 	private final JwtTokenUtil jwtTokenUtil;
 	private final OAuth2AuthenticatorHelper oAuth2AuthenticatorHelper;
 	private final ObjectMapper objectMapper;
@@ -86,11 +91,11 @@ public class AccountController implements AccountApi {
 			try {
 				OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = lookupOAuth2AuthenticatorDescription(
 						authorizationHeader);
-				String idToken = lookpupOriginalIdToken(authorizationHeader);
+				String token = lookpupOriginalToken(authorizationHeader);
 				log.info("Déconnexion du compte, oAuth2AuthenticatorDescription : {}",
 						oAuth2AuthenticatorDescription != null ? oAuth2AuthenticatorDescription.getName()
 								: "no provider");
-				logoutUri = extractLogoutUri(oAuth2AuthenticatorDescription, idToken);
+				logoutUri = extractLogoutUri(oAuth2AuthenticatorDescription, token);
 				log.info("Déconnexion du compte, logoutUri : {}", logoutUri);
 			} catch (Exception e) {
 				// En cas d'erreur, on continue la déconnexion locale
@@ -160,35 +165,40 @@ public class AccountController implements AccountApi {
 		return issuer;
 	}
 
-	protected String lookpupOriginalIdToken(String authorizationHeader) throws ParseException {
+	protected String lookpupOriginalToken(String authorizationHeader)
+			throws ParseException, JsonMappingException, JsonProcessingException {
 		SignedJWT signedJWT = jwtTokenUtil.getJWS(authorizationHeader);
-		String idtoken = null;
+		String tokenId = null;
+		AuthenticatedUser authenticatedUser = null;
 		log.info("Lookup original id token from token JWT");
-		Object connectedUser = signedJWT.getJWTClaimsSet().getClaims().get(AbstractJwtTokenUtil.CONNECTED_USER);
-		if (connectedUser instanceof AuthenticatedUser authenticatedUser) {
-			log.info("Lookup origianl id token dans connectedUser");
-			idtoken = authenticatedUser.getData(AbstractJwtTokenUtil.ORIGINAL_IDTOKEN);
-		} else if (connectedUser instanceof String connectedUserStr) {
+		Object connectedUserObject = signedJWT.getJWTClaimsSet().getClaims().get(AbstractJwtTokenUtil.CONNECTED_USER);
+		if (connectedUserObject instanceof String connectedUserStr) {
 			log.info("connectedUser est une chaîne de caractères, tentative de parsing en AuthenticatedUser");
-			try {
-				AuthenticatedUser authenticatedUser = objectMapper.readValue(connectedUserStr, AuthenticatedUser.class);
-				idtoken = authenticatedUser.getData(AbstractJwtTokenUtil.ORIGINAL_IDTOKEN);
-			} catch (Exception e) {
-				log.warn("Erreur lors du parsing de connectedUser en AuthenticatedUser", e);
-			}
+			authenticatedUser = objectMapper.readValue(connectedUserStr, AuthenticatedUser.class);
+		} else if (connectedUserObject instanceof AuthenticatedUser connectedUserAuth) {
+			log.info("Lookup original id token dans connectedUser");
+			authenticatedUser = connectedUserAuth;
 		} else {
 			log.info("Aucun original id token trouvé dans les claims du token JWT");
 		}
-
-		return idtoken;
+		if (authenticatedUser != null) {
+			tokenId = authenticatedUser.getData(AbstractJwtTokenUtil.ORIGINAL_TOKEN_ID);
+			if (tokenId != null) {
+				return tokenManager.getTokenValue(tokenId);
+			}
+		}
+		return null;
 	}
 
-	protected String extractLogoutUri(OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription, String idToken) {
+	protected String extractLogoutUri(OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription, String token) {
 		if (oAuth2AuthenticatorDescription != null && oAuth2AuthenticatorDescription.getProvider() != null) {
 			String logoutUri = oAuth2AuthenticatorDescription.getProvider().getLogoutUri();
-			Map<String, String> parameters = Map.of(OAuth2AuthenticatorHelper.SERVER_URL_PARAMETER,
-					oAuth2AuthenticatorDescription.getServerUrl(), OAuth2AuthenticatorHelper.ID_TOKEN_PARAMETER,
-					idToken);
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put(OAuth2AuthenticatorHelper.SERVER_URL_PARAMETER,
+					oAuth2AuthenticatorDescription.getServerUrl());
+			if (StringUtils.isNotEmpty(token)) {
+				parameters.put(OAuth2AuthenticatorHelper.TOKEN_PARAMETER, token);
+			}
 			return oAuth2AuthenticatorHelper.convertUrl(logoutUri, parameters);
 		}
 		return null;

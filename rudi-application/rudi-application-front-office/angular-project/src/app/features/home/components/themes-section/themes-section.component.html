@@ -8,28 +8,54 @@
       containerName="rudi-themes"
       [autoplay]="false"
       [loop]="true"
-      [breakpoints]="cardSwiperBreakpoints">
-      @for (theme of themes; track theme) {
-        <div>
-          <div class="theme-card" (click)="onClickThemeCard(theme.code)">
-            <mat-icon class="theme-picto" [svgIcon]="theme.code"></mat-icon>
+      [breakpoints]="cardSwiperBreakpoints"
+      [ariaLabel]="'home.themesSection.title' | translate"
+      ariaRoledescription="carrousel">
+      @for (theme of themes; track theme; let i = $index) {
+        <fieldset class="slide-group" [attr.aria-label]="theme.name + ' ' + (i + 1) + ' sur ' + themes.length" aria-roledescription="diapositive">
+          <button
+            type="button"
+            class="theme-card"
+            [attr.aria-pressed]="selectedThemeCode === theme.code"
+            [attr.aria-label]="theme.name"
+            [class.theme-card--selected]="selectedThemeCode === theme.code"
+            (click)="onClickThemeCard(theme.code)">
+            <mat-icon
+              class="theme-picto"
+              [svgIcon]="theme.code"
+              role="img"
+              [attr.aria-label]="theme.name"
+              aria-hidden="false">
+            </mat-icon>
             <span class="theme-name">{{theme.name}}</span>
-          </div>
-        </div>
+          </button>
+        </fieldset>
       }
     </app-rudi-swiper>
   }
   @if (!isLoading && !canDisplaySwiper) {
-    <div class="theme-container">
+    <ul class="theme-container">
       @for (theme of themes; track theme) {
-        <div >
-          <div class="theme-card" (click)="onClickThemeCard(theme.code)">
-            <mat-icon class="theme-picto" [svgIcon]="theme.code"></mat-icon>
+        <li class="theme-list-item">
+          <button
+            type="button"
+            class="theme-card"
+            [attr.aria-pressed]="selectedThemeCode === theme.code"
+            [attr.aria-label]="theme.name"
+            [class.theme-card--selected]="selectedThemeCode === theme.code"
+            (click)="onClickThemeCard(theme.code)">
+            <mat-icon
+              class="theme-picto"
+              [svgIcon]="theme.code"
+              role="img"
+              [attr.aria-label]="theme.name"
+              aria-hidden="false">
+            </mat-icon>
             <span class="theme-name">{{theme.name}}</span>
-          </div>
-        </div>
+          </button>
+        </li>
       }
-    </div>
+    </ul>
   }
 </div>
 

@@ -90,10 +90,9 @@ public class ProjektHelper {
 	}
 
 	public List<ProjectByOwner> getNumberOfProjectsPerOwners(List<UUID> ownerUuids) {
-		ProjectSearchCriteria criteria = new ProjectSearchCriteria().ownerUuids(ownerUuids);
 		val projectByOwners = projektWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(projektProperties.getGetNumberOfProjectsPerOwnersPath())
-						.queryParam("criteria", criteria).build())
+						.queryParam("ownerUuids", ownerUuids).build())
 				.retrieve().bodyToMono(ProjectByOwner[].class).block();
 
 		// Null safety projectByOwners

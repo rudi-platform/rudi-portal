@@ -417,6 +417,28 @@ enum org.rudi.microservice.projekt.storage.entity.project.ProjectStatus {
 }
 
 
+class org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity <<Entity>>  <<Table>>  {
+ {TableName=related_organization}
+ {TableSchema=projekt_data}
+--
+	{field} {static} +FIELD_ORGANIZATION_UUID : String
+	{field} {static} +FIELD_RELATION_STATUS : String
+	{field} {static} +PROJECT_FK : String
+	{field} +@Column("organization_uuid") organizationUuid : java.util.UUID
+	{field} {static} -serialVersionUID : long
+	{method} +equals ( obj : Object ) : boolean
+	{method} +hashCode () : int
+	{method} +toString () : String
+}
+
+
+enum org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus {
+	{field} +ACCEPTED
+	{field} +PENDING
+	{field} +REFUSED
+}
+
+
 
 
 org.rudi.common.storage.entity.AbstractLabelizedEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
@@ -450,6 +472,7 @@ org.rudi.microservice.projekt.storage.entity.project.ProjectEntity "1" o-- "0..*
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity "1" o-- "0..*"  org.rudi.microservice.projekt.storage.entity.TargetAudienceEntity :  @ManyToMany\ntargetAudiences
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity "1" o-- "0..*"  org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity :  @OneToMany\nlinkedDatasets
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity "1" o-- "0..*"  org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity :  @OneToMany\ndatasetRequests
+org.rudi.microservice.projekt.storage.entity.project.ProjectEntity "1" o-- "0..*"  org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity :  @OneToMany\nrelatedOrganizations
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity -->  org.rudi.microservice.projekt.storage.entity.ConfidentialityEntity :  @ManyToOne\nconfidentiality
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity -->  org.rudi.microservice.projekt.storage.entity.OwnerType :  @Column("owner_type")\nownerType
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity -->  org.rudi.microservice.projekt.storage.entity.ProjectTypeEntity :  @ManyToOne\ntype
@@ -458,6 +481,8 @@ org.rudi.microservice.projekt.storage.entity.project.ProjectEntity -->  org.rudi
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity -->  org.rudi.microservice.projekt.storage.entity.project.ProjectStatus :  @Column("project_status")\nprojectStatus
 org.rudi.microservice.projekt.storage.entity.project.ProjectEntity --|>  org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
 org.rudi.microservice.projekt.storage.entity.project.ProjectStatus ..|>  org.rudi.common.storage.entity.PositionedStatus
+org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity -->  org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus :  @Column("relation_status")\nrelationStatus
+org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
 
 hide methods
 

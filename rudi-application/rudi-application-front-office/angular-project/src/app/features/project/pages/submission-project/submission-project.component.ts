@@ -43,7 +43,8 @@ import {UpdateAction} from '../../model/upate-action';
     providers: [{
         provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
     }],
-    imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent, MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, TranslatePipe]
+    imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent,
+        MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, TranslatePipe]
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
 
@@ -124,7 +125,8 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
                             lastname: this.user.lastname,
                             firstname: this.user.firstname,
                             organizationUuid: null,
-                            contactEmail: this.user.login
+                            contactEmail: this.user.login,
+                            relatedOrganizationUuids: []
                         });
                     }
                     if (dependencies.organizations?.length) {
@@ -331,7 +333,8 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         if (this.createdProject) {
             this.updateProjectFromForm();
             this.isLoading = true;
-            this.projectSubmissionService.updateProject(this.createdProject, this.linkedDatasets, this.datasetRequests, this.mapRequestDetailsByDatasetUuid, image, this.updateImageAction)
+            this.projectSubmissionService.updateProject(this.createdProject, this.linkedDatasets,
+                this.datasetRequests, this.mapRequestDetailsByDatasetUuid, image, this.updateImageAction)
                 .subscribe({
                     next: (created: Project) => {
                         this.onSaveOrCreateSuccess(image, created);
@@ -351,7 +354,8 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         else {
             const project: Project = this.createProjectFromForm();
             this.isLoading = true;
-            this.projectSubmissionService.createProject(project, this.linkedDatasets, this.datasetRequests, image, this.mapRequestDetailsByDatasetUuid)
+            this.projectSubmissionService.createProject(project, this.linkedDatasets, this.datasetRequests, image,
+                this.mapRequestDetailsByDatasetUuid)
                 .subscribe({
                     next: (created: Project) => {
                         this.onSaveOrCreateSuccess(image, created);

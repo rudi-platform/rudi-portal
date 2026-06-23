@@ -1,9 +1,9 @@
 {
-	"help": "Vous vous apprêtez à accepter la demande de nouvelles données. Veuillez remplir le champ ci-dessous pour fournir des informations supplémentaires porteur de projet. ",
+	"help": "Vous vous apprêtez à accepter la demande de nouvelles données. Veuillez remplir le champ ci-dessous pour fournir des informations supplémentaires au réutilisateur. ",
 	"fieldDefinitions": [
 		{
 			"name": "messageToProjectOwner",
-			"label": "Message à l’attention du porteur de projet",
+			"label": "Message à l’attention du réutilisateur",
 			"type": "TEXT",
 			"required": true
 		}

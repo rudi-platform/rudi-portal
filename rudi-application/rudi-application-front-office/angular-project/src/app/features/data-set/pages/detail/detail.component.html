@@ -72,21 +72,18 @@
           }
           <!-- Boutton télécharger -->
             @if (!isSelfdata && hasDownloadableMedia) {
-            <app-banner-button>
-              <div>
-                <div #clickMenuFormatTrigger="matMenuTrigger"
-                  [matMenuTriggerFor]="formatMenu"
-                  class="d-flex align-items-center">
-                  <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
-                  <div
-                    [ngClass]="{'banner-icon-libelle': mediaSize.isSm}">{{ 'availableFormats.telecharger'|translate }}
-                  </div>
-                  <mat-menu #formatMenu="matMenu" role="menu" xPosition="after">
+            <app-banner-button #clickMenuFormatTrigger="matMenuTrigger" [matMenuTriggerFor]="formatMenu">
+              <div class="d-flex align-items-center">
+                <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
+                <div
+                  [ngClass]="{'banner-icon-libelle': mediaSize.isSm}">{{ 'availableFormats.telecharger'|translate }}
+                </div>
+              </div>
+              <mat-menu #formatMenu="matMenu" role="menu" yPosition="below">
                     <div (click)="$event.stopPropagation()" class="rudi-select-panel" fxLayout="column">
                       <form [formGroup]="form">
                         <div class="menu-radioGroup-scrollable">
-                          <h4 class="menu-libelle"
-                          tabindex="0">{{ 'availableFormats.formatsDisponibles'|translate }}</h4>
+                          <h4 class="menu-libelle">{{ 'availableFormats.formatsDisponibles'|translate }}</h4>
                           <mat-radio-group #radioGroup="matRadioGroup"
                             (click)="$event.stopPropagation()"
                             aria-label="Select an option"
@@ -107,7 +104,6 @@
                             [ngClass]="{'btn-download-format':metadata.available_formats.length == null }"
                             class="button menu-btn-download"
                             mat-raised-button
-                            tabindex="3"
                             type="submit"
                             >
                             {{ 'availableFormats.telecharger'|translate }}
@@ -116,8 +112,6 @@
                       </form>
                     </div>
                   </mat-menu>
-                </div>
-              </div>
             </app-banner-button>
           }
           <!-- Faire une demande d'information sur ses données personnelles detenues -->

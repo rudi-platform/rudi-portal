@@ -200,19 +200,47 @@ public class HistoricHelper {
 		}
 	}
 
+	/**
+	 * Recherche la dernière mise à jour d'une variable dans l'historique des détails.
+	 * Retourne l'entrée la plus récente correspondant au nom donné.
+	 *
+	 * @param historicVariables la liste des détails historiques
+	 * @param name le nom de la variable recherchée
+	 * @return la dernière mise à jour de la variable, ou null si non trouvée
+	 */
 	public HistoricDetailVariableInstanceUpdateEntity lookupHistoricDetail(List<HistoricDetail> historicVariables,
 			String name) {
-		HistoricDetailVariableInstanceUpdateEntity result = null;
-		if (CollectionUtils.isNotEmpty(historicVariables)) {
-			for (HistoricDetail historicVariable : historicVariables) {
-				if (historicVariable instanceof HistoricDetailVariableInstanceUpdateEntity item
-						&& item.getName().equalsIgnoreCase(name)) {
-					result = item;
-					break;
-				}
-			}
+		List<HistoricDetailVariableInstanceUpdateEntity> matches = collectHistoricDetailsByName(historicVariables, name);
+		List<HistoricDetailVariableInstanceUpdateEntity> sorted = sortByTimeDesc(matches);
+		return sorted.isEmpty() ? null : sorted.get(0);
+	}
+
+	/**
+	 * Collecte toutes les entrées HistoricDetailVariableInstanceUpdateEntity correspondant au nom donné.
+	 */
+	private List<HistoricDetailVariableInstanceUpdateEntity> collectHistoricDetailsByName(
+			List<HistoricDetail> historicVariables, String name) {
+		if (CollectionUtils.isEmpty(historicVariables)) {
+			return List.of();
 		}
-		return result;
+		return historicVariables.stream()
+				.filter(HistoricDetailVariableInstanceUpdateEntity.class::isInstance)
+				.map(HistoricDetailVariableInstanceUpdateEntity.class::cast)
+				.filter(item -> item.getName().equalsIgnoreCase(name))
+				.toList();
+	}
+
+	/**
+	 * Trie les entrées par date décroissante (la plus récente en premier).
+	 */
+	private List<HistoricDetailVariableInstanceUpdateEntity> sortByTimeDesc(
+			List<HistoricDetailVariableInstanceUpdateEntity> items) {
+		if (CollectionUtils.isEmpty(items)) {
+			return List.of();
+		}
+		return items.stream()
+				.sorted((a, b) -> b.getTime().compareTo(a.getTime()))
+				.toList();
 	}
 
 	/**

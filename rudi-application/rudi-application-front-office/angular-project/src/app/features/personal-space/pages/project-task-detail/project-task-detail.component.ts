@@ -1,4 +1,3 @@
-
 import {Component, OnInit, inject, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatCard, MatCardContent} from '@angular/material/card';
@@ -12,7 +11,10 @@ import {LinkedDatasetMetadatas} from '@core/services/asset/project/project-depen
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
+import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {LogService} from '@core/services/log.service';
+import {AttachmentService} from '@core/services/attachment.service';
+import {ProjectAttachmentService} from '@core/services/project-attachment.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
@@ -43,15 +45,14 @@ import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
-import {WorkflowExpansionImageComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion-image/workflow-expansion-image.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService, Section} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
-import {Project} from 'micro_service_modules/projekt/projekt-model';
+import {OwnerInfoRequest, OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
 import {forkJoin, of} from 'rxjs';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {ProjectMainInformationsComponent} from '../../../project/components/project-main-informations/project-main-informations.component';
-import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
+import {ContactCardComponent, RelatedOrganizationInfo} from '../../components/contact-card/contact-card.component';
 import {ProjectTaskHistoricComponent} from '../../components/project-task-historic/project-task-historic.component';
 
 @Component({
@@ -64,7 +65,6 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
         TabsComponent,
         TabComponent,
         WorkflowExpansionComponent,
-        WorkflowExpansionImageComponent,
         MatAccordion,
         MatExpansionPanel,
         MatExpansionPanelHeader,
@@ -75,11 +75,12 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
         OpenDatasetTableComponent,
         RestrictedDatasetTableComponent,
         NewDatasetRequestTableComponent,
-        OwnerInformationComponent,
+        ContactCardComponent,
         ProjectTaskHistoricComponent,
         BannerButtonComponent,
         TranslatePipe
-    ]
+    ],
+    providers: [{provide: AttachmentService, useExisting: ProjectAttachmentService}]
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>
@@ -107,6 +108,8 @@ export class ProjectTaskDetailComponent
     linkError: string;
     protected readonly ProjectStatus = ProjectStatus;
 
+    relatedOrganizations: RelatedOrganizationInfo[] = [];
+
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
     private readonly projectTaskDependencyFetcher = inject(ProjectTaskDependencyFetcher);
@@ -114,6 +117,7 @@ export class ProjectTaskDetailComponent
     private readonly sanitizer = inject(DomSanitizer);
     private readonly projektService = inject(ProjektService);
     private readonly dataSetActionsAuthorizationService = inject(DataSetActionsAuthorizationService);
+    private readonly organizationMetierService = inject(OrganizationMetierService);
     private readonly projektMetierService = inject(ProjektMetierService);
     private readonly projectSubmissionService = inject(ProjectSubmissionService);
     private readonly projectConsultService = inject(ProjectConsultationService);
@@ -205,6 +209,7 @@ export class ProjectTaskDetailComponent
             ).subscribe({
                 next: (dependencies: ProjectDependencies) => {
                     this.dependencies = dependencies;
+                    this.loadRelatedOrganizations(dependencies.project);
                     this.isLoading = false;
                     this.projektService.isAuthenticatedUserProjectOwner(dependencies.project.uuid).subscribe(isOwner => {
                         this.addActionAuthorized = isOwner &&
@@ -223,6 +228,22 @@ export class ProjectTaskDetailComponent
 
     protected goBackToList(): Promise<boolean> {
         return this.router.navigate(['/personal-space/my-notifications']);
+    }
+
+    private loadRelatedOrganizations(project: Project): void {
+        const relatedOrgs = project.related_organizations;
+        if (!relatedOrgs?.length) {
+            this.relatedOrganizations = [];
+            return;
+        }
+        const ownerInfoRequests: OwnerInfoRequest[] = relatedOrgs.map(r => ({
+            owner_uuid: r.organization_uuid,
+            owner_type: OwnerType.Organization
+        }) as OwnerInfoRequest);
+        this.projektMetierService.getOwnersInfos(ownerInfoRequests).pipe(
+            map(ownerInfos => ownerInfos.map(o => ({name: o.name, adminEmail: o.contact}))),
+            catchError(() => of([]))
+        ).subscribe(orgs => this.relatedOrganizations = orgs);
     }
 
     updateAddButtonStatus(buttonStatus: boolean): void {
@@ -385,5 +406,15 @@ export class ProjectTaskDetailComponent
                 this.childrenIsLoading = false;
             }
         });
+    }
+
+
+    isSectionVisible(section: Section): boolean {
+        if (section.name?.includes('modified-project-picture')) {
+            return false;
+        }
+        return section.fields?.some(f =>
+            f.definition?.type !== 'HIDDEN' && f.values?.some(v => v != null && v.trim() !== '')
+        ) ?? false;
     }
 }

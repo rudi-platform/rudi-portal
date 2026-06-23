@@ -6,13 +6,13 @@
       <mat-card-content>
         @if (newDatasetRequest.creation_date) {
           <div class="vertical-space">
-            <label class="data-label">{{ 'personalSpace.requestDetail.requestDate'|translate }}</label> <br>
+            <span class="data-label">{{ 'personalSpace.requestDetail.requestDate'|translate }}</span> <br>
             <span class="data-value">{{ newDatasetRequest.creation_date | date: 'dd/MM/yyyy' }}</span>
           </div>
         }
         @if (newDatasetRequest.description) {
           <div class="vertical-space">
-            <label class="data-label">{{ 'personalSpace.requestDetail.comment'|translate }}</label> <br>
+            <span class="data-label">{{ 'personalSpace.requestDetail.comment'|translate }}</span> <br>
             <span class="data-value">{{ newDatasetRequest.description }}</span>
           </div>
         }

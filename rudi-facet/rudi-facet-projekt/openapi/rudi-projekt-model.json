@@ -513,6 +513,13 @@
 							},
 							"reutilisation_status": {
 									"$ref": "#/components/schemas/ReutilisationStatus"
+							},
+							"related_organizations": {
+								"description": "Organisations partenaires du projet",
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/RelatedOrganization"
+								}
 							}
 						}
 					}
@@ -677,6 +684,33 @@
 					"ARCHIVED",
 					"DISENGAGED"
 				]
+			},
+			"RelationStatus": {
+				"description": "Statut de la relation entre projet et organization partenaires",
+				"type": "string",
+					"enum": [
+						"ACCEPTED",
+						"REFUSED",
+						"PENDING"
+					]
+			},
+			"RelatedOrganization": {
+				"description": "Organisation partenaire d'un projet",
+				"type": "object",
+				"required": [
+					"organization_uuid",
+					"relation_status"
+				],
+				"properties": {
+					"organization_uuid": {
+						"description": "UUID de l'organisation partenaire",
+						"type": "string",
+						"format": "uuid"
+					},
+					"relation_status": {
+						"$ref": "#/components/schemas/RelationStatus"
+					}
+				}
 			}
 		}
 	}

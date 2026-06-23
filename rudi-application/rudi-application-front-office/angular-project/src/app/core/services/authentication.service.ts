@@ -170,6 +170,14 @@ export class AuthenticationService {
     }
 
     /**
+     * Indique si l'utilisateur est connecté en tant qu'utilisateur (non anonymous)
+     */
+    isAuthenticatedAsUser(): boolean {
+        const state = AuthenticationService.getAuthenticationStateFromSessionStorage();
+        return state === AuthenticationState.USER || state === AuthenticationState.USER_CAS;
+    }
+
+    /**
      * Connexion de l'utilisateur
      * @param form formulaire envoyé pour la connexion
      */

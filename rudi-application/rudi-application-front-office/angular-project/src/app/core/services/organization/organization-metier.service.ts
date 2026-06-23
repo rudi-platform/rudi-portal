@@ -7,6 +7,7 @@ import {
     Organization,
     OrganizationMember,
     OrganizationMemberType,
+    OwnerInfo,
     PagedOrganizationUserMembers
 } from 'micro_service_modules/strukture/strukture-model';
 import {Observable, of} from 'rxjs';
@@ -51,6 +52,10 @@ export abstract class OrganizationMetierService {
 
     getOrganizationByUuid(userUuid: string): Observable<Organization> {
         return this.organizationService.getOrganization(userUuid);
+    }
+
+    getOrganizationOwnerInfo(organizationUuid: string): Observable<OwnerInfo> {
+        return this.organizationService.getOrganizationOwnerInfo(organizationUuid);
     }
 
     searchOrganizationMembers(

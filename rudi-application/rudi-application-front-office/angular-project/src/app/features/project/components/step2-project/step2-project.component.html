@@ -9,18 +9,19 @@
 </div>
 
 <form [formGroup]="step2FormGroup">
-  <label class="step-form-card-label" id="ownerTypeLabel">
+  <span class="step-form-card-label" id="ownerTypeLabel">
     <span
       class="step-form-card-label-title">{{'project.stepper.submission.step2.ownerType.title' | translate}}
       <span class="required-symbol">*</span></span><br/>
       <span
       class="step-form-card-label-description">{{'project.stepper.submission.step2.ownerType.description' | translate}}</span>
-    </label>
+    </span>
 
+    <div class="step-form-card">
     <mat-radio-group
       formControlName="ownerType"
       aria-labelledby="ownerTypeLabel"
-      class="step-form-card">
+      class="step-form-card-radio-group">
 
       <!-- Individuel -->
       <div class="mat-radio-button-container">
@@ -95,6 +96,38 @@
               </mat-error>
             }
           </mat-radio-group>
+
+          <!-- Organisations partenaires -->
+          <section class="related-organizations-section">
+            <mat-slide-toggle
+            class="mat-slide-toggle"
+              [checked]="relatedOrganizationsEnabled"
+              (change)="onToggleRelatedOrganizations()"
+            >
+              <span class="related-organizations-title">{{'project.stepper.submission.step2.relatedOrganizations.title' | translate}}</span>
+            </mat-slide-toggle>
+            <div class="mat-radio-button-panel">
+              <p class="mat-radio-button-description">{{'project.stepper.submission.step2.relatedOrganizations.description' | translate}}</p>
+
+              @if (relatedOrganizationsEnabled) {
+                <div class="related-organizations-field">
+                  <app-multi-select-autocomplete
+                    [autocompleteItems]="relatedOrganizationsAutocompleteItems"
+                    [loading]="relatedOrganizationsLoading"
+                    [excludedValues]="ownerExcludedUuids"
+                    [label]="'project.stepper.submission.step2.relatedOrganizations.label' | translate"
+                    [placeholder]="'project.stepper.submission.step2.relatedOrganizations.placeholder' | translate"
+                    [maxSelection]="9"
+                    [maxSelectionMessageKey]="'project.stepper.submission.step2.relatedOrganizations.maxReached'"
+                    (searchTriggered)="onSearchRelatedOrganizations($event)"
+                    (selectionChanged)="onRelatedOrganizationsChanged($event)"
+                  ></app-multi-select-autocomplete>
+                </div>
+              }
+            </div>
+          </section>
+
+          </div>
 
           <label class="step-form-card-label" for="contactEmail">
             <span

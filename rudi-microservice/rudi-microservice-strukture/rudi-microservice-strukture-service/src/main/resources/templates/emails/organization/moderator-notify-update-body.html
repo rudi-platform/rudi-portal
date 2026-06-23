@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>${projectName} - Archivage d'une organisation</title>
+    <style type="text/css">
+        body {
+            font-family: Montserrat;
+            font-size: 12px;
+            color: #004680;
+        }
+
+        a {
+            font-weight: bold;
+            color: #004680;
+        }
+
+        a:hover {
+            color: #004680;
+        }
+    </style>
+</head>
+<body style="font-family:Montserrat;font-size:12px;	color:#004680;">
+<div>
+    <p>Bonjour,</p>
+    <p>
+        Une demande de modification d'organisation a été lancée pour <a
+            href="${urlServer}/organization/detail/${asset.uuid}">${asset.name}</a>.
+    </p>
+    <p>
+        À très bientôt, <br>
+        L'équipe ${teamName} <br>
+        <a href="${urlServer}">${urlServer}</a>
+    </p>
+</div>
+</body>
+</html>

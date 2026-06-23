@@ -55,6 +55,8 @@ import {
     Project,
     ProjectStatus,
     ProjectType,
+    RelatedOrganization,
+    RelationStatus,
     Support,
     TargetAudience,
     TerritorialScale
@@ -262,7 +264,13 @@ export class ProjectSubmissionService {
             owner_type: ownerType,
             object_type: ObjectType.PROJECT,
             target_audiences: step1FormGroup.get('publicCible').value === '' ? null : step1FormGroup.get('publicCible').value,
-            reutilisation_status: reuseStatus
+            reutilisation_status: reuseStatus,
+            related_organizations: (step2FormGroup.get('relatedOrganizationUuids')?.value as string[] || []).map(
+                (uuid: string): RelatedOrganization => ({
+                    organization_uuid: uuid,
+                    relation_status: RelationStatus.Pending
+                })
+            )
         };
     }
 
@@ -283,6 +291,7 @@ export class ProjectSubmissionService {
         toUpdate.target_audiences = updated.target_audiences;
         toUpdate.type = updated.type;
         toUpdate.contact_email = updated.contact_email;
+        toUpdate.related_organizations = updated.related_organizations;
     }
 
     /**
@@ -307,7 +316,8 @@ export class ProjectSubmissionService {
                 Validators.required
             ],
             contactEmail: ['', [RudiValidators.email]],
-            organizationUuid: [null]
+            organizationUuid: [null],
+            relatedOrganizationUuids: [[]]
         }, {
             validators: [this.organizationUuidValidator]
         });

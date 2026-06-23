@@ -54,12 +54,12 @@
             <!-- Informations générales -->
             <mat-card class="card-main-information project-card pb-4">
               <div class="card-project-type-title">
-                <label class="card-label">{{ 'project.detail.type'|translate }}</label>
+                <span class="card-label">{{ 'project.detail.type'|translate }}</span>
                 <span class="project-type">{{ projectType }}</span>
               </div>
               @if (userIdentity) {
                 <div class="contact">
-                  <label class="card-label">{{ userIdentity }}</label><br/>
+                  <span class="card-label">{{ userIdentity }}</span><br/>
                   @if (isKnownUser) {
                     <app-contact-button [email]="project.contact_email"
                     ></app-contact-button>

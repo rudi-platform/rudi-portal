@@ -163,6 +163,13 @@ public class LinkedDatasetTaskServiceImpl extends
 								|| projectEntity.getStatus().equals(Status.PENDING))) {
 			throw new AppServiceBadRequestException("Projekt is linked to a running task");
 		}
+
+		// Si le owner est une organisation
+		if (OwnerType.ORGANIZATION.equals(projectEntity.getOwnerType()) && projectEntity.getOwnerUuid() != null
+				&& !organizationHelper.hasOrganizationCompletedWorkflow(projectEntity.getOwnerUuid())) {
+			throw new IllegalArgumentException("Invalid organization for workflow, organization with uuid "
+					+ projectEntity.getOwnerUuid() + " not found or has a workflow in progress");
+		}
 	}
 
 }

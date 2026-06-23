@@ -9,7 +9,7 @@ import {SelfdataAttachmentService} from '@core/services/selfdata-attachment.serv
 import {SelfdataInformationRequestSubmissionService} from '@core/services/selfdata-information-request-submission.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {SELFDATA_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
-import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe} from '@ngx-translate/core';
 import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
@@ -32,7 +32,7 @@ const ERROR_DURATION = 10000;
     selector: 'app-selfdata-information-request-creation',
     templateUrl: './selfdata-information-request-creation.component.html',
     styleUrls: ['./selfdata-information-request-creation.component.scss'],
-    imports: [LoaderComponent, MatSidenavContainer, MatSidenavContent, PageTitleComponent, PageSubtitleComponent, MatCard, ErrorBoxComponent, TranslateDirective, WorkflowFormComponent_1, RudiCaptchaComponent_1, MatButton, TranslatePipe]
+    imports: [LoaderComponent, MatSidenavContainer, MatSidenavContent, PageTitleComponent, PageSubtitleComponent, MatCard, ErrorBoxComponent, WorkflowFormComponent_1, RudiCaptchaComponent_1, MatButton, TranslatePipe]
 })
 export class SelfdataInformationRequestCreationComponent implements OnInit {
 

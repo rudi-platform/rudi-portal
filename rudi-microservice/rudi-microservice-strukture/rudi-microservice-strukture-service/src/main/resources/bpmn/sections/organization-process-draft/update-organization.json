@@ -1,0 +1,46 @@
+{
+	"name": "update-organization",
+	"readonly": false,
+	"fieldDefinitions": [
+		{
+			"name": "draftType",
+			"label": "draftType",
+			"extendedType": "update",
+			"type": "HIDDEN",
+			"readonly": true,
+			"required": false
+		},
+		{
+			"name": "name",
+			"label": "Nom de l'organisation",
+			"help": "Définissez le nom de votre organisation.",
+			"type": "STRING",
+			"readonly": false,
+			"required": true
+		},
+		{
+			"name": "description",
+			"label": "Description",
+			"help": "Dites-nous en plus sur votre organisation. Cette description sera visible depuis le catalogue des organisations.",
+			"type": "TEXT",
+			"readonly": false,
+			"required": true
+		},
+		{
+			"name": "url",
+			"label": "Url d'accès",
+			"help": "Cet url est le chemin d'accès à la page officielle de votre organisation.",
+			"type": "STRING",
+			"readonly": false,
+			"required": false
+		},
+		{
+			"name": "address",
+			"label": "Adresse postale",
+			"help": "Il s'agit de l'adresse postale de votre organisation.",
+			"type": "STRING",
+			"readonly": false,
+			"required": false
+		}
+	]
+}

@@ -369,7 +369,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 			throw new AppServiceBadRequestException("No provider found");
 		}
 
-		NodeOrganizationSearchCriteria criteria = NodeOrganizationSearchCriteria.builder().uuid(uuid).providerUUID(provider.getUuid()).build();
+		NodeOrganizationSearchCriteria criteria = NodeOrganizationSearchCriteria.builder().uuids(List.of(uuid)).providerUUID(provider.getUuid()).build();
 
 		NodeOrganizationProjectionBean nodeOrganizationProjectionBean = organizationCustomDao.searchNodeOrganizations(criteria, Pageable.unpaged()).stream().findFirst().orElseThrow(() -> new AppServiceBadRequestException("Organization not found"));
 

@@ -1,0 +1,72 @@
+<div class="multi-select-autocomplete">
+    <label
+        for="multi-select-input"
+        class="multi-select-label">{{ label }}</label>
+
+    <!-- Champ Material avec sélections inline + input autocomplete -->
+    <mat-form-field appearance="outline" class="multi-select-field">
+
+        <div class="field-inner-wrapper">
+            @for (item of selectedItems; track item) {
+                <mat-chip [attr.aria-label]="item.label" (removed)="removeItem(item)">
+                    {{ item.label }}
+                    <button matChipRemove aria-label="Retirer">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+            }
+            <input matInput
+                   #chipInput
+                   id="multi-select-input"
+                   class="inline-input"
+                   type="text"
+                   [formControl]="formControl"
+                   [matAutocomplete]="multiAuto"
+                   [title]="displayValue"
+                   (focus)="onInputFocus()"
+            >
+        </div>
+
+        @if (loading) {
+            <mat-spinner matSuffix [diameter]="20"></mat-spinner>
+        } @else {
+            <mat-icon matSuffix class="dropdown-arrow" (click)="onArrowClick()">arrow_drop_down</mat-icon>
+        }
+    </mat-form-field>
+
+    <!-- Panel autocomplete -->
+    <mat-autocomplete
+        #multiAuto="matAutocomplete"
+        class="multi-select-panel"
+        [autoActiveFirstOption]="false"
+        [displayWith]="displayFn"
+        (optionSelected)="onOptionSelected()"
+        (opened)="onPanelOpened()"
+        (closed)="onPanelClosed()"
+    >
+        @if (isMaxReached) {
+            <div class="max-selection-message">
+                {{ maxSelectionMessageKey | translate }}
+            </div>
+        }
+
+        @for (item of autocompleteItems; track item) {
+            <mat-option
+                (click)="toggleItem(item, $event)"
+                (keydown.enter)="toggleItem(item, $event)"
+                [disabled]="!isSelected(item) && isMaxReached"
+                [class.option-selected]="isSelected(item)"
+                [value]="item.label"
+            >
+                {{ item.label }}
+            </mat-option>
+        }
+
+        @if (loading) {
+            <mat-option disabled class="loading-option">
+                <mat-spinner [diameter]="24"></mat-spinner>
+            </mat-option>
+        }
+    </mat-autocomplete>
+
+</div>

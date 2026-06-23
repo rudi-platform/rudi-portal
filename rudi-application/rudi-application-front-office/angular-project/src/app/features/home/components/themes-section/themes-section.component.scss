@@ -13,17 +13,32 @@
         font-size: 20px;
     }
 
+    // Réinitialisation des styles natifs de <fieldset> utilisé comme
+    // conteneur de diapositive (role="group" implicite, accessibilité)
+    .slide-group {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+    }
+
     .theme-card {
         box-sizing: border-box;
         width: 155px;
         height: 170px;
         border-radius: 15px;
         border: 1.1px solid var(--blocks-and-menus-outline);
+        background: none;
+        padding: 0;
+        font: inherit;
+        color: inherit;
         display: flex;
         flex-direction: column;
         justify-items: center;
         justify-content: center;
         cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
         @include responsive.xs() {
             width: 90%;
             margin: auto;
@@ -34,6 +49,7 @@
             height: 110px;
             margin: 20px auto 10px auto;
             border-radius: 5px;
+            transition: filter 0.2s ease;
         }
 
         .theme-name {
@@ -42,6 +58,7 @@
             font-size: 16px;
             font-weight: 700;
             margin-bottom: 20px;
+            transition: color 0.2s ease;
         }
     }
 
@@ -49,10 +66,42 @@
         box-shadow: var(--shadow-box);
     }
 
+    // État sélectionné (après clic) et focus clavier (WAI-ARIA critère 7.1)
+    .theme-card--selected,
+    .theme-card:focus-visible {
+        background-color: #0270e7;
+        border-color: #0270e7;
+        outline: 2px solid #0270e7;
+        outline-offset: 2px;
+
+        .theme-picto {
+            // Rend le SVG blanc quelle que soit sa couleur d'origine
+            filter: brightness(0) invert(1);
+            color: white;
+        }
+
+        .theme-name {
+            color: white;
+        }
+    }
+
+    // Compatibilité navigateurs ne supportant pas :focus-visible
+    .theme-card:focus {
+        outline: 2px solid #0270e7;
+        outline-offset: 2px;
+    }
+
     .theme-container {
         display: flex;
         width: 100%;
         justify-content: center;
         gap: 15px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        .theme-list-item {
+            display: flex;
+        }
     }
 }

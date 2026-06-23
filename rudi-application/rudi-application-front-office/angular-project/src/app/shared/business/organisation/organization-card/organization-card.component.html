@@ -1,7 +1,7 @@
 <mat-card
   class="organization-card" [ngClass]="{'archived': isArchived()}"
   tabindex="0"
-  role="article"
+  role="button"
   [attr.aria-label]="organizationBean.name"
   (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)"
   (keydown.enter)="onClickOrganization(organizationBean.uuid, organizationBean.name)">

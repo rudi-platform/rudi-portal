@@ -8,25 +8,25 @@
       <mat-card-content>
         @if (!isNewRequest) {
           <div class="vertical-space">
-            <label class="data-label">{{'personalSpace.requestDetail.datasetTitle'|translate}}</label> <br>
+            <span class="data-label">{{'personalSpace.requestDetail.datasetTitle'|translate}}</span> <br>
             <span class="data-value">{{requestDisplayData?.datasetTitle}}</span>
           </div>
         }
         @if (requestDisplayData?.receivedDate) {
           <div class="vertical-space">
-            <label class="data-label">{{'personalSpace.requestDetail.requestDate'|translate}}</label> <br>
+            <span class="data-label">{{'personalSpace.requestDetail.requestDate'|translate}}</span> <br>
             <span class="data-value">{{requestDisplayData?.receivedDate?.toLocaleDateString()}}</span>
           </div>
         }
         @if (!isNewRequest) {
           <div class="vertical-space">
-            <label class="data-label">{{'personalSpace.requestDetail.endDate'|translate}}</label> <br>
+            <span class="data-label">{{'personalSpace.requestDetail.endDate'|translate}}</span> <br>
             <span class="data-value">{{formatEndDate(requestDisplayData?.endDate)}}</span>
           </div>
         }
         @if (requestDisplayData?.comment && requestDisplayData?.comment.trim() !== '') {
           <div class="vertical-space">
-            <label class="data-label">{{'personalSpace.requestDetail.comment'|translate}}</label> <br>
+            <span class="data-label">{{'personalSpace.requestDetail.comment'|translate}}</span> <br>
             <span class="data-value">{{requestDisplayData?.comment}}</span>
           </div>
         }

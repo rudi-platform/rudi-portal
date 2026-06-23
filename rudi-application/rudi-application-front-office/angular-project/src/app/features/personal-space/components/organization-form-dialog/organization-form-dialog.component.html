@@ -7,11 +7,12 @@
         </div>
 
         <div class="dialog-content">
-            <div class="dialog-title">{{ 'personalSpace.organization.dialog.title'|translate }}</div>
-            <div class="dialog-description">{{ 'personalSpace.organization.dialog.description'|translate }}</div>
+            <div class="dialog-title">{{ title || ('personalSpace.organization.dialog.title'|translate) }}</div>
+            <div class="dialog-description">{{ description || ('personalSpace.organization.dialog.description'|translate) }}</div>
 
             <app-organization-form #OrganizationForm
-            [draftForm]="draftForm">
+            [draftForm]="draftForm"
+            [organization]="organization">
             </app-organization-form>
 
             <mat-dialog-actions class="dialog-buttons">

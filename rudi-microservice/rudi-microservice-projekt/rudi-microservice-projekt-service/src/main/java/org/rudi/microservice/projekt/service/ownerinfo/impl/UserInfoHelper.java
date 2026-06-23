@@ -1,6 +1,7 @@
 package org.rudi.microservice.projekt.service.ownerinfo.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
+
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
@@ -8,7 +9,7 @@ import org.rudi.microservice.projekt.core.bean.OwnerInfo;
 import org.rudi.microservice.projekt.core.bean.OwnerType;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,6 @@ class UserInfoHelper implements OwnerInfoHelper {
 		if (userByUUID == null) {
 			throw new AppServiceNotFoundException(User.class, ownerUuid);
 		}
-		return new OwnerInfo().name(userByUUID.getFirstname() + " " + userByUUID.getLastname());
+		return new OwnerInfo().name(userByUUID.getFirstname() + " " + userByUUID.getLastname()).contact(userByUUID.getLogin());
 	}
 }

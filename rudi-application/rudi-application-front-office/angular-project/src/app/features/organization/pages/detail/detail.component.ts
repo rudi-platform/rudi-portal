@@ -1,6 +1,7 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {AuthenticationService} from '@core/services/authentication.service';
 import {LogService} from '@core/services/log.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {PageTitleService} from '@core/services/page-title.service';
@@ -19,7 +20,8 @@ import {OrganizationInformationsComponent} from '../../components/organization-i
 @Component({
     selector: 'app-detail',
     templateUrl: './detail.component.html',
-    imports: [PageComponent, PageHeadingComponent, TabsComponent, TabComponent, OrganizationInformationsComponent, AdministrationTabComponent, TranslatePipe]
+    imports: [PageComponent, PageHeadingComponent, TabsComponent,
+        TabComponent, OrganizationInformationsComponent, AdministrationTabComponent, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
 
@@ -31,6 +33,7 @@ export class DetailComponent implements OnInit {
                 private readonly router: Router,
                 private readonly organizationService: OrganizationMetierService,
                 private readonly userService: UserService,
+                private readonly authenticationService: AuthenticationService,
                 private readonly logService: LogService,
                 private readonly pageTitleService: PageTitleService,
                 private readonly translateService: TranslateService) {
@@ -48,7 +51,12 @@ export class DetailComponent implements OnInit {
                     throw Error('Erreur pas d\'UUID de d\'organisation');
                 }
             }),
-            tap((organization: Organization) => this.isAdministrator(organization.uuid))
+            tap((organization: Organization) => {
+                const isAuth = this.authenticationService.isAuthenticatedAsUser();
+                if (isAuth) {
+                    this.isAdministrator(organization.uuid);
+                }
+            })
         ).subscribe(
             {
                 next: (organization: Organization) => {

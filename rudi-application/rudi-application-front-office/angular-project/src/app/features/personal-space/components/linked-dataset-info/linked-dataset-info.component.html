@@ -6,19 +6,19 @@
       <mat-card-content>
         @if (linkedDataset.title) {
           <div class="vertical-space">
-            <label class="data-label">{{ 'personalSpace.requestDetail.datasetTitle'|translate }}</label> <br>
+            <span class="data-label">{{ 'personalSpace.requestDetail.datasetTitle'|translate }}</span> <br>
             <span class="data-value">{{ linkedDataset.title }}</span>
           </div>
         }
         @if (linkedDataset.creation_date) {
           <div class="vertical-space">
-            <label class="data-label">{{ 'personalSpace.requestDetail.requestDate'|translate }}</label> <br>
+            <span class="data-label">{{ 'personalSpace.requestDetail.requestDate'|translate }}</span> <br>
             <span class="data-value">{{ linkedDataset.creation_date | date: 'dd/MM/yyyy' }}</span>
           </div>
         }
         @if (linkedDataset.end_date) {
           <div class="vertical-space">
-            <label class="data-label">{{ 'personalSpace.requestDetail.endDate'|translate }}</label> <br>
+            <span class="data-label">{{ 'personalSpace.requestDetail.endDate'|translate }}</span> <br>
             <span class="data-value">{{ linkedDataset.end_date | date: 'dd/MM/yyyy' }}</span>
           </div>
         }

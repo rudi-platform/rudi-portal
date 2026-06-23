@@ -105,7 +105,8 @@ export class OrganizationTaskDependencyFetchers extends TaskDependencyFetchers<O
         let extendedType: OrganizationLogoInformations = this.getExtendedType(field);
         if (extendedType?.types) {
             if (Array.isArray(extendedType.types)) {
-                extendedType.types.flatMap((type: AllowedAttachementType) => type.associatedExtensions).forEach(value => fileExtensions.push(value));
+                extendedType.types.flatMap((type: AllowedAttachementType) =>
+                    type.associatedExtensions).forEach(value => fileExtensions.push(value));
             }
         }
 

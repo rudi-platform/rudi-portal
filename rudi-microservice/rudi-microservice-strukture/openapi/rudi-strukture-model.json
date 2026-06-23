@@ -258,6 +258,11 @@
 				"description": "true si on souhaite obtenir uniquement les organisations qui n'ont pas de closing_date",
 				"type": "boolean"
 			},
+			"OrganizationBeanFullParam": {
+				"description": "Permet d'indiquer si on souhaite récupérer les chiffres clés ou non. True par défaut.",
+				"default": true,
+				"type": "boolean"
+			},
 			"OrganizationMember": {
 				"description": "Membre d'une organisation",
 				"type": "object",
@@ -361,6 +366,14 @@
 				"description": "UUID d'une organisation",
 				"type": "string",
 				"format": "uuid"
+			},
+			"OrganizationUuidsParam" : {
+				"description": "Liste des UUIDs d'organisations",
+				"type": "array",
+				"items": {
+					"type": "string",
+					"format": "uuid"
+				}
 			},
 			"OrganizationUserUuidParam": {
 				"description": "UUID d'un membre de l'organisation (tous rôles confondus)",
@@ -933,7 +946,8 @@
 				"type": "string",
 				"enum": [
 					"DRAFT",
-					"DRAFT_ARCHIVE"
+					"DRAFT_ARCHIVE",
+					"DRAFT_UPDATE"
 				]
 			},
 			"NodeOrganizationNameParam": {

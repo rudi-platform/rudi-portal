@@ -94,10 +94,10 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	//	@Override
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KALIM + ", " + MODULE_KONSULT + ", " + MODULE_PROJEKT + ", " + MODULE_KONSENT + ", " + MODULE_KONSULT_ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ")")
-	public ResponseEntity<PagedOrganizationList> searchOrganizations(UUID uuid, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationList> searchOrganizations(List<UUID> uuids, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws Exception {
 		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria
 				.builder()
-				.uuid(uuid)
+				.uuids(uuids)
 				.name(name)
 				.active(active)
 				.userUuid(userUuid)
@@ -279,7 +279,10 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	public ResponseEntity<PagedNodeOrganizationList> searchNodeOrganizations(UUID uuid, String name, Integer offset,
 			Integer limit, String order) throws Exception {
 
-		NodeOrganizationSearchCriteria searchCriteria = NodeOrganizationSearchCriteria.builder().uuid(uuid).name(name)
+		NodeOrganizationSearchCriteria searchCriteria = NodeOrganizationSearchCriteria
+				.builder()
+				.uuids(uuid != null ? List.of(uuid) : List.of())
+				.name(name)
 				.build();
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		Page<NodeOrganization> page = organizationService.searchNodeOrganizations(searchCriteria, pageable);
@@ -288,9 +291,9 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	}
 
 	@Override
-	public ResponseEntity<PagedOrganizationList> searchMyOrganizations(UUID uuid, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationList> searchMyOrganizations(List<UUID> uuids, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
 		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria.builder()
-				.uuid(uuid)
+				.uuids(uuids)
 				.name(name)
 				.active(active)
 				.build();

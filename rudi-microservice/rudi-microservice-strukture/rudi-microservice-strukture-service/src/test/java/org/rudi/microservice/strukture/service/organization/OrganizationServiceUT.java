@@ -441,7 +441,7 @@ class OrganizationServiceUT {
 		Organization organization = createOrganizationDto();
 
 		Organization created = organizationService.createOrganization(organization);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuid(created.getUuid()).build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuids(List.of(created.getUuid())).build();
 		Page<Organization> organizations = organizationService.searchOrganizations(criteria, Pageable.unpaged());
 		assertTrue(organizations.get().anyMatch(collected -> collected.getName().equals(organization.getName())));
 		assertTrue(
@@ -854,7 +854,7 @@ class OrganizationServiceUT {
 		// Recherche de chaque organisation par son uuid
 		// la 1e remonte correctement avec son statut
 		NodeOrganizationSearchCriteria criteriaNodeOrga1 = NodeOrganizationSearchCriteria.builder()
-				.uuid(orga1Created.getUuid()).build();
+				.uuids(List.of(orga1Created.getUuid())).build();
 
 		Page<NodeOrganization> organizationsNode1 = organizationService.searchNodeOrganizations(criteriaNodeOrga1,
 				Pageable.unpaged());
@@ -870,7 +870,7 @@ class OrganizationServiceUT {
 				.isEqualTo(OrganizationStatus.VALIDATED.getValue());
 
 		NodeOrganizationSearchCriteria criteriaNodeOrga2 = NodeOrganizationSearchCriteria.builder()
-				.uuid(orga2Created.getUuid()).build();
+				.uuids(List.of(orga2Created.getUuid())).build();
 
 		// la 2e remonte correctement sans statut
 		Page<NodeOrganization> organizationsNode2 = organizationService.searchNodeOrganizations(criteriaNodeOrga2,
@@ -883,7 +883,7 @@ class OrganizationServiceUT {
 
 		// la 3e n'est pas retournée car en brouillon
 		NodeOrganizationSearchCriteria criteriaNodeOrga3 = NodeOrganizationSearchCriteria.builder()
-				.uuid(orga3Created.getUuid()).build();
+				.uuids(List.of(orga3Created.getUuid())).build();
 
 		Page<NodeOrganization> organizationsNode3 = organizationService.searchNodeOrganizations(criteriaNodeOrga3,
 				Pageable.unpaged());
@@ -915,7 +915,7 @@ class OrganizationServiceUT {
 		// Recherche de chaque organisation par son uuid
 		// la 1e remonte correctement avec son statut
 		NodeOrganizationSearchCriteria criteriaNodeOrga1 = NodeOrganizationSearchCriteria.builder()
-				.uuid(orga1Created.getUuid()).build();
+				.uuids(List.of(orga1Created.getUuid())).build();
 
 		Page<NodeOrganization> organizationsNode1 = organizationService.searchNodeOrganizations(criteriaNodeOrga1,
 				Pageable.unpaged());

@@ -41,10 +41,19 @@ public class TokenManager {
 
 	private final ObjectMapper objectMapper;
 
-	public void saveToken(TokenType type, AuthenticatedUser user, String tokenValue)
+	public Token saveToken(TokenType type, AuthenticatedUser user, String tokenValue)
 			throws ParseException, JsonProcessingException, AppServiceException {
 		Token token = buildToken(type, user, tokenValue);
-		tokenService.saveToken(token);
+		return tokenService.saveToken(token);
+	}
+
+	public String getTokenValue(String tokenId) {
+		Token token = tokenService.getToken(Long.valueOf(tokenId));
+		if (token != null) {
+			return token.getValue();
+		} else {
+			return null;
+		}
 	}
 
 	public Token buildToken(TokenType type, User user, OAuth2Authorization authorization,

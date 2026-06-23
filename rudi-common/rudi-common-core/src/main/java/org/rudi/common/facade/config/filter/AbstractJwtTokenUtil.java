@@ -39,7 +39,7 @@ public abstract class AbstractJwtTokenUtil implements Serializable {
 
 	public static final String ORIGINAL_ISSUER = "original_issuer";
 
-	public static final String ORIGINAL_IDTOKEN = "original_idtoken";
+	public static final String ORIGINAL_TOKEN_ID = "original_tokenId";
 
 	/**
 	 * Validité du token par défaut. Valeur par défaut : 10 minutes

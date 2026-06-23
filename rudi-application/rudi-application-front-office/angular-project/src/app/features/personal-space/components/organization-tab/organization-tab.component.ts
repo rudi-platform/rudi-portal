@@ -137,6 +137,7 @@ export class OrganizationTabComponent implements OnInit, OnDestroy {
      * Création de l'organisation avec l'image (si présente)
      */
     createOrganization(organization: Organization): void {
+        this.isLoading = true;
         this.organizationService.createOrganization(organization).pipe(
             // 1) On crée le draft à partir d'une organization
             switchMap((organization: Organization) => {

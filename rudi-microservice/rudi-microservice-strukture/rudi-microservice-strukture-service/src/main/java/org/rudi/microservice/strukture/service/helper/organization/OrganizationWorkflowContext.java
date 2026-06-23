@@ -5,13 +5,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.script.ScriptContext;
 
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hsqldb.lib.StringUtil;
+import org.rudi.bpmn.core.bean.Field;
+import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.security.RoleCodes;
@@ -26,6 +30,7 @@ import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
@@ -50,6 +55,7 @@ import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.ReportHelper;
 import org.rudi.microservice.strukture.service.helper.ReportSendExecutor;
 import org.rudi.microservice.strukture.service.helper.attachments.AttachmentsHelper;
+import org.rudi.microservice.strukture.service.helper.organization.processors.OrganizationTaskUpdateOrganizationProcessor;
 import org.rudi.microservice.strukture.service.integration.errors.IntegrationError;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
@@ -62,7 +68,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_UPDATE_USER_TASK_ID;
 import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_ARCHIVE_FORM_SECTION_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_UPDATE_FORM_SECTION_NAME;
 import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
 
 @Component(value = "organizationWorkflowContext")
@@ -96,6 +104,7 @@ public class OrganizationWorkflowContext
 	private final AttachmentsHelper attachmentsHelper;
 	private final OrganizationMembersHelper organizationMembersHelper;
 	private final MediaService mediaService;
+	private final List<OrganizationTaskUpdateOrganizationProcessor> organizationTaskUpdateOrganizationProcessors;
 
 	public OrganizationWorkflowContext(EMailService eMailService, TemplateGenerator templateGenerator,
 			OrganizationDao assetDescriptionDao, OrganizationAssignmentHelper assignmentHelper, ACLHelper aclHelper,
@@ -103,7 +112,8 @@ public class OrganizationWorkflowContext
 			ProviderHelper providerHelper, OwnerInfoHelper ownerInfoHelper,
 			TaskService<LinkedProducer> linkedProducerTaskService, LinkedProducerHelper linkedProducerHelper,
 			AttachmentsHelper attachmentsHelper, ProjektHelper projektHelper,
-			OrganizationMembersHelper organizationMembersHelper, MediaService mediaService) {
+			OrganizationMembersHelper organizationMembersHelper, MediaService mediaService,
+			List<OrganizationTaskUpdateOrganizationProcessor> organizationTaskUpdateOrganizationProcessors) {
 		super(eMailService, templateGenerator, assetDescriptionDao, assignmentHelper, aclHelper, formHelper);
 		this.nodeProviderUserHelper = nodeProviderUserHelper;
 		this.reportHelper = reportHelper;
@@ -115,6 +125,7 @@ public class OrganizationWorkflowContext
 		this.projektHelper = projektHelper;
 		this.organizationMembersHelper = organizationMembersHelper;
 		this.mediaService = mediaService;
+		this.organizationTaskUpdateOrganizationProcessors = organizationTaskUpdateOrganizationProcessors;
 	}
 
 	@Transactional(readOnly = false)
@@ -139,6 +150,7 @@ public class OrganizationWorkflowContext
 				assetDescriptionEntity.setFunctionalStatus(functionalStatusValue);
 				assetDescriptionEntity.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescriptionEntity);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
 				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);
@@ -285,28 +297,68 @@ public class OrganizationWorkflowContext
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendArchivageEmail(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData,
-			boolean isValidated) {
+	public void sendReportToLinkedProducers(ScriptContext context, ExecutionEntity executionEntity, boolean isValidated){
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
-		if (isValidated) {
-			// envoi du rapport
-			sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
-					isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
+		// Envoi d'un rapport à l'ensemble des providers liés à l'organisation :
+		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
+				isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
+	}
 
-			sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendArchivageEmailToOrganizationMembers(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
+		User initiator = lookupUser(assetDescription.getInitiator());
+		List<String> avoidedEmails = new ArrayList<>();
+		if(initiator.getType().equals(UserType.PERSON)){
+			avoidedEmails.add(lookupEMailAddress(initiator));
+		}
+
+		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData, avoidedEmails);
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendArchivageEmailToLinkedProviders(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+
+		User initiator = lookupUser(assetDescription.getInitiator());
+		String avoidedMail;
+		// Si le user initiateur est un robot provider, on évite de lui envoyer un mail et on envoie à la place le mail de contact du provider
+		if (initiator.getType().equals(UserType.ROBOT)
+				&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))  {
+			NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
+
+			if (nodeProvider == null) {
+				throw new InvalidParameterException(ERROR_NODE_NOT_FOUND);
+			}
+
+			avoidedMail = providerHelper.getContactEmail(nodeProvider);
 		} else {
-			sendEmailToArchiveInitiator(executionEntity, assetDescription, eMailData);
+			avoidedMail = "";
+		}
+
+		// Récupération des mails de contact des providers
+		List<String> emails = providerHelper.searchAllOrganizationsProviders(assetDescription.getUuid(), true)
+				.stream()
+				.filter(p -> p.getNodeProviders().stream().anyMatch(np -> np.getUuid().toString().equals(assetDescription.getInitiator())))
+				.map(providerHelper::getContactEmail)
+				// Retrait du mail de l'initiateur déà contacté autrement.
+				.filter(email -> StringUtils.isNotEmpty(email) && !email.equals(avoidedMail))
+				.toList();
+
+		try {
+			sendEMail(executionEntity, assetDescription, eMailData, emails);
+		} catch (Exception e) {
+			log.warn("WkC - Failed to send mail to providers for " + executionEntity.getProcessDefinitionKey(), e);
 		}
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void notifyOrganizationMembersArchive(ScriptContext context, ExecutionEntity executionEntity,
+	public void sendEMailToAllOrganizationMembers(ScriptContext context, ExecutionEntity executionEntity,
 			EMailData eMailData) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
-
-		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
+		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData, List.of());
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
@@ -318,18 +370,92 @@ public class OrganizationWorkflowContext
 		log.debug("WkC - resetArchiveDraftForm - assetDescriptionA: {}", assetDescriptionA);
 	}
 
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void resetUpdateDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
+		resetFormData(context, executionEntity, DRAFT_UPDATE_USER_TASK_ID, null,
+				DRAFT_UPDATE_FORM_SECTION_NAME);
+	}
+
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void updateOrganization(ScriptContext context, ExecutionEntity executionEntity) {
+		publishOrganizationModification(context, executionEntity);
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void publishOrganizationModification(ScriptContext context, ExecutionEntity executionEntity){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+		if (assetDescription == null) {
+			return;
+		}
+
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		try {
+			Map<String, Object> data = getFormHelper().hydrateData(assetDescription.getData());
+			Form draftForm = getFormHelper().lookupDraftForm(processInstanceBusinessKey, DRAFT_UPDATE_USER_TASK_ID);
+
+			// On remplit le formulaire avec les données pour appliquer uniquement la section de mise à jour.
+			getFormHelper().fillForm(draftForm, data);
+			draftForm.getSections().stream()
+					.filter(section -> section.getName().equals(DRAFT_UPDATE_FORM_SECTION_NAME)).findFirst()
+					.ifPresentOrElse(section -> applyUpdateOrganizationProcessors(section.getFields(), assetDescription),
+							() -> {
+								throw new NoSuchElementException(String.format(
+										"Update organization : No section found draft form: %s",
+										DRAFT_UPDATE_FORM_SECTION_NAME));
+							});
+
+			assetDescription.setUpdatedDate(LocalDateTime.now());
+			getAssetDescriptionDao().save(assetDescription);
+
+			// On modifie l'image si la donnée est présente.
+			Object mediaUuidValue = data.get(FIELD_NAME_IMAGE_ORGANIZATION);
+			if (mediaUuidValue != null && StringUtils.isNotBlank(mediaUuidValue.toString())) {
+				saveOrganizationMedia(mediaUuidValue, assetDescription);
+			}
+		} catch (InvalidDataException e) {
+			log.error("Failed to hydrate data for {}", assetDescription.getInitiator(), e);
+		} catch (FormDefinitionException e) {
+			log.error("Failed to look up draft form for {}", assetDescription.getInitiator(), e);
+		}
+	}
+
+	private void saveOrganizationMedia(Object mediaUuidValue, OrganizationEntity assetDescription) {
+		try {
+			UUID mediaUuid = UUID.fromString(mediaUuidValue.toString());
+			attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescription.getUuid());
+		} catch (IllegalArgumentException | AppServiceException e) {
+			log.warn("WkC - Invalid media UUID {} for organization {}", mediaUuidValue,
+					assetDescription.getUuid(), e);
+		}
+	}
+
+	private void applyUpdateOrganizationProcessors(List<Field> fields, OrganizationEntity organizationEntity) {
+		if (CollectionUtils.isEmpty(fields)) {
+			return;
+		}
+
+		fields.forEach(field -> organizationTaskUpdateOrganizationProcessors.forEach(processor -> {
+			if (processor.accept(field)) {
+				processor.process(field, organizationEntity);
+			}
+		}));
+	}
+
 	private ProjektArchiveMode mapOrganizationArchiveModeToProjektArchiveMode(String organizationArchiveMode) {
 		return organizationArchiveMode.equals(ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
 				: ProjektArchiveMode.ARCHIVED;
 	}
 
-	private void sendEmailToArchiveInitiator(ExecutionEntity executionEntity, OrganizationEntity assetDescription,
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendEMailToInitiatorUserOrProvider(ScriptContext context, ExecutionEntity executionEntity,
 			EMailData eMailData) {
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 		User initiator = lookupUser(assetDescription.getInitiator());
 		if (initiator != null) {
 			String email = lookupEMailAddress(initiator);
 			if (initiator.getType().equals(UserType.ROBOT)
-					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))  {
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
 				if (nodeProvider == null) {
@@ -349,8 +475,10 @@ public class OrganizationWorkflowContext
 	}
 
 	private void sendEmailToOrganizationMembers(ExecutionEntity executionEntity, OrganizationEntity assetDescription,
-			EMailData eMailData) {
+			EMailData eMailData, List<String>  avoidedEmails) {
 		List<String> emails = getOrganizationMembersEmails(assetDescription);
+		// Si certains mails on déjà été envoyés (ex: initiateur ), on les retire de la liste des destinataires
+		emails.removeAll(avoidedEmails);
 
 		try {
 			sendEMail(executionEntity, assetDescription, eMailData, emails);

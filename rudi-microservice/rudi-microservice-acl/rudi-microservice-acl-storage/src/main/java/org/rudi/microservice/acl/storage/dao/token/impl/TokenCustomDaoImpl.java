@@ -40,9 +40,15 @@ public class TokenCustomDaoImpl extends AbstractCustomDaoImpl<TokenEntity, Token
 	protected void addPredicates(TokenSearchCritera searchCriteria, CriteriaBuilder builder,
 			CriteriaQuery<?> criteriaQuery, Root<TokenEntity> root, List<Predicate> predicates) {
 		predicateEnumCollectionCriteria(searchCriteria.getTypes(), "type", predicates, builder, root);
-		if (searchCriteria.getUserId() != null) {
+		if (StringUtils.isNotEmpty(searchCriteria.getUserId())
+				|| StringUtils.isNotEmpty(searchCriteria.getUserLogin())) {
 			Join<TokenEntity, UserEntity> joinUser = root.join("user", JoinType.INNER);
-			predicates.add(builder.equal(joinUser.get("id"), searchCriteria.getUserId()));
+			if (StringUtils.isNotEmpty(searchCriteria.getUserId())) {
+				predicates.add(builder.equal(joinUser.get("id"), searchCriteria.getUserId()));
+			}
+			if (StringUtils.isNotEmpty(searchCriteria.getUserLogin())) {
+				predicates.add(builder.equal(joinUser.get("login"), searchCriteria.getUserLogin()));
+			}
 		}
 		if (StringUtils.isNotEmpty(searchCriteria.getToken())) {
 			predicates.add(builder.equal(root.get("value"), searchCriteria.getToken()));

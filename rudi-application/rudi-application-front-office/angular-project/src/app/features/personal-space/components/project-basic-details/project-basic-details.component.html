@@ -1,12 +1,12 @@
 <div>
     <mat-card class="p-3">
         <div class="card-title">
-            <label class="card-label mb-1">{{'personalSpace.project.basicInfos.projectType' | translate}}</label>
+            <span class="card-label mb-1">{{'personalSpace.project.basicInfos.projectType' | translate}}</span>
             <span>{{projectType | replaceIfNullPipe}}</span>
         </div>
 
         <div class="contact">
-            <label class="card-label">{{ownerDescription}}</label><br/>
+            <span class="card-label">{{ownerDescription}}</span><br/>
             <span>{{ownerEmail | replaceIfNullPipe}}</span>
         </div>
 

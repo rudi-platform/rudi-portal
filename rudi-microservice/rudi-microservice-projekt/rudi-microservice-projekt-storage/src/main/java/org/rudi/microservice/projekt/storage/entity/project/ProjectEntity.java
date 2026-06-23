@@ -30,6 +30,7 @@ import org.rudi.microservice.projekt.storage.entity.TargetAudienceEntity;
 import org.rudi.microservice.projekt.storage.entity.TerritorialScaleEntity;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -184,6 +185,14 @@ public class ProjectEntity extends AbstractAssetDescriptionEntity {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = LinkedDatasetEntity.PROJECT_FK)
 	private Set<NewDatasetRequestEntity> datasetRequests = new HashSet<>();
+
+
+	/**
+	 * Organisations liées au projet
+	 */
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = RelatedOrganizationEntity.PROJECT_FK)
+	private Set<RelatedOrganizationEntity> relatedOrganizations = new HashSet<>();
 
 	@Override
 	public int hashCode() {

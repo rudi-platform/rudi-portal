@@ -1549,10 +1549,10 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "uuid",
+						"name": "uuids",
 						"required": false,
 						"schema": {
-							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidParam"
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidsParam"
 						}
 					},
 					{
@@ -3853,10 +3853,10 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "uuid",
+						"name": "uuids",
 						"required": false,
 						"schema": {
-							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidParam"
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidsParam"
 						}
 					},
 					{
@@ -3913,10 +3913,10 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "uuid",
+						"name": "uuids",
 						"required": false,
 						"schema": {
-							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidParam"
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidsParam"
 						}
 					},
 					{
@@ -3925,6 +3925,14 @@
 						"required": false,
 						"schema": {
 							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationNameParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "full",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationBeanFullParam"
 						}
 					},
 					{
@@ -3971,6 +3979,38 @@
 				"description": "Retourne une liste d'organisations-beans dans des états permettant leur visibilité pour le grand publique.",
 				"operationId": "searchPublicOrganizationsBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationNameParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "uuids",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidsParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "excluded_organization_uuids",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationUuidsParam"
+						}
+					},
+					{
+						"in": "query",
+						"name": "full",
+						"required": false,
+						"schema": {
+							"$ref": "rudi-strukture-model.json#/components/schemas/OrganizationBeanFullParam"
+						}
+					},
 					{
 						"in": "query",
 						"name": "active",

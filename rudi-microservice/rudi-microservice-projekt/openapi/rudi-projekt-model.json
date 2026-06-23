@@ -252,6 +252,13 @@
 							},
 							"reutilisation_status": {
 								"$ref": "#/components/schemas/ReutilisationStatus"
+							},
+							"related_organizations": {
+								"description": "Organisations partenaires du projet",
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/RelatedOrganization"
+								}
 							}
 						}
 					}
@@ -834,6 +841,10 @@
 					"name": {
 						"description": "Nom du porteur de projet (prénom et nom si utilisateur, nom de l'organisation sinon)",
 						"type": "string"
+					},
+					"contact":  {
+						"description": "email de contact du porteur de projet",
+						"type": "string"
 					}
 				}
 			},
@@ -1100,6 +1111,51 @@
 						"items": {
 							"$ref": "#/components/schemas/AllowedAttachementType"
 						}
+					}
+				}
+			},
+			"RelationStatus": {
+				"description": "Statut de la relation entre projet et organization partenaires",
+				"type": "string",
+				"enum": [
+					"ACCEPTED",
+					"REFUSED",
+					"PENDING"
+				]
+			},
+			"RelatedOrganization": {
+				"description": "Organisation partenaire d'un projet",
+				"type": "object",
+				"required": [
+					"organization_uuid",
+					"relation_status"
+				],
+				"properties": {
+					"uuid": {
+						"description": "UUID unique de la relation entre le projet et l'organisation partenaire",
+						"type": "string",
+						"format": "uuid"
+					},
+					"organization_uuid": {
+						"description": "UUID de l'organisation partenaire",
+						"type": "string",
+						"format": "uuid"
+					},
+					"relation_status": {
+						"$ref": "#/components/schemas/RelationStatus"
+					}
+				}
+			},
+			"OwnerInfoRequest": {
+				"type": "object",
+				"properties": {
+					"owner_uuid": {
+						"description": "UUID de l'utilisateur ou de l'organisation dans ACL",
+						"type": "string",
+						"format": "uuid"
+					},
+					"owner_type": {
+						"$ref": "#/components/schemas/OwnerType"
 					}
 				}
 			}

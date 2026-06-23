@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
-import {ContactButtonComponent} from '../contact-button/contact-button.component';
-import {CopiedButtonComponent} from '../../../core/common/copied-button/copied-button.component';
+import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {CopiedButtonComponent} from '@shared/core/common/copied-button/copied-button.component';
 
 @Component({
     selector: 'app-contact-card',

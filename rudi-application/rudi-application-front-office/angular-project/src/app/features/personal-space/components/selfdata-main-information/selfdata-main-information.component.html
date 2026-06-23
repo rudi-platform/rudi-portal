@@ -6,24 +6,24 @@
     @if (!taskLoading) {
       <div>
         <div class="vertical-space">
-          <label class="data-label" translate="metaData.selfdataInformationRequest.consultation.title"></label>
+          <span class="data-label" translate="metaData.selfdataInformationRequest.consultation.title"></span>
           <br>
             <span class="data-value">{{task.processDefinitionKey | processDefinitionKeyTranslate }}</span>
           </div>
           <div class="vertical-space">
-            <label class="data-label"
-            translate="metaData.selfdataInformationRequest.consultation.datasetTilte"></label>
+            <span class="data-label"
+            translate="metaData.selfdataInformationRequest.consultation.datasetTilte"></span>
             <br>
               <span class="data-value"> {{task.datasetTitle}}</span>
             </div>
             <div class="vertical-space">
-              <label class="data-label"
-              translate="metaData.selfdataInformationRequest.consultation.receivedDate"> </label> <br>
+              <span class="data-label"
+              translate="metaData.selfdataInformationRequest.consultation.receivedDate"> </span> <br>
               <span class="data-value"> {{task.receivedDate.format('DD/MM/YYYY')}} </span>
             </div>
             <div class="vertical-space">
-              <label class="data-label"
-              translate="metaData.selfdataInformationRequest.consultation.expiredDate"> </label>
+              <span class="data-label"
+              translate="metaData.selfdataInformationRequest.consultation.expiredDate"> </span>
               <br>
                 <span class="data-value">{{task.expiredDate.format('DD/MM/YYYY')}}</span>
               </div>

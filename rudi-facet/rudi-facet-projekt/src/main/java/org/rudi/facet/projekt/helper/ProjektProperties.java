@@ -25,7 +25,7 @@ public class ProjektProperties {
 
 	private String searchProjectsPath = "/projects";
 
-	private String getNumberOfProjectsPerOwnersPath = "/projects/project-per-owner";
+	private String getNumberOfProjectsPerOwnersPath = "/projects/count-per-owner";
 
 	private String unlinkProjectToDatasetPath = "/projects/{projectUuid}/linked-datasets/{linkedDatasetUuid}";
 

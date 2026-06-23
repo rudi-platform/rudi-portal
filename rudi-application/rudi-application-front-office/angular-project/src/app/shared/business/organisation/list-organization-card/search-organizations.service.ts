@@ -16,6 +16,10 @@ import {map, tap} from 'rxjs/operators';
 export interface SearchOrganisationsRequest {
     isPersonalSpace?: boolean;
     orgnizationStatus?: OrganizationStatus;
+    uuids?: string[],
+    name?: string,
+    excludedOrganizationUuids?: string[],
+    full?: boolean,
     active?: boolean;
     offset?: number;
     itemPerPage?: number;
@@ -103,8 +107,9 @@ export class SearchOrganizationsService {
         this.isLoadingCatalogue$.next(true);
         if (searchRequest.isPersonalSpace) {
             this.organizationService.searchMyOrganizationBeans(
-                null,
-                null,
+                searchRequest.uuids,
+                searchRequest.name,
+                searchRequest.full ?? true,
                 searchRequest.active,
                 searchRequest.offset,
                 searchRequest.itemPerPage,
@@ -113,11 +118,26 @@ export class SearchOrganizationsService {
                 this.totalOrganizations$.next(data.total);
                 this.organizations$.next(data.elements);
                 this.isLoadingCatalogue$.next(false);
-                this.updateOrganizationsProjectCount();
-                this.updateOrganizationDatasetCount();
+                // this.updateOrganizationsProjectCount();
+                // this.updateOrganizationDatasetCount();
             });
         } else {
+            /*
+                @param name
+                @param uuids
+                @param excludedOrganizationUuids
+                @param full
+                @param active
+                @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche)
+                @param limit Le nombre de résultats à retourner par page
+                @param order
+             */
+
             this.organizationService.searchPublicOrganizationsBeans(
+                searchRequest.name,
+                searchRequest.uuids,
+                searchRequest.excludedOrganizationUuids,
+                searchRequest.full ?? true,
                 searchRequest.active,
                 searchRequest.offset,
                 searchRequest.itemPerPage,
@@ -126,8 +146,8 @@ export class SearchOrganizationsService {
                 this.totalOrganizations$.next(data.total);
                 this.organizations$.next(data.elements);
                 this.isLoadingCatalogue$.next(false);
-                this.updateOrganizationsProjectCount();
-                this.updateOrganizationDatasetCount();
+                // this.updateOrganizationsProjectCount();
+                // this.updateOrganizationDatasetCount();
             });
         }
     }

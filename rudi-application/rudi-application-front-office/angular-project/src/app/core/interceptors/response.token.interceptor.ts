@@ -1,9 +1,10 @@
 import {HttpClient, HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
 import {inject} from '@angular/core';
+import {Router} from '@angular/router';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {AuthenticationService} from '../services/authentication.service';
 
@@ -46,6 +47,7 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
     const translateService = inject(TranslateService);
     const snackBarService = inject(SnackBarService);
     const http = inject(HttpClient);
+    const router = inject(Router);
 
     // Variables d'état
     const refreshIsRunning = ResponseTokenInterceptor_refreshIsRunning();
@@ -78,9 +80,22 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
         }
     }
 
+    // URL d'authentification anonyme
+    const ANONYMOUS_URL = '/anonymous';
+
     // Fonction pour gérer l'erreur HTTP
     function handleHttpError(request: HttpRequestAny, error: HttpErrorResponse): Observable<HttpEventAny> {
-        if (error.status === HTTP_CODE_BUSINESS_ERROR) {
+        if (error.status === 401 && !request.url.includes(ANONYMOUS_URL)) {
+            const isAuth = authenticationService.isAuthenticatedAsUser();
+            if (isAuth) {
+                AuthenticationService.clearTokens();
+                router.navigate(['/login'], {
+                    state: {snackBar: 'error.sessionExpired'}
+                });
+                return EMPTY;
+            }
+            return throwError(() => error);
+        } else if (error.status === HTTP_CODE_BUSINESS_ERROR) {
             const apiError = error.error;
             const translateKey = BUSINESS_ERROR_TRANSLATE_KEY_PREFIX + '.' + apiError.code;
             let errorMessage = translateService.instant(translateKey);
@@ -95,7 +110,14 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
         } else if (error.status === HTTP_CODE_TOKEN_EXPIRED && !refreshIsRunning.getValue()) {
             AuthenticationService.clearAuhtenticatedTokenInSession();
             return refreshToken().pipe(
-                switchMap(() => injectHeadersAndCloneRequest(request))
+                switchMap(() => injectHeadersAndCloneRequest(request)),
+                catchError(() => {
+                    AuthenticationService.clearTokens();
+                    router.navigate(['/login'], {
+                        state: { snackBar: 'error.sessionExpired' }
+                    });
+                    return EMPTY;
+                })
             );
         } else if (error.status === HTTP_CODE_TOKEN_EXPIRED && refreshIsRunning.getValue()) {
             return waitForRefreshTokenOrDo(of(request))

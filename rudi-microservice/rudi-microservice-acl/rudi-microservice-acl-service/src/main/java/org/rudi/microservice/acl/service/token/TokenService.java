@@ -19,6 +19,8 @@ public interface TokenService {
 
 	void removeToken(long id);
 
+	Token getToken(long id);
+
 	void removeTokenByUserId(String userId);
 
 	void removeTokenByUserId(String userId, String value);

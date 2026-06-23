@@ -27,6 +27,10 @@ export class RudiSwiperComponent implements AfterViewInit {
     rowsPerView: number;
     @Input()
     breakpoints?: SwiperBreakpoint;
+    @Input()
+    ariaLabel?: string;
+    @Input()
+    ariaRoledescription?: string;
 
 
     constructor() {
@@ -37,6 +41,8 @@ export class RudiSwiperComponent implements AfterViewInit {
         this.spaceBetween = 20;
         this.rowsPerView = 1;
         this.breakpoints = undefined;
+        this.ariaLabel = undefined;
+        this.ariaRoledescription = undefined;
     }
 
     ngAfterViewInit(): void {
@@ -49,6 +55,25 @@ export class RudiSwiperComponent implements AfterViewInit {
         }
 
         this.swiper = this.buildSwiperInstance().init();
+        // Mise à jour initiale du tabindex après initialisation
+        this.updateSlidesTabindex();
+    }
+
+    /**
+     * Met tabindex="0" sur les éléments focusables des slides visibles à l'écran,
+     * et tabindex="-1" sur ceux des slides non visibles (ou clonées en mode loop).
+     * Cela garantit que la navigation Tab passe uniquement par les cartes visibles.
+     */
+    private updateSlidesTabindex(): void {
+        const slides = Array.from(this.swiperWrapper.nativeElement.children) as HTMLElement[];
+        slides.forEach((slide: HTMLElement) => {
+            const isVisible = slide.classList.contains('swiper-slide-visible')
+                && !slide.classList.contains('swiper-slide-duplicate');
+            const focusableElements = slide.querySelectorAll<HTMLElement>('[tabindex]');
+            focusableElements.forEach((el: HTMLElement) => {
+                el.tabIndex = isVisible ? 0 : -1;
+            });
+        });
     }
 
     private buildSwiperInstance(): Swiper {
@@ -60,6 +85,7 @@ export class RudiSwiperComponent implements AfterViewInit {
             centerInsufficientSlides: true,
             centeredSlidesBounds: true,
             centeredSlides: true,
+            watchSlidesProgress: true,
             pagination: {
                 el: '.swiper-pagination',
             },
@@ -69,6 +95,11 @@ export class RudiSwiperComponent implements AfterViewInit {
             },
             keyboard: {
                 enabled: true
+            },
+            on: {
+                slideChange: () => this.updateSlidesTabindex(),
+                transitionEnd: () => this.updateSlidesTabindex(),
+                resize: () => this.updateSlidesTabindex(),
             },
 
             // customizable options
