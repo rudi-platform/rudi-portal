@@ -8,7 +8,6 @@ import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {MatToolbar} from '@angular/material/toolbar';
 import {NgClass} from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FilterMenuComponent} from '../../filters/filter-menu/filter-menu.component';
 import {ThemesFilterFormComponent} from '../../filters/filter-forms/themes-filter-form/themes-filter-form.component';
 import {ProducerNamesFilterFormComponent} from '../../filters/filter-forms/producer-names-filter-form/producer-names-filter-form.component';
@@ -22,7 +21,6 @@ import {AccessStatusFilterFormComponent} from '../../filters/filter-forms/access
     imports: [
         MatToolbar,
         NgClass,
-        ExtendedModule,
         FilterMenuComponent,
         ThemesFilterFormComponent,
         ProducerNamesFilterFormComponent,

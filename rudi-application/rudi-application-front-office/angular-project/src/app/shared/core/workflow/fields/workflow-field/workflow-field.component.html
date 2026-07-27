@@ -1,22 +1,31 @@
 <ng-container [formGroup]="formGroup">
-  <label for="input-{{formControlName}}">
-    <span class="title">{{label}}@if (required && !readonly) {
+  <div class="d-flex">
+    <mat-label id="label-{{formControlName}}">{{label}}@if (required && !readonly) {
       <span class="required-symbol">*</span>
-    }</span>
-    <br/>
-    @if (!readonly) {
-      <span class="description">{{help}}</span>
-    }
-  </label>
+    }</mat-label>
+  </div>
+  @if (!readonly) {
+    <mat-hint class="title-hint">{{help}}</mat-hint>
+  }
   <mat-form-field appearance="outline">
     <input autocomplete="off" [formControlName]="formControlName"
       [readonly]="readonly"
       id="input-{{formControlName}}"
+      [attr.aria-labelledby]="'label-' + formControlName"
       matInput
       type="text"
       (keydown.control.enter)="submitForm.emit()">
       <mat-error>
-        <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}
+        <em class="fa fa-info-circle fa-2x me-2"></em>
+        @if (formControl?.hasError('required')) {
+          {{'common.validatorsErrors.required'|translate}}
+        } @else if (formControl?.hasError('pattern')) {
+          {{'common.validatorsErrors.pattern'|translate}}
+        } @else if (formControl?.hasError('maxlength')) {
+          {{'common.validatorsErrors.maxlength'|translate}}
+        } @else {
+          {{'common.requiredInformationError'|translate}}
+        }
       </mat-error>
     </mat-form-field>
   </ng-container>

@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, Input} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatToolbar} from '@angular/material/toolbar';
 import {Router} from '@angular/router';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
@@ -12,7 +11,7 @@ import {from, Observable} from 'rxjs';
     selector: 'app-banner',
     templateUrl: './banner.component.html',
     styleUrls: ['./banner.component.scss'],
-    imports: [MatToolbar, NgClass, ExtendedModule, PopoverComponent, TranslatePipe]
+    imports: [MatToolbar, NgClass, PopoverComponent, TranslatePipe]
 })
 export class BannerComponent {
     @Input() mediaSize: MediaSize;

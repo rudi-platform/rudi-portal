@@ -1,0 +1,1 @@
+${projectName} - Demande de partenariat refusée pour la réutilisation ${asset.title}

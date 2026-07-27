@@ -1,5 +1,5 @@
-.contact-card {
-    padding: 16px 24px;
+.owner-card-info {
+    display: block;
 
     .section-title {
         font-weight: bold;
@@ -18,7 +18,21 @@
         margin-top: 12px;
     }
 
-    app-contact-information {
+    app-owner-contact-information.owner-contact {
         margin-top: 20px;
+        display: block;
+    }
+
+    .related-organizations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 10px;
+    }
+
+    app-owner-contact-information.related-organization-contact {
+        display: block;
+        margin: 0;
     }
 }
+

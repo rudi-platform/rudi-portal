@@ -8,6 +8,7 @@ import {CoreModule} from '@core/core.module';
 import {NgbPopoverModule} from '@ng-bootstrap/ng-bootstrap';
 import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
 import {ContactCardComponent} from '@shared/business/contacts/contact-card/contact-card.component';
+import {OwnerContactInformationComponent} from '@shared/business/contacts/contact-information/contact-information.component';
 import {DataSetCardComponent} from '@shared/business/dataset/common/data-set-card/data-set-card.component';
 import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
 import {DatasetListBannerComponent} from '@shared/business/dataset/common/dataset-list-banner/dataset-list-banner.component';
@@ -88,16 +89,7 @@ import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.comp
 import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {WorkflowFieldAddressComponent} from '@shared/core/workflow/fields/workflow-field-address/workflow-field-address.component';
-import {
-    WorkflowFieldAttachmentPopinComponent
-} from '@shared/core/workflow/fields/workflow-field-attachment-popin/workflow-field-attachment-popin.component';
-import {WorkflowFieldAttachmentComponent} from '@shared/core/workflow/fields/workflow-field-attachment/workflow-field-attachment.component';
-import {WorkflowFieldBooleanComponent} from '@shared/core/workflow/fields/workflow-field-boolean/workflow-field-boolean.component';
-import {WorkflowFieldDateComponent} from '@shared/core/workflow/fields/workflow-field-date/workflow-field-date.component';
-import {WorkflowFieldHiddenComponent} from '@shared/core/workflow/fields/workflow-field-hidden/workflow-field-hidden.component';
-import {WorkflowFieldListComponent} from '@shared/core/workflow/fields/workflow-field-list/workflow-field-list.component';
 import {WorkflowFieldTemplateComponent} from '@shared/core/workflow/fields/workflow-field-template/workflow-field-template.component';
-import {WorkflowFieldTextComponent} from '@shared/core/workflow/fields/workflow-field-text/workflow-field-text.component';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
 import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
 import {
@@ -122,7 +114,6 @@ import {TabContentDirective} from '@shared/utils/directives/tab-content-directiv
 import {TabsLayoutDirective} from '@shared/utils/directives/tab-layout-directive/tabs-layout.directive';
 import {FileSizePipe} from '@shared/utils/pipes/file-size-pipe';
 import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
-import {ParseIntPipe} from '@shared/utils/pipes/parse-int.pipe';
 import {ProcessDefinitionKeyTranslatePipe} from '@shared/utils/pipes/process-definition-key-translate.pipe';
 import {ReplaceIfNullPipe} from '@shared/utils/pipes/replace-if-null.pipe';
 import {SelfdataProcessDefinitionKeyTranslatePipe} from '@shared/utils/pipes/selfdata-process-definition-key-translate.pipe';
@@ -130,7 +121,6 @@ import {SplitPipe} from '@shared/utils/pipes/split.pipe';
 import {ToStringPipe} from '@shared/utils/pipes/to-string.pipe';
 import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
 import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
-import {CaptchetatAngularModule} from 'captchetat-angular';
 
 
 @NgModule({
@@ -138,7 +128,6 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        CaptchetatAngularModule,
         ...MaterialModules,
         CoreModule,
         FilePickerModule,
@@ -151,9 +140,8 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         ReplaceIfNullPipe,
         ToStringPipe,
         GetBackendPropertyPipe,
-        ParseIntPipe,
-        ProcessDefinitionKeyTranslatePipe,
         FileSizePipe,
+        ProcessDefinitionKeyTranslatePipe,
         SelfdataProcessDefinitionKeyTranslatePipe,
         IsSectionDisplayedPipe,
         IsSectionOnlyHelpPipe,
@@ -223,6 +211,7 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         // ========== CONTACTS ==========
         ContactButtonComponent,
         ContactCardComponent,
+        OwnerContactInformationComponent,
         // ========== DATASETS COMMON ==========
         DatasetsInfosComponent,
         DataSetCardComponent,
@@ -251,16 +240,9 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         WorklfowExpansionRichLabelComponent,
         // ========== WORKFLOW FIELDS ==========
         WorkflowFieldComponent,
-        WorkflowFieldTextComponent,
-        WorkflowFieldDateComponent,
-        WorkflowFieldHiddenComponent,
-        WorkflowFieldListComponent,
-        WorkflowFieldBooleanComponent,
-        WorkflowFieldAddressComponent,
-        WorkflowFieldAttachmentComponent,
-        WorkflowFieldAttachmentPopinComponent,
         WorkflowFieldTemplateComponent,
-        // ========== WORKFLOW FORMS ==========
+        WorkflowFieldAddressComponent,
+        // ========== WORKFLOW FORMS (utilise le template ci-dessus) ==========
         WorkflowFormComponent,
         WorkflowFormDialogComponent,
         WorkflowFormSubmitSuccessComponent,
@@ -343,6 +325,7 @@ import {CaptchetatAngularModule} from 'captchetat-angular';
         // ========== CONTACTS ==========
         ContactButtonComponent,
         ContactCardComponent,
+        OwnerContactInformationComponent,
         // ========== DATASETS COMMON ==========
         DatasetsInfosComponent,
         DataSetCardComponent,

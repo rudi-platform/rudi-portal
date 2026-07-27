@@ -1,6 +1,5 @@
 import {AsyncPipe, NgClass} from '@angular/common';
 import {Component, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatBadge} from '@angular/material/badge';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -38,7 +37,7 @@ import {switchMap, takeUntil} from 'rxjs/operators';
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, DatesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, ExtendedModule, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, DatesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
 })
 export class ListComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;

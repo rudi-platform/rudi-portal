@@ -1,107 +1,110 @@
 <!-- On ajoute ce contexte de sidenav pour éviter trop de régressions suite à la refonte du front -->
 <mat-sidenav-container>
-  <mat-sidenav-content class="sidebar-content-pd">
-    <app-loader [active]="loading"></app-loader>
-    @if (project) {
-      <div
-        class="project-container ps-0 pe-0 container-fluid">
-        <!-- Icon et titre de la ressource -->
-        <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}">
-          <app-project-heading [logo]="projectLogo" [ownerDescription]="userIdentity"
-            [projectTitle]="project.title"
-          [status]="getHeaderStatus()"></app-project-heading>
-        </div>
-        <!-- Fin Icon et titre de la ressource -->
-        <!-- Bandeau-->
-        <div class="bandeau">
-          <mat-toolbar [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
-            class="bandeau-card">
-            <button class="button button-info" disabled mat-raised-button>
-              <mat-icon
-                [class]="(mediaSize.isXs || mediaSize.isSm) ? 'icon-information-sm' : 'icon-information'"
-                svgIcon="icon-info">
-              </mat-icon>
-              <span
-              [class]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs}">{{ 'project.detail.informations'|translate }}</span>
-            </button>
-            <span class="spacer"></span>
-            @if (project.access_url) {
-              <button (click)="onClickAccessUrl()" class="button bandeau-btn-access"
-                mat-raised-button>
-                <mat-icon class="icon-style"
-                  [class]="{'icon-style-mobile': mediaSize.isSm || mediaSize.isXs}">
-                  launch
-                </mat-icon>
-                <span
-                [ngClass]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs }">{{ 'project.detail.access'|translate }}</span>
-              </button>
-            }
-          </mat-toolbar>
-        </div>
-        <!-- Fin Bandeau -->
-        <!-- Card Description et Colonne de droite -->
-        <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
-          class="row mt-3 card-description-keyword-row">
-          <!--  Card Description -->
-          <div class="col-sm-12 col-lg-8">
-            <mat-card class="project-card">
-              <app-project-main-informations [isProjectUpdatable]="false"
-              [project]="project"></app-project-main-informations>
-            </mat-card>
-          </div>
-          <!-- Colonne de droite -->
-          <div class="col-sm-12 col-lg-4">
-            <!-- Informations générales -->
-            <mat-card class="card-main-information project-card pb-4">
-              <div class="card-project-type-title">
-                <span class="card-label">{{ 'project.detail.type'|translate }}</span>
-                <span class="project-type">{{ projectType }}</span>
-              </div>
-              @if (userIdentity) {
-                <div class="contact">
-                  <span class="card-label">{{ userIdentity }}</span><br/>
-                  @if (isKnownUser) {
-                    <app-contact-button [email]="project.contact_email"
-                    ></app-contact-button>
-                  }
+    <mat-sidenav-content class="sidebar-content-pd">
+        <app-loader [active]="loading"></app-loader>
+        @if (project) {
+            <div
+                class="project-container ps-0 pe-0 container-fluid">
+                <!-- Icon et titre de la ressource -->
+                <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}">
+                    <app-project-heading [logo]="projectLogo" [ownerDescription]="userIdentity"
+                                         [projectTitle]="project.title"
+                                         [status]="getHeaderStatus()"></app-project-heading>
                 </div>
-              }
-              <div class="mt-4">
-                <div class="date-created" fxLayoutAlign="space-between center">
-                  <span class="label-date">{{ 'project.detail.creation_date'|translate }}</span>
-                  <span
-                    class="date-value float-right">{{ project.creation_date | date :'dd/MM/yyyy' }}
+                <!-- Fin Icon et titre de la ressource -->
+                <!-- Bandeau-->
+                <div class="bandeau">
+                    <mat-toolbar
+                        [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
+                        class="bandeau-card">
+                        <button class="button button-info" disabled mat-raised-button>
+                            <mat-icon aria-hidden="true"
+                                      [class]="(mediaSize.isXs || mediaSize.isSm) ? 'icon-information-sm' : 'icon-information'"
+                                      svgIcon="icon-info">
+                            </mat-icon>
+                            <span
+                                [class]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs}">{{ 'project.detail.informations'|translate }}</span>
+                        </button>
+                        <span class="spacer"></span>
+                        @if (project.access_url) {
+                            <button (click)="onClickAccessUrl()" class="button bandeau-btn-access"
+                                    mat-raised-button>
+                                <mat-icon aria-hidden="true" class="icon-style"
+                                          [class.icon-style-mobile]="mediaSize.isSm || mediaSize.isXs">
+                                    launch
+                                </mat-icon>
+                                <span
+                                    [ngClass]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs }">{{ 'project.detail.access'|translate }}</span>
+                            </button>
+                        }
+                    </mat-toolbar>
+                </div>
+                <!-- Fin Bandeau -->
+                <!-- Card Description et Colonne de droite -->
+                <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
+                     class="row mt-3 card-description-keyword-row">
+                    <!--  Card Description -->
+                    <div class="col-sm-12 col-lg-8">
+                        <mat-card class="project-card">
+                            <app-project-main-informations [isProjectUpdatable]="false"
+                                                           [project]="project"></app-project-main-informations>
+                        </mat-card>
+                    </div>
+                    <!-- Colonne de droite -->
+                    <div class="col-sm-12 col-lg-4">
+                        <!-- Informations générales -->
+                        <mat-card class="card-main-information project-card pb-4">
+                            <div class="card-project-type-title">
+                                <span class="card-label">{{ 'project.detail.type'|translate }}</span>
+                                <span class="project-type">{{ projectType }}</span>
+                            </div>
+                            @if (userIdentity) {
+                                <app-owner-card-info class="contact"
+                                                     [title]="'personalSpace.projectDetails.projectOwner' | translate"
+                                                     [showOwnerEmailDirectly]="false"
+                                                     [showRelatedEmailDirectly]="false"
+                                                     [name]="userIdentity"
+                                                     [email]="isKnownUser ? project.contact_email : ''"
+                                                     [relatedTitle]="(relatedOrganizations.length > 1 ? 'personalSpace.projectDetails.relatedOrganizations' : 'personalSpace.projectDetails.relatedOrganization') | translate"
+                                                     [relatedOrganizations]="relatedOrganizations"
+                                ></app-owner-card-info>
+                            }
+                            <div class="mt-4">
+                                <div class="date-created">
+                                    <span class="label-date">{{ 'project.detail.creation_date'|translate }}</span>
+                                    <span
+                                        class="date-value float-right">{{ project.creation_date | date :'dd/MM/yyyy' }}
                   </span>
-                </div>
-                <div class="date-modified mt-3" fxLayoutAlign="space-between center">
-                  <span class="label-date">{{ 'project.detail.updated_date'|translate }}</span>
-                  <span
-                    class="date-value float-right">{{ project.updated_date | date :'dd/MM/yyyy' }}
+                                </div>
+                                <div class="date-modified mt-3">
+                                    <span class="label-date">{{ 'project.detail.updated_date'|translate }}</span>
+                                    <span
+                                        class="date-value float-right">{{ project.updated_date | date :'dd/MM/yyyy' }}
                   </span>
+                                </div>
+                            </div>
+                        </mat-card>
+                        <!-- Jeux de données utilisés -->
+                        <mat-card class="card-datasets project-card rudi-card-border">
+                            <mat-card-title>
+                                <h2 class="card-label">{{ 'project.detail.datasets'|translate }}
+                                    ({{ linkedDatasets?.length || 0 }})</h2>
+                            </mat-card-title>
+                            @for (element of linkedDatasets; track element) {
+                                <app-dataset-infos class="dataset-card-infos"
+                                                   [showLogo]="true"
+                                                   [organizationName]="element?.dataset.producer.organization_name"
+                                                   [organizationId]="element?.dataset.producer.organization_id"
+                                                   [isRestricted]="element?.dataset.access_condition?.confidentiality?.restricted_access"
+                                                   [resourceTitle]="element?.dataset.resource_title"
+                                                   [divider]="true"
+                                                   [goToDetails]="true"
+                                                   [currentJddId]="element?.dataset.global_id"></app-dataset-infos>
+                            }
+                        </mat-card>
+                    </div>
                 </div>
-              </div>
-            </mat-card>
-            <!-- Jeux de données utilisés -->
-            <mat-card class="card-datasets project-card rudi-card-border">
-              <mat-card-title>
-                <h2 class="card-label">{{ 'project.detail.datasets'|translate }}
-                ({{ linkedDatasets?.length || 0 }})</h2>
-              </mat-card-title>
-              @for (element of linkedDatasets; track element) {
-                <app-dataset-infos class="dataset-card-infos"
-                  [showLogo]="true"
-                  [organizationName]="element?.dataset.producer.organization_name"
-                  [organizationId]="element?.dataset.producer.organization_id"
-                  [isRestricted]="element?.dataset.access_condition?.confidentiality?.restricted_access"
-                  [resourceTitle]="element?.dataset.resource_title"
-                  [divider]="true"
-                  [goToDetails]="true"
-                [currentJddId]="element?.dataset.global_id"></app-dataset-infos>
-              }
-            </mat-card>
-          </div>
-        </div>
-      </div>
-    }
-  </mat-sidenav-content>
+            </div>
+        }
+    </mat-sidenav-content>
 </mat-sidenav-container>

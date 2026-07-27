@@ -1,6 +1,6 @@
 import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
-import {enableProdMode, importProvidersFrom, inject, Injector, LOCALE_ID, provideAppInitializer} from '@angular/core';
+import {enableProdMode, importProvidersFrom, inject, Injector, LOCALE_ID, provideAppInitializer, provideZoneChangeDetection} from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
@@ -30,7 +30,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
     providers: [
-        importProvidersFrom(BrowserModule, CoreModule, SharedModule, HomeModule, AppRoutingModule, TranslateModule.forRoot({
+        provideZoneChangeDetection(),importProvidersFrom(BrowserModule, CoreModule, SharedModule, HomeModule, AppRoutingModule, TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
                 useFactory: HttpLoaderFactory,

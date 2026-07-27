@@ -1,6 +1,5 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatDivider} from '@angular/material/divider';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -18,15 +17,15 @@ import {CmsTermsDescription} from 'micro_service_modules/konsult/konsult-model';
 import {switchMap} from 'rxjs';
 import {SocialMediaSectionComponent} from '../../../business/home/social-media-section/social-media-section.component';
 
-const OFFSET: number = 0;
-const LIMIT: number = 3;
+const OFFSET = 0;
+const LIMIT = 3;
 const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
 
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.scss'],
-    imports: [NgClass, ExtendedModule, SocialMediaSectionComponent, MatDivider, AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
+    imports: [NgClass, SocialMediaSectionComponent, MatDivider, AsyncPipe, TranslatePipe, GetBackendPropertyPipe]
 })
 export class FooterComponent implements OnInit {
 

@@ -1,6 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatIcon} from '@angular/material/icon';
 import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
 import {
@@ -40,7 +39,10 @@ const ITEMS_PER_PAGE = 10;
     selector: 'app-selfdata-datasets-table',
     templateUrl: './selfdata-datasets-table.component.html',
     styleUrls: ['./selfdata-datasets-table.component.scss'],
-    imports: [SearchCountComponent, LoaderComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, NgClass, ExtendedModule, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, RouterLink, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe, SelfdataProcessDefinitionKeyTranslatePipe]
+    imports: [SearchCountComponent, LoaderComponent, MatTable, MatSort,
+        MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, NgClass, MatHeaderRowDef,
+        MatHeaderRow, MatRowDef, MatRow, RouterLink, BackPaginationComponent,
+        DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe, SelfdataProcessDefinitionKeyTranslatePipe]
 })
 export class SelfdataDatasetsTableComponent implements OnInit {
     displayedColumns: string[] = ['title', 'processDefinitionKey', 'updatedDate', 'functionalStatus'];

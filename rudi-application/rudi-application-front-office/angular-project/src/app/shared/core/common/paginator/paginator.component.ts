@@ -3,7 +3,6 @@ import {MatPaginator, MatPaginatorIntl} from '@angular/material/paginator';
 import {BreakpointObserverService, NgClassObject} from '@core/services/breakpoint-observer.service';
 import { NgClass } from '@angular/common';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {TranslatePipe} from '@ngx-translate/core';
 
 /**
@@ -13,7 +12,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-paginator',
     templateUrl: './paginator.component.html',
     styleUrls: ['./paginator.component.scss'],
-    imports: [NgxPaginationModule, NgClass, ExtendedModule, TranslatePipe]
+    imports: [NgxPaginationModule, NgClass, TranslatePipe]
 })
 export class PaginatorComponent extends MatPaginator {
 

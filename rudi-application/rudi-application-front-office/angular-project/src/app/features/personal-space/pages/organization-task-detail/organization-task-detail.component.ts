@@ -32,7 +32,7 @@ import {OrganizationService} from 'micro_service_modules/strukture/api-strukture
 import {Organization, OrganizationStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
-import {ContactCardComponent} from '../../components/contact-card/contact-card.component';
+import {OwnerContactCardComponent} from 'src/app/features/personal-space/components/contact-card/owner-contact-card.component';
 import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
 
 @Component({
@@ -42,7 +42,7 @@ import {OrganizationInformationComponent} from '../../components/organization-in
     imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent,
         TabComponent, MatAccordion, MatExpansionPanel,
         MatExpansionPanelHeader, MatExpansionPanelTitle, OrganizationInformationComponent,
-        ContactCardComponent, BannerButtonComponent, AsyncPipe, TranslatePipe],
+        OwnerContactCardComponent, BannerButtonComponent, TranslatePipe, AsyncPipe],
     providers: [{provide: AttachmentService, useExisting: OrganizationAttachmentService}]
 })
 export class OrganizationTaskDetailComponent

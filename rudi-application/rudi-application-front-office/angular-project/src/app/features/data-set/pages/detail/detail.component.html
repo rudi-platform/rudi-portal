@@ -80,14 +80,14 @@
                 </div>
               </div>
               <mat-menu #formatMenu="matMenu" role="menu" yPosition="below">
-                    <div (click)="$event.stopPropagation()" class="rudi-select-panel" fxLayout="column">
+                    <div (click)="$event.stopPropagation()" class="rudi-select-panel d-flex flex-column">
                       <form [formGroup]="form">
                         <div class="menu-radioGroup-scrollable">
                           <h4 class="menu-libelle">{{ 'availableFormats.formatsDisponibles'|translate }}</h4>
                           <mat-radio-group #radioGroup="matRadioGroup"
                             (click)="$event.stopPropagation()"
                             aria-label="Select an option"
-                            formControlName="options" fxLayout="column">
+                            formControlName="options" class="d-flex flex-column">
                             @for (item of downloadableMedias; track item; let i = $index) {
                               <mat-radio-button
                                 [checked]="i === 0"

@@ -1,8 +1,6 @@
-import { DatePipe, NgClass } from '@angular/common';
+import {DatePipe, NgClass} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
-import {FlexModule} from '@angular/flex-layout/flex';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardTitle} from '@angular/material/card';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
@@ -21,16 +19,16 @@ import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
-import {ContactButtonComponent} from '@shared/business/contacts/contact-button/contact-button.component';
+import {OwnerCardInfoComponent, RelatedOrganizationInfo} from '@shared/business/contacts/owner-card-info/owner-card-info.component';
 import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
 import {ProjectHeadingComponent} from '@shared/business/projects/project-heading/project-heading.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {AclService} from 'micro_service_modules/acl/acl-api';
 import {LinkedDatasetStatus, OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import {Project, ProjectStatus} from 'micro_service_modules/projekt/projekt-model';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {OwnerInfoRequest, OwnerType, Project, ProjectStatus, RelationStatus} from 'micro_service_modules/projekt/projekt-model';
+import {Observable, of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import {ProjectMainInformationsComponent} from '../../components/project-main-informations/project-main-informations.component';
 
 const ICON_INFO = '../assets/icons/icon_tab_infos.svg';
@@ -50,7 +48,23 @@ interface Dependencies {
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, ProjectHeadingComponent, MatToolbar, MatButton, MatIcon, MatCard, ProjectMainInformationsComponent, ContactButtonComponent, FlexModule, MatCardTitle, DatasetsInfosComponent, DatePipe, TranslatePipe]
+    imports: [
+        MatSidenavContainer,
+        MatSidenavContent,
+        LoaderComponent,
+        NgClass,
+        ProjectHeadingComponent,
+        MatToolbar,
+        MatButton,
+        MatIcon,
+        MatCard,
+        ProjectMainInformationsComponent,
+        OwnerCardInfoComponent,
+        MatCardTitle,
+        DatasetsInfosComponent,
+        DatePipe,
+        TranslatePipe
+    ]
 })
 export class DetailComponent implements OnInit {
     project: Project;
@@ -59,6 +73,7 @@ export class DetailComponent implements OnInit {
     loading = false;
     projectLogo: Base64EncodedLogo = '';
     linkedDatasets: LinkedDatasetMetadatas[] = [];
+    relatedOrganizations: RelatedOrganizationInfo[] = [];
     userIdentity: string;
     isKnownUser: boolean;
 
@@ -96,6 +111,7 @@ export class DetailComponent implements OnInit {
             this.loadProjectDependencies(projectUuid).subscribe({
                 next: (datasetDependencies: Dependencies) => {
                     this.project = datasetDependencies.project;
+                    this.loadRelatedOrganizations(this.project);
                     // le ownerInfo n'est plus nullable, si inconnu il renvoie la chaine [Utilisateur inconnu]
                     this.userIdentity = datasetDependencies.ownerInfo?.name;
                     // Si inconnu on n'affiche pas d'adresse dans le bouton de contact
@@ -154,6 +170,29 @@ export class DetailComponent implements OnInit {
                 };
             })
         );
+    }
+
+    private loadRelatedOrganizations(project: Project): void {
+        const validatedRelatedOrganizations = project.related_organizations?.filter(
+            relatedOrganization => relatedOrganization.relation_status === RelationStatus.Accepted
+        ) ?? [];
+
+        if (!validatedRelatedOrganizations.length) {
+            this.relatedOrganizations = [];
+            return;
+        }
+
+        const ownerInfoRequests: OwnerInfoRequest[] = validatedRelatedOrganizations.map(relatedOrganization => ({
+            owner_uuid: relatedOrganization.organization_uuid,
+            owner_type: OwnerType.Organization
+        }));
+
+        this.projektMetierService.getOwnersInfos(ownerInfoRequests).pipe(
+            map(ownerInfos => ownerInfos.map(ownerInfo => ({name: ownerInfo.name, adminEmail: ownerInfo.contact}))),
+            catchError(() => of([]))
+        ).subscribe(relatedOrganizations => {
+            this.relatedOrganizations = relatedOrganizations;
+        });
     }
 
     get projectType(): string {

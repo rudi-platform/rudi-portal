@@ -480,6 +480,22 @@
 							"datasetConfidentiality": {
 								"description": "Cherche les linked dataset en lien avec avec des jdd d'une confidentialité donnée",
 								"type": "string"
+							},
+							"projectRelatedUuids": {
+								"description": "Cherche les linked dataset en lien avec des projets d'une organisation donnée",
+								"type": "array",
+								"items": {
+									"type": "string",
+									"format": "uuid",
+									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
+								}
+							},
+							"organizationProjectRelationStatuses": {
+								"description": "Cherche les linked dataset en lien avec des projets d'une organisation donnée et dont le statut de relation est donné",
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/RelationStatus"
+								}
 							}
 						}
 					}
@@ -1051,15 +1067,14 @@
 					}
 				]
 			},
-			"ProjectByOwner": {
-				"description": "Objet contenant un owner UUID et le nombre de projets qu'il a",
-				"type": "object",
+			"ProjectByOrganization": {
+				"description": "Objet contenant un UUID d'organisation et le nombre de projets qu'il a",
 				"required": [
-					"ownerUUID",
+					"organization_uuid",
 					"projectCount"
 				],
 				"properties": {
-					"ownerUUID": {
+					"organization_uuid": {
 						"type": "string",
 						"format": "uuid"
 					},
@@ -1069,11 +1084,11 @@
 					}
 				}
 			},
-			"ProjectByOwners": {
-				"description": "Liste des owner et le nombre de projets associés",
+			"ProjectByOrganisations": {
+				"description": "Liste des organisations et le nombre de projets associés",
 				"type": "array",
 				"items": {
-					"$ref": "#/components/schemas/ProjectByOwner"
+					"$ref": "#/components/schemas/ProjectByOrganization"
 				}
 			},
 			"ProjektArchiveMode": {

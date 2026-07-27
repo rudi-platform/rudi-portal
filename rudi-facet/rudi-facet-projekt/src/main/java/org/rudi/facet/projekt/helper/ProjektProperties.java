@@ -27,6 +27,8 @@ public class ProjektProperties {
 
 	private String getNumberOfProjectsPerOwnersPath = "/projects/count-per-owner";
 
+	private String getNumberOfProjectsPerRelatedOrganizationsPath = "/projects/count-per-related-organization";
+
 	private String unlinkProjectToDatasetPath = "/projects/{projectUuid}/linked-datasets/{linkedDatasetUuid}";
 
 	private String hasProjectOwnerRunningTask = "/project-owners/has-task/{owner-uuid}";

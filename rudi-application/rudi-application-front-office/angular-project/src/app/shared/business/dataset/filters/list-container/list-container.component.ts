@@ -1,6 +1,5 @@
 import {AsyncPipe, NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
@@ -43,7 +42,6 @@ const EMPTY_METADATA_LIST: MetadataList = {
         DatasetListBannerComponent,
         FiltersItemsListComponent,
         NgClass,
-        ExtendedModule,
         LoaderComponent,
         OrderComponent,
         MatButton,

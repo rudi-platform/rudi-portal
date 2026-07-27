@@ -14,7 +14,7 @@ import org.rudi.facet.kaccess.bean.MetadataFacetValues;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.strukture.core.bean.OrganizationBean;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
@@ -45,26 +45,30 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 
 	@Override
 	public Page<OrganizationBean> searchOrganizationBeans(OrganizationSearchCriteria criteria, Pageable pageable) {
-		Page<OrganizationBean> beans = organizationBeanMapper.entitiesToDto(organizationCustomDao.searchOrganizations(criteria, pageable), pageable);
+		Page<OrganizationBean> beans = organizationBeanMapper
+				.entitiesToDto(organizationCustomDao.searchOrganizations(criteria, pageable), pageable);
 
-		if(Boolean.TRUE.equals(criteria.getLoadAllInformations())){
+		if (Boolean.TRUE.equals(criteria.getLoadAllInformations())) {
 			// Récupération de la liste des UUID d'organisation pour récupérer
-			//  leur nombre de jdd et leur nombre de projets
-			List<UUID> organizationsUuids= beans.map(OrganizationBean::getUuid).toList();
+			// leur nombre de jdd et leur nombre de projets
+			List<UUID> organizationsUuids = beans.map(OrganizationBean::getUuid).toList();
 
 			// Récupération du nombre de projets ayant pour owner une des organisations récupérées précédemment.
-			List<ProjectByOwner> projectByOwners = projektHelper.getNumberOfProjectsPerOwners(organizationsUuids);
+			List<ProjectByOrganization> projectByOwners = projektHelper
+					.getNumberOfProjectsPerOwners(organizationsUuids);
+
+			List<ProjectByOrganization> projectByRelatedOrganization = projektHelper
+					.getNumberOfProjectsPerRelatedOrganization(organizationsUuids);
 
 			// Récupération du nombre de JDD par producteur (organisations)
-			//  indépendamment de la liste des organisations précédemment récupérées
+			// indépendamment de la liste des organisations précédemment récupérées
 			MetadataListFacets metadataListFacets = null;
 			try {
 				DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria()
-						.producerUuids(organizationsUuids)
-						.limit(null);
+						.producerUuids(organizationsUuids).limit(null);
 
 				// Liste des facets dataverse sur lesquels on souhaite s'appuyer
-				//  ici, celle des organisations productrice de jdd.
+				// ici, celle des organisations productrice de jdd.
 				List<String> facets = new ArrayList<>();
 				facets.add(OrganizationBeanServiceImpl.ORGANIZATION_UUID_FACET);
 
@@ -74,39 +78,36 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 				log.error("Cannot get datasets from Organizations", e);
 			}
 
-			for(OrganizationBean bean : beans){
-				assignProjectCount(bean, projectByOwners);
+			for (OrganizationBean bean : beans) {
+				assignProjectCount(bean, projectByOwners, projectByRelatedOrganization);
 				assignDatasetCount(bean, metadataListFacets);
 			}
 		}
 		return beans;
 	}
 
-
 	@Override
-	public Page<OrganizationBean> searchPublicOrganizationBeans(OrganizationSearchCriteria criteria, Pageable pageable) {
+	public Page<OrganizationBean> searchPublicOrganizationBeans(OrganizationSearchCriteria criteria,
+			Pageable pageable) {
 		// Force des valeurs nécessaires pour la recherche des organisations publiques
 		criteria.setOrganizationStatus(List.of(OrganizationStatus.VALIDATED));
 		// Appel du search avec les bons paramètres.
 		return searchOrganizationBeans(criteria, pageable);
 	}
 
-	private void assignDatasetCount(OrganizationBean bean, MetadataListFacets metadataListFacets){
+	private void assignDatasetCount(OrganizationBean bean, MetadataListFacets metadataListFacets) {
 		// Stockage du nombre de JDD, par défaut 0
 		int datasetCount = 0;
 
 		// Vérifie si le retour contient bien des données
-		if(metadataListFacets != null
-				&& metadataListFacets.getFacets() != null
+		if (metadataListFacets != null && metadataListFacets.getFacets() != null
 				&& CollectionUtils.isNotEmpty(metadataListFacets.getFacets().getItems())) {
 
 			final String beanUuid = bean.getUuid().toString();
 
 			Optional<MetadataFacetValues> metadataFacetValue = metadataListFacets.getFacets().getItems().stream()
 					.filter(f -> OrganizationBeanServiceImpl.ORGANIZATION_UUID_FACET.equals(f.getPropertyName()))
-					.flatMap(f -> f.getValues().stream())
-					.filter(v -> beanUuid.equals(v.getValue()))
-					.findFirst();
+					.flatMap(f -> f.getValues().stream()).filter(v -> beanUuid.equals(v.getValue())).findFirst();
 
 			datasetCount = metadataFacetValue.map(MetadataFacetValues::getCount).orElse(0);
 
@@ -120,33 +121,39 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 	 * @return
 	 */
 	@Override
-	public Page<OrganizationBean> searchMyOrganizationBeans(OrganizationSearchCriteria criteria, Pageable pageable) throws AppServiceUnauthorizedException {
+	public Page<OrganizationBean> searchMyOrganizationBeans(OrganizationSearchCriteria criteria, Pageable pageable)
+			throws AppServiceUnauthorizedException {
 		UUID userUuid = aCLHelper.getAuthenticatedUserUuid();
 
 		criteria.setUserUuid(userUuid);
 		criteria.setOrganizationStatus(List.of(OrganizationStatus.VALIDATED));
 		criteria.setAdminMemberAllowedStatus(List.of(OrganizationStatus.DISENGAGED));
 
-		Page<OrganizationBean> beans = organizationBeanMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
+		Page<OrganizationBean> beans = organizationBeanMapper
+				.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
 
 		if (Boolean.TRUE.equals(criteria.getLoadAllInformations())) {
 			// Récupération de la liste des UUID d'organisation pour récupérer
-			//  leur nombre de jdd et leur nombre de projets
+			// leur nombre de jdd et leur nombre de projets
 			List<UUID> organizationsUuids = beans.map(OrganizationBean::getUuid).toList();
 
 			// Récupération du nombre de projets ayant pour owner une des organisations récupérées précédemment.
-			List<ProjectByOwner> projectByOwners = projektHelper.getNumberOfProjectsPerOwners(organizationsUuids);
+			List<ProjectByOrganization> projectByOwners = projektHelper
+					.getNumberOfProjectsPerOwners(organizationsUuids);
+
+			// Récupération du nombre de projets ayant pour partenaire une des organisations récupérées précédemment.
+			List<ProjectByOrganization> projectByRelatedOrganization = projektHelper
+					.getNumberOfProjectsPerRelatedOrganization(organizationsUuids);
 
 			// Récupération du nombre de JDD par producteur (organisations)
-			//  indépendamment de la liste des organisations précédemment récupérées
+			// indépendamment de la liste des organisations précédemment récupérées
 			MetadataListFacets metadataListFacets = null;
 			try {
 				DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria()
-						.producerUuids(organizationsUuids)
-						.limit(null);
+						.producerUuids(organizationsUuids).limit(null);
 
 				// Liste des facets dataverse sur lesquels on souhaite s'appuyer
-				//  ici, celle des organisations productrice de jdd.
+				// ici, celle des organisations productrice de jdd.
 				List<String> facets = new ArrayList<>();
 				facets.add(OrganizationBeanServiceImpl.ORGANIZATION_UUID_FACET);
 
@@ -157,7 +164,7 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 			}
 
 			for (OrganizationBean bean : beans) {
-				assignProjectCount(bean, projectByOwners);
+				assignProjectCount(bean, projectByOwners, projectByRelatedOrganization);
 				assignDatasetCount(bean, metadataListFacets);
 			}
 		}
@@ -165,14 +172,19 @@ public class OrganizationBeanServiceImpl implements OrganizationBeanService {
 		return beans;
 	}
 
-	private void assignProjectCount(OrganizationBean bean, List<ProjectByOwner> projectByOwners){
-		//Stockage du nombre de projets
-		Optional<ProjectByOwner> projectByOwner = projectByOwners
-				.stream()
-				.filter(p -> p.getOwnerUUID().equals(bean.getUuid())).findFirst();
+	private void assignProjectCount(OrganizationBean bean, List<ProjectByOrganization> projectByOwners,
+			List<ProjectByOrganization> projectByRelatedOrganizations) {
+		// Stockage du nombre de projets
+		Optional<ProjectByOrganization> projectByOwner = projectByOwners.stream()
+				.filter(p -> p.getOrganizationUuid().equals(bean.getUuid())).findFirst();
 
-		bean.setProjectCount(projectByOwner.map(byOwner -> byOwner.getProjectCount().intValue()).orElse(0));
+		Optional<ProjectByOrganization> projectByRelatedOrganization = projectByRelatedOrganizations.stream()
+				.filter(p -> p.getOrganizationUuid().equals(bean.getUuid())).findFirst();
+
+		// le nombre de projets est la somme des projets dont l'organisation est propriétaire et ceux dont elle est partenaire
+		bean.setProjectCount(projectByOwner.map(byOwner -> byOwner.getProjectCount().intValue()).orElse(0)
+				+ projectByRelatedOrganization
+						.map(byRelatedOrganization -> byRelatedOrganization.getProjectCount().intValue()).orElse(0));
 	}
-
 
 }

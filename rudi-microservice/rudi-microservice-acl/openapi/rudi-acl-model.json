@@ -357,6 +357,25 @@
 					}
 				}
 			},
+			"CaptchaImage": {
+				"type": "object",
+				"required": [
+					"uuid",
+					"imageb64"
+				],
+				"properties": {
+					"uuid": {
+						"type": "string",
+						"example": "e7da1f49-07d6-4ed7-8d5b-21e4ec4e22ec",
+						"description": "Identifiant unique du captcha généré"
+					},
+					"imageb64": {
+						"type": "string",
+						"example": "data:image/png;base64,iVBOR...",
+						"description": "Image du captcha encodée en base64 (data URI)"
+					}
+				}
+			},
 			"CaptchaType": {
 				"type": "string",
 				"enum": [

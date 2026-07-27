@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
@@ -34,7 +33,7 @@ interface OrderItem extends Item {
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
     imports: [MatSidenavContainer, MatSidenavContent,
-        LoaderComponent, PageTitleComponent, NgClass, ExtendedModule,
+        LoaderComponent, PageTitleComponent, NgClass,
         CmsOrderComponent, NewsListComponent, NgxPaginationModule, TranslatePipe]
 })
 export class ListComponent implements OnInit {

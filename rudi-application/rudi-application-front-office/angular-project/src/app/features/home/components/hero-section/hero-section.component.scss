@@ -32,6 +32,7 @@
 
 .hero-subtitle {
     @extend .hero-text;
+    display: block;
     font-size: 34px;
     color: var(--accent-color);
 }

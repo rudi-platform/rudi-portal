@@ -14,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 
 @Transactional
 @RequiredArgsConstructor
-public abstract class AbstractAssetDescriptionDataFactory <E extends AbstractAssetDescriptionEntity, R extends AssetDescriptionDao<E>> extends AbstractDataFactory {
+public abstract class AbstractAssetDescriptionDataFactory<E extends AbstractAssetDescriptionEntity, R extends AssetDescriptionDao<E>>
+		extends AbstractDataFactory {
 
 	protected final R repository;
 	private final Class<E> type;
 
-	public E create(UUID uuid, String processDefinitionKey, Status status, String functionnalStatus, String initiator, LocalDateTime creationDate, String description) {
+	public E create(UUID uuid, String processDefinitionKey, Status status, String functionnalStatus, String initiator,
+			LocalDateTime creationDate, String description) {
 
 		try {
 			Constructor<E> constructor = type.getConstructor(new Class<?>[0]);
@@ -33,14 +35,19 @@ public abstract class AbstractAssetDescriptionDataFactory <E extends AbstractAss
 			item.setDescription(description);
 			assignData(item);
 			return repository.save(item);
-		} catch(Exception e){
+		} catch (Exception e) {
 			throw new IllegalArgumentException("Failed to create item for " + type, e);
 		}
 	}
 
-	protected void assignData(E item){}
+	protected void assignData(E item) {
+	}
 
 	public long countAll() {
 		return repository.count();
+	}
+
+	public void deleteAll() {
+		repository.deleteAll();
 	}
 }

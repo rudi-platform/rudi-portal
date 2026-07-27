@@ -4,6 +4,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {CoreModule} from '@core/core.module';
+import {OwnerContactCardComponent} from '@features/personal-space/components/contact-card/owner-contact-card.component';
 import {MyTasksHistoriesTabComponent} from '@features/personal-space/components/my-tasks-histories-tab/my-tasks-histories-tab.component';
 import {
     OrganizationFormDialogComponent
@@ -12,7 +13,6 @@ import {OrganizationFormComponent} from '@features/personal-space/components/org
 import {
     OrganizationInformationComponent
 } from '@features/personal-space/components/organization-information/organization-information.component';
-import {ContactCardComponent} from '@features/personal-space/components/contact-card/contact-card.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {
@@ -56,6 +56,7 @@ import {MyAccountComponent} from './pages/my-account/my-account.component';
 import {MyActivityComponent} from './pages/my-activity/my-activity.component';
 import {MyNotificationsComponent} from './pages/my-notifications/my-notifications.component';
 import {MyProjectDetailsComponent} from './pages/my-project-details/my-project-details.component';
+import {MyTaskHistoryDetailComponent} from './pages/my-task-history-detail/my-task-history-detail.component';
 import {NewRequestTaskDetailComponent} from './pages/new-request-task-detail/new-request-task-detail.component';
 import {OrganizationTaskDetailComponent} from './pages/organization-task-detail/organization-task-detail.component';
 import {ProjectTaskDetailComponent} from './pages/project-task-detail/project-task-detail.component';
@@ -64,7 +65,6 @@ import {SelfdataDatasetsComponent} from './pages/selfdata-datasets/selfdata-data
 import {
     SelfdataInformationRequestTaskDetailComponent
 } from './pages/selfdata-information-request-task-detail/selfdata-information-request-task-detail.component';
-import {MyTaskHistoryDetailComponent} from './pages/my-task-history-detail/my-task-history-detail.component';
 
 import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
 
@@ -82,7 +82,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         OrganizationFormComponent,
         OrganizationFormDialogComponent,
         LinkedProducerTaskDetailComponent,
-        ContactCardComponent,
+        OwnerContactCardComponent,
         OrganizationInformationComponent,
         RemoveKeysDialogComponent,
         MyAccountComponent,

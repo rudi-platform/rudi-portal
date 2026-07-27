@@ -27,8 +27,8 @@
 }
 
 .menu-btn-download {
-    --mdc-protected-button-label-text-color: var(--secondary-color);
-    --mdc-protected-button-container-color: var(--primary-color);
+    --mat-button-protected-label-text-color: var(--secondary-color);
+    --mat-button-protected-container-color: var(--primary-color);
     width: 100%;
     height: 40px;
     text-align: center;

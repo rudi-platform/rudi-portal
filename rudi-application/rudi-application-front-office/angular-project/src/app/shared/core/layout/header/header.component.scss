@@ -33,9 +33,9 @@
 
 .my-account-btn {
     &-desktop {
-        --mdc-outlined-button-outline-color: var(--rudi-header-primary-color);
-        --mdc-outlined-button-container-shape: 0px;
-        --mdc-outlined-button-label-text-color: var(--rudi-header-primary-color);
+        --mat-button-outlined-outline-color: var(--rudi-header-primary-color);
+        --mat-button-outlined-container-shape: 0px;
+        --mat-button-outlined-label-text-color: var(--rudi-header-primary-color);
 
         .btn-text-container {
             display: flex;
@@ -49,8 +49,8 @@
         }
 
         &:hover {
-            --mdc-outlined-button-outline-color: var(--accent-color);
-            --mdc-outlined-button-label-text-color: var(--accent-color);
+            --mat-button-outlined-outline-color: var(--accent-color);
+            --mat-button-outlined-label-text-color: var(--accent-color);
         }
 
         &:focus {
@@ -67,10 +67,10 @@
 
 .login-btn {
     &-mobile {
-        --mdc-fab-container-shape: 4px;
-        --mdc-fab-container-elevation-shadow: none !important;
-        --mdc-fab-container-color: #ffffff !important;
-        border: 1px solid var(--mdc-outlined-button-outline-color);
+        --mat-fab-container-shape: 4px;
+        --mat-fab-container-elevation-shadow: none !important;
+        --mat-fab-container-color: #ffffff !important;
+        border: 1px solid var(--mat-button-outlined-outline-color);
         width: 75px;
 
         mat-icon {
@@ -96,7 +96,7 @@
         color: var(--rudi-header-primary-color);
 
         &:focus {
-            background-color: var(--mdc-outlined-button-outline-color);
+            background-color: var(--mat-button-outlined-outline-color);
         }
 
         &:hover {
@@ -111,11 +111,11 @@
     margin-left: 7px;
 
     /* Forme et fond type M17 */
-    --mdc-fab-container-shape: 4px;
-    --mdc-fab-container-color: #ffffff !important;
+    --mat-fab-container-shape: 4px;
+    --mat-fab-container-color: #ffffff !important;
 
     /* Retirer l’ombre */
-    --mdc-fab-container-elevation-shadow: none !important;
+    --mat-fab-container-elevation-shadow: none !important;
     box-shadow: none !important;
 
     /* Supprimer l’ombre au hover/focus */

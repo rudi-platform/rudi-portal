@@ -1,6 +1,6 @@
 <ng-container [formGroup]="formGroup">
   <div class="d-flex">
-    <mat-label>{{fullLabel}}@if (required) {
+    <mat-label id="label-{{formControlName}}">{{fullLabel}}@if (required) {
       <span class="required-symbol">*</span>
     }</mat-label>
   </div>
@@ -9,12 +9,23 @@
     <textarea
       matInput
       rows="15"
+      id="input-{{formControlName}}"
+      [attr.aria-labelledby]="'label-' + formControlName"
       [formControlName]="formControlName"
       [readonly]="readonly"
       (keydown.control.enter)="submitForm.emit()"
     ></textarea>
     <mat-error>
-      <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredInformationError'|translate}}
+      <em class="fa fa-info-circle fa-2x me-2"></em>
+      @if (formControl?.hasError('required')) {
+        {{'common.validatorsErrors.required'|translate}}
+      } @else if (formControl?.hasError('pattern')) {
+        {{'common.validatorsErrors.pattern'|translate}}
+      } @else if (formControl?.hasError('maxlength')) {
+        {{'common.validatorsErrors.maxlength'|translate}}
+      } @else {
+        {{'common.requiredInformationError'|translate}}
+      }
     </mat-error>
   </mat-form-field>
 </ng-container>

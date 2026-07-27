@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 
 /**
  * Classe représentant le loader de l'application RUDI
@@ -11,7 +10,7 @@ import {ExtendedModule} from '@angular/flex-layout/extended';
     standalone: true,
     templateUrl: './loader.component.html',
     styleUrls: ['./loader.component.scss'],
-    imports: [NgClass, ExtendedModule]
+    imports: [NgClass]
 })
 export class LoaderComponent implements OnInit {
     /**

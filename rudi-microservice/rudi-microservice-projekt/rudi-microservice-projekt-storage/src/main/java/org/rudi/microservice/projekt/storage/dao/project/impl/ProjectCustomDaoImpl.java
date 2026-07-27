@@ -3,13 +3,14 @@ package org.rudi.microservice.projekt.storage.dao.project.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
@@ -18,6 +19,8 @@ import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetE
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +56,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	private static final String FIELD_DATASET_CONFIDENTIALITY = "datasetConfidentiality";
 	private static final String FIELD_PROJECT_CONFIDENTIALITY = "confidentiality";
 	private static final String FIELD_PROJECT_CONFIDENTIALITY_IS_PRIVATE = "privateAccess";
+	private static final String FIELD_RELATED_ORGANIZATIONS = ProjectEntity.FIELD_RELATED_ORGANIZATION;
 
 	public ProjectCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, ProjectEntity.class);
@@ -173,27 +177,27 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(
+	public List<ProjectByOrganization> getNumberOfProjectsPerOwners(
 			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria) {
 		val builder = entityManager.getCriteriaBuilder();
-		val countQuery = builder.createQuery(ProjectByOwner.class);
+		val countQuery = builder.createQuery(ProjectByOrganization.class);
 		val countRoot = countQuery.from(entitiesClass);
 
-		addWhereSearchRelatedProjects(builder, countQuery, countRoot, enhancedProjectSearchCriteria);
+		addWhereSearchProjectsPerOwner(builder, countQuery, countRoot, enhancedProjectSearchCriteria);
 
 		countQuery.groupBy(countRoot.get(FIELD_OWNER_UUID));
-		countQuery.select(builder.construct(ProjectByOwner.class, countRoot.get(FIELD_OWNER_UUID),
+		countQuery.select(builder.construct(ProjectByOrganization.class, countRoot.get(FIELD_OWNER_UUID),
 				builder.countDistinct(countRoot)));
 
 		return entityManager.createQuery(countQuery).getResultList();
 	}
 
-	public Page<ProjectEntity> searchRelatedProjects(EnhancedProjectSearchCriteria searchCriteria, Pageable pageable) {
+	public Page<ProjectEntity> searchProjectsPerOwner(EnhancedProjectSearchCriteria searchCriteria, Pageable pageable) {
 		if (searchCriteria == null) {
 			return emptyPage(pageable);
 		}
 
-		final Long totalCount = getTotalProjectRelatedToAuthenticatedUser(searchCriteria);
+		final Long totalCount = getTotalProjectOwnedByAuthenticatedUser(searchCriteria);
 		if (totalCount == 0) {
 			return emptyPage(pageable);
 		}
@@ -201,7 +205,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ProjectEntity> searchQuery = builder.createQuery(entitiesClass);
 		Root<ProjectEntity> searchRoot = searchQuery.from(entitiesClass);
-		addWhereSearchRelatedProjects(builder, searchQuery, searchRoot, searchCriteria);
+		addWhereSearchProjectsPerOwner(builder, searchQuery, searchRoot, searchCriteria);
 		searchQuery.select(searchRoot).distinct(true)
 				.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
 
@@ -214,7 +218,7 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 		return new PageImpl<>(projectEntities, pageable, totalCount.intValue());
 	}
 
-	private void addWhereSearchRelatedProjects(CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery,
+	private void addWhereSearchProjectsPerOwner(CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery,
 			Root<ProjectEntity> root, EnhancedProjectSearchCriteria searchCriteria) {
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -261,18 +265,69 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 		}
 	}
 
-	private Long getTotalProjectRelatedToAuthenticatedUser(EnhancedProjectSearchCriteria searchCriteria) {
+	private Long getTotalProjectOwnedByAuthenticatedUser(EnhancedProjectSearchCriteria searchCriteria) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<ProjectEntity> countRoot = countQuery.from(entitiesClass);
 
-		addWhereSearchRelatedProjects(builder, countQuery, countRoot, searchCriteria);
+		addWhereSearchProjectsPerOwner(builder, countQuery, countRoot, searchCriteria);
 
 		countQuery.select(builder.countDistinct(countRoot));
 
 		return entityManager.createQuery(countQuery).getSingleResult();
 
+	}
+
+	@Override
+	public List<ProjectByOrganization> getNumberOfProjectsPerRelatedOrganizations(
+			ProjectSearchCriteria projectSearchCriteria) {
+		if (projectSearchCriteria == null) {
+			return List.of();
+		}
+
+		val builder = entityManager.getCriteriaBuilder();
+		val countQuery = builder.createQuery(ProjectByOrganization.class);
+		val countRoot = countQuery.from(entitiesClass);
+		Join<ProjectEntity, RelatedOrganizationEntity> relatedOrganizationsJoin = countRoot
+				.join(FIELD_RELATED_ORGANIZATIONS, JoinType.INNER);
+
+		addWhereSearchProjectsPerRelatedOrganizations(builder, countQuery, countRoot, relatedOrganizationsJoin,
+				projectSearchCriteria);
+
+		countQuery.groupBy(relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_ORGANIZATION_UUID));
+		countQuery.select(builder.construct(ProjectByOrganization.class,
+				relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_ORGANIZATION_UUID),
+				builder.countDistinct(countRoot)));
+
+		return entityManager.createQuery(countQuery).getResultList();
+	}
+
+	private void addWhereSearchProjectsPerRelatedOrganizations(CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery,
+			Root<ProjectEntity> root, Join<ProjectEntity, RelatedOrganizationEntity> relatedOrganizationsJoin,
+			ProjectSearchCriteria searchCriteria) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(searchCriteria.getRelatedOrganizationUuids())) {
+			predicates.add(relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_ORGANIZATION_UUID)
+					.in(searchCriteria.getRelatedOrganizationUuids()));
+		}
+
+		if (CollectionUtils.isNotEmpty(searchCriteria.getRelationStatus())) {
+			List<RelationStatus> relationStatusList = searchCriteria.getRelationStatus().stream()
+					.map(status -> RelationStatus.valueOf(status.name())).collect(Collectors.toList());
+			predicates.add(
+					relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_RELATION_STATUS).in(relationStatusList));
+		}
+
+		addPredicates(searchCriteria, builder, criteriaQuery, root, predicates);
+		final PredicateListBuilder<ProjectEntity, ProjectSearchCriteria> predicateListBuilder = new PredicateListBuilder<>(
+				searchCriteria, predicates, builder, root);
+		addPredicates(predicateListBuilder);
+
+		if (CollectionUtils.isNotEmpty(predicates)) {
+			criteriaQuery.where(builder.and(predicates.toArray(new Predicate[0])));
+		}
 	}
 
 }

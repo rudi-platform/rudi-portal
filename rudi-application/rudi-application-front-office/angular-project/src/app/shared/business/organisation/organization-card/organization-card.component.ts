@@ -5,7 +5,6 @@ import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {OrganizationLogoComponent} from '../organization-logo/organization-logo.component';
 import {MatButton} from '@angular/material/button';
 import {LoaderComponent} from '../../../core/common/loader/loader.component';
@@ -16,7 +15,7 @@ import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
     selector: 'app-organization-card',
     templateUrl: './organization-card.component.html',
     styleUrls: ['./organization-card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, MatButton, LoaderComponent, TranslatePipe, TruncateTextPipe]
+    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatButton, LoaderComponent, TranslatePipe, TruncateTextPipe]
 })
 export class OrganizationCardComponent {
     @Input() organizationBean: OrganizationBean;

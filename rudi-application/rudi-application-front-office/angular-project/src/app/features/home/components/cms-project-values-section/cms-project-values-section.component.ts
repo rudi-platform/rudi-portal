@@ -7,17 +7,16 @@ import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {CmsProjectValuesDescription} from 'micro_service_modules/konsult/konsult-model';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 
-const OFFSET: number = 0;
-const LIMIT: number = 4;
+const OFFSET = 0;
+const LIMIT = 4;
 
 
 @Component({
     selector: 'app-cms-project-values-section',
     templateUrl: './cms-project-values-section.component.html',
     styleUrls: ['./cms-project-values-section.component.scss'],
-    imports: [NgClass, ExtendedModule]
+    imports: [NgClass]
 })
 export class CmsProjectValuesSectionComponent implements OnInit {
     @Input() cmsProjectValuesDescription: CmsProjectValuesDescription;

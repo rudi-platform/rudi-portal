@@ -27,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -166,7 +165,7 @@ public class AccountController implements AccountApi {
 	}
 
 	protected String lookpupOriginalToken(String authorizationHeader)
-			throws ParseException, JsonMappingException, JsonProcessingException {
+			throws ParseException, JsonProcessingException {
 		SignedJWT signedJWT = jwtTokenUtil.getJWS(authorizationHeader);
 		String tokenId = null;
 		AuthenticatedUser authenticatedUser = null;

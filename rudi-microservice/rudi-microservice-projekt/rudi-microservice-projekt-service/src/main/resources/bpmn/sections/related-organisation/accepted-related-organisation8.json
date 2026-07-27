@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à accepter la demande d'ajout de votre organisation à une réutilisation. Celle-ci sera publiée sur le catalogue des réutilisations avec les informations de votre organisation.",
+	"fieldDefinitions": [
+		{
+			"name": "relatedOrganization8ResponseToProjectOwner",
+			"label": "Message à l'attention du réutilisateur",
+			"type": "TEXT",
+			"required": false
+		}
+	]
+}

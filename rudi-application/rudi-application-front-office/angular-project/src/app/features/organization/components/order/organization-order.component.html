@@ -17,7 +17,7 @@
     @if (!selectedItem) {
       {{'sortBox.sort'|translate|uppercase}}
     }
-    <mat-icon iconPositionEnd class="rudi-select-arrow">
+    <mat-icon aria-hidden="true" iconPositionEnd class="rudi-select-arrow">
       @if (!menuIsOpened) {
         keyboard_arrow_down
       }
@@ -26,7 +26,7 @@
       }
     </mat-icon>
     <mat-menu #sortMenu="matMenu" class="rudi-sort-menu" xPosition="after">
-      <div class="rudi-select-panel" fxLayout="column">
+      <div class="rudi-select-panel d-flex flex-column">
         @for (order of listOrder; track order) {
           <button (click)="onSelectedItemChange(order)"
             [ngClass]="{selected: order === selectedItem}"

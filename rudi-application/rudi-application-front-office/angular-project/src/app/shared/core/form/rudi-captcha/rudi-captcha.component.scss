@@ -1,3 +1,36 @@
-div input {
-    margin-top: 10px;
+.captcha-container {
+    .captcha-image-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .captcha-image {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .captcha-buttons {
+        margin-left: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .captcha-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+
+    .captcha-input {
+        margin-top: 10px;
+        width: 100%;
+    }
 }

@@ -1,15 +1,14 @@
 import {Component} from '@angular/core';
-import {FlexModule} from '@angular/flex-layout/flex';
 import {MatIconButton} from '@angular/material/button';
 import {MatDialogClose, MatDialogContent} from '@angular/material/dialog';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
-import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-success-project-creation-dialog',
     templateUrl: './success-project-creation-dialog.component.html',
-    imports: [MatDialogContent, FlexModule, MatIconButton, MatDialogClose, MatIcon, TranslateDirective, TranslatePipe]
+    imports: [MatDialogContent, MatIconButton, MatDialogClose, MatIcon, TranslatePipe]
 })
 export class SuccessProjectCreationDialogComponent {
 

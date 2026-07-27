@@ -84,12 +84,12 @@
                     </mat-card-content>
                   </mat-card>
                 </div>
-                <app-contact-card [title]="'personalSpace.projectDetails.projectOwner' | translate"
+                <app-owner-contact-card [title]="'personalSpace.projectDetails.projectOwner' | translate"
                   [email]="dependencies.project.contact_email"
                   [name]="dependencies.ownerInfo.name"
                   [relatedTitle]="(relatedOrganizations.length > 1 ? 'personalSpace.projectDetails.relatedOrganizations' : 'personalSpace.projectDetails.relatedOrganization') | translate"
                   [relatedOrganizations]="relatedOrganizations"
-                ></app-contact-card>
+                ></app-owner-contact-card>
               </div>
             </ng-template>
           </app-tab>

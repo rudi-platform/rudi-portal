@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-application</artifactId>
-		<version>3.4.0</version>
+		<version>3.4.1</version>
 	</parent>
 
 	<artifactId>rudi-application-front-office</artifactId>
@@ -42,8 +42,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v20.15.1</nodeVersion>
-							<npmVersion>10.7.0</npmVersion>
+							<nodeVersion>v22.23.1</nodeVersion>
+							<npmVersion>10.9.4</npmVersion>
 						</configuration>
 					</execution>
 					<execution>

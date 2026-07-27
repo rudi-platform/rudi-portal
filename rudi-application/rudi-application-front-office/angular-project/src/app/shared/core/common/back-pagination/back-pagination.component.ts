@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {TranslatePipe} from '@ngx-translate/core';
 import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagination-sort';
@@ -13,7 +12,7 @@ const FIRST_PAGE = 1;
 @Component({
     selector: 'app-back-pagination',
     templateUrl: './back-pagination.component.html',
-    imports: [NgxPaginationModule, NgClass, ExtendedModule, TranslatePipe]
+    imports: [NgxPaginationModule, NgClass, TranslatePipe]
 })
 
 export class BackPaginationComponent {

@@ -1,6 +1,5 @@
 import {Location, NgClass, NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton, MatMiniFabAnchor, MatMiniFabButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
@@ -28,7 +27,8 @@ const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    imports: [RouterLink, CustomRouterlinkDirective, NgClass, ExtendedModule, NgTemplateOutlet, MatButton, MatMenuTrigger, MatMiniFabAnchor, MatIcon, MatMiniFabButton, RouterLinkActive, MatMenu, MatMenuItem, TranslatePipe]
+    imports: [RouterLink, CustomRouterlinkDirective, NgClass, NgTemplateOutlet, MatButton, MatMenuTrigger,
+        MatMiniFabAnchor, MatIcon, MatMiniFabButton, RouterLinkActive, MatMenu, MatMenuItem, TranslatePipe]
 })
 export class HeaderComponent implements OnInit {
 

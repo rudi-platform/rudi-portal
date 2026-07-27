@@ -24,7 +24,7 @@
       <ng-container matColumnDef="updatedDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
         scope="col">{{'personalSpace.myRequests.dateTableHeader' | translate}}</th>
-        <td mat-cell *matCellDef="let element"> {{element.updatedDate | date: 'dd/MM/YYYY'}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.updatedDate | date: 'dd/MM/yyyy'}} </td>
       </ng-container>
 
       <ng-container matColumnDef="description">

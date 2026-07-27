@@ -1,6 +1,5 @@
 import {NgClass, SlicePipe} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
@@ -21,7 +20,7 @@ import {OrganizationLogoComponent} from '../../../organisation/organization-logo
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe]
+    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe]
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;

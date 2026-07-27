@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -11,7 +10,7 @@ import {ListContainerComponent} from '../../components/list-container/list-conta
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, NgClass, ExtendedModule, PageTitleComponent, ListContainerComponent, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, TranslatePipe]
 })
 export class ListComponent implements OnInit {
 

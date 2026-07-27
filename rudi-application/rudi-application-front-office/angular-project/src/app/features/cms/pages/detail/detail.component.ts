@@ -1,6 +1,5 @@
 import { NgClass } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {ActivatedRoute, Params} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -14,16 +13,16 @@ import {throwError} from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
 
 
-const TYPE_FIELD: string = 'type';
-const UUID_FIELD: string = 'uuid';
-const TEMPLATE_FIELD: string = 'template';
-const NEWS_TITLE: string = 'titre';
+const TYPE_FIELD = 'type';
+const UUID_FIELD = 'uuid';
+const TEMPLATE_FIELD = 'template';
+const NEWS_TITLE = 'titre';
 
 @Component({
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [NgClass, ExtendedModule, LoaderComponent]
+    imports: [NgClass, LoaderComponent]
 })
 export class DetailComponent implements OnInit {
 
@@ -54,9 +53,10 @@ export class DetailComponent implements OnInit {
         this.route.params.pipe(
             switchMap((params: Params) => {
                 if (params[TYPE_FIELD] && params[UUID_FIELD] && params[TEMPLATE_FIELD]) {
-                    return this.konsultService.renderAsset(params[TYPE_FIELD].toUpperCase(), params[UUID_FIELD], params[TEMPLATE_FIELD], this.translateService.getCurrentLang());
+                    return this.konsultService.renderAsset(params[TYPE_FIELD].toUpperCase(),
+                    params[UUID_FIELD], params[TEMPLATE_FIELD], this.translateService.getCurrentLang());
                 } else {
-                    return throwError(() => new Error('Certains paramètres obligatoire ne sont pas renseignées'));
+                    return throwError(() => new Error('Certains paramètres obligatoires ne sont pas renseignés'));
                 }
             }),
             catchError(error => {

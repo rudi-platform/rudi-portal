@@ -1,0 +1,11 @@
+{
+	"help": "Vous vous apprêtez à refuser la demande d'ajout de votre organisation à une réutilisation. Votre organisation n'apparaîtra pas dans la réutilisation. Veuillez détailler les raisons ci-dessous afin d'en informer le réutilisateur.",
+	"fieldDefinitions": [
+		{
+			"name": "relatedOrganization5ResponseToProjectOwner",
+			"label": "Message à l'attention du réutilisateur",
+			"type": "TEXT",
+			"required": true
+		}
+	]
+}

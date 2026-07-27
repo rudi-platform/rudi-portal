@@ -10,13 +10,7 @@ import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/w
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
-
-// Taille maximum requise pour les différents champs du formulaire
-const MAX_NAME_LENGTH = 100;
-const MAX_DESCRIPTION_LENGTH = 800;
-const MAX_URL_LENGTH = 80;
-const MAX_ADDRESS_LENGTH = 255;
-const MAX_MESSAGE_LENGTH = 3000;
+import {MAX_ADDRESS_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH, MAX_URL_LENGTH, URL_PATTERN} from './organization-form.constants';
 
 @Component({
     selector: 'app-organization-form',
@@ -54,7 +48,7 @@ export class OrganizationFormComponent implements OnInit {
             {name: this.FORM_CONTROL_NAME_DESCRIPTION, validators: [Validators.required, Validators.maxLength(MAX_DESCRIPTION_LENGTH)]},
             {
                 name: this.FORM_CONTROL_NAME_URL,
-                validators: [Validators.pattern(/^(http|https|ftp):\/\/.*$/), Validators.maxLength(MAX_URL_LENGTH)]
+                validators: [Validators.pattern(URL_PATTERN), Validators.maxLength(MAX_URL_LENGTH)]
             },
             {name: this.FORM_CONTROL_NAME_ADDRESS, validators: [Validators.maxLength(MAX_ADDRESS_LENGTH)]},
         ];

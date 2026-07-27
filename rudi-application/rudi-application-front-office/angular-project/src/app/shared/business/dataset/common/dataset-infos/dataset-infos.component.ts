@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, Input} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatDivider} from '@angular/material/divider';
 import {MatIcon} from '@angular/material/icon';
 import {Router} from '@angular/router';
@@ -14,7 +13,7 @@ import {OrganizationLogoComponent} from '../../../organisation/organization-logo
     selector: 'app-dataset-infos',
     templateUrl: './dataset-infos.component.html',
     styleUrls: ['./dataset-infos.component.scss'],
-    imports: [NgClass, ExtendedModule, OrganizationLogoComponent, MatIcon, MatDivider]
+    imports: [NgClass, OrganizationLogoComponent, MatIcon, MatDivider]
 })
 export class DatasetsInfosComponent {
     /**

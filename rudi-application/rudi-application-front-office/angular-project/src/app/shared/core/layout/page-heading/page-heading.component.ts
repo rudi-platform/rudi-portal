@@ -1,6 +1,5 @@
 import { NgClass } from '@angular/common';
 import {Component, Input} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatIcon} from '@angular/material/icon';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {OrganizationLogoComponent} from '../../../business/organisation/organization-logo/organization-logo.component';
@@ -9,7 +8,7 @@ import {OrganizationLogoComponent} from '../../../business/organisation/organiza
     selector: 'app-page-heading',
     templateUrl: './page-heading.component.html',
     styleUrls: ['./page-heading.component.scss'],
-    imports: [NgClass, ExtendedModule, OrganizationLogoComponent, MatIcon]
+    imports: [NgClass, OrganizationLogoComponent, MatIcon]
 })
 export class PageHeadingComponent {
 

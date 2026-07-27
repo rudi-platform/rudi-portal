@@ -1,0 +1,9 @@
+<mat-card-subtitle class="section-sub-title">
+    {{ name }}
+</mat-card-subtitle>
+@if (email) {
+    <mat-card-content class="section-content">
+        <app-contact-button [email]="email" [showEmailDirectly]="showEmailDirectly"></app-contact-button>
+    </mat-card-content>
+}
+

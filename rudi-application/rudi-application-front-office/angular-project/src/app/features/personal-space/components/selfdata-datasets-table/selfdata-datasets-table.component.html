@@ -41,7 +41,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
         scope="col">{{'personalSpace.selfdataDatasets.date'|translate}}</th>
         <td mat-cell
-        *matCellDef="let selfdataDataset"> {{selfdataDataset.updated_date | date: 'dd/MM/YYYY' | replaceIfNullPipe}} </td>
+        *matCellDef="let selfdataDataset"> {{selfdataDataset.updated_date | date: 'dd/MM/yyyy' | replaceIfNullPipe}} </td>
       </ng-container>
 
       <ng-container matColumnDef="functionalStatus">

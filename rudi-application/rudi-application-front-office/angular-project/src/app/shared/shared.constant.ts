@@ -1,5 +1,4 @@
 import {LayoutModule} from '@angular/cdk/layout';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatButtonModule} from '@angular/material/button';
@@ -27,7 +26,6 @@ import {NgxPaginationModule} from 'ngx-pagination';
 
 export const MaterialModules = [
     LayoutModule,
-    FlexLayoutModule,
     MatIconModule,
     MatRadioModule,
     MatMenuModule,

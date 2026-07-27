@@ -6,8 +6,6 @@ import {MatButton} from '@angular/material/button';
 import {MatMenuTrigger, MatMenu, MatMenuItem} from '@angular/material/menu';
 import { NgClass, UpperCasePipe } from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {FlexModule} from '@angular/flex-layout/flex';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 
 @Component({
     selector: 'app-order',
@@ -18,10 +16,8 @@ import {ExtendedModule} from '@angular/flex-layout/extended';
     MatMenuTrigger,
     MatIcon,
     MatMenu,
-    FlexModule,
     MatMenuItem,
     NgClass,
-    ExtendedModule,
     UpperCasePipe,
     TranslatePipe
 ],

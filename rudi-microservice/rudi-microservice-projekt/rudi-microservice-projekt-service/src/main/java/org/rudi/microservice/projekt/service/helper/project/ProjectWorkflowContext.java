@@ -60,6 +60,8 @@ import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetS
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -266,6 +268,129 @@ public class ProjectWorkflowContext
 			startSubProcessNewDatasetRequests(assetDescription);
 			startSubProcessLinkedDatasets(assetDescription);
 		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public boolean hasRelatedOrganizationAtIndex(ScriptContext context, ExecutionEntity executionEntity, int index) {
+		if (index < 0) {
+			return false;
+		}
+		ProjectEntity project = lookupProject(executionEntity);
+		if (project == null || CollectionUtils.isEmpty(project.getRelatedOrganizations())) {
+			return false;
+		}
+		return index < getRelatedOrganizationsAsList(project).size();
+	}
+
+	/**
+	 * Calcul des potentiels owners pour une organisation partenaire, à partir de son index trié.
+	 *
+	 * @param context         contexte
+	 * @param executionEntity entity
+	 * @param index           index de l'organisation partenaire
+	 * @return List<String> liste des logins des owners potentiels
+	 */
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public List<String> computePotentialProjectRelatedOrganizationOwner(ScriptContext context,
+			ExecutionEntity executionEntity, int index) {
+		List<String> result = new ArrayList<>();
+		if (index < 0) {
+			return result;
+		}
+
+		ProjectEntity project = lookupProject(executionEntity);
+		if (project == null) {
+			return result;
+		}
+
+		RelatedOrganizationEntity relatedOrganization = getRelatedOrganizationAtIndex(project, index);
+		if (relatedOrganization == null || relatedOrganization.getOrganizationUuid() == null) {
+			return result;
+		}
+
+		CollectionUtils.addAll(result,
+				getAssignmentHelper().computeOrganizationMembersLogins(relatedOrganization.getOrganizationUuid()));
+
+		if (log.isInfoEnabled()) {
+			log.info("Potential assignees for related organization index {}: {}", index,
+					StringUtils.join(result, ", "));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Retourne le nom de l'organisation partenaire à l'index donné.
+	 *
+	 * @param context         le context
+	 * @param executionEntity entité de l'exécution, ici projet
+	 * @param index           index de l'organisation partenaire (trié)
+	 * @return le nom de l'organisation, ou null si introuvable
+	 */
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public String computeRelatedOrganizationName(ScriptContext context, ExecutionEntity executionEntity, int index) {
+		ProjectEntity project = lookupProject(executionEntity);
+		if (project == null) {
+			return null;
+		}
+		RelatedOrganizationEntity relatedOrganization = getRelatedOrganizationAtIndex(project, index);
+		if (relatedOrganization == null || relatedOrganization.getOrganizationUuid() == null) {
+			return null;
+		}
+		try {
+			Organization organization = organizationHelper.getOrganization(relatedOrganization.getOrganizationUuid());
+
+			if(organization == null){
+				throw new AppServiceException("Organization not found");
+			}
+			return organization.getName();
+		} catch (Exception e) {
+			log.error("Erreur lors de la récupération du nom de l'organisation partenaire à l'index {} : {}", index, e);
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void sendEmailToRelatedOrganizations(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData,
+			int index) {
+		try {
+			ProjectEntity project = lookupProject(executionEntity);
+			if (project == null || eMailData == null) {
+				return;
+			}
+
+			RelatedOrganizationEntity relatedOrganization = getRelatedOrganizationAtIndex(project, index);
+			if (relatedOrganization == null || relatedOrganization.getOrganizationUuid() == null) {
+				return;
+			}
+
+			List<User> users = getAssignmentHelper().computeOrganizationMembers(relatedOrganization.getOrganizationUuid());
+			List<String> assigneesEmails = aclHelper.lookupEmailAddresses(users);
+			if (CollectionUtils.isNotEmpty(assigneesEmails)) {
+				sendEMail(executionEntity, project, eMailData, assigneesEmails, null);
+			}
+		} catch (Exception e) {
+			log.warn("Failed to send email to related organization at index {}", index, e);
+		}
+	}
+
+	@Transactional(readOnly = false)
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public void updateRelatedOrganisation(ScriptContext context, ExecutionEntity executionEntity, int index,
+			boolean accepted) {
+		ProjectEntity project = lookupProject(executionEntity);
+		if (project == null) {
+			return;
+		}
+
+		RelatedOrganizationEntity relatedOrganization = getRelatedOrganizationAtIndex(project, index);
+		if (relatedOrganization == null) {
+			return;
+		}
+
+		relatedOrganization.setRelationStatus(accepted ? RelationStatus.ACCEPTED : RelationStatus.REFUSED);
+		project.setUpdatedDate(LocalDateTime.now());
+		getAssetDescriptionDao().save(project);
 	}
 
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
@@ -505,4 +630,32 @@ public class ProjectWorkflowContext
 		}
 	}
 
+	private ProjectEntity lookupProject(ExecutionEntity executionEntity) {
+		String processInstanceBusinessKey = executionEntity.getProcessInstanceBusinessKey();
+		if (processInstanceBusinessKey == null) {
+			log.debug(WKC_UNLINK_SKIPPED, processInstanceBusinessKey);
+			return null;
+		}
+		UUID uuid = UUID.fromString(processInstanceBusinessKey);
+		ProjectEntity project = getAssetDescriptionDao().findByUuid(uuid);
+		if (project == null) {
+			log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);
+		}
+		return project;
+	}
+
+	private RelatedOrganizationEntity getRelatedOrganizationAtIndex(ProjectEntity project, int index) {
+		if (index < 0) {
+			return null;
+		}
+		List<RelatedOrganizationEntity> relatedOrganizations = getRelatedOrganizationsAsList(project);
+		if (index >= relatedOrganizations.size()) {
+			return null;
+		}
+		return relatedOrganizations.get(index);
+	}
+
+	private List<RelatedOrganizationEntity> getRelatedOrganizationsAsList(ProjectEntity project) {
+		return new ArrayList<>(project.getRelatedOrganizations());
+	}
 }

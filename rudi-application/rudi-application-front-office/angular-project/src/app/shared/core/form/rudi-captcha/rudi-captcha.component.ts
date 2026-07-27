@@ -1,65 +1,117 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CaptchetatAngularComponent, CaptchetatAngularModule} from 'captchetat-angular';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {HttpClient} from '@angular/common/http';
 import {CaptchaModel, CaptchaService} from 'micro_service_modules/acl/acl-api';
-import {Observable} from 'rxjs';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {Observable, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
-const ACL_SERVICE_BASEPATH = '/acl/v1';
 const CAPTCHA_NAMESPACE = '/kaptcha';
+
+interface CaptchaResponse {
+    uuid: string;
+    imageb64: string;
+}
 
 @Component({
     selector: 'app-rudi-captcha',
     templateUrl: './rudi-captcha.component.html',
     styleUrls: ['./rudi-captcha.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, CaptchetatAngularModule]
+    imports: [ReactiveFormsModule, TranslateModule]
 })
-export class RudiCaptchaComponent implements OnInit {
+export class RudiCaptchaComponent implements OnInit, OnDestroy {
 
-    /**
-     * Type du captcha qu'on veut
-     */
     @Input()
     nomCaptcha: string;
-    urlBackend: string;
-    form: FormGroup;
-    FORM_CONTROL_CAPTCHA: string = 'captchaCode';
 
-    @ViewChild(CaptchetatAngularComponent) captchetatComponent: CaptchetatAngularComponent;
+    form: FormGroup;
+    FORM_CONTROL_CAPTCHA = 'captchaCode';
+    idCaptcha: string;
+    imageSrc: string;
+    reloadTitle: string;
+    audioTitle: string;
+
+    private readonly baseUrl: string;
+    private readonly destroy$ = new Subject<void>();
 
     constructor(
+        private readonly httpClient: HttpClient,
         private readonly captchaService: CaptchaService,
+        private readonly translateService: TranslateService,
     ) {
+        this.baseUrl = this.captchaService.configuration.basePath + CAPTCHA_NAMESPACE;
     }
 
     ngOnInit(): void {
-        this.urlBackend = ACL_SERVICE_BASEPATH + CAPTCHA_NAMESPACE;
+        this.setButtonTitles();
         this.form = new FormGroup({
             captchaCode: new FormControl('')
         });
-        this.form.get(this.FORM_CONTROL_CAPTCHA)?.valueChanges.subscribe(value => {
+        this.form.get(this.FORM_CONTROL_CAPTCHA)?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
             const uppercasedValue = value.toUpperCase();
             if (value !== uppercasedValue) {
                 this.form.get(this.FORM_CONTROL_CAPTCHA)?.setValue(uppercasedValue, {emitEvent: false});
             }
         });
+        this.loadCaptcha();
     }
 
-    /**
-     * Indique si le champ de captcha a été rempli par l'utilisateur
-     */
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     isFilled(): boolean {
         const captchaCode: string = this.form.get(this.FORM_CONTROL_CAPTCHA)?.value as string;
         return captchaCode !== '';
     }
 
-    /**
-     * Envoie pour validation la saisie utilisateur du captcha auprès du back
-     */
     validateInput(): Observable<boolean> {
         const captcha: CaptchaModel = {
-            uuid: this.captchetatComponent.getIdCaptcha(),
+            uuid: this.idCaptcha,
             code: this.form.get(this.FORM_CONTROL_CAPTCHA)?.value as string
         };
         return this.captchaService.validateCaptcha(captcha);
+    }
+
+    reloadCaptcha(): void {
+        this.loadCaptcha();
+    }
+
+    playCaptchaSound(): void {
+        this.httpClient.get(`${this.baseUrl}?get=sound&c=${this.nomCaptcha}&t=${this.idCaptcha}`, {responseType: 'blob'}).pipe(takeUntil(this.destroy$)).subscribe({
+            next: (blob: Blob) => {
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                audio.play().catch(() => {
+                    this.reloadCaptcha();
+                });
+                audio.onended = () => URL.revokeObjectURL(url);
+            },
+            error: () => {
+                this.reloadCaptcha();
+            }
+        });
+    }
+
+    /**
+     * Appelle GET /kaptcha?get=image&c=captchaFR
+     * L'API CaptchEtat v2 retourne directement {uuid, imageb64}
+     */
+    private loadCaptcha(): void {
+        this.httpClient.get<CaptchaResponse>(`${this.baseUrl}?get=image&c=${this.nomCaptcha}`).subscribe({
+            next: (response) => {
+                this.idCaptcha = response.uuid;
+                this.imageSrc = response.imageb64;
+            },
+            error: (error) => {
+                console.error('Erreur lors du chargement du captcha', error);
+            }
+        });
+    }
+
+    private setButtonTitles(): void {
+        this.reloadTitle = this.translateService.instant('authentification.captchaReload');
+        this.audioTitle = this.translateService.instant('authentification.captchaAudio');
     }
 }

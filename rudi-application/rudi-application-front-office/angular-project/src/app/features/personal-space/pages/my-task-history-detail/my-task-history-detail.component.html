@@ -50,11 +50,13 @@
                           </mat-card-content>
                         </mat-card>
                       </div>
-                      <app-contact-card
+                      <app-owner-contact-card
                         [title]="'personalSpace.projectDetails.projectOwner' | translate"
                         [name]="(bearer$ | async)?.name"
-                        [email]="(bearer$ | async)?.email">
-                      </app-contact-card>
+                        [email]="(bearer$ | async)?.email"
+                        [relatedTitle]="(relatedOrganizations.length > 1 ? 'personalSpace.projectDetails.relatedOrganizations' : 'personalSpace.projectDetails.relatedOrganization') | translate"
+                        [relatedOrganizations]="relatedOrganizations">
+                      </app-owner-contact-card>
                     </div>
                   }
                 }
@@ -68,11 +70,11 @@
                         </app-organization-information>
                       </div>
                       <div class="owner-information-container">
-                        <app-contact-card
+                        <app-owner-contact-card
                           [title]="'personalSpace.myTasksHistories.initiator' | translate"
                           [name]="(bearer$ | async)?.name"
                           [email]="(bearer$ | async)?.email">
-                        </app-contact-card>
+                        </app-owner-contact-card>
                       </div>
                     </div>
                   }
@@ -87,11 +89,11 @@
                         </app-organization-information>
                       </div>
                       <div class="owner-information-container">
-                        <app-contact-card
+                        <app-owner-contact-card
                           [title]="'personalSpace.myTasksHistories.initiator' | translate"
                           [name]="(bearer$ | async)?.name"
                           [email]="(bearer$ | async)?.email">
-                        </app-contact-card>
+                        </app-owner-contact-card>
                       </div>
                     </div>
                   }
@@ -105,11 +107,11 @@
                       </app-linked-dataset-info>
                     </div>
                     <div class="owner-information-container">
-                      <app-contact-card
+                      <app-owner-contact-card
                         [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
                         [name]="(bearer$ | async)?.name"
                         [email]="(bearer$ | async)?.email">
-                      </app-contact-card>
+                      </app-owner-contact-card>
                     </div>
                   </div>
                 }
@@ -122,11 +124,11 @@
                       </app-new-dataset-request-info>
                     </div>
                     <div class="owner-information-container">
-                      <app-contact-card
+                      <app-owner-contact-card
                         [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
                         [name]="(bearer$ | async)?.name"
                         [email]="(bearer$ | async)?.email">
-                      </app-contact-card>
+                      </app-owner-contact-card>
                     </div>
                   </div>
                 }
@@ -161,11 +163,13 @@
                     </mat-card>
                   </div>
                   <div class="project-tab-side">
-                    <app-contact-card
+                    <app-owner-contact-card
                       [title]="'personalSpace.projectDetails.projectOwner' | translate"
                       [name]="(bearer$ | async)?.name"
-                      [email]="(bearer$ | async)?.email">
-                    </app-contact-card>
+                      [email]="(bearer$ | async)?.email"
+                      [relatedTitle]="(relatedOrganizations.length > 1 ? 'personalSpace.projectDetails.relatedOrganizations' : 'personalSpace.projectDetails.relatedOrganization') | translate"
+                      [relatedOrganizations]="relatedOrganizations">
+                    </app-owner-contact-card>
                   </div>
                 </div>
               </ng-template>
@@ -180,12 +184,12 @@
                 <app-project-task-historic [processHistoricInformation]="processHistoricInformation"></app-project-task-historic>
               </div>
 
-              <app-contact-card
+              <app-owner-contact-card
                 class="task-history-detail-side"
                 [title]="'personalSpace.projectTaskHistoric.initiator' | translate"
                 [name]="(bearer$ | async)?.name"
                 [email]="(bearer$ | async)?.email"
-              ></app-contact-card>
+              ></app-owner-contact-card>
             </div>
           </ng-template>
         </app-tab>

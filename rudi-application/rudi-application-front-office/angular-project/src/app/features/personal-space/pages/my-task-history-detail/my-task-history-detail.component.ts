@@ -1,32 +1,45 @@
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
+import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {HtmlService} from '@core/services/html/html.service';
+import {OwnerContactCardComponent} from '@features/personal-space/components/contact-card/owner-contact-card.component';
+import {LinkedDatasetInfoComponent} from '@features/personal-space/components/linked-dataset-info/linked-dataset-info.component';
+import {
+    NewDatasetRequestInfoComponent
+} from '@features/personal-space/components/new-dataset-request-info/new-dataset-request-info.component';
+import {
+    OrganizationInformationComponent
+} from '@features/personal-space/components/organization-information/organization-information.component';
+import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
+import {AssetResolverService, ResolvedAsset} from '@features/personal-space/services/asset-resolver.service';
+import {ProjectBearer, ProjectBearerResolverService} from '@features/personal-space/services/project-bearer-resolver.service';
 import {TaskHistoryDetailService} from '@features/personal-space/services/task-history-detail.service';
-import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
+import {ProjectMainInformationsComponent} from '@features/project/components/project-main-informations/project-main-informations.component';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {RelatedOrganizationInfo} from '@shared/business/contacts/owner-card-info/owner-card-info.component';
+import {
+    NewDatasetRequestTableComponent
+} from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
+import {
+    OpenDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/open-dataset-table/open-dataset-table.component';
+import {
+    RestrictedDatasetTableComponent
+} from '@shared/business/projects/projects-datasets-tables/restricted-dataset-table/restricted-dataset-table.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
+import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
-import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
-import {ContactCardComponent} from '@features/personal-space/components/contact-card/contact-card.component';
-import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
-import {TabComponent} from '@shared/core/common/tab/tab.component';
-import {Subject, Observable, of} from 'rxjs';
-import {catchError, map, switchMap, takeUntil, tap, shareReplay, distinctUntilChanged} from 'rxjs/operators';
-import {ProjectBearerResolverService, ProjectBearer} from '@features/personal-space/services/project-bearer-resolver.service';
-import {AssetResolverService, ResolvedAsset} from '@features/personal-space/services/asset-resolver.service';
 import {TitleIconType} from '@shared/models/title-icon-type';
-import {ProjectMainInformationsComponent} from '@features/project/components/project-main-informations/project-main-informations.component';
-import {OrganizationInformationComponent} from '@features/personal-space/components/organization-information/organization-information.component';
-import {LinkedDatasetInfoComponent} from '@features/personal-space/components/linked-dataset-info/linked-dataset-info.component';
-import {NewDatasetRequestInfoComponent} from '@features/personal-space/components/new-dataset-request-info/new-dataset-request-info.component';
-import {OpenDatasetTableComponent} from '@shared/business/projects/projects-datasets-tables/open-dataset-table/open-dataset-table.component';
-import {RestrictedDatasetTableComponent} from '@shared/business/projects/projects-datasets-tables/restricted-dataset-table/restricted-dataset-table.component';
-import {NewDatasetRequestTableComponent} from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
+import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
+import {OwnerInfoRequest, OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
+import {Observable, of, Subject} from 'rxjs';
+import {catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
     selector: 'app-my-task-history-detail',
@@ -38,10 +51,9 @@ import {NewDatasetRequestTableComponent} from '@shared/business/projects/project
         PageComponent,
         TaskDetailHeaderComponent,
         LoaderComponent,
-        AsyncPipe,
         TranslatePipe,
         ProjectTaskHistoricComponent,
-        ContactCardComponent,
+        OwnerContactCardComponent,
         TabsComponent,
         TabComponent,
         ProjectMainInformationsComponent,
@@ -54,6 +66,7 @@ import {NewDatasetRequestTableComponent} from '@shared/business/projects/project
         OpenDatasetTableComponent,
         RestrictedDatasetTableComponent,
         NewDatasetRequestTableComponent,
+        AsyncPipe,
     ]
 })
 export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
@@ -67,6 +80,7 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
     objectTabIcon: TitleIconType;
     bearer$: Observable<ProjectBearer | null>;
     resolvedAsset$: Observable<ResolvedAsset | null>;
+    relatedOrganizations: RelatedOrganizationInfo[] = [];
     resolvedAssetLoading = true;
     processDefinitionKey: string | null = null;
     icon: string;
@@ -131,6 +145,7 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
     private readonly taskHistoryDetailService = inject(TaskHistoryDetailService);
     private readonly projectBearerResolverService = inject(ProjectBearerResolverService);
     private readonly assetResolverService = inject(AssetResolverService);
+    private readonly projektMetierService = inject(ProjektMetierService);
     private readonly route = inject(ActivatedRoute);
     private readonly translateService = inject(TranslateService);
     private readonly htmlService = inject(HtmlService);
@@ -181,7 +196,7 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
                 // 1) Priorité: données passées via navigation state au clic sur le tableau
                 const state: any = (globalThis as any)?.history?.state;
                 const fromState: ProcessHistoricInformation | undefined = state?.processHistoricInformation;
-                if (fromState?.id === historicId ) {
+                if (fromState?.id === historicId) {
                     return of(clean(fromState));
                 }
 
@@ -215,7 +230,13 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
         this.resolvedAssetLoading = true;
         this.resolvedAsset$ = processHistoricInformation$.pipe(
             switchMap(info => this.assetResolverService.resolve(info)),
-            catchError(() => of(null)),
+            switchMap(resolvedAsset => this.loadRelatedOrganizations(resolvedAsset).pipe(
+                map(() => resolvedAsset)
+            )),
+            catchError(() => {
+                this.relatedOrganizations = [];
+                return of(null);
+            }),
             tap(() => {
                 this.resolvedAssetLoading = false;
                 this.cdr.markForCheck();
@@ -275,5 +296,46 @@ export class MyTaskHistoryDetailComponent implements OnInit, OnDestroy {
             const haystack = `${h?.activityName ?? ''} ${h?.action ?? ''}`.toLowerCase();
             return matcher.test(haystack);
         });
+    }
+
+    private loadRelatedOrganizations(resolvedAsset: ResolvedAsset | null): Observable<RelatedOrganizationInfo[]> {
+        const project = this.extractProjectFromResolvedAsset(resolvedAsset);
+        const relatedOrganizations = project?.related_organizations;
+
+        if (!relatedOrganizations?.length) {
+            this.relatedOrganizations = [];
+            return of([]);
+        }
+
+        const ownerInfoRequests: OwnerInfoRequest[] = relatedOrganizations.map(relatedOrganization => ({
+            owner_uuid: relatedOrganization.organization_uuid,
+            owner_type: OwnerType.Organization
+        }) as OwnerInfoRequest);
+
+        return this.projektMetierService.getOwnersInfos(ownerInfoRequests).pipe(
+            map(ownerInfos => ownerInfos.map(ownerInfo => ({
+                name: ownerInfo.name,
+                adminEmail: ownerInfo.contact,
+            }))),
+            tap(relatedOrganizationsInfo => {
+                this.relatedOrganizations = relatedOrganizationsInfo;
+            }),
+            catchError(() => {
+                this.relatedOrganizations = [];
+                return of([]);
+            })
+        );
+    }
+
+    private extractProjectFromResolvedAsset(resolvedAsset: ResolvedAsset | null): Project | null {
+        if (!resolvedAsset) {
+            return null;
+        }
+
+        if (resolvedAsset.type === 'project' || resolvedAsset.type === 'linked-dataset' || resolvedAsset.type === 'new-dataset-request') {
+            return resolvedAsset.project;
+        }
+
+        return null;
     }
 }

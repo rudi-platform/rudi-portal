@@ -51,7 +51,6 @@
     }
 
     .card-main-information {
-        max-height: 439px;
         border-radius: 6px;
 
         .card-title {
@@ -91,6 +90,9 @@
         }
 
         .date-created, .date-modified {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 8px 11px 0 11px;
             height: 40px;
             border-radius: 4px;

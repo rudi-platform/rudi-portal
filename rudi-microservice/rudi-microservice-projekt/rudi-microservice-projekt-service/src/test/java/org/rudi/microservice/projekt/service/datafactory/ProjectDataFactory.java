@@ -14,6 +14,7 @@ import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetS
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
 import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * DataFactory pour créer/récupérer des projets dans les tests.
  *
- * Les méthodes getOrCreate[NomDuProjet] permettent de créer un projet s'il n'existe pas en BDD,
- * ou de le récupérer sinon (idempotent).
+ * Les méthodes getOrCreate[NomDuProjet] permettent de créer un projet s'il n'existe pas en BDD, ou de le récupérer sinon (idempotent).
  *
  * UUIDs constants pour chaque type de projet permettent l'idempotence.
  *
- * Chaque méthode peut être configurée pour inclure :
- * - linkedDatasets
- * - newDatasetRequests
- * - relatedOrganizations
+ * Chaque méthode peut être configurée pour inclure : - linkedDatasets - newDatasetRequests - relatedOrganizations
  */
 @Component
 @Transactional
@@ -44,19 +41,16 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	private final ReutilisationStatusDataFactory reutilisationStatusDataFactory;
 	private final LinkedDatasetDataFactory linkedDatasetDataFactory;
 	private final NewDatasetRequestDataFactory newDatasetRequestDataFactory;
-	private final RelatedOrganizationDataFactory relatedOrganizationDataFactory;
 
 	public ProjectDataFactory(ProjectDao repository, ConfidentialityDataFactory confidentialityDataFactory,
 			ReutilisationStatusDataFactory reutilisationStatusDataFactory,
 			LinkedDatasetDataFactory linkedDatasetDataFactory,
-			NewDatasetRequestDataFactory newDatasetRequestDataFactory,
-			RelatedOrganizationDataFactory relatedOrganizationDataFactory) {
+			NewDatasetRequestDataFactory newDatasetRequestDataFactory) {
 		super(repository, ProjectEntity.class);
 		this.confidentialityDataFactory = confidentialityDataFactory;
 		this.reutilisationStatusDataFactory = reutilisationStatusDataFactory;
 		this.linkedDatasetDataFactory = linkedDatasetDataFactory;
 		this.newDatasetRequestDataFactory = newDatasetRequestDataFactory;
-		this.relatedOrganizationDataFactory = relatedOrganizationDataFactory;
 	}
 
 	/**
@@ -97,27 +91,27 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	 * Ajoute un LinkedDataset au projet
 	 */
 	private void addLinkedDataset(ProjectEntity project, UUID datasetUuid, UUID organizationUuid) {
-		project.getLinkedDatasets().add(linkedDatasetDataFactory.createNotPersisted(
-				datasetUuid,
-				organizationUuid,
-				LinkedDatasetStatus.DRAFT,
-				DatasetConfidentiality.OPENED));
+		project.getLinkedDatasets().add(linkedDatasetDataFactory.createNotPersisted(datasetUuid, organizationUuid,
+				LinkedDatasetStatus.DRAFT, DatasetConfidentiality.OPENED));
 	}
 
 	/**
 	 * Ajoute une demande de NewDatasetRequest au projet
 	 */
 	private void addNewDatasetRequest(ProjectEntity project, String title) {
-		project.getDatasetRequests().add(newDatasetRequestDataFactory.createNotPersisted(title,
-				NewDatasetRequestStatus.DRAFT));
+		project.getDatasetRequests()
+				.add(newDatasetRequestDataFactory.createNotPersisted(title, NewDatasetRequestStatus.DRAFT));
 	}
 
 	/**
 	 * Ajoute une organization liée au projet
 	 */
 	private void addRelatedOrganization(ProjectEntity project, UUID organizationUuid, RelationStatus relationStatus) {
-		project.getRelatedOrganizations().add(
-				relatedOrganizationDataFactory.createNotPersisted(organizationUuid, relationStatus));
+		if (organizationUuid != null && relationStatus != null) {
+
+			project.getRelatedOrganizations()
+					.add(createNotPersistedRelatedOrganizationEntity(organizationUuid, relationStatus));
+		}
 	}
 
 	private UUID resolveProjectUuid(UUID projectUuid) {
@@ -140,12 +134,8 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	 * Retourne un projet non persisté "Lampadaires" avec LinkedDatasets et NewDatasetRequest
 	 */
 	public ProjectEntity getLampadairesWithLinkedAndNew(UUID ownerUuid, OwnerType ownerType, UUID projectUuid) {
-		ProjectEntity project = createBaseProject(
-				resolveProjectUuid(projectUuid),
-				"Lampadaires - Full",
-				"Projet de comptage des lampadaires avec données",
-				ownerUuid,
-				ownerType);
+		ProjectEntity project = createBaseProject(resolveProjectUuid(projectUuid), "Lampadaires - Full",
+				"Projet de comptage des lampadaires avec données", ownerUuid, ownerType);
 
 		// Ajoute 2 LinkedDatasets
 		addLinkedDataset(project, UUID.randomUUID(), UUID.randomUUID());
@@ -158,14 +148,12 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	}
 
 	/**
-	 * Crée ou récupère un projet "Poubelles" dont le propriétaire est obligatoirement une organisation.
-	 * Le projet contient :
-	 * - 1 LinkedDataset (obligatoire selon les règles métier)
-	 * - le ownerUuid dans les RelatedOrganizations
-	 * - les autres organisations passées en paramètre dans les RelatedOrganizations
+	 * Crée ou récupère un projet "Poubelles" dont le propriétaire est obligatoirement une organisation. Le projet contient : - 1 LinkedDataset
+	 * (obligatoire selon les règles métier) - le ownerUuid dans les RelatedOrganizations - les autres organisations passées en paramètre dans les
+	 * RelatedOrganizations
 	 *
-	 * Ce cas est volontairement invalide : le propriétaire (organisation) est aussi une RelatedOrganization,
-	 * ce qui doit produire une erreur dans les TUs.
+	 * Ce cas est volontairement invalide : le propriétaire (organisation) est aussi une RelatedOrganization, ce qui doit produire une erreur dans les
+	 * TUs.
 	 */
 	public ProjectEntity getOrCreatePoubelleWithRelatedOrganizations(UUID ownerUuid, Set<UUID> organizationUuids) {
 		ProjectEntity existingProject = repository.findByUuid(POUBELLES_UUID);
@@ -181,12 +169,8 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	 */
 	public ProjectEntity getPoubelleWithRelatedOrganizations(UUID ownerUuid, Set<UUID> organizationUuids,
 			UUID projectUuid) {
-		ProjectEntity project = createBaseProject(
-				resolveProjectUuid(projectUuid),
-				"Poubelles - With Orga",
-				"Projet de suivi des poubelles avec organisations liées",
-				ownerUuid,
-				OwnerType.ORGANIZATION);
+		ProjectEntity project = createBaseProject(resolveProjectUuid(projectUuid), "Poubelles - With Orga",
+				"Projet de suivi des poubelles avec organisations liées", ownerUuid, OwnerType.ORGANIZATION);
 
 		// Ajoute 1 LinkedDataset (obligatoire)
 		addLinkedDataset(project, UUID.randomUUID(), UUID.randomUUID());
@@ -196,8 +180,7 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 
 		// Ajoute les autres organisations liées
 		if (organizationUuids != null) {
-			organizationUuids.forEach(
-					orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.ACCEPTED));
+			organizationUuids.forEach(orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.ACCEPTED));
 		}
 
 		return project;
@@ -213,8 +196,8 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 			return existingProject;
 		}
 
-		return repository.save(
-				getParkBikeWithLinkedAndOrganizations(ownerUuid, ownerType, organizationUuids, PARK_BIKE_UUID));
+		return repository
+				.save(getParkBikeWithLinkedAndOrganizations(ownerUuid, ownerType, organizationUuids, PARK_BIKE_UUID));
 	}
 
 	/**
@@ -222,20 +205,15 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	 */
 	public ProjectEntity getParkBikeWithLinkedAndOrganizations(UUID ownerUuid, OwnerType ownerType,
 			Set<UUID> organizationUuids, UUID projectUuid) {
-		ProjectEntity project = createBaseProject(
-				resolveProjectUuid(projectUuid),
-				"Park Bike - Full",
-				"Projet de localisation des parcs à vélos avec organisations partenaires",
-				ownerUuid,
-				ownerType);
+		ProjectEntity project = createBaseProject(resolveProjectUuid(projectUuid), "Park Bike - Full",
+				"Projet de localisation des parcs à vélos avec organisations partenaires", ownerUuid, ownerType);
 
 		// Ajoute 1 LinkedDataset
 		addLinkedDataset(project, UUID.randomUUID(), UUID.randomUUID());
 
 		// Ajoute les organisations liées
 		if (organizationUuids != null) {
-			organizationUuids.forEach(
-					orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.PENDING));
+			organizationUuids.forEach(orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.PENDING));
 		}
 
 		return project;
@@ -258,12 +236,7 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 			return existingProject;
 		}
 
-		ProjectEntity project = createBaseProject(
-				projectUuid,
-				name,
-				"Projet simple " + name,
-				ownerUuid,
-				ownerType);
+		ProjectEntity project = createBaseProject(projectUuid, name, "Projet simple " + name, ownerUuid, ownerType);
 
 		return repository.save(project);
 	}
@@ -279,12 +252,7 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 			return existingProject;
 		}
 
-		ProjectEntity project = createBaseProject(
-				projectUuid,
-				name,
-				"Projet avec datasets liés",
-				ownerUuid,
-				ownerType);
+		ProjectEntity project = createBaseProject(projectUuid, name, "Projet avec datasets liés", ownerUuid, ownerType);
 
 		// Ajoute N LinkedDatasets
 		for (int i = 0; i < numberOfDatasets; i++) {
@@ -297,19 +265,15 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	/**
 	 * Crée ou récupère un projet avec uniquement des NewDatasetRequests
 	 */
-	public ProjectEntity getOrCreateProjectWithNewDatasetRequestsOnly(String name, UUID ownerUuid,
-			OwnerType ownerType, int numberOfRequests) {
+	public ProjectEntity getOrCreateProjectWithNewDatasetRequestsOnly(String name, UUID ownerUuid, OwnerType ownerType,
+			int numberOfRequests) {
 		UUID projectUuid = generateDeterministicUuid(name + "-NewDatasetRequests-" + numberOfRequests, ownerType);
 		ProjectEntity existingProject = repository.findByUuid(projectUuid);
 		if (existingProject != null) {
 			return existingProject;
 		}
 
-		ProjectEntity project = createBaseProject(
-				projectUuid,
-				name,
-				"Projet avec demandes de données",
-				ownerUuid,
+		ProjectEntity project = createBaseProject(projectUuid, name, "Projet avec demandes de données", ownerUuid,
 				ownerType);
 
 		// Ajoute N NewDatasetRequests
@@ -322,30 +286,28 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 
 	/**
 	 * Crée ou récupère un projet avec uniquement des OrganizationsRelated
+	 * 
+	 * @param accepted
 	 */
-	public ProjectEntity getOrCreateProjectWithRelatedOrganizationsOnly(String name, UUID ownerUuid,
-			OwnerType ownerType, Set<UUID> organizationUuids) {
-		String orgUuidsString = organizationUuids != null ? organizationUuids.stream()
-				.map(UUID::toString)
-				.sorted()
-				.reduce("", String::concat) : "empty";
+	public ProjectEntity getOrCreateProjectWithRelatedOrganizationsOnly(String name, ProjectStatus projectStatus,
+			UUID ownerUuid, OwnerType ownerType, Set<UUID> organizationUuids, RelationStatus relationStatus) {
+		String orgUuidsString = organizationUuids != null
+				? organizationUuids.stream().map(UUID::toString).sorted().reduce("", String::concat)
+				: "empty";
 		UUID projectUuid = generateDeterministicUuid(name + "-RelatedOrganizations-" + orgUuidsString, ownerType);
 		ProjectEntity existingProject = repository.findByUuid(projectUuid);
 		if (existingProject != null) {
 			return existingProject;
 		}
 
-		ProjectEntity project = createBaseProject(
-				projectUuid,
-				name,
-				"Projet avec organisations liées",
-				ownerUuid,
+		ProjectEntity project = createBaseProject(projectUuid, name, "Projet avec organisations liées", ownerUuid,
 				ownerType);
+		project.setProjectStatus(projectStatus != null ? projectStatus : ProjectStatus.DRAFT);
 
 		// Ajoute les organisations liées
 		if (organizationUuids != null) {
-			organizationUuids.forEach(
-					orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.PENDING));
+			organizationUuids.forEach(orgUuid -> addRelatedOrganization(project, orgUuid,
+					relationStatus != null ? relationStatus : RelationStatus.PENDING));
 		}
 
 		return repository.save(project);
@@ -356,21 +318,16 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	 */
 	public ProjectEntity getOrCreateCompleteProject(String name, UUID ownerUuid, OwnerType ownerType,
 			Set<UUID> organizationUuids) {
-		String orgUuidsString = organizationUuids != null ? organizationUuids.stream()
-				.map(UUID::toString)
-				.sorted()
-				.reduce("", String::concat) : "empty";
+		String orgUuidsString = organizationUuids != null
+				? organizationUuids.stream().map(UUID::toString).sorted().reduce("", String::concat)
+				: "empty";
 		UUID projectUuid = generateDeterministicUuid(name + "-Complete-" + orgUuidsString, ownerType);
 		ProjectEntity existingProject = repository.findByUuid(projectUuid);
 		if (existingProject != null) {
 			return existingProject;
 		}
 
-		ProjectEntity project = createBaseProject(
-				projectUuid,
-				name,
-				"Projet complet avec tous les éléments",
-				ownerUuid,
+		ProjectEntity project = createBaseProject(projectUuid, name, "Projet complet avec tous les éléments", ownerUuid,
 				ownerType);
 
 		// Ajoute 2 LinkedDatasets
@@ -383,11 +340,18 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 
 		// Ajoute les organisations liées
 		if (organizationUuids != null) {
-			organizationUuids.forEach(
-					orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.ACCEPTED));
+			organizationUuids.forEach(orgUuid -> addRelatedOrganization(project, orgUuid, RelationStatus.ACCEPTED));
 		}
 
 		return repository.save(project);
 	}
 
+	public RelatedOrganizationEntity createNotPersistedRelatedOrganizationEntity(UUID organizationUuid,
+			RelationStatus relationStatus) {
+		RelatedOrganizationEntity relatedOrganization = new RelatedOrganizationEntity();
+		relatedOrganization.setUuid(UUID.randomUUID());
+		relatedOrganization.setOrganizationUuid(organizationUuid != null ? organizationUuid : UUID.randomUUID());
+		relatedOrganization.setRelationStatus(relationStatus != null ? relationStatus : RelationStatus.PENDING);
+		return relatedOrganization;
+	}
 }

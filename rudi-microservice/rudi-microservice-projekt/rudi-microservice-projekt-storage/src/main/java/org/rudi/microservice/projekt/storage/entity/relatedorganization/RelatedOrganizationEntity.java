@@ -24,6 +24,7 @@ public class RelatedOrganizationEntity extends AbstractLongIdEntity {
 	private static final long serialVersionUID = -6508639499690690580L;
 	public static final String FIELD_ORGANIZATION_UUID = "organizationUuid";
 	public static final String FIELD_RELATION_STATUS = "relationStatus";
+	public static final String FIELD_ID = "id";
 	public static final String PROJECT_FK = "project_fk";
 
 	@Column(name = "organization_uuid")

@@ -1,5 +1,14 @@
 package org.rudi.microservice.projekt.facade.controller;
 
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -25,11 +34,12 @@ import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.PagedProjectList;
 import org.rudi.microservice.projekt.core.bean.Project;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectFormType;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.rudi.microservice.projekt.core.bean.RelationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.facade.controller.api.ProjectsApi;
@@ -46,16 +56,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -284,13 +287,10 @@ public class ProjectController implements ProjectsApi {
 	}
 
 	@Override
-	public ResponseEntity<PagedProjectList> getMyProjects(List<Status> status,Integer offset, Integer limit, String order)
-			throws Exception {
+	public ResponseEntity<PagedProjectList> getMyProjects(List<Status> status, Integer offset, Integer limit,
+			String order) throws Exception {
 
-		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria
-				.builder()
-				.status(status)
-				.build();
+		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria.builder().status(status).build();
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		val page = projectService.getMyProjects(searchCriteria, pageable);
@@ -363,7 +363,7 @@ public class ProjectController implements ProjectsApi {
 	 * @return OK (status code 200) or Internal server error (status code 500)
 	 */
 	@Override
-	public ResponseEntity<List<ProjectByOwner>> getNumberOfProjectsPerOwners(List<UUID> datasetUuids,
+	public ResponseEntity<List<ProjectByOrganization>> getNumberOfProjectsPerOwners(List<UUID> datasetUuids,
 			List<UUID> linkedDatasetUuids, List<UUID> ownerUuids, List<UUID> projectUuids, List<ProjectStatus> status,
 			List<String> themes, List<String> keywords, List<TargetAudience> targetAudiennces, Integer offset,
 			Integer limit, String order) throws Exception {
@@ -372,6 +372,38 @@ public class ProjectController implements ProjectsApi {
 				.projectStatus(status).themes(themes).keywords(keywords).targetAudiences(targetAudiennces).build();
 
 		return ResponseEntity.ok(projectService.getNumberOfProjectsPerOwners(criteria));
+	}
+
+	/**
+	 * GET /projects/count-per-related-organization : Retourne le nombre de projects par organization related (partenaire)
+	 *
+	 * @param datasetUuids             UUIDs des jeux de données liés aux projets recherchés (optional)
+	 * @param linkedDatasetUuids       UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
+	 * @param relatedOrganizationUuids UUIDs des utilisateurs ou des organisations partenaires de la réutilisation ou soumis le projet (optional)
+	 * @param relationStatus           Status de la relation (optional)
+	 * @param projectUuids             UUIDs des projets (optional)
+	 * @param status                   (optional)
+	 * @param themes                   (optional)
+	 * @param keywords                 (optional)
+	 * @param targetAudiences          (optional)
+	 * @param offset                   Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param limit                    Le nombre de résultats à retourner par page (optional)
+	 * @param order                    (optional)
+	 * @return OK (status code 200) or Internal server error (status code 500)
+	 */
+	@Override
+	public ResponseEntity<List<ProjectByOrganization>> getNumberOfProjectsPerRelatedOrganizations(
+			@Valid List<UUID> datasetUuids, @Valid List<UUID> linkedDatasetUuids,
+			@Valid List<UUID> relatedOrganizationUuids, @Valid List<RelationStatus> relationStatus,
+			@Valid List<UUID> projectUuids, @Valid List<ProjectStatus> status, @Valid List<String> themes,
+			@Valid List<String> keywords, @Valid List<@Valid TargetAudience> targetAudiences, @Valid Integer offset,
+			@Valid Integer limit, @Valid String order) throws Exception {
+		ProjectSearchCriteria criteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids)
+				.linkedDatasetUuids(linkedDatasetUuids).relatedOrganizationUuids(relatedOrganizationUuids)
+				.relationStatus(relationStatus).projectUuids(projectUuids).projectStatus(status).themes(themes)
+				.keywords(keywords).targetAudiences(targetAudiences).build();
+
+		return ResponseEntity.ok(projectService.getNumberOfProjectsPerRelatedOrganizations(criteria));
 	}
 
 	@Override

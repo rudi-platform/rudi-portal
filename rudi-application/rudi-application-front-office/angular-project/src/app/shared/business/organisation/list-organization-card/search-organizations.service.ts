@@ -3,7 +3,7 @@ import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.
 import {Order} from '@features/organization/components/order/type';
 import {MetadataFacets} from 'micro_service_modules/api-kaccess';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
-import {ProjectByOwner} from 'micro_service_modules/projekt/projekt-model';
+import {ProjectByOrganization} from 'micro_service_modules/projekt/projekt-model';
 import {
     OrganizationBean,
     OrganizationService,
@@ -158,12 +158,12 @@ export class SearchOrganizationsService {
 
         this.projektMetierService.getNumberOfProjectsPerOwners({
             owner_uuids: organizations.map((e: OrganizationBean) => e.uuid)
-        }).subscribe((projectByOwners: ProjectByOwner[]): void => {
+        }).subscribe((projectByOrganizations: ProjectByOrganization[]): void => {
 
-            projectByOwners.forEach((projectByOwner: ProjectByOwner) => {
-                const orga = organizations.find(organisation => organisation.uuid === projectByOwner.ownerUUID);
+            projectByOrganizations.forEach((projectByOrganization: ProjectByOrganization) => {
+                const orga = organizations.find(organisation => organisation.uuid === projectByOrganization.organization_uuid);
                 if (orga) {
-                    orga.projectCount = projectByOwner.projectCount;
+                    orga.projectCount = projectByOrganization.projectCount;
                 }
             });
 

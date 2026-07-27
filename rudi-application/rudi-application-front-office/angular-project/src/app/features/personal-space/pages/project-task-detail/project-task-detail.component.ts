@@ -1,4 +1,4 @@
-import {Component, OnInit, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
@@ -10,12 +10,12 @@ import {ProjectConsultationService} from '@core/services/asset/project/project-c
 import {LinkedDatasetMetadatas} from '@core/services/asset/project/project-dependencies.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
-import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
-import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
-import {LogService} from '@core/services/log.service';
 import {AttachmentService} from '@core/services/attachment.service';
-import {ProjectAttachmentService} from '@core/services/project-attachment.service';
+import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
+import {LogService} from '@core/services/log.service';
+import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {PageTitleService} from '@core/services/page-title.service';
+import {ProjectAttachmentService} from '@core/services/project-attachment.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {
@@ -27,7 +27,9 @@ import {
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {ProjektTaskSearchCriteria} from '@core/services/tasks/projekt/projekt-task-search-criteria.interface';
 import {LinkedDatasetFromProject} from '@features/data-set/models/linked-dataset-from-project';
+import {OwnerContactCardComponent} from '@features/personal-space/components/contact-card/owner-contact-card.component';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {RelatedOrganizationInfo} from '@shared/business/contacts/owner-card-info/owner-card-info.component';
 import {
     NewDatasetRequestTableComponent
 } from '@shared/business/projects/projects-datasets-tables/new-dataset-request-table/new-dataset-request-table.component';
@@ -46,13 +48,12 @@ import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detai
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService, Section} from 'micro_service_modules/projekt/projekt-api';
+import {Confidentiality, Field, NewDatasetRequest, ProjectStatus, ProjektService, Section} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
 import {OwnerInfoRequest, OwnerType, Project} from 'micro_service_modules/projekt/projekt-model';
 import {forkJoin, of} from 'rxjs';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {ProjectMainInformationsComponent} from '../../../project/components/project-main-informations/project-main-informations.component';
-import {ContactCardComponent, RelatedOrganizationInfo} from '../../components/contact-card/contact-card.component';
 import {ProjectTaskHistoricComponent} from '../../components/project-task-historic/project-task-historic.component';
 
 @Component({
@@ -75,7 +76,7 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
         OpenDatasetTableComponent,
         RestrictedDatasetTableComponent,
         NewDatasetRequestTableComponent,
-        ContactCardComponent,
+        OwnerContactCardComponent,
         ProjectTaskHistoricComponent,
         BannerButtonComponent,
         TranslatePipe
@@ -231,11 +232,26 @@ export class ProjectTaskDetailComponent
     }
 
     private loadRelatedOrganizations(project: Project): void {
-        const relatedOrgs = project.related_organizations;
+        let relatedOrgs = project.related_organizations;
+
+        // Si on on est censé n'afficher que l'organisation en cours de validation
+        // Elle est précisée dans un form HIDDEN
+        this.currentTask.asset.form?.sections?.forEach((s: Section) => {
+            s.fields?.forEach((f: Field) => {
+                if (f.definition.name == 'relatedOrganization') {
+                    // On ne prend alors que l'organisation concernée.
+                    relatedOrgs = [relatedOrgs[f.definition.extendedType]];
+                    this.hasSections = false;
+                    this.headerLibelle = this.translateService.instant('personalSpace.projectDetails.headerTitleRelatedOrganization');
+                }
+            });
+        });
+
         if (!relatedOrgs?.length) {
             this.relatedOrganizations = [];
             return;
         }
+
         const ownerInfoRequests: OwnerInfoRequest[] = relatedOrgs.map(r => ({
             owner_uuid: r.organization_uuid,
             owner_type: OwnerType.Organization

@@ -47,7 +47,7 @@ public class WebSecurityConfig {
 			"/oauth2/**",
 			// ACL
 			// Divers
-			"/acl/v1/kaptcha",
+			"/acl/v1/kaptcha/**",
 			// acècs aux définitions des authentificateurs oauth2
 			"/acl/v1/oauth2-authenticators/icons/**", "/acl/v1/oauth2-authenticators",
 			"/acl/v1/oauth2-authenticators/**",

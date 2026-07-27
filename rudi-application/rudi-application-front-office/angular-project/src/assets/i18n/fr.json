@@ -307,6 +307,9 @@
         "errorLoginLocked": "Votre compte a été bloqué pendant 20 minutes suite à 10 essais infructueux d'authentification. Passé ce délai vous pourrez de nouveau vous authentifier. Vous avez oublié votre mot de passe ? Cliquez ",
         "errorLoginLockedFooter": "ici",
         "error-captcha": "Le Captcha saisi n'est pas valide. Veuillez essayer de nouveau.",
+        "captchaImageAlt": "Recopier le code de sécurité ci-contre",
+        "captchaReload": "Générer un nouveau captcha",
+        "captchaAudio": "Énoncer le code du captcha",
         "authenticators": "Authentifications externes",
         "or": "ou"
     },
@@ -361,7 +364,9 @@
         "validatorsErrors": {
             "required": "Cette information est obligatoire.",
             "requiredTrue": "Cette case obligatoire doit être cochée.",
-            "checkRvaAddressValidator": "Veuillez sélectionner une adresse dans la liste proposée."
+            "checkRvaAddressValidator": "Veuillez sélectionner une adresse dans la liste proposée.",
+            "pattern": "Le format saisi est incorrect.",
+            "maxlength": "La longueur maximale autorisée est dépassée."
         },
         "select": {
             "oneOptionPlaceHolder": "Sélectionner une option"
@@ -1235,7 +1240,8 @@
             "error": "Une erreur est survenue lors de la création de l'organisation. Si l'erreur persiste, merci de contacter un administrateur ",
             "dialog": {
                 "title": "Déclarer une nouvelle organisation",
-                "description": "Vous vous apprêtez à déclarer une nouvelle organisation sur {projectName}. Suite à son approbation par les équipes {projectName}, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques."
+                "description": "Vous vous apprêtez à déclarer une nouvelle organisation sur {projectName}. Suite à son approbation par les équipes {projectName}, vous pourrez publier des réutilisations en son nom et demander l’accès à des jeux de données. L’ensemble des informations sont publiques.",
+                "requiredFields": "Informations obligatoires à renseigner"
             },
             "form": {
                 "errorRequired": "Ce champ est requis",
@@ -1280,6 +1286,7 @@
         "projectDetails": {
             "headerTitlePublication": "Demande de publication",
             "headerTitleModification": "Demande de modification",
+            "headerTitleRelatedOrganization": "Demande d'ajout de votre organisation à une réutilisation",
             "image": "Image",
             "projectTab": {
                 "title": "Réutilisation",

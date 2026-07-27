@@ -16,7 +16,7 @@
   <bpmn:itemDefinition id="ItemDefinition_1499" isCollection="false" structureRef="xs:int"/>
   <bpmn:process id="linked-producer-process" name="LinkedProducerProcess" isExecutable="true">
     <bpmn:documentation id="Documentation_2"><![CDATA[Processus d'une demande]]></bpmn:documentation>
-    <bpmn:startEvent id="StartEvent_1" name="Transmission de la demande de rattachement">
+    <bpmn:startEvent id="StartEvent_1" name="Transmission de la demande">
       <bpmn:documentation id="Documentation_1"><![CDATA[Etat de départ du processus]]></bpmn:documentation>
       <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>

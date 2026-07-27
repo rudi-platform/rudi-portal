@@ -12,6 +12,15 @@ mat-label {
     color: var(--secondary-text);
 }
 
+.title-hint {
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--primary-text-light);
+    line-height: 1.43;
+    margin-bottom: 5px;
+}
+
 mat-error {
     font-size: 14px;
     font-weight: normal;

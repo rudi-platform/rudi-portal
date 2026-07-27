@@ -37,9 +37,9 @@ export class FiltersItemsListComponent {
      * Filter not null value in selectedAccessStatusItems
      */
     get notNullSelectedAccessStatusItems(): AccessStatusFilterItem[] {
-        this.selectedAccessStatusItems = this.selectedAccessStatusItems.filter(
-            selectedValue => selectedValue.value != null
-        );
+        this.selectedAccessStatusItems = this.selectedAccessStatusItems?.filter(
+            selectedValue => selectedValue?.value != null
+        ) ?? [];
         return this.selectedAccessStatusItems;
     }
 

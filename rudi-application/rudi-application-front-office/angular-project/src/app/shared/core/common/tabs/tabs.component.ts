@@ -1,5 +1,5 @@
-import { DOCUMENT, NgClass } from '@angular/common';
-import {AfterViewInit, Component, ContentChild, ContentChildren, Inject, QueryList, ViewChild, ViewContainerRef} from '@angular/core';
+import { NgClass } from '@angular/common';
+import {AfterViewInit, Component, ContentChild, ContentChildren, Inject, QueryList, ViewChild, ViewContainerRef, DOCUMENT} from '@angular/core';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TabComponent} from '@shared/core/common/tab/tab.component';
 import {WorkInProgressComponent} from '@shared/core/common/work-in-progress/work-in-progress.component';
@@ -7,13 +7,12 @@ import {TabContentDirective} from '@shared/utils/directives/tab-content-directiv
 import {TabsLayoutDirective} from '@shared/utils/directives/tab-layout-directive/tabs-layout.directive';
 import {BannerComponent} from '../../banner/banner/banner.component';
 import {TabComponent as TabComponent_1} from '../tab/tab.component';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 
 @Component({
     selector: 'app-tabs',
     templateUrl: './tabs.component.html',
     styleUrls: ['./tabs.component.scss'],
-    imports: [BannerComponent, TabComponent_1, NgClass, ExtendedModule]
+    imports: [BannerComponent, TabComponent_1, NgClass]
 })
 export class TabsComponent implements AfterViewInit {
 

@@ -13,7 +13,7 @@ import {
     DatasetConfidentiality,
     OwnerInfo,
     OwnerInfoRequest,
-    ProjectByOwner,
+    ProjectByOrganization,
     ProjektService,
     Status
 } from 'micro_service_modules/projekt/projekt-api';
@@ -568,7 +568,7 @@ export class ProjektMetierService {
         });
     }
 
-    getNumberOfProjectsPerOwners(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<Array<ProjectByOwner>> {
+    getNumberOfProjectsPerOwners(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<Array<ProjectByOrganization>> {
         return this.projektService.getNumberOfProjectsPerOwners(
             criteria.dataset_uuids,
             criteria.linked_dataset_uuids,

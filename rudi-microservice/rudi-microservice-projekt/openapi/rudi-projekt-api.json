@@ -4326,7 +4326,141 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "rudi-projekt-model.json#/components/schemas/ProjectByOwners"
+									"$ref": "rudi-projekt-model.json#/components/schemas/ProjectByOrganisations"
+								}
+							}
+						}
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/projects/count-per-related-organization": {
+			"get": {
+				"tags": [
+					"projekt"
+				],
+				"summary": "Retourne le nombre de projects par organisation partenaire",
+				"description": "Retourne le nombre de projects par organisation partenaire",
+				"operationId": "getNumberOfProjectsPerRelatedOrganizations",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "datasetUuids",
+						"description": "UUIDs des jeux de données liés aux projets recherchés",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "linkedDatasetUuids",
+						"description": "UUIDs des LinkedDatasetEntity (des demandes d'accès) liées aux projets recherchés",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "relatedOrganizationUuids",
+						"description": "UUIDs des utilisateurs ou des organisations ayant contribué à la réutilisation",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "relationStatus",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/RelationStatus"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "projectUuids",
+						"description": "UUIDs des projets",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"format": "uuid"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/ProjectStatus"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "themes",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "keywords",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "targetAudiences",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "rudi-projekt-model.json#/components/schemas/TargetAudience"
+							}
+						}
+					},
+					{
+						"$ref": "#/components/parameters/OffsetParam"
+					},
+					{
+						"$ref": "#/components/parameters/LimitParam"
+					},
+					{
+						"$ref": "#/components/parameters/OrderParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "rudi-projekt-model.json#/components/schemas/ProjectByOrganisations"
 								}
 							}
 						}

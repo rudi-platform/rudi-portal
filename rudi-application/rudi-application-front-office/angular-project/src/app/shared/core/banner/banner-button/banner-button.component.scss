@@ -1,8 +1,8 @@
 @use "app/styles/common-style";
 
 button, button.mat-raised-button.mat-mdc-raised-button:not(:disabled) {
-    --mdc-protected-button-container-color: var(--primary-color);
-    --mdc-protected-button-label-text-color: var(--secondary-color);
+    --mat-button-protected-container-color: var(--primary-color);
+    --mat-button-protected-label-text-color: var(--secondary-color);
 
     cursor: pointer;
     font-weight: 600;

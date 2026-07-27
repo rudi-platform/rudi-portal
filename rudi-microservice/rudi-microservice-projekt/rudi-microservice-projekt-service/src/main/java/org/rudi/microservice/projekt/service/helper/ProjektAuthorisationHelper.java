@@ -30,6 +30,7 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersExcep
 import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelper;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -168,6 +169,18 @@ public class ProjektAuthorisationHelper {
 
 			return DEFAULT_ACCESS_GRANT;
 		} catch (AppServiceUnauthorizedException e) {
+			return DEFAULT_ACCESS_GRANT;
+		}
+	}
+
+	public boolean isAccessGrantedForUserAsRelatedOnProject(ProjectEntity projectEntity) throws AppServiceUnauthorizedException, GetOrganizationException {
+		User user = aclHelper.getAuthenticatedUser();
+		if (projectEntity != null && CollectionUtils.isNotEmpty(projectEntity.getRelatedOrganizations())) {
+			List<UUID> userAndItsOrganizationUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
+			userAndItsOrganizationUuid.remove(user.getUuid());
+			List<UUID> relatedOrganizations = projectEntity.getRelatedOrganizations().stream().map(RelatedOrganizationEntity::getOrganizationUuid).collect(Collectors.toList());
+			return CollectionUtils.isNotEmpty(CollectionUtils.intersection(userAndItsOrganizationUuid, relatedOrganizations));
+		} else {
 			return DEFAULT_ACCESS_GRANT;
 		}
 	}
@@ -329,11 +342,11 @@ public class ProjektAuthorisationHelper {
 	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
 	public void checkRightsAdministerProject(ProjectEntity projectEntity)
-			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
+			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException, GetOrganizationException {
 		Map<String, Boolean> accessRightsByRole = ProjektAuthorisationHelper.getADMINISTRATOR_MODERATOR_ACCESS();
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
-		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity))) {
+		if (!(isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity) || isAccessGrantedForUserAsRelatedOnProject(projectEntity))) {
 			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}

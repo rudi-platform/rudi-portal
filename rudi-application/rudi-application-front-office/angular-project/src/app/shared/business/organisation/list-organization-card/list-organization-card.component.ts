@@ -4,14 +4,13 @@ import {OrganizationBean} from 'micro_service_modules/strukture/strukture-model'
 import { NgClass } from '@angular/common';
 import {OrganizationCardComponent} from '../organization-card/organization-card.component';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-list-organization-card',
     templateUrl: './list-organization-card.component.html',
     styleUrls: ['./list-organization-card.component.scss'],
-    imports: [OrganizationCardComponent, NgxPaginationModule, NgClass, ExtendedModule, TranslatePipe]
+    imports: [OrganizationCardComponent, NgxPaginationModule, NgClass, TranslatePipe]
 })
 export class ListOrganizationCardComponent {
     @Input() organizations: OrganizationBean[];

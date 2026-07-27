@@ -7,7 +7,7 @@
     @if (projectList && projectList.items.length > 0) {
       <div class="content"
         [ngClass]="{'mb-4': projectList?.total <= maxResultsPerPage}">
-        <div class="project-cards-container" fxLayout="row wrap">
+        <div class="project-cards-container d-flex flex-wrap">
           @for (project of projectListItems | paginate: {
             itemsPerPage: maxResultsPerPage,
             currentPage: page,

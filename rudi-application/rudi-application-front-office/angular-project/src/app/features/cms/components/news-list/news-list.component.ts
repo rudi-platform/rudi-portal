@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {SafeHtml} from '@angular/platform-browser';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -15,7 +14,7 @@ const FIRST_PAGE = 1;
     standalone: true,
     templateUrl: './news-list.component.html',
     styleUrl: './news-list.component.scss',
-    imports: [CommonModule, LoaderComponent, ExtendedModule, NgxPaginationModule]
+    imports: [CommonModule, LoaderComponent, NgxPaginationModule]
 })
 export class NewsListComponent implements OnInit {
 

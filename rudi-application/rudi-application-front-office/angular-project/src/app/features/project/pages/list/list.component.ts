@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {Router} from '@angular/router';
 import {DEFAULT_PROJECT_ORDER, ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -18,7 +17,7 @@ import {ProjectCatalogItem} from '../../model/project-catalog-item';
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, NgClass, ExtendedModule, PageTitleComponent, BannerComponent, OrderComponent, ProjectListComponent, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, NgClass, PageTitleComponent, BannerComponent, OrderComponent, ProjectListComponent, TranslatePipe]
 })
 export class ListComponent implements OnInit {
     mediaSize: MediaSize;

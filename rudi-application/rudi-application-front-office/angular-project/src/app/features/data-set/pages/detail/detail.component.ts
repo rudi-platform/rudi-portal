@@ -1,8 +1,6 @@
 import {CommonModule, NgClass} from '@angular/common';
 import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
-import {FlexModule} from '@angular/flex-layout/flex';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
@@ -68,7 +66,7 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
+    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;

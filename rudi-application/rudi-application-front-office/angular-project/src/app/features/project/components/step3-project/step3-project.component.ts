@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatError} from '@angular/material/form-field';
@@ -15,7 +14,7 @@ import {SuccessStep3TemplateComponent} from '../success-step3-template/success-s
     selector: 'app-step3-project',
     templateUrl: './step3-project.component.html',
     styleUrls: ['./step3-project.component.scss'],
-    imports: [NgClass, ExtendedModule, FormsModule, ReactiveFormsModule, DataSetButtonComponent, MatError, ProjectDatasetListComponent, SuccessStep3TemplateComponent, RouterLink, TranslatePipe]
+    imports: [NgClass, FormsModule, ReactiveFormsModule, DataSetButtonComponent, MatError, ProjectDatasetListComponent, SuccessStep3TemplateComponent, RouterLink, TranslatePipe]
 })
 export class Step3ProjectComponent {
 

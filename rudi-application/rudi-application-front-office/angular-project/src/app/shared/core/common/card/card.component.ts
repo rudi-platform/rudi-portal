@@ -1,6 +1,5 @@
 import { NgClass } from '@angular/common';
 import {Component, Input} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatCard} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {NgClassObject} from '@core/services/breakpoint-observer.service';
@@ -12,7 +11,7 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, MatIcon, TranslatePipe]
+    imports: [MatCard, NgClass, MatIcon, TranslatePipe]
 })
 export class CardComponent {
 

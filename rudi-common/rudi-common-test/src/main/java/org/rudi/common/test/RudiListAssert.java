@@ -6,12 +6,11 @@ import java.util.List;
 import org.assertj.core.api.FactoryBasedNavigableListAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.assertj.core.api.ObjectAssertFactory;
 import org.json.JSONException;
 
 public class RudiListAssert<E> extends FactoryBasedNavigableListAssert<ListAssert<E>, List<? extends E>, E, ObjectAssert<E>> {
 	RudiListAssert(List<? extends E> actual) {
-		super(actual, RudiListAssert.class, new ObjectAssertFactory<>());
+		super(actual, RudiListAssert.class, (o) -> new ObjectAssert<>(o));
 	}
 
 	/**

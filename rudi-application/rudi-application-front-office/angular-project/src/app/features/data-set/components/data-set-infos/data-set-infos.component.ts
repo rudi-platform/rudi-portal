@@ -2,7 +2,6 @@ import {Clipboard} from '@angular/cdk/clipboard';
 import {AsyncPipe, DatePipe, NgClass, UpperCasePipe} from '@angular/common';
 import {HttpResponse} from '@angular/common/http';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatButton} from '@angular/material/button';
 import {MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
@@ -60,7 +59,11 @@ import SelfdataCatagoriesEnum = SelfdataContent.SelfdataCategoriesEnum;
     selector: 'app-data-sets-infos',
     templateUrl: './data-set-infos.component.html',
     styleUrls: ['./data-set-infos.component.scss'],
-    imports: [MatCardHeader, MatCardTitle, MatCardContent, LoaderComponent, MatExpansionPanel, MatExpansionPanelHeader, NgClass, ExtendedModule, MatExpansionPanelTitle, BooleanDataBlockComponent, MatError, MatIcon, MatButton, MapComponent, OrganizationLogoComponent, ContactButtonComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe, ReplaceIfNullPipe]
+    imports: [MatCardHeader, MatCardTitle, MatCardContent, LoaderComponent, MatExpansionPanel,
+        MatExpansionPanelHeader, NgClass, MatExpansionPanelTitle,
+        BooleanDataBlockComponent, MatError, MatIcon, MatButton,
+        MapComponent, OrganizationLogoComponent, ContactButtonComponent,
+        AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe, ReplaceIfNullPipe]
 })
 export class DataSetInfosComponent implements OnInit {
 
@@ -98,7 +101,7 @@ export class DataSetInfosComponent implements OnInit {
     baseLayers: LayerInformation[] = [];
 
     isMapLoading = false;
-    maxSourceUrlSize: number = 100;
+    maxSourceUrlSize = 100;
 
     constructor(private readonly konsultMetierService: KonsultMetierService,
                 readonly snacbackService: SnackBarService,

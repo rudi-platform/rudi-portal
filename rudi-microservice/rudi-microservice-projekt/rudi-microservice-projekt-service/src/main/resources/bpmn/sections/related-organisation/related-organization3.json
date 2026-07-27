@@ -1,0 +1,13 @@
+{
+	"fieldDefinitions": [
+		{
+			"name": "relatedOrganization",
+			"label": "relatedOrganization",
+			"extendedType": "2",
+			"type": "HIDDEN",
+			"readonly": true,
+			"required": true
+		}
+	]
+}
+

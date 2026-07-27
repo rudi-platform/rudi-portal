@@ -1,0 +1,22 @@
+<div class="owner-card-info">
+    @if (title) {
+        <div class="section-title">
+            {{ title }}
+        </div>
+    }
+    <app-owner-contact-information class="owner-contact" [name]="name" [email]="email" [showEmailDirectly]="showOwnerEmailDirectly"></app-owner-contact-information>
+
+    @if (relatedOrganizations.length) {
+        <hr class="related-organizations-divider">
+        @if (relatedTitle) {
+            <div class="section-title related-organizations-title">
+                {{ relatedTitle }}
+            </div>
+        }
+        <div class="related-organizations-list">
+            @for (relatedOrganization of relatedOrganizations; track relatedOrganization.name) {
+                <app-owner-contact-information class="related-organization-contact" [name]="relatedOrganization.name" [email]="relatedOrganization.adminEmail" [showEmailDirectly]="showRelatedEmailDirectly"></app-owner-contact-information>
+            }
+        </div>
+    }
+</div>

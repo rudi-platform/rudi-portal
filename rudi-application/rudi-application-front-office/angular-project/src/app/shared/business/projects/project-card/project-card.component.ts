@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatCard, MatCardContent, MatCardImage} from '@angular/material/card';
 import {Router} from '@angular/router';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -14,7 +13,7 @@ import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
     selector: 'app-project-card',
     templateUrl: './project-card.component.html',
     styleUrls: ['./project-card.component.scss'],
-    imports: [MatCard, NgClass, ExtendedModule, MatCardImage, MatCardContent]
+    imports: [MatCard, NgClass, MatCardImage, MatCardContent]
 })
 export class ProjectCardComponent implements OnInit {
     @Input() projectCatalogItem: ProjectCatalogItem;

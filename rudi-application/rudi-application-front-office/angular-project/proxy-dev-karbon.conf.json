@@ -1,0 +1,137 @@
+{
+    "/authenticate": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/refresh_token": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/anonymous": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "acl/v1/oauth2-authenticators": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/acl/v1/oauth2-authenticators",
+        "secure": false,
+        "pathRewrite": {
+            "^/acl/v1/oauth2-authenticators": ""
+        },
+        "changeOrigin": true
+    },
+    "/acl/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/acl/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/acl/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/konsult/v1/cms": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/konsult/v1/cms",
+        "secure": false,
+        "pathRewrite": {
+            "^/konsult/v1/cms": ""
+        },
+        "changeOrigin": true
+    },
+    "/konsult/v1/properties": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/konsult/v1/properties",
+        "secure": false,
+        "pathRewrite": {
+            "^/konsult/v1/properties": ""
+        },
+        "changeOrigin": true
+    },
+    "/konsult/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/konsult/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/konsult/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/node/v1/linked-producers": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/strukture/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/node/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/node/v1/organizations/request": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/strukture/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/node/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/strukture/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/strukture/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/strukture/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/kos/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/kos/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/kos/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/projekt/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/projekt/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/projekt/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/selfdata/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/selfdata/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/selfdata/v1": ""
+        },
+        "changeOrigin": true
+    },
+    "/medias": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/apigateway/datasets",
+        "secure": false,
+        "pathRewrite": {
+            "^/medias": ""
+        },
+        "changeOrigin": true
+    },
+    "/robots.txt": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/konsult/v1/robots/robots",
+        "secure": false,
+        "pathRewrite": {
+            "^/robots.txt": ""
+        },
+        "changeOrigin": true
+    },
+    "/oauth2": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/oauth2",
+        "secure": false,
+        "pathRewrite": {
+            "^/oauth2": ""
+        },
+        "changeOrigin": true
+    },
+    "/kalim/v1": {
+        "target": "https://dev-karbon.rennes-metropole-rudi.karbon.open.global/kalim/v1",
+        "secure": false,
+        "pathRewrite": {
+            "^/kalim/v1": ""
+        },
+        "changeOrigin": true
+    }
+}

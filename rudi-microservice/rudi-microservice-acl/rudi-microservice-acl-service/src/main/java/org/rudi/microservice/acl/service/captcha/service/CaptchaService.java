@@ -6,18 +6,20 @@ import org.rudi.microservice.acl.core.bean.CaptchaModel;
 
 public interface CaptchaService {
 	/**
-	 * @param get nom du captcha
-	 * @param c   type du captcha qui est obligatoire pour certains type de captcha (html)
-	 * @param t   param technique utilisé par l'API
-	 * @param cs  param technique utilisé par l'API
-	 * @param d   param technique utilisé par l'API
-	 * @return HTML du captcha généré en string
+	 * Appelle l'API CaptchEtat v2 pour récupérer un élément du captcha.
+	 *
+	 * @param get  type d'objet : "image" ou "sound"
+	 * @param c    nom du captcha (ex: captchaFR)
+	 * @param t    identifiant UUID du captcha (requis pour sound)
+	 * @return DocumentContent contenant la réponse (JSON pour image, binaire pour sound)
 	 */
-	DocumentContent generateCaptcha(String get, String c, String t, String cs, String d) throws ExternalServiceException;
+	DocumentContent generateCaptcha(String get, String c, String t) throws ExternalServiceException;
 
 	/**
-	 * @param captchaModel DTO du captcha à valider
-	 * @return boolean pour dire si tout s'est bien passé
+	 * Valide la saisie utilisateur d'un captcha auprès de l'API CaptchEtat v2.
+	 *
+	 * @param captchaModel DTO contenant uuid et code
+	 * @return true si le captcha est validé, false sinon
 	 */
 	Boolean validateCaptcha(CaptchaModel captchaModel) throws ExternalServiceException;
 }

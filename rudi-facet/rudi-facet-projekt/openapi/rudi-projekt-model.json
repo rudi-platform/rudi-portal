@@ -652,15 +652,14 @@
 					}
 				]
 			},
-			"ProjectByOwner": {
-				"description": "Objet contenant un owner UUID et le nombre de projets qu'il a",
-				"type": "object",
+			"ProjectByOrganization": {
+				"description": "Objet contenant un UUID d'organisation et le nombre de projets qu'il a",
 				"required": [
-					"ownerUUID",
+					"organization_uuid",
 					"projectCount"
 				],
 				"properties": {
-					"ownerUUID": {
+					"organization_uuid": {
 						"type": "string",
 						"format": "uuid"
 					},
@@ -670,11 +669,11 @@
 					}
 				}
 			},
-			"ProjectByOwners": {
-				"description": "Liste des owner et le nombre de projets associés",
+			"ProjectByOrganisations": {
+				"description": "Liste des organisations et le nombre de projets associés",
 				"type": "array",
 				"items": {
-					"$ref": "#/components/schemas/ProjectByOwner"
+					"$ref": "#/components/schemas/ProjectByOrganization"
 				}
 			},
 			"ProjektArchiveMode": {

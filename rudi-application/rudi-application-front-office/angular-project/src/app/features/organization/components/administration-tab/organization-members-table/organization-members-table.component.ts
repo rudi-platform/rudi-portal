@@ -1,6 +1,5 @@
 import {DatePipe, NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormsModule} from '@angular/forms';
 import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -44,7 +43,11 @@ import {OrganizationMemberDialogData} from './organization-member-dialog-data';
     selector: 'app-organization-members-table',
     templateUrl: './organization-members-table.component.html',
     styleUrls: ['./organization-members-table.component.scss'],
-    imports: [FormsModule, MatIcon, NgClass, ExtendedModule, MatButton, ErrorBoxComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe]
+    imports: [FormsModule, MatIcon, NgClass, MatButton, ErrorBoxComponent,
+        MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell,
+        MatSortHeader, MatCellDef, MatCell, MatMiniFabButton, MatMenuTrigger,
+        MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow,
+        LoaderComponent, BackPaginationComponent, DatePipe, TranslatePipe, NgxPaginationModule, ReplaceIfNullPipe]
 })
 export class OrganizationMembersTableComponent implements OnInit {
 

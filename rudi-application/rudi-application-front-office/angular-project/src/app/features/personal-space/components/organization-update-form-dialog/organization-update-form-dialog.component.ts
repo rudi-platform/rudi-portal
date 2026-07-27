@@ -1,4 +1,5 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, AfterViewInit, OnInit, ViewChild} from '@angular/core';
+import {ValidatorFn, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
@@ -10,6 +11,14 @@ import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/w
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
+import {
+    MAX_ADDRESS_LENGTH,
+    MAX_DESCRIPTION_LENGTH,
+    MAX_MESSAGE_LENGTH,
+    MAX_NAME_LENGTH,
+    MAX_URL_LENGTH,
+    URL_PATTERN
+} from '../organization-form/organization-form.constants';
 
 export interface OrganizationUpdateFormDialogData {
     draftForm: Form;
@@ -32,12 +41,20 @@ export interface OrganizationUpdateFormDialogData {
     templateUrl: './organization-update-form-dialog.component.html',
     styleUrl: './organization-update-form-dialog.component.scss'
 })
-export class OrganizationUpdateFormDialogComponent implements OnInit {
+export class OrganizationUpdateFormDialogComponent implements OnInit, AfterViewInit {
     FORM_CONTROL_NAME_MESSAGE = 'updateMessageToModerator';
     FORM_CONTROL_NAME_NAME = 'name';
     FORM_CONTROL_NAME_DESCRIPTION = 'description';
     FORM_CONTROL_NAME_URL = 'url';
     FORM_CONTROL_NAME_ADDRESS = 'address';
+
+    private readonly fieldValidators: Record<string, ValidatorFn[]> = {
+        [this.FORM_CONTROL_NAME_MESSAGE]: [Validators.maxLength(MAX_MESSAGE_LENGTH)],
+        [this.FORM_CONTROL_NAME_NAME]: [Validators.maxLength(MAX_NAME_LENGTH)],
+        [this.FORM_CONTROL_NAME_DESCRIPTION]: [Validators.maxLength(MAX_DESCRIPTION_LENGTH)],
+        [this.FORM_CONTROL_NAME_URL]: [Validators.maxLength(MAX_URL_LENGTH), Validators.pattern(URL_PATTERN)],
+        [this.FORM_CONTROL_NAME_ADDRESS]: [Validators.maxLength(MAX_ADDRESS_LENGTH)],
+    };
 
     @ViewChild(WorkflowFormComponent)
     workflowFormComponent!: WorkflowFormComponent;
@@ -60,6 +77,10 @@ export class OrganizationUpdateFormDialogComponent implements OnInit {
         this.organization = this.data.organization;
 
         this.prefillDraftFormIfEmpty();
+    }
+
+    ngAfterViewInit(): void {
+        this.addFieldValidators();
     }
 
     onClickClose(): void {
@@ -120,6 +141,22 @@ export class OrganizationUpdateFormDialogComponent implements OnInit {
 
         const value = formGroup.controls[controlKey]?.value;
         return value === undefined || value === null || value === '' ? null : String(value);
+    }
+
+    private addFieldValidators(): void {
+        const formGroup = this.workflowFormComponent?.formGroup;
+        if (!formGroup) {
+            return;
+        }
+
+        for (const [fieldName, validators] of Object.entries(this.fieldValidators)) {
+            const controlKey = Object.keys(formGroup.controls)
+                .find(name => name === fieldName || name.endsWith(`_${fieldName}`));
+            if (controlKey) {
+                formGroup.controls[controlKey].addValidators(validators);
+                formGroup.controls[controlKey].updateValueAndValidity();
+            }
+        }
     }
 
     private prefillDraftFormIfEmpty(): void {

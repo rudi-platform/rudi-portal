@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {
     AbstractControl,
     AbstractControlOptions,
@@ -41,13 +40,17 @@ import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CmsTermsDescription, CustomizationDescription, KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {ConfirmedValidator} from './confirmed-validator';
 
-const ICON_INFO: string = '../assets/icons/icon_info.svg';
+const ICON_INFO = '../assets/icons/icon_info.svg';
 
 @Component({
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatLabel, MatFormField, MatInput, MatHint, MatError, MatIconButton, MatSuffix, MatIcon, PasswordStrengthComponent, MatCheckbox, RudiCaptchaComponent_1, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, MatDivider, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass,
+        MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatLabel,
+        MatFormField, MatInput, MatHint, MatError, MatIconButton, MatSuffix, MatIcon,
+        PasswordStrengthComponent, MatCheckbox, RudiCaptchaComponent_1, MatCardActions,
+        MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, MatDivider, TranslatePipe]
 })
 export class SignUpComponent implements OnInit {
 

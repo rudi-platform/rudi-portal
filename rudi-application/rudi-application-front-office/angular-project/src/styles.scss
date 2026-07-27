@@ -26,7 +26,7 @@ body {
 }
 
 .red-snackbar {
-    --mdc-snackbar-container-color: var(--error-color) !important;
+    --mat-snackbar-container-color: var(--error-color) !important;
     max-width: unset !important;
 
 
@@ -37,7 +37,7 @@ body {
 }
 
 .blue-snackbar {
-    --mdc-snackbar-container-color: var(--primary-color) !important;
+    --mat-snackbar-container-color: var(--primary-color) !important;
     max-width: unset !important;
 
 
@@ -342,6 +342,7 @@ a {
             line-height: 20px;
             font-size: 14px;
             margin-bottom: 7px;
+            color: var(--primary-text);
 
             .link-text {
                 font-weight: bold;
@@ -473,22 +474,22 @@ a {
 }
 
 .action-btn-icon {
-    --mdc-fab-container-color: unset !important;
-    --mdc-fab-small-container-color: var(--secondary-color) !important;
+    --mat-fab-container-color: unset !important;
+    --mat-fab-small-container-color: var(--secondary-color) !important;
     --mat-fab-small-foreground-color: var(--primary-color) !important;
     box-shadow: unset !important;
 
     &:hover {
         transition: 0.2s;
-        --mdc-fab-small-container-color: var(--primary-color) !important;
+        --mat-fab-small-container-color: var(--primary-color) !important;
         --mat-fab-small-foreground-color: var(--secondary-color) !important;
     }
 }
 
 // flatten action-btn-icon
 .action-fab-btn-icon {
-    --mdc-fab-container-color: unset !important;
-    --mdc-fab-small-container-color: var(--secondary-color) !important;
+    --mat-fab-container-color: unset !important;
+    --mat-fab-small-container-color: var(--secondary-color) !important;
     --mat-fab-small-foreground-color: var(--primary-color) !important;
     box-shadow: unset !important;
 
@@ -496,7 +497,7 @@ a {
         transition: 0.2s;
         height: 2rem;
         border-radius: 1rem;
-        --mdc-fab-small-container-color: var(--primary-color) !important;
+        --mat-fab-small-container-color: var(--primary-color) !important;
         --mat-fab-small-foreground-color: var(--secondary-color) !important;
     }
 }

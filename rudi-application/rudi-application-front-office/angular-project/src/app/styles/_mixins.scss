@@ -31,10 +31,10 @@
 }
 
 @mixin card-main-button {
-    --mdc-protected-button-label-text-color: var(--secondary-color);
-    --mdc-protected-button-container-color: var(--primary-color);
-    --mdc-filled-button-container-color: var(--primary-color);
-    --mdc-filled-button-label-text-color: var(--secondary-color);
+    --mat-button-protected-label-text-color: var(--secondary-color);
+    --mat-button-protected-container-color: var(--primary-color);
+    --mat-button-filled-container-color: var(--primary-color);
+    --mat-button-filled-label-text-color: var(--secondary-color);
 
     background-color: var(--primary-color);
     color: var(--secondary-color);
@@ -46,8 +46,8 @@
     width: 100%;
 
     &.mat-mdc-button-disabled {
-        color: var(--mdc-protected-button-disabled-label-text-color);
-        background-color: var(--mdc-protected-button-disabled-container-color);
+        color: var(--mat-button-protected-disabled-label-text-color);
+        background-color: var(--mat-button-protected-disabled-container-color);
     }
 }
 

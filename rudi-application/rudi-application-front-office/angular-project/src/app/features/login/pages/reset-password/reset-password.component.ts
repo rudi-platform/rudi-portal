@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {
     AbstractControl,
     AbstractControlOptions,
@@ -37,7 +36,11 @@ import {ConfirmedValidator} from '../sign-up/confirmed-validator';
     selector: 'app-reset-password-page',
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, MatCard, MatCardTitle, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatIconButton, MatSuffix, MatIcon, MatError, PasswordStrengthComponent, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass,
+        MatCard, MatCardTitle, MatCardContent, FormsModule,
+        ReactiveFormsModule, MatFormField, MatLabel, MatInput,
+        MatIconButton, MatSuffix, MatIcon, MatError,
+        PasswordStrengthComponent, MatCardActions, MatButton, MatProgressSpinner, ErrorBoxComponent, RouterLink, TranslatePipe]
 })
 export class ResetPasswordComponent implements OnInit {
 

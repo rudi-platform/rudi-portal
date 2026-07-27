@@ -9,7 +9,7 @@
     [matBadge]="counter$ | async"
     >
     {{buttonTextKey | translate}}
-    <mat-icon iconPositionEnd class="rudi-select-arrow">
+    <mat-icon aria-hidden="true" iconPositionEnd class="rudi-select-arrow">
       @if (!menuIsOpened) {
         keyboard_arrow_down
       }
@@ -18,7 +18,7 @@
       }
     </mat-icon>
     <mat-menu #matMenu="matMenu" yPosition="below" class="rudi-menu">
-      <div fxLayout="column" class="rudi-select-panel" (click)="$event.stopPropagation();">
+      <div class="rudi-select-panel d-flex flex-column" (click)="$event.stopPropagation();">
         <ng-content></ng-content>
       </div>
     </mat-menu>

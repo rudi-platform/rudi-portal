@@ -2,22 +2,10 @@ package org.rudi.microservice.projekt.storage.entity.project;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import org.rudi.common.storage.entity.SkosConceptCodeColumn;
 import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
 import org.rudi.microservice.projekt.core.common.SchemaConstants;
@@ -32,6 +20,20 @@ import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetE
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -50,6 +52,7 @@ public class ProjectEntity extends AbstractAssetDescriptionEntity {
 	public static final String FIELD_OWNER_UUID = "ownerUuid";
 	public static final String FIELD_DATASET_REQUESTS = "datasetRequests";
 	public static final String FIELD_LINKED_DATASET = "linkedDatasets";
+	public static final String FIELD_RELATED_ORGANIZATION = "relatedOrganizations";
 	public static final String FIELD_ID = "id";
 
 	/**
@@ -186,13 +189,13 @@ public class ProjectEntity extends AbstractAssetDescriptionEntity {
 	@JoinColumn(name = LinkedDatasetEntity.PROJECT_FK)
 	private Set<NewDatasetRequestEntity> datasetRequests = new HashSet<>();
 
-
 	/**
-	 * Organisations liées au projet
+	 * Organisations liees au projet
 	 */
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = RelatedOrganizationEntity.PROJECT_FK)
-	private Set<RelatedOrganizationEntity> relatedOrganizations = new HashSet<>();
+	@OrderBy(RelatedOrganizationEntity.FIELD_ID + " ASC")
+	private Set<RelatedOrganizationEntity> relatedOrganizations = new LinkedHashSet<>();
 
 	@Override
 	public int hashCode() {

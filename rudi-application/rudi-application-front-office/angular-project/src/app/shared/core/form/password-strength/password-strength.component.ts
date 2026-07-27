@@ -3,14 +3,13 @@ import {Validators} from '@angular/forms';
 import {PasswordStrengthCriteria} from '@shared/core/form/password-strength/password-strength-criteria';
 import {PasswordStrengthCriterion} from '@shared/core/form/password-strength/password-strength-criterion';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-password-strength',
     templateUrl: './password-strength.component.html',
     styleUrls: ['./password-strength.component.scss'],
-    imports: [NgClass, ExtendedModule, TranslatePipe]
+    imports: [NgClass, TranslatePipe]
 })
 export class PasswordStrengthComponent implements OnChanges {
     /** Le mot-de-passe dont on cherche la force */

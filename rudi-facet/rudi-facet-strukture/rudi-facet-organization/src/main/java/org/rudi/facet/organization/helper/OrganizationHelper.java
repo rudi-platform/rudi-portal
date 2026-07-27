@@ -213,7 +213,7 @@ public class OrganizationHelper {
 			// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
 			// Soit qu'elle a un workflow en cours
 			// On empêche donc le lancement du workflow
-			return organizations.getElements() != null && !organizations.getElements().isEmpty();
+			return CollectionUtils.isNotEmpty(organizations.getElements());
 		} catch (GetOrganizationException e) {
 			throw new IllegalArgumentException("Invalid organization uuid " + ownerUuid, e);
 		}

@@ -8,8 +8,7 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {AdapterProxy} from '@shared/core/form/uploader/adapter-proxy';
 import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
-import {FilePickerComponent, FilePreviewModel, ValidationError} from '@sleiss/ngx-awesome-uploader';
-import {UploaderCaptions} from '@sleiss/ngx-awesome-uploader/lib/uploader-captions';
+import {FilePickerComponent, FilePreviewModel, UploaderCaptions, ValidationError} from '@sleiss/ngx-awesome-uploader';
 import saveAs from 'file-saver';
 
 @Component({

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
@@ -25,8 +25,12 @@ public interface ProjectCustomDao {
 	Integer getNumberOfLinkedDatasets(UUID projectUuid);
 
 	Integer getNumberOfNewRequests(UUID projectUuid);
-	
-	List<ProjectByOwner> getNumberOfProjectsPerOwners(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria);
 
-	Page<ProjectEntity> searchRelatedProjects(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria, Pageable pageable);
+	List<ProjectByOrganization> getNumberOfProjectsPerOwners(
+			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria);
+
+	Page<ProjectEntity> searchProjectsPerOwner(EnhancedProjectSearchCriteria enhancedProjectSearchCriteria,
+			Pageable pageable);
+
+	List<ProjectByOrganization> getNumberOfProjectsPerRelatedOrganizations(ProjectSearchCriteria projectSearchCriteria);
 }

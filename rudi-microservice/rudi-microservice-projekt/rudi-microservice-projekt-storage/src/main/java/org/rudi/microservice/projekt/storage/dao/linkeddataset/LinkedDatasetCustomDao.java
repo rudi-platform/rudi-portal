@@ -14,4 +14,6 @@ import org.springframework.data.domain.Pageable;
 public interface LinkedDatasetCustomDao {
 
 	Page<LinkedDatasetEntity> searchLinkedDatasets(LinkedDatasetSearchCriteria searchCriteria, Pageable pageable);
+
+	Page<LinkedDatasetEntity> searchRelatedDatasetAccess(LinkedDatasetSearchCriteria searchCriteria, Pageable pageable);
 }

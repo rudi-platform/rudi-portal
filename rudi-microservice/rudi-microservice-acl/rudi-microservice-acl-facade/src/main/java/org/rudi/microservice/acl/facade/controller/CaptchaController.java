@@ -17,8 +17,8 @@ public class CaptchaController implements KaptchaApi {
 	private final ControllerHelper controllerHelper;
 
 	@Override
-	public ResponseEntity<Resource> generateCaptcha(String get, String c, String t, String cs, String d) throws Exception {
-		return controllerHelper.downloadableResponseEntity(captchaService.generateCaptcha(get, c, t, cs, d));
+	public ResponseEntity<Resource> generateCaptcha(String get, String c, String t) throws Exception {
+		return controllerHelper.downloadableResponseEntity(captchaService.generateCaptcha(get, c, t));
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -30,8 +30,8 @@ import {LinkedProducer, LinkedProducersService} from 'micro_service_modules/stru
 import {LinkedProducerStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+import {OwnerContactCardComponent} from 'src/app/features/personal-space/components/contact-card/owner-contact-card.component';
 import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
-import {ContactCardComponent} from '../../components/contact-card/contact-card.component';
 
 @Component({
     selector: 'app-producer-link-task-detail',
@@ -43,10 +43,11 @@ import {ContactCardComponent} from '../../components/contact-card/contact-card.c
         TabsComponent,
         TabComponent,
         OrganizationInformationComponent,
-        ContactCardComponent,
+        OwnerContactCardComponent,
         BannerButtonComponent,
-        AsyncPipe,
-        TranslatePipe]
+        TranslatePipe,
+        AsyncPipe
+    ]
 })
 export class LinkedProducerTaskDetailComponent
     extends TaskDetailComponent<LinkedProducer, LinkedProducerDependencies, LinkedProducerTask, LinkedProducerTaskSearchCriteria>

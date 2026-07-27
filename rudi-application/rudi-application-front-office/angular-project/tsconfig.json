@@ -3,33 +3,36 @@
     "compileOnSave": false,
     "compilerOptions": {
       "baseUrl": "./",
-        "outDir": "./dist/out-tsc",
-        "forceConsistentCasingInFileNames": true,
-        "esModuleInterop": true,
-        "strictPropertyInitialization": false,
-        "strict": false,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "declaration": false,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "importHelpers": true,
-        "skipLibCheck": true, // obligé depuis openlayer 6.6 car les standards typescript ont changé mais pas été propagé dans toutes les deps
-        "target": "es2022",
-        "module": "es2020",
-        "lib": [
-            "es2018",
-            "es2019",
-            "dom"
+      "outDir": "./dist/out-tsc",
+      "forceConsistentCasingInFileNames": true,
+      "esModuleInterop": true,
+      "strictPropertyInitialization": false,
+      "strict": false,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "sourceMap": true,
+      "declaration": false,
+      "experimentalDecorators": true,
+      "moduleResolution": "bundler",
+      "importHelpers": true,
+      "skipLibCheck": true,
+      "target": "es2022",
+      "module": "es2020",
+      "resolveJsonModule": true,
+      "paths": {
+        "@app/*": [
+          "./src/app/*"
         ],
-        "resolveJsonModule": true,
-        "paths": {
-            "@app/*": ["./src/app/*"],
-            "@shared/*": ["./src/app/shared/*"],
-            "@core/*": ["./src/app/core/*"],
-            "@features/*": ["./src/app/features/*"]
-        }
+        "@shared/*": [
+          "./src/app/shared/*"
+        ],
+        "@core/*": [
+          "./src/app/core/*"
+        ],
+        "@features/*": [
+          "./src/app/features/*"
+        ]
+      }
     },
     "angularCompilerOptions": {
         "strictInjectionParameters": true,

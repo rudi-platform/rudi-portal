@@ -1,6 +1,5 @@
 import { NgClass } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatHint, MatLabel} from '@angular/material/form-field';
@@ -29,11 +28,12 @@ import {UploaderComponent} from '../../../form/uploader/uploader.component';
     selector: 'app-workflow-field-attachment',
     templateUrl: './workflow-field-attachment.component.html',
     styleUrls: ['./workflow-field-attachment.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, UploaderComponent, LoaderComponent, NgClass, ExtendedModule, MatIcon, TranslateDirective, FileSizePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, UploaderComponent, LoaderComponent,
+        NgClass, MatIcon, TranslateDirective, FileSizePipe]
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
-    attachmentLoading: boolean = false;
-    fileSizeLoading: boolean = false;
+    attachmentLoading = false;
+    fileSizeLoading = false;
     attachment: DocumentMetadata;
     allowedFileExtensions: string[] = [];
     attachmentService: AttachmentService;

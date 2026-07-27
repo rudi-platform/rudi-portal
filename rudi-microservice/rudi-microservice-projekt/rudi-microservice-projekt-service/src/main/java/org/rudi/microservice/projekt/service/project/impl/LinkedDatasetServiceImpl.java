@@ -30,6 +30,7 @@ import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersExcep
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
+import org.rudi.microservice.projekt.core.bean.RelationStatus;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
@@ -49,8 +50,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -185,7 +186,8 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 
 	@Override
 	@Transactional // readOnly = false
-	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force) throws AppServiceException {
+	public void unlinkProjectToDataset(UUID projectUuid, UUID linkedDatasetUuid, Boolean force)
+			throws AppServiceException {
 		val project = getRequiredProjectEntity(projectUuid);
 
 		projektAuthorisationHelper.checkRightRemoveLinkedDatasetOnProject(project, force);
@@ -341,9 +343,10 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 		}
 
 		var linkedDatasetSearchCriteria = new LinkedDatasetSearchCriteria().datasetUuid(datasetUuid)
-				.projectOwnerUuids(userAndItsOrganizations).status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true);
-		final var linkedDatasetEntities = linkedDatasetCustomDao.searchLinkedDatasets(linkedDatasetSearchCriteria,
+				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsNotOver(true)
+				.projectRelatedUuids(userAndItsOrganizations)
+				.organizationProjectRelationStatuses(List.of(RelationStatus.ACCEPTED));
+		final var linkedDatasetEntities = linkedDatasetCustomDao.searchRelatedDatasetAccess(linkedDatasetSearchCriteria,
 				Pageable.unpaged());
 		return linkedDatasetEntities.getTotalElements() > 0;
 	}

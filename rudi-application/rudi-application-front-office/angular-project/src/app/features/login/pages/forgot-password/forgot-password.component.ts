@@ -1,6 +1,5 @@
 import {NgClass} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
@@ -25,7 +24,7 @@ import {map, switchMap} from 'rxjs/operators';
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, TranslateDirective, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class ForgotPasswordComponent implements OnInit {
     /**

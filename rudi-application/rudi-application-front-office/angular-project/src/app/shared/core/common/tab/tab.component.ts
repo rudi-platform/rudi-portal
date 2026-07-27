@@ -3,14 +3,13 @@ import {IconRegistryService} from '@core/services/icon-registry.service';
 import {ALL_TYPES, TitleIconType} from '@shared/models/title-icon-type';
 import {MatButton} from '@angular/material/button';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'app-tab',
     templateUrl: './tab.component.html',
     styleUrls: ['./tab.component.scss'],
-    imports: [MatButton, NgClass, ExtendedModule, MatIcon]
+    imports: [MatButton, NgClass, MatIcon]
 })
 export class TabComponent {
 

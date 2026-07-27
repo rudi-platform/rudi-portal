@@ -72,16 +72,16 @@ mat-error {
 }
 
 .button-login {
-    --mdc-protected-button-container-color: #004680;
-    --mdc-protected-button-label-text-color: #ffffff;
-    --mdc-filled-button-container-color: #004680;
-    --mdc-filled-button-label-text-color: #ffffff;
+    --mat-button-protected-container-color: #004680;
+    --mat-button-protected-label-text-color: #ffffff;
+    --mat-button-filled-container-color: #004680;
+    --mat-button-filled-label-text-color: #ffffff;
     background-color: #004680;
     color: #ffffff;
 
     &:not(:disabled):hover {
-        --mdc-protected-button-container-color: #0270e7;
-        --mdc-filled-button-container-color: #0270e7;
+        --mat-button-protected-container-color: #0270e7;
+        --mat-button-filled-container-color: #0270e7;
         background-color: #0270e7;
     }
 }

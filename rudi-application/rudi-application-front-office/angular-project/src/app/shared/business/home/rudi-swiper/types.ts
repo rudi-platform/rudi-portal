@@ -1,4 +1,4 @@
-import {SwiperOptions} from 'swiper/types/swiper-options';
+import {SwiperOptions} from 'swiper/types';
 
 export interface SwiperBreakpoint {
     [width: number]: SwiperOptions;

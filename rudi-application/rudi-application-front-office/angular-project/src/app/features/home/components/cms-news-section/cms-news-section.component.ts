@@ -7,7 +7,6 @@ import {TranslateService, TranslatePipe} from '@ngx-translate/core';
 import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CmsNewsDescription, KonsultService, NewsPageDescription} from 'micro_service_modules/konsult/konsult-api';
 import { NgClass } from '@angular/common';
-import {ExtendedModule} from '@angular/flex-layout/extended';
 
 const DEFAULT_ORDER: string = '-publishdate';
 const DEFAULT_CATEGORIES: string[] = ['/rudi/news/a-la-une'];
@@ -27,7 +26,7 @@ interface News {
     selector: 'app-cms-news-section',
     templateUrl: './cms-news-section.component.html',
     styleUrls: ['./cms-news-section.component.scss'],
-    imports: [NgClass, ExtendedModule, TranslatePipe]
+    imports: [NgClass, TranslatePipe]
 })
 export class CmsNewsSectionComponent implements OnInit {
     @Input() cmsNewsDescription: CmsNewsDescription;

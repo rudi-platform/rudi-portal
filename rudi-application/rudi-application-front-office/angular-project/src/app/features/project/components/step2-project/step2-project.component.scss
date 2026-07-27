@@ -24,14 +24,14 @@
     // Slide toggle en bleu primaire (même couleur que les radio buttons)
     .mat-mdc-slide-toggle {
         margin-left: 10px;
-        --mdc-switch-selected-handle-color: var(--focus);
-        --mdc-switch-selected-track-color: var(--focus);
-        --mdc-switch-selected-pressed-handle-color: var(--focus);
-        --mdc-switch-selected-focus-handle-color: var(--focus);
-        --mdc-switch-selected-hover-handle-color: var(--focus);
-        --mdc-switch-selected-hover-track-color: var(--focus);
-        --mdc-switch-selected-focus-track-color: var(--focus);
-        --mdc-switch-selected-pressed-track-color: var(--focus);
+        --mat-slide-toggle-selected-handle-color: var(--focus);
+        --mat-slide-toggle-selected-track-color: var(--focus);
+        --mat-slide-toggle-selected-pressed-handle-color: var(--focus);
+        --mat-slide-toggle-selected-focus-handle-color: var(--focus);
+        --mat-slide-toggle-selected-hover-handle-color: var(--focus);
+        --mat-slide-toggle-selected-hover-track-color: var(--focus);
+        --mat-slide-toggle-selected-focus-track-color: var(--focus);
+        --mat-slide-toggle-selected-pressed-track-color: var(--focus);
     }
 
     .related-organizations-title {

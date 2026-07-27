@@ -29,7 +29,8 @@ export class DataSetActionsAuthorizationService {
             case 'REJECTED':
                 return fromTask; // modification des jdd ou new dataset requests autorisée uniquement depuis une tâche sur une réutilisation pas encore finalisée
             case 'VALIDATED' :
-                return project.reutilisation_status.dataset_set_modification_allowed && project.status === Status.Completed;
+                return project.reutilisation_status.dataset_set_modification_allowed && project.status === Status.Completed &&
+                    (!project.related_organizations || project.related_organizations.length === 0 || !project.related_organizations.some(org => org.relation_status === "PENDING"));
             case 'IN_PROGRESS':
             case 'CANCELLED':
             case 'DISENGAGED':

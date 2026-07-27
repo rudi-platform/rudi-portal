@@ -9,6 +9,10 @@
         <div class="dialog-content">
             <div class="dialog-title">{{ title || ('personalSpace.organization.dialog.title'|translate) }}</div>
             <div class="dialog-description">{{ description || ('personalSpace.organization.dialog.description'|translate) }}</div>
+            <div class="d-flex required-info">
+                <span class="required-symbol">*</span>
+                <span class="ms-1">{{ 'personalSpace.organization.dialog.requiredFields'|translate }}</span>
+            </div>
 
             <app-workflow-form #WorkflowForm
                 [workflowForm]="draftForm"

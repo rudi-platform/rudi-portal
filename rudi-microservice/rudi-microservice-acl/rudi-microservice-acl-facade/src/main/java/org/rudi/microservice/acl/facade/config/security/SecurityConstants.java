@@ -39,7 +39,7 @@ public final class SecurityConstants {
 			"/oauth2/logout", "/oauth2/jwks", AUTHENTICATE_URL, AUTHENTICATE1_URL,
 			// swagger ui / openapi
 			"/acl/v3/api-docs/**", "/acl/swagger-ui/**", "/acl/swagger-ui.html", "/acl/swagger-resources/**",
-			"/configuration/ui", "/configuration/security", "/webjars/**", "/error", "/acl/v1/kaptcha" };
+			"/configuration/ui", "/configuration/security", "/webjars/**", "/error", "/acl/v1/kaptcha/**" };
 
 	protected static final String[] SB_PERMIT_ALL_URL2 = Arrays.append(SB_PERMIT_ALL_URL, OAUTH2_AUTHENTICATORS_URL);
 }

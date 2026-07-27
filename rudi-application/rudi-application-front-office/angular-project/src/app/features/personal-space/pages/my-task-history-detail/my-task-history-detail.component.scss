@@ -1,263 +1,263 @@
 @use "common-style";
 
 ::ng-deep {
-  mat-card, .mat-mdc-card {
-    padding: 16px 24px;
-  }
+    mat-card, .mat-mdc-card {
+        padding: 16px 24px;
+    }
 
-  mat-card-content, .mat-mdc-card-content {
-    padding: 0 !important;
-  }
+    mat-card-content, .mat-mdc-card-content {
+        padding: 0 !important;
+    }
 }
 
 .card-demand-label {
-  @include common-style.card-demand-label;
+    @include common-style.card-demand-label;
 }
 
 .no-result {
-  margin: 24px 0;
-  text-align: center;
+    margin: 24px 0;
+    text-align: center;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 caption {
-  caption-side: top;
-  text-align: left;
-  padding: 16px 0;
+    caption-side: top;
+    text-align: left;
+    padding: 16px 0;
 }
 
 th,
 td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--blocks-and-menus-outline);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--blocks-and-menus-outline);
 }
 
 .blue-step {
-  color: var(--primary-color);
-  font-weight: 600;
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 .task-history-detail-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  .task-history-detail-main {
-    padding: 0;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .task-history-detail-side {
-    padding: 0;
-    margin-top: 16px;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 992px) {
-  .task-history-detail-container {
-    flex-wrap: nowrap;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
 
     .task-history-detail-main {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+        padding: 0;
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 
     .task-history-detail-side {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
-      margin-top: 0;
+        padding: 0;
+        margin-top: 16px;
+        flex: 0 0 100%;
+        max-width: 100%;
     }
-  }
+}
+
+@media (min-width: 992px) {
+    .task-history-detail-container {
+        flex-wrap: nowrap;
+
+        .task-history-detail-main {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
+
+        .task-history-detail-side {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+            margin-top: 0;
+        }
+    }
 }
 
 .project-details-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding-top: 16px;
-
-  .project-metadata-container {
-    padding: 0;
-    flex: 0 0 100%;
-    max-width: 100%;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-top: 16px;
 
-    .project-metadata {
-      border: 1px solid var(--self-data-border-color);
-      border-radius: 7px;
-      box-sizing: border-box;
-      margin-top: 15px;
+    .project-metadata-container {
+        padding: 0;
+        flex: 0 0 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .project-metadata {
+            border: 1px solid var(--self-data-border-color);
+            border-radius: 7px;
+            box-sizing: border-box;
+            margin-top: 15px;
+        }
     }
-  }
 
-  app-contact-card {
-    padding: 16px 0;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    app-owner-contact-card {
+        padding: 16px 0;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 @media (min-width: 992px) {
-  .project-details-container {
-    flex-wrap: nowrap;
+    .project-details-container {
+        flex-wrap: nowrap;
 
-    .project-metadata-container {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
-    }
+        .project-metadata-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
 
-    app-contact-card {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
+        app-owner-contact-card {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
-  }
 }
 
 .producer-link-details-container {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 
-  .producer-link-information-container {
-    padding-bottom: 24px;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .producer-link-information-container {
+        padding-bottom: 24px;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 
-  .owner-information-container {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .owner-information-container {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 @media (min-width: 992px) {
-  .producer-link-details-container {
-    .producer-link-information-container {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+    .producer-link-details-container {
+        .producer-link-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
+
+        .owner-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
 
-    .owner-information-container {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
-    }
-  }
+    .new-dataset-request-details-container {
+        .new-dataset-request-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
 
-  .new-dataset-request-details-container {
-    .new-dataset-request-information-container {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+        .owner-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
-
-    .owner-information-container {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
-    }
-  }
 }
 
 .new-dataset-request-details-container {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 
-  .new-dataset-request-information-container {
-    padding-bottom: 24px;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .new-dataset-request-information-container {
+        padding-bottom: 24px;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 
-  .owner-information-container {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .owner-information-container {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 .linked-dataset-details-container {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 
-  .linked-dataset-information-container {
-    padding-bottom: 24px;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .linked-dataset-information-container {
+        padding-bottom: 24px;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 
-  .owner-information-container {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+    .owner-information-container {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 @media (min-width: 992px) {
-  .new-dataset-request-details-container {
-    .new-dataset-request-information-container {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+    .new-dataset-request-details-container {
+        .new-dataset-request-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
+
+        .owner-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
 
-    .owner-information-container {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
-    }
-  }
+    .linked-dataset-details-container {
+        .linked-dataset-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
 
-  .linked-dataset-details-container {
-    .linked-dataset-information-container {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+        .owner-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
     }
-
-    .owner-information-container {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
-    }
-  }
 }
 
 .project-tab-details-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
 
-  .project-tab-main {
-    flex: 0 0 100%;
-    max-width: 100%;
-    padding-bottom: 24px;
-  }
-
-  .project-tab-side {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 992px) {
-  .project-tab-details-container {
     .project-tab-main {
-      flex: 0 0 66.6667%;
-      max-width: 66.6667%;
-      padding-right: 1.5rem;
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-bottom: 24px;
     }
 
     .project-tab-side {
-      flex: 0 0 33.3333%;
-      max-width: 33.3333%;
+        flex: 0 0 100%;
+        max-width: 100%;
     }
-  }
+}
+
+@media (min-width: 992px) {
+    .project-tab-details-container {
+        .project-tab-main {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
+
+        .project-tab-side {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
+    }
 }

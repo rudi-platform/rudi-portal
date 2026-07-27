@@ -1,5 +1,9 @@
 package org.rudi.microservice.strukture.service.organization.bean;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,7 +24,7 @@ import org.rudi.facet.kaccess.bean.MetadataFacetValues;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.strukture.core.bean.OrganizationBean;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
@@ -39,10 +43,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationBeanServiceUT {
@@ -319,7 +319,7 @@ class OrganizationBeanServiceUT {
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 
 		assertThat(organizationBeans.getTotalElements()).as(
-						"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
 				.isEqualTo(filteredOrganization.size() + initialOrganizationBeans.getTotalElements());
 
 		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
@@ -357,7 +357,7 @@ class OrganizationBeanServiceUT {
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 
 		assertThat(organizationBeans.getTotalElements()).as(
-						"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
 				.isEqualTo(filteredOrganization.size() + initialOrganizationBeans.getTotalElements());
 
 		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
@@ -394,7 +394,7 @@ class OrganizationBeanServiceUT {
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 
 		assertThat(returnedOrganizations.getTotalElements()).as(
-						"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
 				.isEqualTo(initialState.getTotalElements() + expectedOrganizations.size());
 
 		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
@@ -431,7 +431,7 @@ class OrganizationBeanServiceUT {
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 
 		assertThat(returnedOrganizations.getTotalElements()).as(
-						"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
+				"La liste retournée doit contenir exactement le bon nombre d'organisations en plus qu'à l'état initial.")
 				.isEqualTo(initialState.getTotalElements() + expectedOrganizations.size());
 
 		// Création de liste avec uniquement les noms des organisations censées être retournées pour effectuer les tests.
@@ -446,28 +446,24 @@ class OrganizationBeanServiceUT {
 	@DisplayName("search public organisation - all data loaded")
 	void searchPublicOrganizationBeansFull() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		// On veut charger l'ensemble des données liées aux organisations
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(true)
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(true).build();
 		Pageable pageable = Pageable.unpaged();
 
 		// On crée les fausses donnéezs de sorte à ce que chaque organisation ait 5 projet
-		List<ProjectByOwner> projectByOwners = publicOrganizations.stream().map(o -> {
-			ProjectByOwner p = new ProjectByOwner();
-			p.ownerUUID(o.getUuid());
+		List<ProjectByOrganization> projectByOwners = publicOrganizations.stream().map(o -> {
+			ProjectByOrganization p = new ProjectByOrganization();
+			p.setOrganizationUuid(o.getUuid());
 			p.setProjectCount(5L);
 			return p;
 		}).toList();
 
-		when(projektHelper.getNumberOfProjectsPerOwners(any()))
-				.thenReturn(projectByOwners);
+		when(projektHelper.getNumberOfProjectsPerOwners(any())).thenReturn(projectByOwners);
 
 		// Et de sorte à ce que chaque organisation ait 10 jdd
 		List<MetadataFacet> metadataFacets = publicOrganizations.stream().map(o -> {
@@ -484,8 +480,7 @@ class OrganizationBeanServiceUT {
 		metadataListFacets.setFacets(new org.rudi.facet.kaccess.bean.MetadataFacets());
 		metadataListFacets.getFacets().setItems(metadataFacets);
 
-		when(datasetService.searchDatasets(any(), any()))
-				.thenReturn(metadataListFacets);
+		when(datasetService.searchDatasets(any(), any())).thenReturn(metadataListFacets);
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
@@ -494,38 +489,32 @@ class OrganizationBeanServiceUT {
 				.allMatch(o -> publicOrganizations.stream()
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
 				.as("Chaque bean doit avoir le nombre de projet et de jdd renseigné correctement")
-				.allMatch(bean -> publicOrganizations.stream()
-						.filter(o -> o.getUuid().equals(bean.getUuid()))
-						.allMatch(o -> bean.getProjectCount() == 5L && bean.getDatasetCount() == 10))
-		;
+				.allMatch(bean -> publicOrganizations.stream().filter(o -> o.getUuid().equals(bean.getUuid()))
+						.allMatch(o -> bean.getProjectCount() == 5L && bean.getDatasetCount() == 10));
 	}
 
 	@Test
 	@DisplayName("search public organisation - only organization loaded")
 	void searchPublicOrganizationBeansOnlyOrgaData() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		// On ne veut pas toute la donnée, mais seulement les données de base de l'organisation
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false).build();
 		Pageable pageable = Pageable.unpaged();
 
 		// On crée les fausses donnéezs de sorte à ce que chaque organisation ait 5 projet
-		List<ProjectByOwner> projectByOwners = publicOrganizations.stream().map(o -> {
-			ProjectByOwner p = new ProjectByOwner();
-			p.ownerUUID(o.getUuid());
+		List<ProjectByOrganization> projectByOwners = publicOrganizations.stream().map(o -> {
+			ProjectByOrganization p = new ProjectByOrganization();
+			p.setOrganizationUuid(o.getUuid());
 			p.setProjectCount(5L);
 			return p;
 		}).toList();
 
-		when(projektHelper.getNumberOfProjectsPerOwners(any()))
-				.thenReturn(projectByOwners);
+		when(projektHelper.getNumberOfProjectsPerOwners(any())).thenReturn(projectByOwners);
 
 		// Et de sorte à ce que chaque organisation ait 10 jdd
 		List<MetadataFacet> metadataFacets = publicOrganizations.stream().map(o -> {
@@ -542,8 +531,7 @@ class OrganizationBeanServiceUT {
 		metadataListFacets.setFacets(new org.rudi.facet.kaccess.bean.MetadataFacets());
 		metadataListFacets.getFacets().setItems(metadataFacets);
 
-		when(datasetService.searchDatasets(any(), any()))
-				.thenReturn(metadataListFacets);
+		when(datasetService.searchDatasets(any(), any())).thenReturn(metadataListFacets);
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
@@ -552,10 +540,8 @@ class OrganizationBeanServiceUT {
 				.allMatch(o -> publicOrganizations.stream()
 						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
 				.as("Chaque bean ne doit avoir aucune donnée de renseignée pour le nombre de JDD et le nombre de projets")
-				.allMatch(bean -> publicOrganizations.stream()
-						.filter(o -> o.getUuid().equals(bean.getUuid()))
-						.allMatch(o -> bean.getProjectCount() == 0L && bean.getDatasetCount() == 0))
-		;
+				.allMatch(bean -> publicOrganizations.stream().filter(o -> o.getUuid().equals(bean.getUuid()))
+						.allMatch(o -> bean.getProjectCount() == 0L && bean.getDatasetCount() == 0));
 	}
 
 	@Test
@@ -563,21 +549,19 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansOnlyOrgaDataExcept1() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
 
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		OrganizationEntity avoidedOrganization = publicOrganizations.getFirst();
 
-		List<OrganizationEntity> expectedOrganizations = publicOrganizations.stream().filter(o -> !o.getUuid().equals(avoidedOrganization.getUuid())).toList();
+		List<OrganizationEntity> expectedOrganizations = publicOrganizations.stream()
+				.filter(o -> !o.getUuid().equals(avoidedOrganization.getUuid())).toList();
 
 		// On veut éviter d'avoir une organisation en particulier
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.excludeOrganizationUuids(List.of(avoidedOrganization.getUuid()))
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.excludeOrganizationUuids(List.of(avoidedOrganization.getUuid())).build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
@@ -588,8 +572,7 @@ class OrganizationBeanServiceUT {
 				.noneMatch(o -> o.getUuid().equals(avoidedOrganization.getUuid()))
 				.as("La liste doit toujours contenir le même nombre d'organisations") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
 				.allMatch(o -> expectedOrganizations.stream()
-						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
-		;
+						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 	}
 
 	@Test
@@ -597,21 +580,19 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansOnlyOrgaDataTarget3() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
 
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		OrganizationEntity avoidedOrganization = publicOrganizations.getFirst();
 
-		List<OrganizationEntity> expectedOrganizations = publicOrganizations.stream().filter(o -> !o.getUuid().equals(avoidedOrganization.getUuid())).toList();
+		List<OrganizationEntity> expectedOrganizations = publicOrganizations.stream()
+				.filter(o -> !o.getUuid().equals(avoidedOrganization.getUuid())).toList();
 
 		// On veut éviter d'avoir une organisation en particulier
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.uuids(expectedOrganizations.stream().map(OrganizationEntity::getUuid).toList())
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.uuids(expectedOrganizations.stream().map(OrganizationEntity::getUuid).toList()).build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
@@ -622,8 +603,7 @@ class OrganizationBeanServiceUT {
 				.noneMatch(o -> o.getUuid().equals(avoidedOrganization.getUuid()))
 				.as("La liste doit toujours contenir le même nombre d'organisations") // parcours la liste des beans et vérifie que pour chaque bean il y a une organization correspondante
 				.allMatch(o -> expectedOrganizations.stream()
-						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())))
-		;
+						.anyMatch(organization -> organization.getUuid().equals(o.getUuid())));
 	}
 
 	@Test
@@ -631,28 +611,23 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansByExactName() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
 
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		// On cible la première organisation publique par son nom exact
 		OrganizationEntity targetOrganization = publicOrganizations.getFirst();
 
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.name(targetOrganization.getName())
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.name(targetOrganization.getName()).build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
-		assertThat(returnedOrganizations)
-				.as("La recherche par nom exact doit retourner exactement une organisation")
-				.hasSize(1)
-				.as("L'organisation retournée doit correspondre à celle recherchée")
+		assertThat(returnedOrganizations).as("La recherche par nom exact doit retourner exactement une organisation")
+				.hasSize(1).as("L'organisation retournée doit correspondre à celle recherchée")
 				.allMatch(o -> o.getUuid().equals(targetOrganization.getUuid()));
 	}
 
@@ -661,28 +636,24 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansByWildcardName() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
 
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		// On cible la première organisation publique via un préfixe de son nom suivi d'un wildcard
 		OrganizationEntity targetOrganization = publicOrganizations.getFirst();
 		String namePrefix = targetOrganization.getName().substring(0, 3); // ex : "IRI" pour "IRISA"
 
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.name(namePrefix + "*")
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.name(namePrefix + "*").build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
 		assertThat(returnedOrganizations)
-				.as("La recherche avec wildcard en suffixe doit retourner au moins une organisation")
-				.isNotEmpty()
+				.as("La recherche avec wildcard en suffixe doit retourner au moins une organisation").isNotEmpty()
 				.as("L'organisation ciblée doit faire partie des résultats")
 				.anyMatch(o -> o.getUuid().equals(targetOrganization.getUuid()));
 	}
@@ -692,30 +663,24 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansByWildcardBothSides() throws Exception {
 		List<OrganizationEntity> organizations = createOrganizations();
 
-		List<OrganizationEntity> publicOrganizations = organizations.stream()
-				.filter(o ->
-						o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) &&
-								o.getOrganizationStatus().equals(org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED)
-				).toList();
+		List<OrganizationEntity> publicOrganizations = organizations.stream().filter(
+				o -> o.getStatus().equals(org.rudi.bpmn.core.bean.Status.COMPLETED) && o.getOrganizationStatus().equals(
+						org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus.VALIDATED))
+				.toList();
 
 		// On calcule les organisations dont le nom contient "RI" (insensible à la casse non testée ici)
 		List<OrganizationEntity> expectedOrganizations = publicOrganizations.stream()
-				.filter(o -> o.getName().contains("RI"))
-				.toList();
+				.filter(o -> o.getName().contains("RI")).toList();
 
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.name("*RI*")
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.name("*RI*").build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
-		assertThat(returnedOrganizations)
-				.as("La recherche avec *RI* doit retourner au moins une organisation")
-				.isNotEmpty()
-				.as("Seules les organisations dont le nom contient 'RI' doivent être retournées")
+		assertThat(returnedOrganizations).as("La recherche avec *RI* doit retourner au moins une organisation")
+				.isNotEmpty().as("Seules les organisations dont le nom contient 'RI' doivent être retournées")
 				.allMatch(o -> o.getName().contains("RI"))
 				.as("Toutes les organisations publiques contenant 'RI' doivent être présentes")
 				.hasSize(expectedOrganizations.size());
@@ -726,17 +691,14 @@ class OrganizationBeanServiceUT {
 	void searchPublicOrganizationBeansByUnknownName() throws Exception {
 		createOrganizations();
 
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
-				.loadAllInformations(false)
-				.name("OrganisationQuiNExistePas")
-				.build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().loadAllInformations(false)
+				.name("OrganisationQuiNExistePas").build();
 		Pageable pageable = Pageable.unpaged();
 
 		Page<OrganizationBean> returnedOrganizations = organizationBeanService.searchPublicOrganizationBeans(criteria,
 				pageable);
 
-		assertThat(returnedOrganizations)
-				.as("Une recherche par nom inexistant doit retourner une liste vide")
+		assertThat(returnedOrganizations).as("Une recherche par nom inexistant doit retourner une liste vide")
 				.isEmpty();
 	}
 }

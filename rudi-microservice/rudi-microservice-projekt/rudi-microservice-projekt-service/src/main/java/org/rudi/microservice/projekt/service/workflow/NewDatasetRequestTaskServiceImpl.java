@@ -143,7 +143,7 @@ public class NewDatasetRequestTaskServiceImpl extends
 		if (projectEntity != null) {
 			try {
 				projektAuthorisationHelper.checkRightsAdministerProject(projectEntity);
-			} catch (GetOrganizationMembersException | MissingParameterException | AppServiceUnauthorizedException e) {
+			} catch (GetOrganizationMembersException | MissingParameterException | AppServiceUnauthorizedException | GetOrganizationException e) {
 				throw new IllegalArgumentException(
 						"Erreur lors de la vérification des droits pour le traitement de la tache de new dataset request",
 						e);

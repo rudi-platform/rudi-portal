@@ -389,6 +389,7 @@ class org.rudi.microservice.projekt.storage.entity.project.ProjectEntity <<Entit
 	{field} {static} +FIELD_ID : String
 	{field} {static} +FIELD_LINKED_DATASET : String
 	{field} {static} +FIELD_OWNER_UUID : String
+	{field} {static} +FIELD_RELATED_ORGANIZATION : String
 	{field} +accessUrl : String
 	{field} +@Column("contact_email") contactEmail : String
 	{field} +@Column("desired_support_description") desiredSupportDescription : String
@@ -421,6 +422,7 @@ class org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOr
  {TableName=related_organization}
  {TableSchema=projekt_data}
 --
+	{field} {static} +FIELD_ID : String
 	{field} {static} +FIELD_ORGANIZATION_UUID : String
 	{field} {static} +FIELD_RELATION_STATUS : String
 	{field} {static} +PROJECT_FK : String

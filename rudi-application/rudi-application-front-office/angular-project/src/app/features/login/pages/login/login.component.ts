@@ -1,6 +1,5 @@
-import {DOCUMENT, NgClass} from '@angular/common';
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {ExtendedModule} from '@angular/flex-layout/extended';
+import {NgClass} from '@angular/common';
+import {Component, Inject, OnInit, ViewChild, DOCUMENT} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
@@ -31,7 +30,11 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, ExtendedModule, TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe, SafeUrlPipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass,
+        TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard,
+        MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError,
+        MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent,
+        MatCardActions, MatButton, MatProgressSpinner, TranslatePipe, SafeUrlPipe]
 })
 export class LoginComponent implements OnInit {
 

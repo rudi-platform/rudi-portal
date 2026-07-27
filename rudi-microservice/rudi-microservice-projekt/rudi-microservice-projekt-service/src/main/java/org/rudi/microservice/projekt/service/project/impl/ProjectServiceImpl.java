@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
@@ -40,7 +39,7 @@ import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.Project;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
@@ -82,9 +81,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -94,7 +94,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 	private static final List<String> FULL_SEARCH_ROLECODES = List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR,
 			RoleCodes.MODULE_APIGATEWAY, RoleCodes.MODULE_KALIM);
-	private static final List<ProjectStatus> STATUS_TO_NOT_ARCHIVE = List.of(ProjectStatus.ARCHIVED, ProjectStatus.DISENGAGED, ProjectStatus.CANCELLED);
+	private static final List<ProjectStatus> STATUS_TO_NOT_ARCHIVE = List.of(ProjectStatus.ARCHIVED,
+			ProjectStatus.DISENGAGED, ProjectStatus.CANCELLED);
 
 	private final List<CreateProjectFieldProcessor> createProjectProcessors;
 	private final List<UpdateProjectFieldProcessor> updateProjectProcessors;
@@ -168,24 +169,29 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Project getProject(UUID uuid) throws AppServiceException {
 		final var projectEntity = getRequiredProjectEntity(uuid);
-		if (projectEntity.getConfidentiality().isPrivateAccess() || ProjectStatus.DISENGAGED.equals(projectEntity.getProjectStatus())) {
+		if (projectEntity.getConfidentiality().isPrivateAccess()
+				|| ProjectStatus.DISENGAGED.equals(projectEntity.getProjectStatus())) {
 			projektAuthorisationHelper.checkRightsAdministerProject(projectEntity);
 		}
 		return projectMapper.entityToDto(projectEntity);
 	}
 
 	@Override
-	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable) throws AppServiceException {
+	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
+			throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
 			searchCriteria.setIsPrivate(false);
 		} else if (!projektAuthorisationHelper.hasAnyRole(user, FULL_SEARCH_ROLECODES)) {
 			List<UUID> ownersUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
-			List<UUID> datasetUuids = myLinkedDatasetHelper.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
-			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(searchCriteria);
+			List<UUID> datasetUuids = myLinkedDatasetHelper
+					.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
+			EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(
+					searchCriteria);
 			enhancedProjectSearchCriteria.setMyOrganizationsUuids(ownersUuid);
 			enhancedProjectSearchCriteria.setMyOrganizationsDatasetsUuids(datasetUuids);
-			return projectMapper.entitiesToDto(projectCustomDao.searchRelatedProjects(enhancedProjectSearchCriteria, pageable), pageable);
+			return projectMapper.entitiesToDto(
+					projectCustomDao.searchProjectsPerOwner(enhancedProjectSearchCriteria, pageable), pageable);
 		}
 		// Si on a un rôle autorisé pour la recherche complète, le champ "isPrivate" n'entre pas en ligne de compte.
 		return projectMapper.entitiesToDto(projectCustomDao.searchProjects(searchCriteria, pageable), pageable);
@@ -251,7 +257,9 @@ public class ProjectServiceImpl implements ProjectService {
 					try {
 						processor.process(linkedDataset, false);
 					} catch (Exception e) {
-						throw new AppServiceException(String.format("Erreur de suppression du linkedDataset %s (dataset %s) dans le projet %s", linkedDataset.getUuid(), linkedDataset.getDatasetUuid(), existingProject.getUuid()), e);
+						throw new AppServiceException(String.format(
+								"Erreur de suppression du linkedDataset %s (dataset %s) dans le projet %s",
+								linkedDataset.getUuid(), linkedDataset.getDatasetUuid(), existingProject.getUuid()), e);
 					}
 				}
 				it.remove();
@@ -269,7 +277,8 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 			return logo;
 		} catch (DataverseAPIException e) {
-			log.warn(String.format("Erreur lors du téléchargement du %s du projet avec projectUuid = %s", kindOfData.getValue(), projectUuid), e);
+			log.warn(String.format("Erreur lors du téléchargement du %s du projet avec projectUuid = %s",
+					kindOfData.getValue(), projectUuid), e);
 			return getDefaultLogo();
 		}
 	}
@@ -285,7 +294,8 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public void uploadMedia(UUID projectUuid, KindOfData kindOfData, DocumentContent documentContent) throws AppServiceException {
+	public void uploadMedia(UUID projectUuid, KindOfData kindOfData, DocumentContent documentContent)
+			throws AppServiceException {
 		ProjectEntity existingProject = getRequiredProjectEntity(projectUuid);
 		checkRightsAdministerProjectMedia(existingProject);
 
@@ -300,12 +310,14 @@ public class ProjectServiceImpl implements ProjectService {
 				ContentTypeUtils.checkMediaType(documentContent.getContentType(), allowedLogoType);
 			}
 
-			File tempFile = File.createTempFile(UUID.randomUUID().toString(), "." + FilenameUtils.getExtension(documentContent.getFileName()));
+			File tempFile = File.createTempFile(UUID.randomUUID().toString(),
+					"." + FilenameUtils.getExtension(documentContent.getFileName()));
 			FileUtils.copyInputStreamToFile(documentContent.getFileStream(), tempFile);
 
 			mediaService.setMediaFor(MediaOrigin.PROJECT, projectUuid, kindOfData, tempFile);
 		} catch (final DataverseAPIException | IOException e) {
-			throw new AppServiceException(String.format("Erreur lors de l'upload du %s du projet d'uuid %s", kindOfData.getValue(), projectUuid), e);
+			throw new AppServiceException(String.format("Erreur lors de l'upload du %s du projet d'uuid %s",
+					kindOfData.getValue(), projectUuid), e);
 		}
 	}
 
@@ -322,7 +334,8 @@ public class ProjectServiceImpl implements ProjectService {
 		try {
 			mediaService.deleteMediaFor(MediaOrigin.PROJECT, projectUuid, kindOfData);
 		} catch (final DataverseAPIException e) {
-			throw new AppServiceException(String.format("Erreur lors de la suppression du %s du projet d'uuid %s", kindOfData.getValue(), projectUuid), e);
+			throw new AppServiceException(String.format("Erreur lors de la suppression du %s du projet d'uuid %s",
+					kindOfData.getValue(), projectUuid), e);
 		}
 	}
 
@@ -337,7 +350,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional // readOnly = false
-	public NewDatasetRequest createNewDatasetRequest(UUID projectUuid, NewDatasetRequest datasetRequest) throws AppServiceException {
+	public NewDatasetRequest createNewDatasetRequest(UUID projectUuid, NewDatasetRequest datasetRequest)
+			throws AppServiceException {
 		// Recuperer le projet pour vérifier son statut
 		ProjectEntity associatedProject = getRequiredProjectEntity(projectUuid);
 
@@ -369,7 +383,8 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public NewDatasetRequest getNewDatasetRequestByUuid(UUID projectUuid, UUID requestUuid) throws AppServiceNotFoundException {
+	public NewDatasetRequest getNewDatasetRequestByUuid(UUID projectUuid, UUID requestUuid)
+			throws AppServiceNotFoundException {
 		for (NewDatasetRequestEntity element : getRequiredProjectEntity(projectUuid).getDatasetRequests()) {
 			if (element.getUuid().equals(requestUuid)) {
 				return newDatasetRequestMapper.entityToDto(element);
@@ -380,7 +395,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional // readOnly = false
-	public NewDatasetRequest updateNewDatasetRequest(UUID projectUuid, NewDatasetRequest newDatasetRequest) throws AppServiceException {
+	public NewDatasetRequest updateNewDatasetRequest(UUID projectUuid, NewDatasetRequest newDatasetRequest)
+			throws AppServiceException {
 		ProjectEntity project = getRequiredProjectEntity(projectUuid);
 		projektAuthorisationHelper.checkRightsAdministerProjectDataset(project);
 
@@ -442,11 +458,13 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Integer getNumberOfRequests(UUID projectUuid) throws AppServiceNotFoundException {
 		getRequiredProjectEntity(projectUuid);
-		return projectCustomDao.getNumberOfLinkedDatasets(projectUuid) + projectCustomDao.getNumberOfNewRequests(projectUuid);
+		return projectCustomDao.getNumberOfLinkedDatasets(projectUuid)
+				+ projectCustomDao.getNumberOfNewRequests(projectUuid);
 	}
 
 	@Override
-	public Page<Project> getMyProjects(ProjectSearchCriteria searchCriteria, Pageable pageable) throws AppServiceException {
+	public Page<Project> getMyProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
+			throws AppServiceException {
 		// get user uuid
 		UUID userUuid = null;
 		AuthenticatedUser authenticatedUser = utilContextHelper.getAuthenticatedUser();
@@ -471,21 +489,25 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public boolean isAuthenticatedUserProjectOwner(UUID projectUuid) throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException {
+	public boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
+			throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException {
 		return projektAuthorisationHelper.isAccessGrantedForUserOnProject(getRequiredProjectEntity(projectUuid));
 	}
 
 	@Override
-	public List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException {
+	public List<ProjectByOrganization> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria)
+			throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		EnhancedProjectSearchCriteria enhancedProjectSearchCriteria = new EnhancedProjectSearchCriteria(criteria);
 		enhancedProjectSearchCriteria
 				.setProjectStatus(List.of(org.rudi.microservice.projekt.core.bean.ProjectStatus.VALIDATED));
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
 			enhancedProjectSearchCriteria.setIsPrivate(false);
-		} else if (!projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR))) {
+		} else if (!projektAuthorisationHelper.hasAnyRole(user,
+				List.of(RoleCodes.MODERATOR, RoleCodes.ADMINISTRATOR))) {
 			List<UUID> ownersUuid = myInformationsHelper.getMeAndMyOrganizationsUuids();
-			List<UUID> datasetUuids = myLinkedDatasetHelper.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
+			List<UUID> datasetUuids = myLinkedDatasetHelper
+					.searchMyOrganizationsLinkedDatasets(new LinkedDatasetSearchCriteria());
 			enhancedProjectSearchCriteria.setMyOrganizationsUuids(ownersUuid);
 			enhancedProjectSearchCriteria.setMyOrganizationsDatasetsUuids(datasetUuids);
 		}
@@ -493,7 +515,14 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectKey createProjectKey(UUID projectUuid, ProjectKeyCredential projectKeyCredential) throws AppServiceException {
+	public List<ProjectByOrganization> getNumberOfProjectsPerRelatedOrganizations(ProjectSearchCriteria criteria) {
+		criteria.setIsPrivate(false);
+		return projectCustomDao.getNumberOfProjectsPerRelatedOrganizations(criteria);
+	}
+
+	@Override
+	public ProjectKey createProjectKey(UUID projectUuid, ProjectKeyCredential projectKeyCredential)
+			throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		if (aclHelper.getUserByLoginAndPassword(user.getLogin(), projectKeyCredential.getPassword()) == null) {
 			throw new AppServiceUnauthorizedException("Identification impossible");
@@ -551,8 +580,10 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 		ProjectEntity project = getRequiredProjectEntity(searchCriteria.getProjectUuid());
 		projektAuthorisationHelper.checkRightAdministerKeyOnProject(project);
-		ProjectKeystoreSearchCriteria projectKeystoreSearchCriteria = ProjectKeystoreSearchCriteria.builder().projectUuids(List.of(searchCriteria.getProjectUuid())).build();
-		Page<ProjectKeystore> projectKeystores = aclHelper.searchProjectKeystores(projectKeystoreSearchCriteria, PageRequest.of(0, 1));
+		ProjectKeystoreSearchCriteria projectKeystoreSearchCriteria = ProjectKeystoreSearchCriteria.builder()
+				.projectUuids(List.of(searchCriteria.getProjectUuid())).build();
+		Page<ProjectKeystore> projectKeystores = aclHelper.searchProjectKeystores(projectKeystoreSearchCriteria,
+				PageRequest.of(0, 1));
 		if (!projectKeystores.isEmpty()) {
 			return projectKeystores.getContent().get(0).getProjectKeys();
 		}
@@ -561,16 +592,17 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional
-	public void archiveOwnerProjects(ProjectSearchCriteria criteria, ProjektArchiveMode action) throws AppServiceBadRequestException {
+	public void archiveOwnerProjects(ProjectSearchCriteria criteria, ProjektArchiveMode action)
+			throws AppServiceBadRequestException {
 		Page<ProjectEntity> projects = projectCustomDao.searchProjects(criteria, Pageable.unpaged());
 
-		if(hasProjectOwnerRunningTask(projects)){
+		if (hasProjectOwnerRunningTask(projects)) {
 			throw new AppServiceBadRequestException("Cannot archive project with running task");
 		}
 
 		if (!projects.isEmpty()) {
 
-			projects.forEach(project ->  archiveProject(project, action));
+			projects.forEach(project -> archiveProject(project, action));
 		}
 	}
 
@@ -586,7 +618,8 @@ public class ProjectServiceImpl implements ProjectService {
 	 * @throws AppServiceUnauthorizedException
 	 * @throws MissingParameterException
 	 */
-	private void checkRightsAdministerProjectMedia(ProjectEntity projectEntity) throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
+	private void checkRightsAdministerProjectMedia(ProjectEntity projectEntity)
+			throws GetOrganizationMembersException, AppServiceUnauthorizedException, MissingParameterException {
 		// pour le moment les droits d'accès à cette fonction sont les mêmes que la fonction de création de projet
 		projektAuthorisationHelper.checkRightsInitProject(projectEntity);
 	}
@@ -600,15 +633,14 @@ public class ProjectServiceImpl implements ProjectService {
 
 	private void archiveProject(ProjectEntity projectEntity, ProjektArchiveMode action) {
 		// Si le projet n'est pas déjà archivé.
-		if(!STATUS_TO_NOT_ARCHIVE.contains(projectEntity.getProjectStatus())){
+		if (!STATUS_TO_NOT_ARCHIVE.contains(projectEntity.getProjectStatus())) {
 			ProjectStatus projectStatus;
 			LinkedDatasetStatus linkedDatasetStatus;
 
-			if(ProjektArchiveMode.ARCHIVED.equals(action)){
+			if (ProjektArchiveMode.ARCHIVED.equals(action)) {
 				projectStatus = ProjectStatus.ARCHIVED;
 				linkedDatasetStatus = LinkedDatasetStatus.ARCHIVED;
-			}
-			else { // Cas disengaged par défaut.
+			} else { // Cas disengaged par défaut.
 				projectStatus = ProjectStatus.DISENGAGED;
 				linkedDatasetStatus = LinkedDatasetStatus.DISENGAGED;
 			}
@@ -635,7 +667,8 @@ public class ProjectServiceImpl implements ProjectService {
 	private boolean hasProjectOwnerRunningTask(Page<ProjectEntity> projects) {
 		if (!projects.isEmpty()) {
 			for (ProjectEntity project : projects.getContent()) {
-				if (hasProjectRunningTask(project) || hasProjectLinkedDatasetRequestRunningTask(project) || hasProjectNewDatasetRequestRunningTask(project)) {
+				if (hasProjectRunningTask(project) || hasProjectLinkedDatasetRequestRunningTask(project)
+						|| hasProjectNewDatasetRequestRunningTask(project)) {
 					return true;
 				}
 			}

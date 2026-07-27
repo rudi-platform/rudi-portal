@@ -1773,24 +1773,25 @@
 				"tags": [
 					"captcha"
 				],
-				"summary": "Retourne un nouveau captcha",
-				"description": "Retourne un nouveau captcha généré auprès de CaptchEtat",
+				"summary": "Retourne un élément du captcha",
+				"description": "Appelle l'API CaptchEtat v2 pour récupérer un élément du captcha (image ou son)",
 				"operationId": "generateCaptcha",
 				"parameters": [
 					{
 						"name": "get",
 						"in": "query",
-						"description": "Type de captcha voulu",
-						"required": false,
+						"description": "Type d'objet voulu : image ou sound",
+						"required": true,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"enum": ["image", "sound"]
 						}
 					},
 					{
 						"name": "c",
 						"in": "query",
-						"description": "Nom du captcha voulant être récupéré. Ce parametre est obligatoire lorsqu'on choisi les types d'objets du parametre type suivants (html, script-include, image, sound, p(refresh))",
-						"required": false,
+						"description": "Nom du captcha (ex: captchaFR)",
+						"required": true,
 						"schema": {
 							"type": "string"
 						}
@@ -1798,25 +1799,7 @@
 					{
 						"name": "t",
 						"in": "query",
-						"description": "Identifiant captcha, c'est un parametre technique non utilisable par le developpeur. Il est renseigné dans les requêtes auto-générées.",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "cs",
-						"in": "query",
-						"description": "Code style du captcha, c'est un parametre technique non utilisable par le developpeur. Il est renseigné dans les requêtes auto-générées.",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "d",
-						"in": "query",
-						"description": "Si le paramètre existe, le navigateur peut créer une balise audio via javascript en tant qu'audio ; c'est un parametre technique non utilisable par le developpeur. Il est renseigné dans les requêtes auto-générées.",
+						"description": "Identifiant UUID du captcha (requis pour get=sound)",
 						"required": false,
 						"schema": {
 							"type": "string"
@@ -1825,7 +1808,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "Stream renvoyé par l'API",
+						"description": "JSON {uuid, imageb64} pour get=image, audio/x-wav pour get=sound",
 						"content": {
 							"application/octet-stream": {
 								"schema": {

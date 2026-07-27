@@ -16,7 +16,7 @@ import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.Project;
-import org.rudi.microservice.projekt.core.bean.ProjectByOwner;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
@@ -162,10 +162,12 @@ public interface ProjectService {
 	 * @throws AppServiceUnauthorizedException erreur lors de l'identification de l'utilisateur connecté
 	 * @throws AppServiceNotFoundException     erreur lors de la récupération du projet
 	 */
-	boolean isAuthenticatedUserProjectOwner(UUID projectUuid) throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException;
+	boolean isAuthenticatedUserProjectOwner(UUID projectUuid)
+			throws AppServiceNotFoundException, GetOrganizationMembersException, MissingParameterException;
 
+	List<ProjectByOrganization> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException;
 
-	List<ProjectByOwner> getNumberOfProjectsPerOwners(ProjectSearchCriteria criteria) throws AppServiceException;
+	List<ProjectByOrganization> getNumberOfProjectsPerRelatedOrganizations(ProjectSearchCriteria criteria);
 
 	/**
 	 * Création d'une nouvelle clé pour une projet donné

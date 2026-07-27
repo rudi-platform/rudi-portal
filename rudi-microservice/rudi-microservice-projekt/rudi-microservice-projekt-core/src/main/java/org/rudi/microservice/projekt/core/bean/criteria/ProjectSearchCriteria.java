@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.bean.criteria.SearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.rudi.microservice.projekt.core.bean.RelationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 
 import jakarta.validation.Valid;
@@ -34,4 +35,7 @@ public class ProjectSearchCriteria implements SearchCriteria {
 	private List<ProjectStatus> projectStatus;
 	private List<Status> status;
 	private Boolean isPrivate;
+	private List<UUID> relatedOrganizationUuids;
+	private List<RelationStatus> relationStatus;
+
 }
