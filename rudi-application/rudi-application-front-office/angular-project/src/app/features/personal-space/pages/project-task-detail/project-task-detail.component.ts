@@ -13,6 +13,8 @@ import {ProjectSubmissionService} from '@core/services/asset/project/project-sub
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {DataSetActionsAuthorizationService} from '@core/services/data-set/data-set-actions-authorization.service';
 import {LogService} from '@core/services/log.service';
+import {AttachmentService} from '@core/services/attachment.service';
+import {ProjectAttachmentService} from '@core/services/project-attachment.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
@@ -43,9 +45,8 @@ import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
 import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
-import {WorkflowExpansionImageComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion-image/workflow-expansion-image.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {Confidentiality, NewDatasetRequest, ProjectStatus, ProjektService, Section} from 'micro_service_modules/projekt/projekt-api';
 import {Task} from 'micro_service_modules/projekt/projekt-api/model/task';
 import {Project} from 'micro_service_modules/projekt/projekt-model';
 import {forkJoin, of} from 'rxjs';
@@ -64,7 +65,6 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
         TabsComponent,
         TabComponent,
         WorkflowExpansionComponent,
-        WorkflowExpansionImageComponent,
         MatAccordion,
         MatExpansionPanel,
         MatExpansionPanelHeader,
@@ -79,7 +79,8 @@ import {ProjectTaskHistoricComponent} from '../../components/project-task-histor
         ProjectTaskHistoricComponent,
         BannerButtonComponent,
         TranslatePipe
-    ]
+    ],
+    providers: [{provide: AttachmentService, useExisting: ProjectAttachmentService}]
 })
 export class ProjectTaskDetailComponent
     extends TaskDetailComponent<Project, ProjectDependencies, ProjectTask, ProjektTaskSearchCriteria>
@@ -385,5 +386,15 @@ export class ProjectTaskDetailComponent
                 this.childrenIsLoading = false;
             }
         });
+    }
+
+
+    isSectionVisible(section: Section): boolean {
+        if (section.name?.includes('modified-project-picture')) {
+            return false;
+        }
+        return section.fields?.some(f =>
+            f.definition?.type !== 'HIDDEN' && f.values?.some(v => v != null && v.trim() !== '')
+        ) ?? false;
     }
 }

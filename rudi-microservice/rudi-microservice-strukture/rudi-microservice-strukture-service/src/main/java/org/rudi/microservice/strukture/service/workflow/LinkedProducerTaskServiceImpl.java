@@ -18,11 +18,13 @@ import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
+import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.provider.LinkedProducerAssignmentHelper;
 import org.rudi.microservice.strukture.service.helper.provider.LinkedProducerWorkflowContext;
 import org.rudi.microservice.strukture.service.helper.provider.LinkedProducerWorkflowHelper;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +38,16 @@ public class LinkedProducerTaskServiceImpl extends
 
 	public static final String WORFKLOW_CONTEXT_BEAN_NAME = "linkedProducerWorkflowContext";
 
+	private final ProviderHelper providerHelper;
+
 	protected LinkedProducerTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService,
 			LinkedProducerDao assetDescriptionDao, LinkedProducerWorkflowHelper assetDescriptionHelper,
 			LinkedProducerAssignmentHelper assignmentHelper, LinkedProducerWorkflowContext workflowContext,
-			ProcessEngineConfiguration processEngineConfiguration) {
+			ProcessEngineConfiguration processEngineConfiguration, ProviderHelper providerHelper) {
 		super(processEngine, formHelper, bpmnHelper, utilContextHelper, initializationService, assetDescriptionDao,
 				assetDescriptionHelper, assignmentHelper, workflowContext, processEngineConfiguration);
+		this.providerHelper = providerHelper;
 	}
 
 	@Override
@@ -105,12 +110,27 @@ public class LinkedProducerTaskServiceImpl extends
 
 	@Override
 	protected void updateAssetCreation(LinkedProducerEntity assetDescriptionEntity) {
-		String presetInitiator = assetDescriptionEntity.getInitiator();
+		if (assetDescriptionEntity.getLinkedProducerStatus().equals(LinkedProducerStatus.VALIDATED)
+				&& assetDescriptionEntity.getStatus().equals(Status.COMPLETED)) {
 
+			// Cherche le premier provider lié à cet assetDescription dans l'organisation
+			providerHelper.searchAllOrganizationsProviders(assetDescriptionEntity.getOrganization().getUuid(), true)
+					.stream()
+					.filter(p -> p.getLinkedProducers().stream()
+							.anyMatch(lp -> lp.getUuid().equals(assetDescriptionEntity.getUuid())))
+					.findFirst()
+					.ifPresent(p -> assetDescriptionEntity.setDescription(
+							String.format("Détachement de l'organisation %s au provider %s",
+									assetDescriptionEntity.getOrganization().getName(), p.getLabel())));
+		}
+
+		String presetInitiator = assetDescriptionEntity.getInitiator();
 		super.updateAssetCreation(assetDescriptionEntity);
 
 		if(StringUtils.isNotEmpty(presetInitiator) && getUtilContextHelper().hasRole(RoleCodes.MODERATOR)){
 			assetDescriptionEntity.setInitiator(presetInitiator);
 		}
+
+
 	}
 }

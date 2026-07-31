@@ -16,8 +16,7 @@
       <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
       <bpmn:outputSet id="OutputSet_1" name="Output Set 1"/>
     </bpmn:startEvent>
-    <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande de déclaration d'organisation"
-            scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande de déclaration d'organisation" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_4"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_3</bpmn:outgoing>
@@ -100,17 +99,21 @@ organizationWorkflowContext.sendEmailToOrganizationInitiator(context, execution,
       <bpmn:incoming>SequenceFlow_9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_16</bpmn:outgoing>
       <bpmn:script>organizationWorkflowContext.info(&quot;Archivage de l'organisation&quot;); 
-organizationWorkflowContext.archiveOrganization(context, execution);
+organizationWorkflowContext.sendReportToLinkedProducers(context, execution, true);
+var initiatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/initiator-confirm-archive-subject.txt&quot;, &quot;file:templates/emails/organization/initiator-confirm-archive-body.html&quot;);
+organizationWorkflowContext.sendArchivageEmailToInitiator(context, execution, initiatorEmailData);
+var membersEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/member-confirm-archive-subject.txt&quot;, &quot;file:templates/emails/organization/member-confirm-archive-body.html&quot;);
+organizationWorkflowContext.sendArchivageEmailToOrganizationMembers(context, execution, membersEmailData);
+var providersEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/provider-confirm-archive-subject.txt&quot;, &quot;file:templates/emails/organization/provider-confirm-archive-body.html&quot;);
+organizationWorkflowContext.sendArchivageEmailToLinkedProviders(context, execution, providersEmailData);
 var moderatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/moderator-confirm-archive-subject.txt&quot;, &quot;file:templates/emails/organization/moderator-confirm-archive-body.html&quot;);
 organizationWorkflowContext.sendEMailToRole(context, execution, moderatorEmailData, &quot;MODERATOR&quot;);
-var membersEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/member-confirm-archive-subject.txt&quot;, &quot;file:templates/emails/organization/member-confirm-archive-body.html&quot;);
-organizationWorkflowContext.sendArchivageEmail(context, execution, membersEmailData, true);</bpmn:script>
+organizationWorkflowContext.archiveOrganization(context, execution);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_5" name="Transmission de la demande d'archivage" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_4">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" id="FormalExpression_6" evaluatesToTypeRef="ItemDefinition_18">${organizationStatus == &quot;VALIDATED&quot; &amp;&amp; draftType == &quot;archive&quot;}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:scriptTask id="ScriptTask_4" name="Réception de la demande d'archivage d'organisation"
-            scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_4" name="Réception de la demande d'archivage d'organisation" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_3"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_13</bpmn:outgoing>
@@ -119,7 +122,7 @@ organizationWorkflowContext.updateStatus(context, execution, &quot;PENDING&quot;
 var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/moderator-notify-archive-subject.txt&quot;, &quot;file:templates/emails/organization/moderator-notify-archive-body.html&quot;);
 organizationWorkflowContext.sendEMailToRole(context, execution, emailData, &quot;MODERATOR&quot;);
 var orgaMemberEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/initiator-members-notify-archive-subject.txt&quot;, &quot;file:templates/emails/organization/initiator-members-notify-archive-body.html&quot;);
-organizationWorkflowContext.notifyOrganizationMembersArchive(context, execution, orgaMemberEmailData);</bpmn:script>
+organizationWorkflowContext.notifyOrganizationMembersArchive(context, execution, orgaMemberEmailData );</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="ScriptTask_5" name="Demande d'archivage d'organisation refusée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_5"><![CDATA[Positionne le workflow dans l'état IN_PROGRESS / PENDING]]></bpmn:documentation>
@@ -127,8 +130,11 @@ organizationWorkflowContext.notifyOrganizationMembersArchive(context, execution,
       <bpmn:outgoing>SequenceFlow_17</bpmn:outgoing>
       <bpmn:script>organizationWorkflowContext.info(&quot;Refus Archivage de l'organisation&quot;);
 organizationWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, &quot;Acceptée&quot;);
+
+organizationWorkflowContext.sendReportToLinkedProducers(context, execution, false);
+
 var initiatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/initiator-refused-archive-subject.txt&quot;, &quot;file:templates/emails/organization/initiator-refused-archive-body.html&quot;);
-organizationWorkflowContext.sendArchivageEmail(context, execution, initiatorEmailData, false);</bpmn:script>
+organizationWorkflowContext.sendArchivageEmailToInitiator(context, execution, initiatorEmailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:userTask id="UserTask_2" name="Traitement de la demande d'archivage d'organisation">
       <bpmn:incoming>SequenceFlow_13</bpmn:incoming>
@@ -341,7 +347,7 @@ organizationWorkflowContext.resetFormData(context, execution, &quot;UserTask_2&q
         <di:waypoint xsi:type="dc:Point" x="121.0" y="489.0"/>
         <di:waypoint xsi:type="dc:Point" x="173.0" y="489.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_17">
-          <dc:Bounds height="15.0" width="53.0" x="95.0" y="417.0"/>
+          <dc:Bounds height="60.0" width="80.0" x="82.0" y="380.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_9" sourceElement="BPMNShape_ExclusiveGateway_3" targetElement="BPMNShape_ScriptTask_3">

@@ -21,6 +21,7 @@ import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.microservice.strukture.core.bean.IntegrationStatus;
@@ -96,6 +97,7 @@ public class LinkedProducerWorkflowContext
 				assetDescriptionEntity.setFunctionalStatus(functionalStatusValue);
 				assetDescriptionEntity.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescriptionEntity);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
 				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);

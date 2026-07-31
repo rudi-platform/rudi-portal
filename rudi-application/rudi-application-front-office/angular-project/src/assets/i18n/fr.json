@@ -315,6 +315,7 @@
     "error": {
         "authentificationFailed": "L’identifiant et/ou le mot de passe sont erronés.",
         "internalError": "Désolé, une erreur interne est survenue, veuillez réessayer ultérieurement !",
+        "sessionExpired": "Votre session a expiré, veuillez vous reconnecter.",
         "technicalError": "Le portail {projectName} est momentanément indisponible. Veuillez nous excuser pour la gêne occasionnée."
     },
     "common": {
@@ -1205,7 +1206,9 @@
             "identifiant": "Identifiant de l'organisation",
             "nom": "Nom de l'organisation",
             "supplier": "Demandeur",
-            "organizationInformations": "Informations de l'organisation",
+            "organizationInformations": "Information de l'organisation",
+            "image": "Image de l'organisation",
+            "imageAlt": "Image de l'organisation {{name}}",
             "archive": {
                 "task": {
                     "title": "Demande d'archivage d'organisation",

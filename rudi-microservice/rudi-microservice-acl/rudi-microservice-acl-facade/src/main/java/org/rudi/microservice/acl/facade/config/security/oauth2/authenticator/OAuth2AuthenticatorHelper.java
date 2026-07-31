@@ -57,7 +57,7 @@ public class OAuth2AuthenticatorHelper {
 
 	public static final String STATE_PARAMETER = "state";
 
-	public static final String ID_TOKEN_PARAMETER = "idtoken";
+	public static final String TOKEN_PARAMETER = "token";
 
 	private static final String AUTHENTICATORS_ICONS_URL = "/acl/v1/oauth2-authenticators/icons/";
 
@@ -351,7 +351,7 @@ public class OAuth2AuthenticatorHelper {
 	public String convertUrl(String url, Map<String, String> parameters) {
 		String result = url;
 		String serverUrl = parameters.get(SERVER_URL_PARAMETER);
-		String idtoken = parameters.get(ID_TOKEN_PARAMETER);
+		String idtoken = parameters.get(TOKEN_PARAMETER);
 		String state = parameters.get(STATE_PARAMETER);
 		if (StringUtils.isNotEmpty(result)) {
 			if (StringUtils.isNotEmpty(getLocalServerUrl())) {
@@ -361,7 +361,7 @@ public class OAuth2AuthenticatorHelper {
 			result = replaceValue(result, SERVER_URL_PARAMETER, serverUrl, "");
 			// dans franceconnect il faut fournir un state différent à chaque requête, on génère donc un UUID pour remplacer le ${state} dans les urls.
 			result = replaceValue(result, STATE_PARAMETER, state, UUID.randomUUID().toString());
-			result = replaceValue(result, ID_TOKEN_PARAMETER, idtoken, "");
+			result = replaceValue(result, TOKEN_PARAMETER, idtoken, "");
 
 			if (result != null && !(result.startsWith("http") || result.startsWith("https"))) {
 				result = serverUrl + result;

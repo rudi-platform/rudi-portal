@@ -78,7 +78,10 @@ public class ProviderHelper {
 	}
 
 	public String getContactEmail(NodeProvider nodeProvider) {
-		ProviderEntity providerEntity = getProviderFromNodeProvider(nodeProvider);
+		return getContactEmail(getProviderFromNodeProvider(nodeProvider));
+	}
+
+	public String getContactEmail(ProviderEntity providerEntity) {
 		EmailAddressEntity addressEntity = (EmailAddressEntity) providerEntity.getAddresses().stream()
 				.filter(addresse -> AddressType.EMAIL.equals(addresse.getAddressRole().getType())
 						&& codeContact.equals(addresse.getAddressRole().getCode()))
@@ -95,8 +98,12 @@ public class ProviderHelper {
 		return providerCustomDao.searchProviders(criteria, pageable);
 	}
 
+	public List<ProviderEntity> searchAllOrganizationsProviders(UUID organizationUuid, boolean full) {
+		return searchOrganizationsProviders(organizationUuid, Pageable.unpaged(), full).getContent();
+	}
+
 	public List<NodeProvider> getOrganizationsNodeProviders(UUID organizationUuid){
-		Page<ProviderEntity> providers = searchOrganizationsProviders(organizationUuid, Pageable.unpaged(), true);
+		List<ProviderEntity> providers = searchAllOrganizationsProviders(organizationUuid, true);
 		List<NodeProviderEntity> nodeProviders = new ArrayList<>();
 
 		for (ProviderEntity providerEntity : providers) {

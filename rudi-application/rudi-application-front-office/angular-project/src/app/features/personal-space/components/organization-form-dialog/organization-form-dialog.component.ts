@@ -13,7 +13,8 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-organization-form-dialog',
     templateUrl: './organization-form-dialog.component.html',
     styleUrls: ['./organization-form-dialog.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, OrganizationFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
+    imports: [CdkScrollable, MatDialogContent, MatIconButton,
+        MatIcon, OrganizationFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class OrganizationFormDialogComponent implements OnInit {
     @ViewChild('OrganizationForm', {static: true})
@@ -36,6 +37,9 @@ export class OrganizationFormDialogComponent implements OnInit {
     }
 
     onClickConfirm(): void {
+        if (!this.organizationFormComponent.submitWorkflowForm()) {
+            return;
+        }
         this.dialogRef.close({
             closeEvent: CloseEvent.VALIDATION,
             data: this.organizationFormComponent.getOrganization()

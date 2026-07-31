@@ -40,6 +40,7 @@ import {
     TaskService
 } from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
+import {OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
 import moment from 'moment';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
@@ -82,6 +83,7 @@ export class MyProjectDetailsComponent implements OnInit {
     public form: Form;
     public isLoading: boolean;
     public _displayApiTab: boolean;
+    public isOwnerOrganizationUnavailable = false;
     private urlToRedirectIfError: string;
     protected readonly ProjectStatus = ProjectStatus;
     protected readonly Status = Status;
@@ -158,7 +160,24 @@ export class MyProjectDetailsComponent implements OnInit {
 
             this.projectLogo = dependencies.logo;
             this.projectOwnerInfo = dependencies.ownerInfo;
-            this.loading = false;
+
+            if (this.project.owner_type === OwnerType.Organization) {
+                this.organizationService.getOrganizationByUuid(this.project.owner_uuid).subscribe({
+                    next: (org) => {
+                        const hasPendingWorkflow = org?.status === Status.Pending
+                            && org?.organizationStatus === OrganizationStatus.Validated;
+                        const isArchived = org?.organizationStatus === OrganizationStatus.Disengaged;
+                        this.isOwnerOrganizationUnavailable = hasPendingWorkflow || isArchived;
+                        this.loading = false;
+                    },
+                    error: (error) => {
+                        this.logService.error(error);
+                        this.loading = false;
+                    }
+                });
+            } else {
+                this.loading = false;
+            }
         };
     }
 
@@ -198,7 +217,10 @@ export class MyProjectDetailsComponent implements OnInit {
         const containsLinkedDatasetsRestricted = this.project?.linked_datasets
             ?.filter((linkedDataset) => linkedDataset?.dataset_confidentiality === DatasetConfidentiality.Restricted)
             .length > 0;
-        return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsRestricted;
+        return this.isProjectCompleted()
+            && !this.projectContainsNewDatasetRequestInProgress()
+            && !containsLinkedDatasetsRestricted
+            && !this.isOwnerOrganizationUnavailable;
     }
 
     isProjectArchived(): boolean {
@@ -206,7 +228,10 @@ export class MyProjectDetailsComponent implements OnInit {
             linkedDataset?.linked_dataset_status === LinkedDatasetStatus.InProgress ||
             linkedDataset?.linked_dataset_status === LinkedDatasetStatus.Draft
         ).length > 0;
-        return this.isProjectCompleted() && !this.projectContainsNewDatasetRequestInProgress() && !containsLinkedDatasetsInProgress;
+        return this.isProjectCompleted()
+            && !this.projectContainsNewDatasetRequestInProgress()
+            && !containsLinkedDatasetsInProgress
+            && !this.isOwnerOrganizationUnavailable;
     }
 
     updateProjectTask(formModified: {

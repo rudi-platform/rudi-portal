@@ -4,6 +4,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LogService} from '@core/services/log.service';
+import {AttachmentService} from '@core/services/attachment.service';
+import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
+import {OrganizationAttachmentService} from '@core/services/organization-attachment.service';
 import {PageTitleService} from '@core/services/page-title.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
@@ -22,22 +25,25 @@ import {TabsComponent} from '@shared/core/common/tabs/tabs.component';
 import {PageComponent} from '@shared/core/layout/page/page.component';
 import {TaskDetailHeaderComponent} from '@shared/core/workflow/common/task-detail-header/task-detail-header.component';
 import {TaskDetailComponent} from '@shared/core/workflow/common/task-detail/task-detail.component';
-import {WorkflowExpansionComponent} from '@shared/core/workflow/workflow-expansion/workflow-expansion.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Task} from 'micro_service_modules/projekt/projekt-api';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {Organization, OrganizationStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
 import {Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
-import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {OwnerInformationComponent} from '../../components/owner-information/owner-information.component';
+import {OrganizationInformationComponent} from '../../components/organization-information/organization-information.component';
 
 @Component({
     selector: 'app-organization-task-detail',
     templateUrl: './organization-task-detail.component.html',
     styleUrls: ['./organization-task-detail.component.scss'],
-    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent, TabComponent, WorkflowExpansionComponent, MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe]
+    imports: [PageComponent, TaskDetailHeaderComponent, TabsComponent,
+        TabComponent, MatAccordion, MatExpansionPanel,
+        MatExpansionPanelHeader, MatExpansionPanelTitle, 
+        OrganizationInformationComponent, OwnerInformationComponent, BannerButtonComponent, AsyncPipe, TranslatePipe],
+    providers: [{provide: AttachmentService, useExisting: OrganizationAttachmentService}]
 })
 export class OrganizationTaskDetailComponent
     extends TaskDetailComponent<Organization, OrganizationDependencies, OrganizationTask, OrganizationTaskSearchCriteria>
@@ -47,9 +53,10 @@ export class OrganizationTaskDetailComponent
     dependencies: OrganizationDependencies;
     idTask: string;
     currentTask: Task;
-    hasSections: boolean = false;
+    hasSections = false;
     ownerInfo: Observable<OwnerInfo>;
     headerLibelle: string;
+    organizationImageBase64: Base64EncodedLogo;
     protected readonly ProjectStatus = ProjectStatus;
     readonly panelInitialTaskOpenState = signal(false);
 
@@ -65,7 +72,9 @@ export class OrganizationTaskDetailComponent
         private readonly pageTitleService: PageTitleService,
         readonly organizationTaskDependencyFetchers: OrganizationTaskDependencyFetchers,
         private readonly processDefinitionsKeyIconRegistryService: ProcessDefinitionsKeyIconRegistryService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly organizationAttachmentService: OrganizationAttachmentService,
+        private readonly imageLogoService: ImageLogoService
     ) {
         super(dialog, translateService, snackBarService, taskWithDependenciesService, organizationTaskMetierService, logger);
         this.processDefinitionsKeyIconRegistryService.addAllSvgIcons(PROCESS_DEFINITION_KEY_TYPES);
@@ -81,8 +90,9 @@ export class OrganizationTaskDetailComponent
                 next: (task: Task) => {
                     this.currentTask = task;
                     this.hasSections = !!task?.asset?.form?.sections;
+                    this.loadOrganizationImage(task);
                 },
-                error: (err) => console.error('Error fetching task:', err)
+                error: (err) => this.logger.error('Error fetching task:', err)
             });
             this.taskWithDependenciesService.getTaskWithDependencies(idTask).pipe(
                 tap(taskWithDependencies => {
@@ -118,7 +128,7 @@ export class OrganizationTaskDetailComponent
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    console.error(error);
+                    this.logger.error(error);
                 }
             });
         }
@@ -136,5 +146,21 @@ export class OrganizationTaskDetailComponent
 
     protected goBackToList(): Promise<boolean> {
         return this.router.navigate(['/personal-space/my-notifications']);
+    }
+
+    private loadOrganizationImage(task: Task): void {
+        const imageUuid = task?.asset?.form?.sections
+            ?.find(s => s.name === 'image-organization')
+            ?.fields?.[0]?.values?.[0];
+        if (imageUuid) {
+            this.organizationAttachmentService.downloadAttachement(imageUuid).pipe(
+                switchMap((blob: Blob) => this.imageLogoService.createImageFromBlob(blob))
+            ).subscribe({
+                next: (base64: Base64EncodedLogo) => {
+                    this.organizationImageBase64 = base64;
+                },
+                error: (err) => this.logger.error('Failed to load organization image', err)
+            });
+        }
     }
 }

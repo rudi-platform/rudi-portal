@@ -1,5 +1,5 @@
-import {NgClass} from '@angular/common';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {DOCUMENT, NgClass} from '@angular/common';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {ExtendedModule} from '@angular/flex-layout/extended';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
@@ -125,9 +125,10 @@ export class LoginComponent implements OnInit {
 
     /**
      * SnackBar i18n key to display on init
+     * Supports both navigation state (preferred, no URL pollution) and query params (legacy)
      */
     get snackBarParam(): string | null {
-        return this.route.snapshot.queryParams.snackBar;
+        return this.document.defaultView?.history.state?.snackBar ?? this.route.snapshot.queryParams.snackBar;
     }
 
     /**
@@ -144,7 +145,8 @@ export class LoginComponent implements OnInit {
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly captchaCheckerService: CaptchaCheckerService,
                 private readonly authenticatorService: AuthenticatorService,
-                private readonly accountService: AccountService) {
+                private readonly accountService: AccountService,
+                @Inject(DOCUMENT) private readonly document: Document) {
     }
 
     ngOnInit(): void {

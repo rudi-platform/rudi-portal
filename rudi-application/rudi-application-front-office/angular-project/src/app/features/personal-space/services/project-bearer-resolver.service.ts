@@ -1,10 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { ProcessHistoricInformation } from 'micro_service_modules/api-bpmn';
-import { ProjektService, OwnerInfo, OwnerType, Project } from 'micro_service_modules/projekt/projekt-api';
-import { OrganizationService, LinkedProducersService, User as StruktureUser, Organization } from 'micro_service_modules/strukture/api-strukture';
-import { AclService } from 'micro_service_modules/acl/acl-api';
+import {Injectable} from '@angular/core';
+import {AclService} from 'micro_service_modules/acl/acl-api';
+import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
+import {OwnerInfo, OwnerType, Project, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {
+    LinkedProducersService,
+    Organization,
+    OrganizationService,
+    User as StruktureUser
+} from 'micro_service_modules/strukture/api-strukture';
+import {Observable, of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
 
 export interface ProjectBearer {
     name: string;
@@ -21,11 +26,14 @@ export class ProjectBearerResolverService {
         private readonly organizationService: OrganizationService,
         private readonly linkedProducersService: LinkedProducersService,
         private readonly aclService: AclService,
-    ) {}
+    ) {
+    }
 
     resolve(processHistoricInformation: ProcessHistoricInformation | null): Observable<ProjectBearer | null> {
         const businessKey = (processHistoricInformation?.businessKey ?? '').trim();
-        if (!businessKey) return of(null);
+        if (!businessKey) {
+            return of(null);
+        }
 
         const processDefinitionKey = (processHistoricInformation?.processDefinitionKey ?? '').trim();
 
@@ -51,8 +59,10 @@ export class ProjectBearerResolverService {
     private resolveFromStartUser(processHistoricInformation: ProcessHistoricInformation | null): Observable<ProjectBearer | null> {
         const name = (processHistoricInformation?.startUserName ?? '').trim();
         const login = (processHistoricInformation?.startUserLogin ?? '').trim();
-        if (!name && !login) return of(null);
-        return of({ name: name || login, email: login });
+        if (!name && !login) {
+            return of(null);
+        }
+        return of({name: name || login, email: login});
     }
 
     private resolveFromOrganizationUuid(organizationUuid: string): Observable<ProjectBearer | null> {
@@ -77,7 +87,9 @@ export class ProjectBearerResolverService {
         return this.linkedProducersService.getLinkedProducer(linkedProducerUuid).pipe(
             switchMap(linkedProducer => {
                 const organizationUuid = linkedProducer?.organization?.uuid;
-                if (!organizationUuid) return of(null);
+                if (!organizationUuid) {
+                    return of(null);
+                }
                 return this.resolveFromOrganizationUuid(organizationUuid);
             }),
             catchError(() => of(null)),
@@ -92,13 +104,15 @@ export class ProjectBearerResolverService {
         ).pipe(
             map(result => result?.elements?.[0] ?? null),
             switchMap((project: Project | null) => {
-                if (project) return this.resolveFromProject(project);
+                if (project) {
+                    return this.resolveFromProject(project);
+                }
                 return this.projektService.getLinkedDatasetOwner(linkedDatasetUuid).pipe(
-                    map(owner => ({ name: (owner ?? '').trim(), email: '' })),
+                    map(owner => ({name: (owner ?? '').trim(), email: ''})),
                 );
             }),
             catchError(() => this.projektService.getLinkedDatasetOwner(linkedDatasetUuid).pipe(
-                map(owner => ({ name: (owner ?? '').trim(), email: '' })),
+                map(owner => ({name: (owner ?? '').trim(), email: ''})),
                 catchError(() => of(null)),
             )),
         );
@@ -115,26 +129,25 @@ export class ProjectBearerResolverService {
         const fallbackEmail = (project.contact_email ?? '').trim();
         return this.projektService.getOwnerInfo(project.owner_type, project.owner_uuid).pipe(
             switchMap((ownerInfo: OwnerInfo) =>
-                this.resolveOwnerEmail(project.owner_type, project.owner_uuid, fallbackEmail).pipe(
+                this.resolveOwnerEmail(ownerInfo, project.owner_type, project.owner_uuid, fallbackEmail).pipe(
                     map(email => ({
                         name: (ownerInfo?.name ?? '').trim(),
                         email,
                     })),
                 )
             ),
-            catchError(() => of({ name: '', email: fallbackEmail })),
+            catchError(() => of({name: '', email: fallbackEmail})),
         );
     }
 
-    private resolveOwnerEmail(ownerType: OwnerType, ownerUuid: string, fallbackEmail: string): Observable<string> {
-        if (!ownerUuid) return of(fallbackEmail);
+    private resolveOwnerEmail(ownerInfo: OwnerInfo, ownerType: OwnerType, ownerUuid: string, fallbackEmail: string): Observable<string> {
+        if (!ownerUuid) {
+            return of(fallbackEmail);
+        }
 
         switch (ownerType) {
             case 'USER':
-                return this.aclService.getUserInfo(ownerUuid).pipe(
-                    map(user => (user?.login ?? '').trim() || fallbackEmail),
-                    catchError(() => of(fallbackEmail)),
-                );
+                return of(ownerInfo.contact ?? fallbackEmail);
             case 'ORGANIZATION':
                 return this.organizationService.getOrganizationUserFromOrganizationUuid(ownerUuid).pipe(
                     map(user => (user?.login ?? '').trim() || fallbackEmail),

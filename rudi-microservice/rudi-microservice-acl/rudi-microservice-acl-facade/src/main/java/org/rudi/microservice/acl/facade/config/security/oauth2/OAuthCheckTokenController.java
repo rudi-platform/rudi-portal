@@ -94,30 +94,34 @@ public class OAuthCheckTokenController {
 			throw new InvalidBearerTokenException("Mismashuped token");
 		}
 
-		try {
-			// décodage du token pour vérifier sa validité et récupérer les informations d'authentification
-			Jwt jwt = jwtDecoder.decode(tokenValue);
-			// construction de la réponse pour les attributs standard d'OAuth2 et les informations d'authentification
-			OAuth2TokenData.OAuth2TokenDataBuilder builder = OAuth2TokenData.builder().active(true)
-					.clientId(jwt.getSubject()).userName(jwt.getSubject()).scope(collectScopes(jwt))
-					.exp(Optional.ofNullable(jwt.getExpiresAt()).orElse(Instant.now()).getEpochSecond())
-					.jti(jwt.getClaimAsString("jti"));
-			// prise en compte des attributs spécifiques à RUDI pour les utilisateurs authentifiés
-			initAuthenticatedUser(jwt, builder);
-			response = builder.build();
-			log.debug("================>Validate token {}", AnonymizerUtils.anonymize(value));
-		} catch (JwtValidationException e) {
-			log.info("================>Expired token {}", e.getMessage());
-			response = OAuth2TokenData.builder().active(false)
-					.errorCode(CommonSecurityConstants.HTTP_CODE_TOKEN_EXPIRED).clientId(clientId).build();
-		} catch (BadJwtException e) {
-			log.info("================>Invalid signature token {}", e.getMessage());
-			response = OAuth2TokenData.builder().active(false).errorCode(HttpStatus.UNAUTHORIZED.value())
-					.clientId(clientId).build();
-		} catch (Exception e) {
-			log.info("================>Invalid token {}", e.getMessage());
-			response = OAuth2TokenData.builder().active(false).errorCode(HttpStatus.UNAUTHORIZED.value())
-					.clientId(clientId).build();
+		if (!isPortalIssuer(tokenValue)) {
+			return casOAuth2CheckHelper.checkToken(tokenValue);
+		} else {
+			try {
+				// décodage du token pour vérifier sa validité et récupérer les informations d'authentification
+				Jwt jwt = jwtDecoder.decode(tokenValue);
+				// construction de la réponse pour les attributs standard d'OAuth2 et les informations d'authentification
+				OAuth2TokenData.OAuth2TokenDataBuilder builder = OAuth2TokenData.builder().active(true)
+						.clientId(jwt.getSubject()).userName(jwt.getSubject()).scope(collectScopes(jwt))
+						.exp(Optional.ofNullable(jwt.getExpiresAt()).orElse(Instant.now()).getEpochSecond())
+						.jti(jwt.getClaimAsString("jti"));
+				// prise en compte des attributs spécifiques à RUDI pour les utilisateurs authentifiés
+				initAuthenticatedUser(jwt, builder);
+				response = builder.build();
+				log.debug("================>Validate token {}", AnonymizerUtils.anonymize(value));
+			} catch (JwtValidationException e) {
+				log.info("================>Expired token {}", e.getMessage());
+				response = OAuth2TokenData.builder().active(false)
+						.errorCode(CommonSecurityConstants.HTTP_CODE_TOKEN_EXPIRED).clientId(clientId).build();
+			} catch (BadJwtException e) {
+				log.info("================>Invalid signature token {}", e.getMessage());
+				response = OAuth2TokenData.builder().active(false).errorCode(HttpStatus.UNAUTHORIZED.value())
+						.clientId(clientId).build();
+			} catch (Exception e) {
+				log.info("================>Invalid token {}", e.getMessage());
+				response = OAuth2TokenData.builder().active(false).errorCode(HttpStatus.UNAUTHORIZED.value())
+						.clientId(clientId).build();
+			}
 		}
 
 		return response;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
 import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM_ADMINISTRATOR;
 
 @RestController
@@ -27,7 +28,7 @@ public class MimeTypeController implements MediaApi {
 	private final UtilPageable utilPageable;
 
 	@Override
-	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
+	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODERATOR + ", " + MODULE_KALIM_ADMINISTRATOR + ")")
 	public ResponseEntity<MimeType> createAllowedMimeType(MimeType mimeType) {
 		return ResponseEntity.ok(mimeTypeService.createAllowedMimeType(mimeType));
 	}

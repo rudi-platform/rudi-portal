@@ -22,7 +22,7 @@
     <bpmn:endEvent id="EndEvent_1ogwwp9" name="Demande traitée">
       <bpmn:incoming>SequenceFlow_7</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="UserTask_1" name="Traitement de la demande de nouvelle donnée" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_1" name="Traitement de la demande de nouvelles données" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_5">
@@ -59,7 +59,7 @@
       <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="UserTask_1" targetRef="ExclusiveGateway_1"/>
-    <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande de nouvelle donnée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_1" name="Réception de la demande de nouvelles données" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_4">
 				<![CDATA[Positionne le workflow dans l'état "en attente de traitement" (pending)]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
@@ -73,7 +73,7 @@
 			</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="StartEvent_1" targetRef="ScriptTask_1"/>
-    <bpmn:scriptTask id="ScriptTask_2" name="Demande de nouvelle donnée acceptée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_2" name="Demande de nouvelles données acceptée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_5">
 				<![CDATA[Positionne le workflow dans l'état validé]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_3</bpmn:incoming>
@@ -87,7 +87,7 @@ var localEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:
 newDatasetRequestWorkflowContext.sendEMailToInitiator(context,execution,localEmailData);
 			</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:scriptTask id="ScriptTask_3" name="Demande de nouvelle donnée refusée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_3" name="Demande de nouvelles données refusée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_7">
 				<![CDATA[Positionne le workflow dans l'état refusé ]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_4</bpmn:incoming>
@@ -103,7 +103,7 @@ newDatasetRequestWorkflowContext.sendEMailToInitiator(context,execution,localEma
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_6" sourceRef="ScriptTask_3" targetRef="EndEvent_13bsqqd"/>
     <bpmn:sequenceFlow id="SequenceFlow_8" sourceRef="ScriptTask_1" targetRef="UserTask_1"/>
-    <bpmn:scriptTask id="ScriptTask_5" name="Demande de nouvelle donnée clôturée" scriptFormat="javascript">
+    <bpmn:scriptTask id="ScriptTask_5" name="Demande de nouvelles données clôturée" scriptFormat="javascript">
       <bpmn:documentation id="Documentation_14">
 				<![CDATA[Positionne le workflow dans l'état terminé]]></bpmn:documentation>
       <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
@@ -117,7 +117,7 @@ newDatasetRequestWorkflowContext.sendEMailToInitiator(context,execution,localEma
 			</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_7" sourceRef="ScriptTask_5" targetRef="EndEvent_1ogwwp9"/>
-    <bpmn:userTask id="UserTask_2" name="Clôture de la demande de nouvelle donnée" implementation="##unspecified">
+    <bpmn:userTask id="UserTask_2" name="Clôture de la demande de nouvelles données" implementation="##unspecified">
       <bpmn:incoming>SequenceFlow_9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_10</bpmn:outgoing>
       <bpmn:ioSpecification id="InputOutputSpecification_1">

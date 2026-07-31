@@ -29,6 +29,7 @@ import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
@@ -156,6 +157,7 @@ public class ProjectWorkflowContext
 				assetDescription.setFunctionalStatus(functionalStatusValue);
 				assetDescription.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescription);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
 				log.debug(WKC_UNKNOWN_SKIPPED, processInstanceBusinessKey);

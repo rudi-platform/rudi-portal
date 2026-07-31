@@ -36,8 +36,13 @@
         line-height: 45px;
     }
 
+    .project-values-heading {
+        margin: 0;
+    }
+
     .project-values-title {
         @extend .project-values-text;
+        display: block;
         padding-top: 20px;
         font-size: 38px;
         color: var(--primary-color);
@@ -48,6 +53,7 @@
 
     .project-values-subtitle {
         @extend .project-values-text;
+        display: block;
         font-size: 34px;
         color: var(--accent-color);
     }

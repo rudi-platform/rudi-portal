@@ -68,7 +68,12 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
+    imports: [
+        CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, ExtendedModule, PageHeadingComponent,
+        TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent,
+        BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FlexModule, FormsModule, ReactiveFormsModule, MatRadioGroup,
+        MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe
+    ]
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;
@@ -81,7 +86,7 @@ export class DetailComponent implements OnInit {
     restrictedAccess: boolean;
     licenceLabel;
     conceptUri;
-    downloadableMedias: Media[] = [];
+    usersDownloadableMedias: Media[] = [];
     // Indique si on affiche le loader pendant le téléchargement du media
     public isLoading = false;
     otherDatasets: Metadata[] = [];
@@ -95,9 +100,9 @@ export class DetailComponent implements OnInit {
     restrictedDatasetIcon = 'key_icon_88_secondary-color';
     selfDataIcon = 'self-data-icon';
 
-    mapHasError: boolean = false;
+    mapHasError = false;
 
-    nbLinkedProjects: number = 1;
+    nbLinkedProjects = 1;
 
     /**
      * Permet de suivre la valeur du JDD récupéré. Nous devons passer par un Observable car le chargement
@@ -176,8 +181,18 @@ export class DetailComponent implements OnInit {
         return MetadataUtils.isSelfdata(this.metadata);
     }
 
-    get hasDownloadableMedia(): boolean {
-        return this.downloadableMedias?.length > 0;
+    get hasDownloadAccess(): boolean {
+        return this.usersDownloadableMedias?.length > 0;
+    }
+
+    /**
+     * Le JDD contient au moins un média de type FILE
+     * indépendamment des droits d'accès de l'utilisateur.
+     */
+    get containsFileMedia(): boolean {
+        return this.metadata?.available_formats?.some(
+            media => media.media_type === 'FILE'
+        ) ?? false;
     }
 
     get isSpreadsheetDisplayed(): boolean {
@@ -443,7 +458,7 @@ export class DetailComponent implements OnInit {
             .using(media => this.dataSetDetailsFunctions.canDownloadMedia(media, this.metadata))
             .pipe(
                 map((downloadableMedias: Media[]) => {
-                    this.downloadableMedias = downloadableMedias;
+                    this.usersDownloadableMedias = downloadableMedias;
                 })
             );
     }

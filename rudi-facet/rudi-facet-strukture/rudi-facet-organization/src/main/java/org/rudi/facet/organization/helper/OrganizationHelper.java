@@ -202,4 +202,20 @@ public class OrganizationHelper {
 
 		return page.getElements().stream().map(Organization::getUuid).toList();
 	}
+
+	public boolean hasOrganizationCompletedWorkflow(UUID ownerUuid) {
+		// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
+		// L'organisation ne doit pas avoir de Workflow en cours
+		try {
+			PagedOrganizationList organizations = searchOrganizations(ownerUuid, null, null, null, null,
+					Status.COMPLETED, 0, 1, null);
+
+			// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
+			// Soit qu'elle a un workflow en cours
+			// On empêche donc le lancement du workflow
+			return organizations.getElements() != null && !organizations.getElements().isEmpty();
+		} catch (GetOrganizationException e) {
+			throw new IllegalArgumentException("Invalid organization uuid " + ownerUuid, e);
+		}
+	}
 }

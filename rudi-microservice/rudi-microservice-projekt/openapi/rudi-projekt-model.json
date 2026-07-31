@@ -834,6 +834,10 @@
 					"name": {
 						"description": "Nom du porteur de projet (prénom et nom si utilisateur, nom de l'organisation sinon)",
 						"type": "string"
+					},
+					"contact":  {
+						"description": "email de contact du porteur de projet",
+						"type": "string"
 					}
 				}
 			},

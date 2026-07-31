@@ -32,6 +32,7 @@ import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.impl.FormTemplateConfiguration;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.email.exception.EMailException;
@@ -124,6 +125,7 @@ public abstract class AbstractWorkflowContext<E extends AssetDescriptionEntity, 
 				assetDescription.setFunctionalStatus(functionalStatusValue);
 				assetDescription.setUpdatedDate(LocalDateTime.now());
 				assetDescriptionDao.save(assetDescription);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
 				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);

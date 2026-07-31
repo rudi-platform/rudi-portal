@@ -3,7 +3,7 @@
 	"fieldDefinitions": [
 		{
 			"name": "messageToProjectOwnerProjectModification",
-			"label": "Message à l’attention du porteur de projet",
+			"label": "Message à l’attention du réutilisateur",
 			"type": "TEXT",
 			"required": false
 		}

@@ -38,8 +38,13 @@ public class ProjectHelper {
 	private final ACLHelper aclHelper;
 
 	@Transactional
-	public void archiveProject(ProjectEntity project, ProjectStatus projectStatus, LinkedDatasetStatus linkedDatasetStatus){
-		if(project == null || !ProjectStatus.VALIDATED.equals(project.getProjectStatus())){
+	public void archiveProject(ProjectEntity project, ProjectStatus projectStatus, LinkedDatasetStatus linkedDatasetStatus) {
+
+		//Si le projet n'est ni validé ne rejeté par le MODERATOR, on empêche l'archivage.
+		if (project == null || (
+				!ProjectStatus.VALIDATED.equals(project.getProjectStatus()) &&
+						!ProjectStatus.REJECTED.equals(project.getProjectStatus()))
+		) {
 			throw new IllegalStateException("Projet non valide");
 		}
 
@@ -55,8 +60,8 @@ public class ProjectHelper {
 		projectDao.save(project);
 	}
 
-	private void handleArchivedLinkedDataset(ProjectEntity project, LinkedDatasetStatus linkedDatasetStatus){
-		for(LinkedDatasetEntity ld : project.getLinkedDatasets()){
+	private void handleArchivedLinkedDataset(ProjectEntity project, LinkedDatasetStatus linkedDatasetStatus) {
+		for (LinkedDatasetEntity ld : project.getLinkedDatasets()) {
 			ld.setLinkedDatasetStatus(linkedDatasetStatus);
 			ld.setStatus(Status.DELETED);
 			ld.setFunctionalStatus(LINKED_DATASET_ARCHIVED_FUNCTIONAL_STATUS);
@@ -64,7 +69,7 @@ public class ProjectHelper {
 		}
 	}
 
-	private void handleArchivedNewDatasetRequest(ProjectEntity project){
+	private void handleArchivedNewDatasetRequest(ProjectEntity project) {
 		for (NewDatasetRequestEntity newDatasetRequestEntity : project.getDatasetRequests()) {
 			newDatasetRequestEntity.setNewDatasetRequestStatus(ARCHIVED);
 			newDatasetRequestEntity.setStatus(Status.DELETED);
@@ -73,12 +78,12 @@ public class ProjectHelper {
 		}
 	}
 
-	public void deleteProjectKeyStore(ProjectEntity project){
+	public void deleteProjectKeyStore(ProjectEntity project) {
 		ProjectKeystoreSearchCriteria searchCriteria = new ProjectKeystoreSearchCriteria();
 		List<UUID> uuidList = new ArrayList<>();
 		uuidList.add(project.getUuid());
 		searchCriteria.setProjectUuids(uuidList);
-		Pageable pageable = utilPageable.getPageable(0,1,null);
+		Pageable pageable = utilPageable.getPageable(0, 1, null);
 		Optional<ProjectKeystore> projectKeystore = aclHelper.searchProjectKeystores(searchCriteria, pageable).get().findFirst();
 		if (projectKeystore.isPresent()) {
 			aclHelper.deleteProjectKeyStore(projectKeystore.get().getUuid());

@@ -27,8 +27,7 @@
 				"properties": {
 					"uuid": {
 						"type": "string",
-						"format": "uuid",
-						"readOnly": true
+						"format": "uuid"
 					}
 				}
 			},
@@ -266,6 +265,9 @@
 				}
 			},
 			"MimeType": {
+				"required": [
+					"uuid"
+				],
 				"allOf": [
 					{
 						"$ref": "#/components/schemas/AbstractStampedDto"

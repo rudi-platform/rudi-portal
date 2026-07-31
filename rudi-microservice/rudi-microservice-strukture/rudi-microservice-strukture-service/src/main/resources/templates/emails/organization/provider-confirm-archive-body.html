@@ -24,8 +24,9 @@
     <p>Bonjour,</p>
     <p>
         L'organisation ${asset.name} a bien été archivée conformément à la demande de l'utilisateur ${denomination}.
-        <br>
-        Les modalités suivantes ont été appliquées :
+    </p>
+    <p>
+        Votre organisation ${asset.name} a bien été archivée en respectant le choix :
         <#if organizationArchiveMode == "DISENGAGED">
         Mes réutilisations doivent être archivées. L’ensemble des informations ne seront plus accessibles au grand
         public, seules les équipes ${projectName} les conserverons à des fins archivistiques.
@@ -33,6 +34,10 @@
         Mes réutilisations et l’ensemble des informations qui lui sont rattachées peuvent rester visibles depuis le
         catalogue ${projectName}.
     </#if>
+    </p>
+    <p>
+        Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
+            href="${urlContact}">ici</a>.
     </p>
     <p>
         À très bientôt, <br>

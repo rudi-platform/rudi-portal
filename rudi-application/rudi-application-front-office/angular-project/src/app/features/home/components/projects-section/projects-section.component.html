@@ -1,12 +1,12 @@
 <div class="section-container">
-  <div class="title-container d-sm-block d-md-flex justify-content-center">
-    <h2 class="title1">{{ projectsDescription.title1 }}</h2>
-    <h2 class="title2">{{ projectsDescription.title2 }}</h2>
-  </div>
+  <h2 class="title-container d-sm-block d-md-flex justify-content-center">
+    <span class="title1">{{ projectsDescription.title1 }}</span>
+    <span class="title2">{{ projectsDescription.title2 }}</span>
+  </h2>
   <div class="d-flex flex-column align-items-center">
 
     <div class="description-container">
-      <p class="description">{{ projectsDescription.description }} <span class="submit-project-link" (click)="submitProject()" >{{ 'home.projectsSection.viaOurForm' | translate }}</span></p>
+      <p class="description">{{ projectsDescription.description }} <button type="button" class="submit-project-link" (click)="submitProject()">{{ 'home.projectsSection.viaOurForm' | translate }}</button></p>
     </div>
   </div>
 

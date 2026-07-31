@@ -30,7 +30,7 @@
                 [licenceLabel]="licenceLabel"
                 [conceptUri]="conceptUri"
                 [themeLabel]="themeLabel"
-                [downloadableMedias]="downloadableMedias"
+                [downloadableMedias]="usersDownloadableMedias"
                 [isLoading]="isLoading"
                 [otherDatasets]="otherDatasets"
                 [themeCode]="themeCode"
@@ -71,17 +71,15 @@
             </app-tab>
           }
           <!-- Boutton télécharger -->
-            @if (!isSelfdata && hasDownloadableMedia) {
-            <app-banner-button>
-              <div>
-                <div #clickMenuFormatTrigger="matMenuTrigger"
-                  [matMenuTriggerFor]="formatMenu"
-                  class="d-flex align-items-center">
-                  <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
-                  <div
-                    [ngClass]="{'banner-icon-libelle': mediaSize.isSm}">{{ 'availableFormats.telecharger'|translate }}
-                  </div>
-                  <mat-menu #formatMenu="matMenu" role="menu" xPosition="after">
+            @if (!isSelfdata && hasDownloadAccess) {
+            <app-banner-button #clickMenuFormatTrigger="matMenuTrigger" [matMenuTriggerFor]="formatMenu">
+              <div class="d-flex align-items-center">
+                <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
+                <div
+                  [ngClass]="{'banner-icon-libelle': mediaSize.isSm}">{{ 'availableFormats.telecharger'|translate }}
+                </div>
+              </div>
+              <mat-menu #formatMenu="matMenu" role="menu" yPosition="below">
                     <div (click)="$event.stopPropagation()" class="rudi-select-panel" fxLayout="column">
                       <form [formGroup]="form">
                         <div class="menu-radioGroup-scrollable">
@@ -91,7 +89,7 @@
                             (click)="$event.stopPropagation()"
                             aria-label="Select an option"
                             formControlName="options" fxLayout="column">
-                            @for (item of downloadableMedias; track item; let i = $index) {
+                            @for (item of usersDownloadableMedias; track item; let i = $index) {
                               <mat-radio-button
                                 [checked]="i === 0"
                                 [value]="item"
@@ -116,8 +114,6 @@
                       </form>
                     </div>
                   </mat-menu>
-                </div>
-              </div>
             </app-banner-button>
           }
           <!-- Faire une demande d'information sur ses données personnelles detenues -->
@@ -130,7 +126,7 @@
             </app-banner-button>
           }
           <!-- Demander l'accès à un JDD restreint -->
-            @if (!isSelfdata && isRestricted && hasDownloadableMedia) {
+            @if (!isSelfdata && isRestricted && containsFileMedia) {
             <app-banner-button
               (click)="handleClickRequestAccess()">
               <div class="d-flex align-items-center">

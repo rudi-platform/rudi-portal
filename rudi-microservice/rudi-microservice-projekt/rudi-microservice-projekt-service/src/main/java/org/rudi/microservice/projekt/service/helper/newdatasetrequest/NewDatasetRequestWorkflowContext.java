@@ -20,6 +20,7 @@ import org.rudi.facet.bpmn.bean.workflow.EMailData;
 import org.rudi.facet.bpmn.bean.workflow.EMailDataModel;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.email.EMailService;
 import org.rudi.facet.generator.text.TemplateGenerator;
 import org.rudi.facet.organization.bean.Organization;
@@ -89,6 +90,7 @@ public class NewDatasetRequestWorkflowContext extends
 				assetDescription.setFunctionalStatus(functionalStatusValue);
 				assetDescription.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescription);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {}/{}/{} done.", processInstanceBusinessKey, statusValue,
 						newDatasetRequestStatusValue, functionalStatusValue);
 			} else {

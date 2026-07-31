@@ -31,9 +31,7 @@ import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.facet.bpmn.service.FormService;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.impl.AbstractTaskServiceImpl;
-import org.rudi.facet.organization.bean.PagedOrganizationList;
 import org.rudi.facet.organization.helper.OrganizationHelper;
-import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.Project;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
@@ -198,8 +196,12 @@ public class ProjectTaskServiceImpl extends
 		validateEntityAndTask(assetDescriptionEntity);
 
 		// Si le owner est une organisation
-		if(OwnerType.ORGANIZATION.equals(assetDescriptionEntity.getOwnerType()) && assetDescriptionEntity.getOwnerUuid() != null) {
-			validateOrganizationOwner(assetDescriptionEntity);
+		if (OwnerType.ORGANIZATION.equals(assetDescriptionEntity.getOwnerType())
+				&& assetDescriptionEntity.getOwnerUuid() != null
+				&& !organizationHelper.hasOrganizationCompletedWorkflow(assetDescriptionEntity.getOwnerUuid())) {
+			throw new IllegalArgumentException("Invalid organization for workflow, organization with uuid "
+					+ assetDescriptionEntity.getOwnerUuid() + " not found or has a workflow in progress");
+
 		}
 
 		// Vérifie si l'état de l'asset est DRAFT (création de project)
@@ -227,23 +229,6 @@ public class ProjectTaskServiceImpl extends
 				&& (assetDescriptionEntity.getStatus().equals(Status.DRAFT)
 				|| assetDescriptionEntity.getStatus().equals(Status.COMPLETED))) {
 			throw new AppServiceBadRequestException("Asset is already linked to a task");
-		}
-	}
-
-	private void validateOrganizationOwner(ProjectEntity assetDescriptionEntity) {
-		try {
-			// On récupère l'organisation, et on filtre sur un statut BPN COMPLETED
-			// L'organisation ne doit pas avoir de Workflow en cours
-			PagedOrganizationList organizations = organizationHelper.searchOrganizations(assetDescriptionEntity.getOwnerUuid(), null, null, null, null, Status.COMPLETED, 0, 1, null);
-
-			// Si rien n'est renvoyé, c'est soit que l'organisation n'existe pas
-			// Soit qu'elle a un workflow en cours
-			// On empêche donc le lancement du workflow
-			if (organizations.getElements() == null || organizations.getElements().isEmpty()) {
-				throw new IllegalArgumentException("Invalid organization");
-			}
-		} catch (GetOrganizationException e) {
-			throw new IllegalArgumentException("Invalid organization uuid");
 		}
 	}
 

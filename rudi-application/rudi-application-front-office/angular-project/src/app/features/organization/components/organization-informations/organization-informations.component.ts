@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
+import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
@@ -28,29 +29,34 @@ export class OrganizationInformationsComponent implements OnInit {
     projectListTotal = 0;
     order = DEFAULT_PROJECT_ORDER;
     reuseListTotal: number;
-    isMember: boolean = false;
+    isMember = false;
     isMemberLoading = false;
 
 
     constructor(private readonly filtersService: FiltersService,
                 private readonly breakpointObserver: BreakpointObserverService,
-                private readonly organizationMetierService: OrganizationMetierService
+                private readonly organizationMetierService: OrganizationMetierService,
+                private readonly authenticationService: AuthenticationService
     ) {
         this.mediaSize = this.breakpointObserver.getMediaSize();
     }
 
     ngOnInit(): void {
-        this.isMemberLoading = true;
-        this.organizationMetierService.isMember(this.organization.uuid).subscribe({
-            next: (isMember) => {
-                this.isMember = isMember;
-                this.isMemberLoading = false;
-            },
-            error: (e) => {
-                this.isMemberLoading = false;
-            }
-        })
-        ;
+        const isAuth = this.authenticationService.isAuthenticatedAsUser();
+        if (isAuth) {
+            this.isMemberLoading = true;
+            this.organizationMetierService.isMember(this.organization.uuid).subscribe({
+                next: (isMember) => {
+                    this.isMember = isMember;
+                    this.isMemberLoading = false;
+                },
+                error: (e) => {
+                    this.isMemberLoading = false;
+                }
+            });
+        } else {
+            this.isMemberLoading = false;
+        }
     }
 
 

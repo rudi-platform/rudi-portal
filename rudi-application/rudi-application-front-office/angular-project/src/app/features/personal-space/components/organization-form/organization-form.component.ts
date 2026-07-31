@@ -1,5 +1,5 @@
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
@@ -24,7 +24,9 @@ const MAX_ADDRESS_LENGTH = 255;
     imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, WorkflowFormComponent, TranslatePipe]
 })
 export class OrganizationFormComponent implements OnInit {
+    @ViewChild(WorkflowFormComponent) workflowFormComponent: WorkflowFormComponent;
     @Input() draftForm: Form;
+    @Input() organization: Organization;
     form: FormGroup;
     FORM_CONTROL_NAME_NAME = 'name';
     FORM_CONTROL_NAME_DESCRIPTION = 'description';
@@ -54,10 +56,23 @@ export class OrganizationFormComponent implements OnInit {
                 return acc;
             }, {})
         );
+
+        if (this.organization) {
+            this.form.patchValue({
+                [this.FORM_CONTROL_NAME_NAME]: this.organization.name || '',
+                [this.FORM_CONTROL_NAME_DESCRIPTION]: this.organization.description || '',
+                [this.FORM_CONTROL_NAME_URL]: this.organization.url || '',
+                [this.FORM_CONTROL_NAME_ADDRESS]: this.organization.address || '',
+            });
+        }
     }
 
     isValidForm(): boolean {
         return this.form.valid;
+    }
+
+    submitWorkflowForm(): boolean {
+        return this.workflowFormComponent?.submit() ?? true;
     }
 
     getOrganization(): Organization {

@@ -26,6 +26,7 @@ import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.bpmn.exception.InvalidDataException;
 import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.bpmn.helper.workflow.AbstractWorkflowContext;
+import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.email.EMailService;
@@ -139,6 +140,7 @@ public class OrganizationWorkflowContext
 				assetDescriptionEntity.setFunctionalStatus(functionalStatusValue);
 				assetDescriptionEntity.setUpdatedDate(LocalDateTime.now());
 				getAssetDescriptionDao().save(assetDescriptionEntity);
+				executionEntity.setVariable(TaskConstants.FUNCTIONAL_STATUS, functionalStatusValue);
 				log.debug("WkC - Update {} to status {} done.", processInstanceBusinessKey, statusValue);
 			} else {
 				log.debug("WkC - Unkown {} skipped.", processInstanceBusinessKey);
@@ -285,19 +287,68 @@ public class OrganizationWorkflowContext
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendArchivageEmail(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData,
-			boolean isValidated) {
+	public void sendArchivageEmailToInitiator(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
-		if (isValidated) {
-			// envoi du rapport
-			sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
-					isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
+		// Envoi d'un mail à l'initiateur de la demande d'archivage
+		sendEmailToArchiveInitiator(executionEntity, assetDescription, eMailData);
+	}
 
-			sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendReportToLinkedProducers(ScriptContext context, ExecutionEntity executionEntity, boolean isValidated){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
+		// Envoi d'un rapport à l'ensemble des providers liés à l'organisation :
+		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
+				isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendArchivageEmailToOrganizationMembers(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+
+		User initiator = lookupUser(assetDescription.getInitiator());
+		List<String> avoidedEmails = new ArrayList<>();
+		if(initiator.getType().equals(UserType.PERSON)){
+			avoidedEmails.add(lookupEMailAddress(initiator));
+		}
+
+		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData, avoidedEmails);
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendArchivageEmailToLinkedProviders(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData){
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+
+		User initiator = lookupUser(assetDescription.getInitiator());
+		String avoidedMail;
+		// Si le user initiateur est un robot provider, on évite de lui envoyer un mail et on envoie à la place le mail de contact du provider
+		if (initiator.getType().equals(UserType.ROBOT)
+				&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))  {
+			NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
+
+			if (nodeProvider == null) {
+				throw new InvalidParameterException(ERROR_NODE_NOT_FOUND);
+			}
+
+			avoidedMail = providerHelper.getContactEmail(nodeProvider);
 		} else {
-			sendEmailToArchiveInitiator(executionEntity, assetDescription, eMailData);
+			avoidedMail = "";
+		}
+
+		// Récupération des mails de contact des providers
+		List<String> emails = providerHelper.searchAllOrganizationsProviders(assetDescription.getUuid(), true)
+				.stream()
+				.filter(p -> p.getNodeProviders().stream().anyMatch(np -> np.getUuid().equals(assetDescription.getInitiator())))
+				.map(providerHelper::getContactEmail)
+				// Retrait du mail de l'initiateur déà contacté autrement.
+				.filter(email -> StringUtils.isNotEmpty(email) && !email.equals(avoidedMail))
+				.toList();
+
+		try {
+			sendEMail(executionEntity, assetDescription, eMailData, emails);
+		} catch (Exception e) {
+			log.warn("WkC - Failed to send mail to providers for " + executionEntity.getProcessDefinitionKey(), e);
 		}
 	}
 
@@ -306,7 +357,7 @@ public class OrganizationWorkflowContext
 			EMailData eMailData) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
-		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData);
+		sendEmailToOrganizationMembers(executionEntity, assetDescription, eMailData, List.of());
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
@@ -329,7 +380,7 @@ public class OrganizationWorkflowContext
 		if (initiator != null) {
 			String email = lookupEMailAddress(initiator);
 			if (initiator.getType().equals(UserType.ROBOT)
-					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER))) {
+					&& initiator.getRoles().stream().anyMatch(role -> role.getCode().equals(RoleCodes.PROVIDER)))  {
 				NodeProvider nodeProvider = nodeProviderUserHelper.getNodeProviderFromUser(initiator);
 
 				if (nodeProvider == null) {
@@ -349,8 +400,10 @@ public class OrganizationWorkflowContext
 	}
 
 	private void sendEmailToOrganizationMembers(ExecutionEntity executionEntity, OrganizationEntity assetDescription,
-			EMailData eMailData) {
+			EMailData eMailData, List<String>  avoidedEmails) {
 		List<String> emails = getOrganizationMembersEmails(assetDescription);
+		// Si certains mails on déjà été envoyés (ex: initiateur ), on les retire de la liste des destinataires
+		emails.removeAll(avoidedEmails);
 
 		try {
 			sendEMail(executionEntity, assetDescription, eMailData, emails);

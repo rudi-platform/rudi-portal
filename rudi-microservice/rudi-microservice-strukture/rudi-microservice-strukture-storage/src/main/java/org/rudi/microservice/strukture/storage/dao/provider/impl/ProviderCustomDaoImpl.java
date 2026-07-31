@@ -77,8 +77,15 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 		searchQuery.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
 
 		TypedQuery<ProviderEntity> typedQuery = entityManager.createQuery(searchQuery);
-		List<ProviderEntity> providerEntities = typedQuery.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+
+		List<ProviderEntity> providerEntities = null;
+		if (pageable.isPaged()) {
+			providerEntities = typedQuery.setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		} else {
+			providerEntities = typedQuery.getResultList();
+		}
+
 		return new PageImpl<>(providerEntities, pageable, totalCount.intValue());
 	}
 

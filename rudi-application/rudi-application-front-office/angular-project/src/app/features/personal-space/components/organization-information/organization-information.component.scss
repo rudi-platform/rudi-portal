@@ -1,11 +1,22 @@
 @use "common-style";
 
 .card {
-  padding: 16px;
+  padding: 0;
+  box-shadow: none;
+  border: none;
 
   mat-card-content {
     padding: 0;
   }
+}
+
+.organization-detail-image {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  max-width: 200px;
+  max-height: 150px;
+  object-fit: contain;
 }
 
 .card-demand-label {
