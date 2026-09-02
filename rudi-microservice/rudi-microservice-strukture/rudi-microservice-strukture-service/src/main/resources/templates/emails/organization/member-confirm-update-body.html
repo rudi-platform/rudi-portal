@@ -23,12 +23,21 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        L'organisation <a href="${urlServer}/organization/detail/${asset.uuid}">${asset.name}</a> a bien été modifiée
-        conformément à la demande de l'utilisateur ${denomination}.
+        Votre organisation <a href="${urlServer}/organization/detail/${asset.uuid}">${asset.name}</a> a bien été
+        modifiée.
     </p>
+    <#if messageToOrganizationUpdater??>
+        <p>
+            Message renseigné par l'utilisateur : <#if messageToOrganizationUpdater?matches(".*[.!?]$")>
+                "${messageToOrganizationUpdater}"
+            <#else>
+                "${messageToOrganizationUpdater}."
+            </#if>
+        </p>
+    </#if>
     <p>
         Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
-            href="${urlContact}">ici</a>.
+                href="${urlContact}">ici</a>.
     </p>
     <p>
         À très bientôt, <br>

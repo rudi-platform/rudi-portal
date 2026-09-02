@@ -1,6 +1,23 @@
-<div class="header-container">
+<!-- Lien d'évitement vers le contenu principal -->
+<div class="fr-skiplinks">
+    <nav aria-label="Accès rapide" class="fr-container">
+        <ul class="fr-skiplinks__list">
+            <li>
+                <a class="skip-link" href="#main-content" (click)="handleSkipLinkClick($event, 'main-content')">{{ 'header.skipLink.mainContent'| translate }}</a>
+            </li>
+            <li>
+                <a class="skip-link" href="#header-navigation" (click)="handleSkipLinkClick($event, 'header-navigation')">{{ 'header.skipLink.headerNavigation'| translate }}</a>
+            </li>
+            <li>
+                <a class="skip-link" href="#footer" (click)="handleSkipLinkClick($event, 'footer')">{{ 'header.skipLink.footer'| translate }}</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
-  <a routerLink="/home">
+<header class="header-container" role="banner">
+
+  <a routerLink="/home" [attr.aria-label]="('header.accueil'| translate) + ' - ' + logoAltTxt">
     @if (!logoIsLoading) {
       <img class="header-logo" [src]="logo"
         [alt]="logoAltTxt"/>
@@ -27,7 +44,8 @@
             <button [matMenuTriggerFor]="accountMenu" mat-stroked-button [ngClass]="{
                     'my-account-btn-mobile': mediaSize.isSm || mediaSize.isXs || mediaSize.isMd || mediaSize.isLg,
                     'my-account-btn-desktop': mediaSize.isXl || mediaSize.isXxl
-                }">
+                }" 
+                [attr.aria-label]="'header.monCompte' | translate">
           <div class="btn-text-container">
             <img alt=""
               src="../../../../../assets/images/mon_compte.png">
@@ -44,17 +62,16 @@
         <div>
           @if (mediaSize.isDeviceMobile) {
             <div>
-              <a class="login-btn-mobile" href="#" routerLink="login" mat-mini-fab
-                aria-label="Redirection vers la page de connexion"
+              <a class="login-btn-mobile" routerLink="login" mat-mini-fab
+                [attr.aria-label]="'header.logIn'| translate"
                 (click)="handleClickGoLogin()">
-                <mat-icon fontIcon="account_circle" aria-hidden="false" aria-label="Ouvrir le menu"></mat-icon>
+                <mat-icon fontIcon="account_circle" aria-hidden="true"></mat-icon>
               </a>
             </div>
           }
           @if (mediaSize.isDeviceDesktop) {
             <div>
-              <a class="login-btn-desktop" href="#" routerLink="login"
-                aria-label="Redirection vers la page de connexion"
+              <a class="login-btn-desktop" routerLink="login"
                 (click)="handleClickGoLogin()">
                 {{ 'header.logIn'| translate }}
               </a>
@@ -63,86 +80,97 @@
         </div>
       }
     </div>
-  </div>
+  </header>
 
   <ng-template #menuMobile>
-    <button class="burger-menu-btn" mat-mini-fab aria-label="Button d'ouverture du menu"
+    <button class="burger-menu-btn" mat-mini-fab
+      [attr.aria-label]="(isCollapsed ? 'header.burger.open' : 'header.burger.close') | translate"
+      [attr.aria-expanded]="!isCollapsed"
+      aria-controls="mobile-nav-menu"
       (click)="handleClickBurger()">
 
       @if (isCollapsed) {
         <div>
-          <mat-icon fontIcon="menu" aria-hidden="false" aria-label="Ouvrir le menu"></mat-icon>
+          <mat-icon fontIcon="menu" aria-hidden="true"></mat-icon>
         </div>
       }
       @if (!isCollapsed) {
         <div>
-          <mat-icon fontIcon="close" aria-hidden="false" aria-label="Fermer le menu"></mat-icon>
+          <mat-icon fontIcon="close" aria-hidden="true"></mat-icon>
         </div>
       }
     </button>
 
     @if (!isCollapsed) {
-      <div class="mobile-container">
+      <div class="mobile-container" id="mobile-nav-menu">
         <div *ngTemplateOutlet="menuList"></div>
       </div>
     }
   </ng-template>
 
   <ng-template #menuList>
-    <ul [ngClass]="{
-        'list-container-mobile': mediaSize.isDeviceMobile,
-        'list-container-desktop': mediaSize.isDeviceDesktop
-    }">
-      <li>
-        <a [ngClass]="ngClassNavLink"
-          rel="noopener noreferrer"
-          routerLink="home"
-          [routerLinkActive]="'active'"
-          (click)="handleClickBurger()"
-          >
-          <em class="fa fa-home me-2"></em>
-          <span>{{ 'header.accueil'| translate }}</span>
-        </a>
-      </li>
-      <li>
-        <a [ngClass]="ngClassNavLink" href="#" routerLink="catalogue"
-          [routerLinkActive]="'active'"
-          (click)="handleClickBurger()">
-          {{ 'header.catalogue'| translate }}
-        </a>
-      </li>
-      <li>
-        <a [ngClass]="ngClassNavLink" href="#" routerLink="projets"
-          rel="noopener noreferrer"
-          [routerLinkActive]="'active'"
-          (click)="handleClickBurger()">
-          {{ 'header.reutilisations'| translate }}
-        </a>
-      </li>
-      <li>
-        <a [ngClass]="ngClassNavLink" href="#" routerLink="organization"
-          [routerLinkActive]="'active'"
-          (click)="handleClickBurger()">
-          {{ 'header.organisations'| translate }}
-        </a>
-      </li>
-    </ul>
+    <nav id="header-navigation" aria-label="{{ 'header.menuPrincipal' | translate }}" tabindex="-1">
+      <ul [ngClass]="{
+          'list-container-mobile': mediaSize.isDeviceMobile,
+          'list-container-desktop': mediaSize.isDeviceDesktop
+      }">
+        <li>
+          <a [ngClass]="ngClassNavLink"
+            routerLink="home"
+            [routerLinkActive]="'active'"
+            [ariaCurrentWhenActive]="'page'"
+            (click)="handleClickBurger()"
+            >
+            <span class="fa fa-home me-2" aria-hidden="true"></span>
+            <span>{{ 'header.accueil'| translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a [ngClass]="ngClassNavLink" routerLink="catalogue"
+            [routerLinkActive]="'active'"
+            [ariaCurrentWhenActive]="'page'"
+            (click)="handleClickBurger()">
+            {{ 'header.catalogue'| translate }}
+          </a>
+        </li>
+        <li>
+          <a [ngClass]="ngClassNavLink" routerLink="projets"
+            [routerLinkActive]="'active'"
+            [ariaCurrentWhenActive]="'page'"
+            (click)="handleClickBurger()">
+            {{ 'header.reutilisations'| translate }}
+          </a>
+        </li>
+        <li>
+          <a [ngClass]="ngClassNavLink" routerLink="organization"
+            [routerLinkActive]="'active'"
+            [ariaCurrentWhenActive]="'page'"
+            (click)="handleClickBurger()">
+            {{ 'header.organisations'| translate }}
+          </a>
+        </li>
+      </ul>
+    </nav>
   </ng-template>
 
   <!-- MENU 'MON COMPTE' -->
   <mat-menu #accountMenu="matMenu" role="menu" xPosition="before">
-    <button mat-menu-item
-      (click)="handleClickGoMonCompte()">{{ 'header.accountMenu.myAccount'| translate }}
-    </button>
-    <button mat-menu-item
-      (click)="handleClickGoReceivedLinkedDatasets()">{{ 'header.accountMenu.myNotifications'| translate }}
-    </button>
-    <button mat-menu-item
-      (click)="handleClickGoToReuse()">{{ 'header.accountMenu.myActivity'| translate }}
-    </button>
-    <button mat-menu-item
-      (click)="handleClickGoToMySelfdata()">{{ 'header.accountMenu.mySelfdata'| translate }}
-    </button>
+    <a mat-menu-item [routerLink]="isConnectedAsUser ? ['personal-space/my-account'] : ['/login']"
+      [routerLinkActive]="'active'"
+      [ariaCurrentWhenActive]="'page'">{{ 'header.accountMenu.myAccount'| translate }}
+    </a>
+    <a mat-menu-item routerLink="personal-space/my-notifications"
+      [routerLinkActive]="'active'"
+      [ariaCurrentWhenActive]="'page'">{{ 'header.accountMenu.myNotifications'| translate }}
+    </a>
+    <a mat-menu-item routerLink="personal-space/my-activity"
+      [routerLinkActive]="'active'"
+      [ariaCurrentWhenActive]="'page'">{{ 'header.accountMenu.myActivity'| translate }}
+    </a>
+    <a mat-menu-item routerLink="personal-space/selfdata-datasets"
+      [routerLinkActive]="'active'"
+      [ariaCurrentWhenActive]="'page'">{{ 'header.accountMenu.mySelfdata'| translate }}
+    </a>
     <hr class="m-0">
     <button (click)="handleClickLogout()"
       mat-menu-item>{{ 'header.logOut'| translate }}

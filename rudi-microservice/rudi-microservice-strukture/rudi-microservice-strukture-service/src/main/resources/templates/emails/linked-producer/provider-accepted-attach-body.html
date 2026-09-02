@@ -24,11 +24,18 @@
 <p>
     L'équipe ${projectName} a accepté votre demande de rattachement pour l'organisation ${asset.organization.name}.
 </p>
-<#if messageToAttachmentInitiator??><p>Voici le commentaire associé à la demande : ${messageToAttachmentInitiator}</p></#if>
 <p>
     L'organisation ${asset.organization.name} est désormais rattachée à votre nœud producteur, vous pouvez
     dès à présent publier des jeux de données en son nom.
 </p>
+<#if messageToAttachmentInitiator??>
+<p>Message adossé à votre demande : <#if messageToAttachmentInitiator?matches(".*[.!?]$")>
+    "${messageToAttachmentInitiator}"
+    <#else>
+    "${messageToAttachmentInitiator}."
+</#if>
+</p>
+</#if>
 <p>
     Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
         href="${urlContact}">ici</a>.

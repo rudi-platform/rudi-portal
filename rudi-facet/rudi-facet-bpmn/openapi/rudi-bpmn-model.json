@@ -78,7 +78,9 @@
 					"REQUIRED",
 					"MAXLENGTH",
 					"POSITIVE",
-					"NEGATIVE"
+					"NEGATIVE",
+					"REGEXP",
+					"EMAIL"
 				]
 			},
 			"Validator": {

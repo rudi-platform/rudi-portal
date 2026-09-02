@@ -103,19 +103,19 @@
                     "header-description": "Décrivez votre réutilisation en saisissant les informations ci-dessous",
                     "requiredInformation": "Informations obligatoires à renseigner",
                     "title": "Titre",
-                    "titleHint": "Définissez votre réutilisation en quelques mots. Le titre est visible depuis le catalogue.",
+                    "titleHint": "Définissez le titre de votre réutilisation en quelques mots dans le champ ci-dessous. Celui-ci est visible depuis le catalogue.",
                     "description": "Description",
-                    "descriptionHint": "Présentez votre réutilisation (objectifs, outils, traitements envisagés…). Ce résumé pourra être visible depuis le catalogue des réutilisations et depuis la page de présentation de votre réutilisation. 3000 signes maximum sont autorisés.",
+                    "descriptionHint": "Présentez votre réutilisation (objectifs, outils, traitements envisagés…) dans le champ ci-dessous. Ce résumé pourra être visible depuis le catalogue des réutilisations et depuis la page de présentation de votre réutilisation. 3000 signes maximum sont autorisés.",
                     "image": "Image",
-                    "imageHint": "Nous vous conseillons de choisir une image représentant votre réutilisation. Cette image est visible depuis le catalogue. Si vous n'en avez pas, une image par défaut sera utilisée.",
+                    "imageHint": "Sélectionnez une image depuis le champ ci-dessous. Nous vous conseillons d'en choisir une représentant votre réutilisation. Cette image est visible depuis le catalogue si celle-ci est publique. Si vous n'en avez pas, une image par défaut sera utilisée.",
                     "periode": "Date de réalisation",
-                    "periodeHint": "Le mois et l'année sélectionnés ici, correspondent à la date de début et de fin de votre réutilisation. Format attendu MM/AAAA.",
+                    "periodeHint": "Renseignez le mois et l'année dans les champs ci-dessous. Ceux-ci correspondent à la date de début et de fin de votre réutilisation. Format attendu MM/AAAA.",
                     "periodeBeginPlaceholder": "Date de début",
                     "periodeEndPlaceholder": "Date de fin",
                     "periodeBeginError": "Date de début de période saisie invalide",
                     "periodeEndError": "Date de fin de période saisie invalide",
                     "echelle": "Échelle",
-                    "echelleHint": "L'échelle indique le périmètre géographique de votre réutilisation.",
+                    "echelleHint": "L'échelle indique le périmètre géographique de votre réutilisation. Vous pouvez sélectionner une option dans le champ ci-dessous.",
                     "selectOption": "Sélectionner une option",
                     "selectOptions": "Cocher une ou plusieurs options",
                     "accessUrl": "URL d'accès",
@@ -126,10 +126,11 @@
                     "targetAudience": "Public cible",
                     "targetAudienceHint": "Le public cible est le public à destination de votre réutilisation. Vous pouvez sélectionner plusieurs options.",
                     "reuseType": "Type de réutilisation",
-                    "reuseTypeHint": "Le type de réutilisation définit le type de service que votre réutilisation permettra de mettre en oeuvre.",
+                    "reuseTypeHint": "Le type de réutilisation définit le type de service que votre réutilisation permettra de mettre en oeuvre. Vous pouvez sélectionner une option dans le champ ci-dessous.",
                     "accompagnementSouhaite": "Accompagnement souhaité",
                     "accompagnementSouhaiteHint": "Le type d'accompagnement nous indique dans quelle mesure {projectName} pourra vous aider. Vous pouvez sélectionner plusieurs options.",
                     "projectConfidentiality": "Confidentialité de la réutilisation",
+                    "projectConfidentialityHint": "La confidentialité de la réutilisation indique si celle-ci doit être accessible au grand public ou non. Vous pouvez sélectionner une option dans le champ ci-dessous.",
                     "errorFieldRequired": "Ce champ est requis",
                     "reuseStatus": "Statut de votre réutilisation",
                     "reuseStatusHint": "Veuillez préciser le statut d'avancement de votre réutilisation."
@@ -259,10 +260,20 @@
         "projets": "Projets",
         "contact": "Contact",
         "monCompte": "Mon compte",
+        "menuPrincipal": "Menu principal",
         "logIn": "Se connecter",
         "logOut": "Se déconnecter",
         "logOutSuccess": "Vous avez été correctement déconnecté. À bientôt sur {projectName} !",
         "logOutError": "Une erreur est survenue lors de la déconnexion. Si l'erreur persiste, merci de contacter un administrateur ",
+        "burger": {
+            "open": "Ouvrir le menu de navigation",
+            "close": "Fermer le menu de navigation"
+        },
+        "skipLink": {
+            "mainContent": "Contenu principal",
+            "headerNavigation": "Menu",
+            "footer": "Pied de page"
+        },
         "accountMenu": {
             "myAccount": "Mon compte",
             "myActivity": "Mon activité",
@@ -360,12 +371,17 @@
         "requiredInformation": "Informations obligatoires à renseigner.",
         "requiredInformationError": "Cette information est obligatoire.",
         "requiredCheckboxError": "Cette case doit être cochée afin de poursuivre.",
+        "requiredFieldLabel": "Champ obligatoire",
+        "showPassword": "Afficher le mot de passe",
+        "hidePassword": "Masquer le mot de passe",
+        "clearSearch": "Effacer la recherche",
         "errorMissingFieldAccount": "Au moins un champ obligatoire n'est pas rempli.",
         "validatorsErrors": {
             "required": "Cette information est obligatoire.",
             "requiredTrue": "Cette case obligatoire doit être cochée.",
             "checkRvaAddressValidator": "Veuillez sélectionner une adresse dans la liste proposée.",
             "pattern": "Le format saisi est incorrect.",
+            "email": "Le format de l'adresse e-mail est incorrect.",
             "maxlength": "La longueur maximale autorisée est dépassée."
         },
         "select": {
@@ -475,8 +491,8 @@
         "-dataset_dates.updated": "Le plus récent",
         "dataset_dates.created": "Le plus ancien",
         "-dataset_dates.created": "Le plus récent",
-        "producer.organization_name": "Nom de producteur de A à Z",
-        "-producer.organization_name": "Nom de producteur de Z à A"
+        "producer.organization_name": "Nom des organisations de A à Z",
+        "-producer.organization_name": "Nom des organisations de Z à A"
     },
     "donneesPersonnellesBox": {
         "donneesPersonnelles": "Données personnelles",
@@ -1215,11 +1231,14 @@
             "description": "Description",
             "url": "Url de l'organisation",
             "adresse": "Adresse",
+            "email": "Adresse e-mail",
+            "phone": "Numéro de téléphone",
             "nodeProvider": "Noeud fournisseur",
             "identifiant": "Identifiant de l'organisation",
             "nom": "Nom de l'organisation",
             "supplier": "Demandeur",
             "organizationInformations": "Information de l'organisation",
+            "currentOrganization": "Organisation actuelle",
             "image": "Image de l'organisation",
             "imageAlt": "Image de l'organisation {{name}}",
             "archive": {
@@ -1232,7 +1251,9 @@
                 "task": {
                     "title": "Demande de modification d'organisation",
                     "accordionTitle": "Demande de modification d'organisation"
-                }
+                },
+                "additionalInformation": "Informations complémentaires",
+                "currentOrganization": "Organisation actuelle"
             }
         },
         "organization": {
@@ -1257,7 +1278,13 @@
                 "url": "Url d'accès",
                 "urlHint": "Cette url est le chemin d'accès à la page officielle de votre organisation.",
                 "address": "Adresse postale",
-                "addressHint": "Il s’agit de l’adresse postale de votre organisation."
+                "addressHint": "Il s’agit de l’adresse postale de votre organisation.",
+                "email": "Adresse e-mail",
+                "emailHint": "Cette adresse sera visible depuis le catalogue des organisations. Vous pouvez indiquer une adresse e-mail spécifique sur laquelle vous souhaitez être contacté. Exemple : rudi@rennesmetropole.fr",
+                "errorEmailPattern": "Veuillez respecter le format : rudi@rennesmetropole.fr",
+                "phone": "Numéro de téléphone",
+                "phoneHint": "Ce numéro sera visible depuis le catalogue des organisations. Vous pouvez indiquer le numéro de téléphone sur lequel vous souhaitez être contacté. Le format attendu est : 00 00 00 00 00",
+                "errorPhonePattern": "Veuillez respecter le format : 00 00 00 00 00"
             },
             "archive": {
                 "dialog": {
@@ -1658,6 +1685,10 @@
     },
     "organization": {
         "label": "Organisation",
+        "contactTitle": "Informations de contact",
+        "emailTitle": "Adresse e-mail",
+        "phoneTitle": "Numéro de téléphone",
+        "urlTitle": "Site internet",
         "noDescription": "L'organisation n'a renseigné aucune description.",
         "noUrl": "L'organisation n'a renseigné aucune information.",
         "datasetTotal": "Jeux de donnée",

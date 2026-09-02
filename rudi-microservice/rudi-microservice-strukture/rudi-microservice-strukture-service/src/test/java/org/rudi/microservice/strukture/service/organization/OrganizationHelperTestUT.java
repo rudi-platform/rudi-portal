@@ -1,10 +1,5 @@
 package org.rudi.microservice.strukture.service.organization;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +25,11 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationM
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationHelperTestUT {
@@ -153,7 +153,7 @@ class OrganizationHelperTestUT {
 	}
 
 	private OrganizationEntity createOrganization() {
-		OrganizationEntity o = organizationDataFactory.createIRISAOrganization(null);
+		OrganizationEntity o = organizationDataFactory.getOrCreateIRISAOrganization();
 		createdOrganizations.add(o);
 		return o;
 	}

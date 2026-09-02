@@ -45,10 +45,11 @@ public class AddressRoleController implements AddressRolesApi {
 	}
 
 	@Override
-	public ResponseEntity<List<AddressRole>> searchAddressRoles(Boolean active, AddressType type) throws Exception {
+	public ResponseEntity<List<AddressRole>> searchAddressRoles(String code, AddressType type, Boolean active) throws Exception {
 		AddressRoleSearchCriteria searchCriteria = new AddressRoleSearchCriteria();
 		searchCriteria.setActive(active);
 		searchCriteria.setType(type);
+		searchCriteria.setCode(code);
 		return ResponseEntity.ok(addressRoleService.searchAddressRoles(searchCriteria));
 	}
 

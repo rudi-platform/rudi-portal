@@ -16,7 +16,7 @@ import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnt
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {
 		MapperUtils.class,
-		OrganizationMapper.class
+		OrganizationSimpleMapper.class
 })
 public interface LinkedProducerMapper extends AssetDescriptionMapper<LinkedProducerEntity, LinkedProducer> {
 	/**

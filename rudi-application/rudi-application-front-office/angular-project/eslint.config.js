@@ -35,6 +35,8 @@ module.exports = [
             }],
             'quotes': ['error', 'single', {avoidEscape: true}],
             'semi': ['error', 'always'],
+            'curly': ['error', 'all'],
+            'brace-style': ['error', '1tbs', { allowSingleLine: false }],
             'max-len': ['error', {code: 140, ignoreUrls: true, ignoreStrings: true, ignoreTemplateLiterals: true}],
             'space-before-function-paren': ['error', {
                 anonymous: 'never',
@@ -110,6 +112,18 @@ module.exports = [
             '@angular-eslint/template/no-autofocus': 'warn',
             // Icônes : aria-hidden="true" (décoratif) ou aria-label (informatif) (RGAA 1.1)
             'rudi/mat-icon-requires-aria': 'warn',
+            // Champs de formulaire : étiquette obligatoire (RGAA 11.1)
+            'rudi/form-field-requires-label': 'warn',
+            // Tabindex positif interdit (RGAA 11.11)
+            'rudi/no-positive-tabindex': 'warn',
+            // Boutons : intitulé accessible obligatoire (RGAA 11.9 / 11.12)
+            'rudi/form-button-requires-name': 'warn',
+            // Champs personnels : autocomplete recommandé (RGAA 11.13)
+            'rudi/autocomplete-on-personal-fields': 'warn',
+            // Hiérarchie des titres cohérente (RGAA 9.1)
+            'rudi/heading-hierarchy': 'warn',
+            // Structure des listes valide (RGAA 9.3)
+            'rudi/list-structure': 'warn',
         }
     }
 

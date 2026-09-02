@@ -4,7 +4,7 @@ import {MatBadge} from '@angular/material/badge';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
-import {Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {OrderValue} from '@core/services/filters/order-filter';
@@ -65,7 +65,7 @@ export class ListComponent implements OnInit, OnDestroy {
     constructor(
         private readonly konsultMetierService: KonsultMetierService,
         private readonly kosMetierService: KosMetierService,
-        private readonly router: Router,
+        private readonly route: ActivatedRoute,
         private readonly filtersService: FiltersService,
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly providersMetierService: ProvidersMetierService,
@@ -76,6 +76,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
+        this.initFiltersFromQueryParams();
         this.sidenavOpeningsService.sideNavOpening$.pipe(takeUntil(this.isDestroyed$)).subscribe(() => {
             this.sidenav.open();
         });
@@ -89,8 +90,22 @@ export class ListComponent implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Permet une navigation par URL vers le catalogue pré-filtré sur une ou plusieurs thématiques
+     * (ex: /catalogue?themes=theme1,theme2), utilisée notamment par les cards de thématiques de la
+     * page d'accueil qui utilisent désormais des liens natifs (<a href>).
+     */
+    private initFiltersFromQueryParams(): void {
+        const themesParam = this.route.snapshot.queryParamMap.get('themes');
+        if (themesParam) {
+            this.filtersService.deleteAllFilters();
+            this.filtersService.themesFilter.value = themesParam.split(',');
+        }
+    }
+
     ngOnDestroy(): void {
         this.isDestroyed$.next();
+        // eslint-disable-next-line no-undef
         this.renderer.removeClass(document.body, 'menu');
     }
 

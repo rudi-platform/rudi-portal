@@ -1,9 +1,5 @@
 package org.rudi.microservice.strukture.service.organization.bean;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +39,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @StruktureSpringBootTest
 class OrganizationBeanServiceUT {
@@ -102,31 +102,31 @@ class OrganizationBeanServiceUT {
 		jacques = userDataFactory.getOrCreateJacques();
 		when(aclHelper.getUserByLogin(jacques.getLogin())).thenReturn(jacques); // Force la récupération du même user quand on repassera dans le get or create.
 
-		OrganizationEntity irisa = organizationDataFactory.createIRISAOrganization(null);
+		OrganizationEntity irisa = organizationDataFactory.getOrCreateIRISAOrganization();
 		irisa = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(irisa);
 		irisa = organizationMemberDataFactory.createOrganizationMemberJeanEditor(irisa);
 		organizations.add(irisa);
 
-		OrganizationEntity open = organizationDataFactory.createOpenOrganization(null);
+		OrganizationEntity open = organizationDataFactory.getOrCreateOpenOrganization();
 		open = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(open);
 		open = organizationMemberDataFactory.createOrganizationMemberJeanEditor(open);
 		organizations.add(open);
 
-		OrganizationEntity rm = organizationDataFactory.createRMOrganization(null);
+		OrganizationEntity rm = organizationDataFactory.getOrCreateRMOrganization();
 		rm = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(rm);
 		rm = organizationMemberDataFactory.createOrganizationMemberJeanEditor(rm);
 		organizations.add(rm);
 
-		OrganizationEntity viaRoma = organizationDataFactory.createViaRomaOrganization(null);
+		OrganizationEntity viaRoma = organizationDataFactory.getOrCreateViaRomaOrganization();
 		viaRoma = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(viaRoma);
 		organizations.add(viaRoma);
 
-		OrganizationEntity cookingPot = organizationDataFactory.createCookingPotOrganization(null);
+		OrganizationEntity cookingPot = organizationDataFactory.getOrCreateCookingPotOrganization();
 		cookingPot = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(cookingPot);
 		cookingPot = organizationMemberDataFactory.createOrganizationMemberJacquesEditor(cookingPot);
 		organizations.add(cookingPot);
 
-		OrganizationEntity block = organizationDataFactory.createBlockOrganization(null);
+		OrganizationEntity block = organizationDataFactory.getOrCreateBlockOrganization();
 		block = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(block);
 		block = organizationMemberDataFactory.createOrganizationMemberJacquesEditor(block);
 		organizations.add(block);

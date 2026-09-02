@@ -319,33 +319,39 @@ public class ProjectWorkflowContext
 		return result;
 	}
 
-	/**
-	 * Retourne le nom de l'organisation partenaire à l'index donné.
-	 *
-	 * @param context         le context
-	 * @param executionEntity entité de l'exécution, ici projet
-	 * @param index           index de l'organisation partenaire (trié)
-	 * @return le nom de l'organisation, ou null si introuvable
-	 */
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public String computeRelatedOrganizationName(ScriptContext context, ExecutionEntity executionEntity, int index) {
 		ProjectEntity project = lookupProject(executionEntity);
 		if (project == null) {
 			return null;
 		}
+		Organization organization = computeRelatedOrganization(project, index);
+		return organization != null ? organization.getName() : null;
+	}
+
+	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
+	public UUID computeRelatedOrganizationUuid(ScriptContext context, ExecutionEntity executionEntity, int index) {
+		ProjectEntity project = lookupProject(executionEntity);
+		if (project == null) {
+			return null;
+		}
+		Organization organization = computeRelatedOrganization(project, index);
+		return organization != null ? organization.getUuid() : null;
+	}
+
+	private Organization computeRelatedOrganization(ProjectEntity project, int index) {
 		RelatedOrganizationEntity relatedOrganization = getRelatedOrganizationAtIndex(project, index);
 		if (relatedOrganization == null || relatedOrganization.getOrganizationUuid() == null) {
 			return null;
 		}
 		try {
 			Organization organization = organizationHelper.getOrganization(relatedOrganization.getOrganizationUuid());
-
-			if(organization == null){
+			if (organization == null) {
 				throw new AppServiceException("Organization not found");
 			}
-			return organization.getName();
+			return organization;
 		} catch (Exception e) {
-			log.error("Erreur lors de la récupération du nom de l'organisation partenaire à l'index {} : {}", index, e);
+			log.error("Erreur lors de la récupération de l'organisation partenaire à l'index {} : {}", index, e);
 			return null;
 		}
 	}

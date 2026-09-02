@@ -34,6 +34,9 @@ import lombok.ToString;
 @ToString
 public abstract class AbstractAddressEntity extends AbstractLongIdEntity implements Serializable {
 
+	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_ADDRESS_ROLE = "addressRole";
+
 	private static final long serialVersionUID = 1674111844242326124L;
 
 	@Column(name = "type", nullable = false)

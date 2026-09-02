@@ -129,7 +129,7 @@ public class ProviderDataFactory extends AbstractStampedDataFactory<ProviderEnti
 				AddressRoleEntity addressRole = emailAddressRoleDataFactory.getOrCreate(ADDRESS_ROLE_CODE, ADDRESS_ROLE_CODE.toLowerCase());
 
 				if (item.getAddresses().stream().filter(a -> a.getType().equals(AddressType.EMAIL) && a.getAddressRole().equals(addressRole)).collect(Collectors.toList()).isEmpty()) {
-					item.getAddresses().add((EmailAddressEntity) abstractAddressDataFactory.createEmailAddress(ADDRESS_ROLE_CODE));
+					item.getAddresses().add((EmailAddressEntity) abstractAddressDataFactory.createEmailAddressEntity(ADDRESS_ROLE_CODE));
 				}
 			}
 		}

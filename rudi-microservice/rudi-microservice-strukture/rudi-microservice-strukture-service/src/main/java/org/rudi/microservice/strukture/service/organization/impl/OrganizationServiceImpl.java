@@ -3,9 +3,13 @@ package org.rudi.microservice.strukture.service.organization.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -33,14 +37,17 @@ import org.rudi.microservice.strukture.service.helper.organization.OrganizationH
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
 import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
-import org.rudi.microservice.strukture.service.mapper.OrganizationMapper;
+import org.rudi.microservice.strukture.service.mapper.OrganizationFullMapper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationMemberMapper;
+import org.rudi.microservice.strukture.service.mapper.OrganizationSimpleMapper;
 import org.rudi.microservice.strukture.service.organization.OrganizationService;
 import org.rudi.microservice.strukture.service.organization.impl.fields.CreateOrganizationFieldProcessor;
 import org.rudi.microservice.strukture.service.organization.impl.fields.UpdateOrganizationFieldProcessor;
 import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
+import org.rudi.microservice.strukture.storage.dao.address.AbstractAddressDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
+import org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
@@ -71,7 +78,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	private final OrganizationDao organizationDao;
 	private final OrganizationCustomDao organizationCustomDao;
-	private final OrganizationMapper organizationMapper;
+	private final AbstractAddressDao abstractAddressDao;
+	private final OrganizationSimpleMapper organizationSimpleMapper;
+	private final OrganizationFullMapper organizationFullMapper;
 	private final NodeOrganizationMapper nodeOrganizationMapper;
 	private final Collection<CreateOrganizationFieldProcessor> createOrganizationFieldProcessors;
 	private final Collection<UpdateOrganizationFieldProcessor> updateOrganizationFieldProcessors;
@@ -102,12 +111,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
 	@Override
-	public Organization getOrganization(UUID uuid) throws AppServiceException {
+	public Organization getOrganization(UUID uuid, boolean full) throws AppServiceException {
 		OrganizationEntity entity = organizationHelper.getOrganizationEntity(uuid);
 		if (OrganizationStatus.DISENGAGED.equals(entity.getOrganizationStatus())) {
 			struktureAuthorisationHelper.checkRightsAdminsterOrganization(entity);
 		}
-		return organizationMapper.entityToDto(entity);
+		if (full) {
+			return organizationFullMapper.entityToDto(entity);
+		}
+		return organizationSimpleMapper.entityToDto(entity);
 	}
 
 	@Override
@@ -132,16 +144,16 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	@Transactional // (readOnly = false)
 	public Organization createOrganization(Organization organization) throws AppServiceBadRequestException {
-		val entity = organizationMapper.dtoToEntity(organization);
+		val entity = organizationFullMapper.dtoToEntity(organization);
 		for (final CreateOrganizationFieldProcessor processor : createOrganizationFieldProcessors) {
-			processor.processBeforeCreate(entity);
+			processor.processBeforeCreate(entity, organization);
 		}
 
 		final LocalDateTime now = LocalDateTime.now();
 		entity.setCreationDate(now);
 		entity.setUpdatedDate(now);
 
-		return organizationMapper.entityToDto(organizationDao.save(entity));
+		return organizationFullMapper.entityToDto(organizationDao.save(entity));
 	}
 
 	@Override
@@ -151,14 +163,18 @@ public class OrganizationServiceImpl implements OrganizationService {
 		for (final UpdateOrganizationFieldProcessor processor : updateOrganizationFieldProcessors) {
 			processor.processBeforeUpdate(organization, existingEntity);
 		}
-		organizationMapper.dtoToEntity(organization, existingEntity);
+		organizationSimpleMapper.dtoToEntity(organization, existingEntity);
 	}
 
 	@Override
 	@Transactional // (readOnly = false)
 	public void deleteOrganization(UUID uuid) throws AppServiceNotFoundException {
 		val entity = organizationHelper.getOrganizationEntity(uuid);
+		final Set<AbstractAddressEntity> addressesToDelete = new HashSet<>(entity.getAddresses());
+		entity.getAddresses().clear();
+		organizationDao.save(entity);
 		organizationDao.delete(entity);
+		abstractAddressDao.deleteAll(addressesToDelete);
 	}
 
 	@Override
@@ -178,7 +194,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	public Page<Organization> searchOrganizations(OrganizationSearchCriteria searchCriteria, Pageable pageable) {
-		return organizationMapper.entitiesToDto(organizationCustomDao.searchOrganizations(searchCriteria, pageable),
+		if (searchCriteria != null && Boolean.TRUE.equals(searchCriteria.getFull())) {
+			return organizationFullMapper.entitiesToDto(organizationCustomDao.searchOrganizations(searchCriteria, pageable),
+					pageable);
+		}
+		return organizationSimpleMapper.entitiesToDto(organizationCustomDao.searchOrganizations(searchCriteria, pageable),
 				pageable);
 	}
 
@@ -384,7 +404,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 		criteria.setUserUuid(aclHelper.getAuthenticatedUserUuid());
 
 		// Appel du search classique et pas du searchMy car pas de restriction supplémentaires
-		return organizationMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
+		if (Boolean.TRUE.equals(criteria.getFull())) {
+			return organizationFullMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
+		}
+		return organizationSimpleMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
 	}
 
 	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {
@@ -392,5 +415,23 @@ public class OrganizationServiceImpl implements OrganizationService {
 				.filter(orgaMember -> OrganizationRole.ADMINISTRATOR.equals(orgaMember.getRole()))
 				.toList();
 		return adminMembers.size() == 1 && adminMembers.get(0).getUserUuid().equals(userUuid);
+	}
+
+	private void deleteOrphanAddresses(Set<AbstractAddressEntity> previousAddresses,
+			Set<AbstractAddressEntity> currentAddresses) {
+		if (previousAddresses == null || previousAddresses.isEmpty()) {
+			return;
+		}
+
+		// L'association est en ManyToMany : on conserve un nettoyage manuel des adresses détachées.
+		final Set<UUID> currentAddressUuids = currentAddresses == null ? Set.of()
+				: currentAddresses.stream().map(AbstractAddressEntity::getUuid).filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+
+		for (final AbstractAddressEntity previousAddress : previousAddresses) {
+			if (previousAddress.getUuid() != null && !currentAddressUuids.contains(previousAddress.getUuid())) {
+				abstractAddressDao.delete(previousAddress);
+			}
+		}
 	}
 }

@@ -28,9 +28,7 @@ public class TelephoneAddressEntity extends AbstractAddressEntity {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getPhoneNumber() == null) ? 0 : getPhoneNumber().hashCode());
-		return result;
+		return prime * super.hashCode();
 	}
 
 	@Override
@@ -41,18 +39,7 @@ public class TelephoneAddressEntity extends AbstractAddressEntity {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (!(obj instanceof TelephoneAddressEntity)) {
-			return false;
-		}
-		TelephoneAddressEntity other = (TelephoneAddressEntity) obj;
-		if (getPhoneNumber() == null) {
-			if (other.getPhoneNumber() != null) {
-				return false;
-			}
-		} else if (!getPhoneNumber().equals(other.getPhoneNumber())) {
-			return false;
-		}
-		return true;
+		return obj instanceof TelephoneAddressEntity;
 	}
 
 }

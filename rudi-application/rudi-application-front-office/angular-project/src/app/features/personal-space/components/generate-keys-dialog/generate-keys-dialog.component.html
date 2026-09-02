@@ -114,7 +114,7 @@
                 </mat-hint>
                 <mat-form-field appearance="outline" hideRequiredMarker>
                   <input type="text" formControlName="name" matInput
-                    autocomplete="off" maxlength="150">
+                    autocomplete="off" maxlength="150" required>
                     @if (generateKeyForm2.get('name').errors?.required) {
                       <mat-error class="stepper-mat-error"
                         >

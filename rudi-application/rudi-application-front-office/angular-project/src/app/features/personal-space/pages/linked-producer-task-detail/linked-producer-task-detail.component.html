@@ -1,3 +1,4 @@
+<main id="main-content" tabindex="-1">
 <app-page>
   <app-task-detail-header
     [headingLoading]="isLoading"
@@ -13,8 +14,8 @@
           <ng-template>
             <div class="producer-link-details-container">
               <div class="producer-link-information-container">
-                <app-organization-information
-                [organization]="dependencies?.linkedProducer?.organization"></app-organization-information>
+                <app-task-organization-information
+                [organization]="dependencies?.linkedProducer?.organization"></app-task-organization-information>
               </div>
               @if (ownerInfo | async; as ownerInformation) {
                 <div class="owner-information-container">
@@ -37,3 +38,4 @@
     </div>
   }
 </app-page>
+</main>

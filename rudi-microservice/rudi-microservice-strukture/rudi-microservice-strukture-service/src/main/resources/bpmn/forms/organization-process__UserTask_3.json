@@ -7,10 +7,6 @@
 		{
 			"name": "organization-process-draft/update-organization",
 			"readOnly": true
-		},
-		{
-			"name": "image-organization",
-			"readOnly": true
 		}
 	]
 }

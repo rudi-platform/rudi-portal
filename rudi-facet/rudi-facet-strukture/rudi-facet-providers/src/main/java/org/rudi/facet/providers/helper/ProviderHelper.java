@@ -95,7 +95,7 @@ public class ProviderHelper {
 						.queryParam(NODE_PROVIDER_UUID_PARAMETER, List.of(nodeProviderUUId)).build())
 				.retrieve().bodyToMono(ProviderPageResult.class).block();
 		if (pageResult != null && CollectionUtils.isNotEmpty(pageResult.getElements())) {
-			result = pageResult.getElements().get(0);
+			result = pageResult.getElements().getFirst();
 		}
 		return result;
 	}

@@ -1,13 +1,5 @@
 package org.rudi.facet.kaccess.service.dataset;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.awaitility.Awaitility.await;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
-import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
-
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -28,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.rudi.common.core.json.JsonResourceReader;
 import org.rudi.common.test.RudiAssertions;
 import org.rudi.common.test.UUIDUtils;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
@@ -43,21 +34,32 @@ import org.rudi.facet.kaccess.bean.MetadataFacets;
 import org.rudi.facet.kaccess.bean.MetadataList;
 import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.bean.ReferenceDates;
+import org.rudi.facet.kaccess.datafactory.AvailableFormatsDataFactory;
+import org.rudi.facet.kaccess.datafactory.MetadataDataFactory;
 import org.rudi.facet.kaccess.exceptions.DatasetAlreadyExistsException;
 import org.rudi.facet.kaccess.helper.dataset.metadatablock.MetadataBlockHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
+import static org.rudi.facet.kaccess.constant.ConstantMetadata.DOI_REGEX;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.DATASET_DATES_UPDATED;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.METADATA_INFO_DATES_UPDATED;
 
 @KaccessSpringBootTest
 @Slf4j
 class DatasetServiceIT {
-
-	private final JsonResourceReader jsonResourceReader = new JsonResourceReader();
 	private final List<Metadata> createdDatasets = new ArrayList<>();
 	@Autowired
 	private DatasetService datasetService;
+	@Autowired
+	private MetadataDataFactory metadataDataFactory;
+	@Autowired
+	private AvailableFormatsDataFactory availableFormatsDataFactory;
 	@Autowired
 	private MetadataBlockHelper metadataBLockHelper;
 
@@ -83,13 +85,14 @@ class DatasetServiceIT {
 				log.error("Error when deleting Dataset with globalId " + globalId, e);
 			}
 		});
+//		metadataDataFactory.cleanupAllCreatedDatasets();
 		createdDatasets.clear();
 	}
 
 	@Test
 	void testCreateDataset() throws DataverseAPIException, IOException, JSONException {
 
-		final Metadata metadata = readMetadata("agri");
+		final Metadata metadata = metadataDataFactory.buildMetadataAgri();
 		final String dataverseDoi = createDataset(metadata);
 
 		Assertions.assertTrue(dataverseDoi.matches(DOI_REGEX));
@@ -119,8 +122,7 @@ class DatasetServiceIT {
 		Assertions.assertEquals(metadata.getMetadataInfo(), metadataGetted.getMetadataInfo());
 
 		// création du jeu de données transports
-		final Metadata metadataTransport = readMetadata("transport");
-		createDataset(metadataTransport);
+		final Metadata metadataTransport = metadataDataFactory.getOrCreateMetadataTransport();
 
 		// recherche tous critères renseignés
 		// -----------------------------------
@@ -203,7 +205,7 @@ class DatasetServiceIT {
 		// recherche sur ProducerNames
 		// ---------------------------
 		MetadataList metadataList9 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("Metropole"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("Producteur rudi"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList9.getTotal() > 0);
@@ -213,14 +215,13 @@ class DatasetServiceIT {
 		// ----------------------------------------------------------
 		// Recherche pour s'assurer que seuls les jdd correspondant aux valeurs exactes sont remontés
 		// ----------------------------------------------------------
-		final Metadata metadataKeolisStarAgriculture = readMetadata("jdd_producer_keolis-star_theme_agriculture");
-		createDataset(metadataKeolisStarAgriculture);
-		final Metadata metadataStarAgricultureBiologique = readMetadata(
-				"jdd_producer_star_theme_agriculture_biologique");
-		createDataset(metadataStarAgricultureBiologique);
+		final Metadata metadataKeolisStarAgriculture = metadataDataFactory.getOrCreateMetadataJddProducerKeolisStarThemeAgriculture();
+
+		metadataDataFactory.getOrCreateMetadataJddProducerStarThemeAgricultureBiologique();
+		final Metadata metadataStarAgricultureBiologique = metadataDataFactory.getOrCreateMetadataJddProducerStarThemeAgricultureBiologique();
 
 		MetadataList metadataList10 = datasetService
-				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("star"),
+				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("STAR"),
 						Collections.emptyList())
 				.getMetadataList();
 		Assertions.assertTrue(metadataList10.getTotal() > 0);
@@ -253,12 +254,6 @@ class DatasetServiceIT {
 				.anyMatch(metadataFacet -> metadataFacet.getPropertyName().equals("keywords")
 						&& CollectionUtils.isNotEmpty(metadataFacet.getValues())));
 
-	}
-
-	private Metadata readMetadata(String name) throws IOException {
-		final Metadata metadata = jsonResourceReader.read("metadata/" + name + ".json", Metadata.class);
-		randomizeUuids(metadata);
-		return metadata;
 	}
 
 	private String createDataset(Metadata metadata) throws DataverseAPIException {
@@ -294,8 +289,8 @@ class DatasetServiceIT {
 	@Test
 	void testCreateDatasetWithMandatoryPropertiesOnly() throws DataverseAPIException, IOException {
 		// test si la création avec les données minimales marche bien
-		final Metadata metadataMandatoryProperties = readMetadata("metadata_only_mandatory_properties");
-		final String dataverseDoi = createDataset(metadataMandatoryProperties);
+		final Metadata metadataMandatoryProperties = metadataDataFactory.getOrCreateMetadataMinimal();
+		final String dataverseDoi = metadataMandatoryProperties.getDataverseDoi();
 
 		// test de la récupération de métadonnées avec les informations minimales
 		Metadata metadataGetted = datasetService.getDataset(dataverseDoi);
@@ -304,12 +299,13 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void testCreateDatasetWithoutUpdatedReferenceDates() throws IOException {
+	void testCreateDatasetWithoutUpdatedReferenceDates() throws IOException, DataverseAPIException {
 		// test de la valeur dataset_dates.updated
-		final Metadata metadataWithoutUpdatedDatasetDates = readMetadata("metadata_without_reference_dates_updated");
-		assertThatThrownBy(() -> createDataset(metadataWithoutUpdatedDatasetDates))
+		assertThatThrownBy(() -> metadataDataFactory.getOrCreateMetadataWithoutReferenceDatesUpdated())
 				.isInstanceOf(NullPointerException.class)
 				.hasMessage(MessageUtils.buildErrorMessageRequiredMandatoryAttributes(DATASET_DATES_UPDATED));
+
+		final Metadata metadataWithoutUpdatedDatasetDates = metadataDataFactory.buildMetadataWithoutReferenceDatesUpdated();
 
 		// test de la valeur metadata_info.metadata_dates.updated
 		metadataWithoutUpdatedDatasetDates.getDatasetDates().setUpdated(OffsetDateTime.now());
@@ -318,11 +314,14 @@ class DatasetServiceIT {
 		assertThatThrownBy(() -> createDataset(metadataWithoutUpdatedDatasetDates))
 				.isInstanceOf(NullPointerException.class)
 				.hasMessage(MessageUtils.buildErrorMessageRequiredMandatoryAttributes(METADATA_INFO_DATES_UPDATED));
+
+		// On s'assure que la metadonnée corrigée n'est pas en dans Dataverse pour la réentrance des tests
+		metadataDataFactory.deleteMetadataWithoutReferenceDatesUpdated();
 	}
 
 	@Test
 	void testMapping() throws JSONException, IOException, DataverseMappingException {
-		final Metadata metadata = readMetadata("agri");
+		final Metadata metadata = metadataDataFactory.buildMetadataAgri();
 
 		// conversion Metadata -> DatasetMetadataBlock
 		DatasetMetadataBlock datasetMetadataBlock = metadataBLockHelper.metadataToDatasetMetadataBlock(metadata);
@@ -338,13 +337,15 @@ class DatasetServiceIT {
 
 	@Test
 	void testUpdateDataset() throws DataverseAPIException, IOException {
-
 		// création du jeu de données à mettre à jour
-		final List<Media> medias = jsonResourceReader
-				.readList("metadata/available_format/available_format_for_update.json", Media.class);
-		final Metadata metadataToUpdate = readMetadata("jdd_to_update").theme("agriculture biologique")
-				.resourceTitle("JDD ouvert mise à jour effectué").addKeywordsItem("riz").availableFormats(medias);
-		createDataset(metadataToUpdate);
+		final List<Media> medias = availableFormatsDataFactory.createAvailableFormatsForUpdate();
+
+		Metadata metadataToUpdate = metadataDataFactory.getOrCreateMetadataJddToUpdate();
+
+		metadataToUpdate.setAvailableFormats(medias);
+		metadataToUpdate.setTheme("agriculture biologique");
+		metadataToUpdate.setResourceTitle("JDD ouvert mise à jour effectué");
+		metadataToUpdate.addKeywordsItem("riz");
 
 		// mise à jour
 		Metadata metadataUpdated = datasetService.updateDataset(metadataToUpdate);
@@ -356,6 +357,9 @@ class DatasetServiceIT {
 		Assertions.assertEquals(1, metadataUpdated.getAvailableFormats().size());
 		Assertions.assertTrue(metadataUpdated.getAvailableFormats().stream()
 				.anyMatch(media -> media.getMediaId().equals(UUID.fromString("7eafd872-5c1e-47c2-ac57-c07926fe482e"))));
+
+		// Assure la réentrance des tests
+		metadataDataFactory.deleteMetadataJddToUpdate();
 	}
 
 	/**
@@ -370,10 +374,9 @@ class DatasetServiceIT {
 	private void searchDatasetsFreeText(String freeText) throws IOException, DataverseAPIException {
 
 		// On ajoute un autre JDD pour être sûr que seul le JDD souhaité remonte
-		createDataset(readMetadata("jdd-sans-mots-communs-avec-jdd-avec-separateurs"));
+		metadataDataFactory.getOrCreateMetadataJddSansMotsCommunsAvecJddAvecSeparateurs();
 
-		final Metadata metadata = readMetadata("jdd-avec-separateurs");
-		final String dataverseDoi = createDataset(metadata);
+		final String dataverseDoi = metadataDataFactory.getOrCreateMetadataJddAvecSeparateurs().getDataverseDoi();
 
 		final DatasetSearchCriteria criteria = new DatasetSearchCriteria().offset(0).limit(100).freeText(freeText);
 		final MetadataList metadataList = datasetService.searchDatasets(criteria, Collections.emptyList())
@@ -420,13 +423,12 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void searchDatasets_doiProches() throws DataverseAPIException, IOException {
+	void searchDatasets_doiProches() throws DataverseAPIException {
 
 		val existingDoi = "10.1594/PANGAEA.726855";
 		val nonExistingDoi = "10.1594/PANGAEA.726900"; // seuls les 3 derniers chiffres changent
 
-		final Metadata metadata = readMetadata("existing_dataset");
-		createDataset(metadata);
+		final Metadata metadata = metadataDataFactory.getOrCreateMetadataExistingDataset();
 
 		final DatasetSearchCriteria existingCriteria = new DatasetSearchCriteria();
 		existingCriteria.doi(existingDoi);
@@ -448,13 +450,13 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void searchDatasets_localIdProches() throws DataverseAPIException, IOException {
+	void searchDatasets_localIdProches() throws DataverseAPIException {
 
 		val existingLocalId = "2020.11-Laennec-AQMO-air quality sensors measures";
 		val nonExistingLocalId = "2020.11-Laennec-AQMO-air quality sensors measure"; // seul un caractère change
 
-		final Metadata metadata = readMetadata("existing_dataset");
-		createDataset(metadata);
+		final Metadata metadata = metadataDataFactory.getOrCreateMetadataExistingDataset();
+
 
 		final DatasetSearchCriteria existingCriteria = new DatasetSearchCriteria();
 		existingCriteria.localId(existingLocalId);
@@ -476,10 +478,9 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void searchDatasets_globalIdProches() throws DataverseAPIException, IOException {
+	void searchDatasets_globalIdProches() throws DataverseAPIException {
 
-		final Metadata metadata = readMetadata("existing_dataset");
-		createDataset(metadata);
+		final Metadata metadata = metadataDataFactory.getOrCreateMetadataExistingDataset();
 
 		val existingGlobalId = metadata.getGlobalId();
 		val nonExistingGlobalId = UUIDUtils.eraseOnlyUUIDSegment(1, existingGlobalId); // seul un groupe de chiffres change
@@ -501,5 +502,33 @@ class DatasetServiceIT {
 		assertThat(nonExistingResult.getMetadataList().getTotal()).isZero();
 		assertThat(nonExistingResult.getMetadataList().getItems()).isEmpty();
 
+	}
+
+	@Test
+	// @Disabled
+	void deleteAllTestsDatasets() throws DataverseAPIException {
+		final DatasetSearchCriteria existingCriteria = new DatasetSearchCriteria();
+		existingCriteria.setLimit(100);
+		existingCriteria.addProducerUuidsItem(UUID.fromString("426ba491-718a-404a-9521-edeb94cd7d80"));
+		// existingCriteria.addProducerNamesItem("IRISA - RM_MIGRATION");
+		boolean continuer = true;
+		while (continuer) {
+			MetadataListFacets existingResult = datasetService.searchDatasets(existingCriteria,
+					Collections.emptyList());
+
+			existingResult.getMetadataList().getItems().forEach(dataset -> {
+				final UUID globalId = dataset.getGlobalId();
+				try {
+					datasetService.deleteDataset(globalId);
+				} catch (DataverseAPIException e) {
+					log.error("Error when deleting Dataset with globalId " + globalId, e);
+				}
+			});
+
+			existingResult = datasetService.searchDatasets(existingCriteria, Collections.emptyList());
+			if (existingResult.getMetadataList().getTotal() == 0) {
+				continuer = false;
+			}
+		}
 	}
 }

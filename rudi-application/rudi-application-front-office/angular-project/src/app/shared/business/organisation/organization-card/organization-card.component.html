@@ -1,10 +1,10 @@
 <mat-card
-  class="organization-card" [ngClass]="{'archived': isArchived()}"
-  tabindex="0"
-  role="button"
-  [attr.aria-label]="organizationBean.name"
-  (click)="onClickOrganization(organizationBean.uuid, organizationBean.name)"
-  (keydown.enter)="onClickOrganization(organizationBean.uuid, organizationBean.name)">
+  class="organization-card" [ngClass]="{'archived': isArchived()}">
+  <a
+    class="stretched-link"
+    [routerLink]="detailUrl"
+    [attr.aria-label]="organizationBean.name">
+  </a>
   <mat-card-content class="card-content">
     <div class="d-flex my-3">
       <div class="align-items-center">

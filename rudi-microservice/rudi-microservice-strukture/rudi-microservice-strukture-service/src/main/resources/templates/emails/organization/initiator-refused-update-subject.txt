@@ -1,1 +1,1 @@
-${projectName} - Refus de modification d'une organisation
+${projectName} - Modification d'organisation refusée

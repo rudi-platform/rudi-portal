@@ -18,8 +18,22 @@
 
     .swiper-button-next, .swiper-button-prev {
         top: var(--swiper-button-top-offset, 60px);
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-color);
+        color: #fff;
         transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+        mat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 40px;
+            line-height: 40px;
+        }
 
         &::after {
             content: none;
@@ -27,9 +41,7 @@
 
         &:focus-visible {
             outline: none;
-            background-color: white;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-
         }
 
         // Compatibilité navigateurs ne supportant pas :focus-visible

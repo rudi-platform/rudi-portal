@@ -21,8 +21,8 @@ import {SnackBarService} from '@core/services/snack-bar.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {
-    OrganizationUpdateFormDialogComponent
-} from '@features/personal-space/components/organization-update-form-dialog/organization-update-form-dialog.component';
+    OrganizationFormDialogComponent
+} from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
 import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
@@ -169,12 +169,13 @@ export class OrganizationTableComponent implements OnInit {
     }
 
     openPopinModification(): void {
-        this.dialog.open(OrganizationUpdateFormDialogComponent, {
+        this.dialog.open(OrganizationFormDialogComponent, {
             data: {
                 draftForm: this.modificationForm,
                 title: this.translateService.instant('personalSpace.organization.update.dialog.title'),
                 description: this.translateService.instant('personalSpace.organization.update.dialog.description'),
                 organization: this.organization,
+                messageControlName: 'updateMessageToModerator',
             }
         }).afterClosed().subscribe(result => {
             if (result?.closeEvent == CloseEvent.VALIDATION) {

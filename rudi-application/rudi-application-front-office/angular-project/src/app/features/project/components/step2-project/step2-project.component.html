@@ -35,9 +35,9 @@
           @if (step2FormGroup.get('ownerType').value === 'USER') {
             <div>
               <label for="lastname">{{'project.stepper.submission.step2.ownerType.lastname'|translate}}<span
-              class="required-symbol">*</span></label><br/>
+              class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label><br/>
               <mat-form-field appearance="outline">
-                <input autocomplete="off" formControlName="lastname"
+                <input autocomplete="family-name" formControlName="lastname"
                   id="lastname"
                   matInput
                   placeholder="{{'project.stepper.noName' | translate}}"
@@ -45,9 +45,9 @@
                 </mat-form-field>
                 <br/>
                 <label for="firstname">{{'project.stepper.submission.step2.ownerType.firstname'|translate}}<span
-                class="required-symbol">*</span></label><br/>
+                class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label><br/>
                 <mat-form-field appearance="outline">
-                  <input autocomplete="off" formControlName="firstname"
+                  <input autocomplete="given-name" formControlName="firstname"
                     id="firstname"
                     matInput
                     placeholder="{{'project.stepper.noName' | translate}}"
@@ -72,11 +72,13 @@
                   <label
                     for="organization-name">{{'project.stepper.submission.step2.ownerType.organization.name.label'|translate}}
                     <span
-                    class="required-symbol">*</span></label><br/>
-                    <mat-form-field id="organization-name" appearance="outline">
+                    class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label><br/>
+                    <mat-form-field appearance="outline">
                       <mat-select
+                        id="organization-name"
                         placeholder="{{'project.stepper.submission.step2.ownerType.organization.name.placeholder'|translate}}"
-                        formControlName="organizationUuid">
+                        formControlName="organizationUuid"
+                        required>
                         @for (organization of organizationItems; track organization) {
                           <mat-option [value]="organization.uuid">
                             {{ organization.name }}
@@ -132,15 +134,15 @@
           <label class="step-form-card-label" for="contactEmail">
             <span
               class="step-form-card-label-title">{{'project.stepper.submission.step2.contactEmail.title' | translate}}
-              <span class="required-symbol">*</span></span><br/>
+              <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></span><br/>
               <span
               class="step-form-card-label-description">{{'project.stepper.submission.step2.contactEmail.description' | translate}}</span>
             </label>
             <mat-form-field appearance="outline">
-              <input autocomplete="off" formControlName="contactEmail"
+              <input autocomplete="email" formControlName="contactEmail"
                 id="contactEmail"
                 matInput
-                required type="text">
+                required type="email">
                 @if (step2FormGroup.get('contactEmail').errors?.email) {
                   <mat-error
                     class="stepper-mat-error">

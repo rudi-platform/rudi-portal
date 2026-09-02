@@ -96,10 +96,10 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 			List<Predicate> predicates = new ArrayList<>();
 
 			// code
-			predicateStringCriteria(searchProviderCriteria.getCode(), FIELD_CODE, predicates, builder, root);
+			predicateStringCriteria(searchProviderCriteria.getCode(), FIELD_CODE, false, false, predicates, builder, root);
 
 			// label
-			predicateStringCriteria(searchProviderCriteria.getLabel(), FIELD_LABEL, predicates, builder, root);
+			predicateStringCriteria(searchProviderCriteria.getLabel(), FIELD_LABEL, false, false, predicates, builder, root);
 
 			// nodeProviders.uuid
 			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getNodeProviderUuid())) {

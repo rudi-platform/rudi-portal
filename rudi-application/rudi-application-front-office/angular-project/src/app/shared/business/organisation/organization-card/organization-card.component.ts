@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {OrganizationStatus} from 'micro_service_modules/strukture/strukture-model';
@@ -7,7 +7,7 @@ import {MatCard, MatCardContent} from '@angular/material/card';
 import { NgClass } from '@angular/common';
 import {OrganizationLogoComponent} from '../organization-logo/organization-logo.component';
 import {MatButton} from '@angular/material/button';
-import {LoaderComponent} from '../../../core/common/loader/loader.component';
+import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {TranslatePipe} from '@ngx-translate/core';
 import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
 
@@ -15,18 +15,23 @@ import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
     selector: 'app-organization-card',
     templateUrl: './organization-card.component.html',
     styleUrls: ['./organization-card.component.scss'],
-    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatButton, LoaderComponent, TranslatePipe, TruncateTextPipe]
+    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatButton, LoaderComponent, TranslatePipe, TruncateTextPipe, RouterLink]
 })
 export class OrganizationCardComponent {
     @Input() organizationBean: OrganizationBean;
     @Input() datasetCountLoading: boolean;
     @Input() projectCountLoading: boolean;
 
-    constructor(private readonly router: Router, private readonly uriComponentCodec: URIComponentCodec) {
+    constructor(private readonly uriComponentCodec: URIComponentCodec) {
     }
 
-    onClickOrganization(uuid: string, name: string): Promise<boolean> {
-        return this.router.navigate(['/organization/detail/' + uuid + '/' + this.uriComponentCodec.normalizeString(name)]);
+    /**
+     * Commandes de route vers le detail d'une organisation, utilisées par [routerLink] (balise <a>)
+     * afin de bénéficier du comportement natif du navigateur (clic droit "ouvrir dans un nouvel
+     * onglet", ctrl/cmd+clic, clic molette).
+     */
+    get detailUrl(): string[] {
+        return ['/organization/detail', this.organizationBean.uuid, this.uriComponentCodec.normalizeString(this.organizationBean.name)];
     }
 
     get datasetsCountTranslationKey(): string {

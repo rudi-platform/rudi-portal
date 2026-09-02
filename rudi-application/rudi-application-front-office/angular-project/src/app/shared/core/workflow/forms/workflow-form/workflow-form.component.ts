@@ -14,7 +14,8 @@ import {WorkflowFieldTemplateComponent} from '../../fields/workflow-field-templa
     selector: 'app-workflow-form',
     templateUrl: './workflow-form.component.html',
     styleUrls: ['./workflow-form.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, NgTemplateOutlet, WorkflowFieldTemplateComponent, IsSectionDisplayedPipe, IsSectionOnlyHelpPipe]
+    imports: [FormsModule, ReactiveFormsModule, NgTemplateOutlet, WorkflowFieldTemplateComponent,
+        IsSectionDisplayedPipe, IsSectionOnlyHelpPipe]
 })
 export class WorkflowFormComponent implements OnInit {
     formGroup: FormGroup;
@@ -110,7 +111,7 @@ export class WorkflowFormComponent implements OnInit {
                 section.fields.forEach(field => {
                     const value = field.values ? field.values[0] : ''; // Pour le moment on ne gère pas les champs multiples
                     const validators = this.workflowFormUtils.getValidatorsFor(field);
-                    controlsConfig[this.workflowFormUtils.computeFormControlName(section, field)] = [value, ...validators];
+                    controlsConfig[this.workflowFormUtils.computeFormControlName(section, field)] = [value, validators];
                 });
             });
         }

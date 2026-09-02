@@ -1,1 +1,1 @@
-${projectName} - Modification d'une organisation
+${projectName} - Modification d'organisation

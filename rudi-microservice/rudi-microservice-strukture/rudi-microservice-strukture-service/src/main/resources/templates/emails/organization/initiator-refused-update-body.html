@@ -22,18 +22,18 @@
 <body style="font-family:Montserrat;font-size:12px;	color:#004680;">
 <p>Bonjour,</p>
 <p>
-    L'équipe ${projectName} a refusé votre demande de modification de l'organisation <a
-        href="${urlServer}/organization/detail/${asset.uuid}">${asset.name}</a>
-    pour le motif suivant
-    : <#if messageToOrganizationUpdater?matches(".*[.!?]$")>
-    ${messageToOrganizationUpdater}
+    Votre demande de modification d'organisation <a
+            href="${urlServer}/organization/detail/${asset.uuid}">${asset.name}</a> a été refusée pour le motif suivant
+    :
+    <#if messageToOrganizationUpdater?matches(".*[.!?]$")>
+        "${messageToOrganizationUpdater}"
     <#else>
-    ${messageToOrganizationUpdater}.
-</#if>
+        "${messageToOrganizationUpdater}."
+    </#if>
 </p>
 <p>
     Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
-        href="${urlContact}">ici</a>.
+            href="${urlContact}">ici</a>.
 </p>
 <p>
     À très bientôt, <br>

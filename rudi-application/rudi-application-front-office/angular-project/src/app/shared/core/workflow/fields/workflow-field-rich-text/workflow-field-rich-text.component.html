@@ -1,12 +1,20 @@
 <ng-container [formGroup]="formGroup">
-  <div class="d-flex">
-    <mat-label>{{ label }}@if (required) {
-      <span class="required-symbol">*</span>
-    }</mat-label>
-  </div>
-  <mat-hint class="title-hint">{{ help }}</mat-hint>
+  <label [for]="'rich-text-' + formControlName" [id]="'label-' + formControlName" class="d-flex">
+    <span class="field-label">{{ label }}@if (required) {
+      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+    }</span>
+  </label>
+  @if (help) {
+    <mat-hint [id]="'hint-' + formControlName" class="title-hint">{{ help }}</mat-hint>
+  }
   <mat-form-field appearance="outline">
-    <app-rich-text-editor formControlName="formControlName"></app-rich-text-editor>
+    <app-rich-text-editor
+      [id]="'rich-text-' + formControlName"
+      [formControlName]="formControlName"
+      [attr.aria-labelledby]="'label-' + formControlName"
+      [attr.aria-describedby]="help ? 'hint-' + formControlName : null"
+      [attr.aria-required]="required ? 'true' : 'false'">
+    </app-rich-text-editor>
     <mat-error>
       <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'common.requiredInformationError'|translate }}
     </mat-error>

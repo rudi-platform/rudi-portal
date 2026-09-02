@@ -7,6 +7,16 @@ import {WorkflowExpansionImageComponent} from './workflow-expansion-image/workfl
 import {WorkflowExpansionLabelComponent} from './workflow-expansion-label/workflow-expansion-label.component';
 import { WorklfowExpansionRichLabelComponent } from './worklfow-expansion-rich-label/worklfow-expansion-rich-label.component';
 
+/**
+ * Représentation aplatie d'un champ prête à être affichée dans le template,
+ * afin d'éviter la manipulation de `field.values[0]` / `field.definition.*` dans la vue.
+ */
+export interface WorkflowExpansionField {
+    type: FieldType;
+    label: string;
+    value: string;
+}
+
 @Component({
     selector: 'app-workflow-expansion',
     templateUrl: './workflow-expansion.component.html',
@@ -27,23 +37,45 @@ export class WorkflowExpansionComponent {
 
     readonly panelTaskOpenState = signal(true);
     fieldType = FieldType;
-    @Input() section: Section;
     @Input() title: string;
     @Input() pictureUuid: string;
+    @Input() expanded = true;
+    @Input() fieldLabel: string;
 
-    getFieldListLabel(extendedType: string, values: string[]): any {
+    private _section: Section;
+    /** Champs prêts à l'affichage, calculés à partir de la section reçue. */
+    displayFields: WorkflowExpansionField[] = [];
+    /** Libellé du panneau : label de la section, sinon label du premier champ. */
+    panelTitle: string;
+
+    @Input()
+    set section(section: Section) {
+        this._section = section;
+        this.panelTitle = section?.label ?? section?.fields?.[0]?.definition?.label;
+        this.displayFields = (section?.fields ?? [])
+            .filter(field => field.values)
+            .map(field => ({
+                type: field.definition?.type,
+                label: field.definition?.label,
+                value: field.definition?.type === FieldType.List
+                    ? this.getFieldListLabel(field.definition.extendedType, field.values).join(',')
+                    : field.values[0]
+            }));
+    }
+
+    get section(): Section {
+        return this._section;
+    }
+
+    private getFieldListLabel(extendedType: string, values: string[]): string[] {
         // Convertir extendedType en tableau d'objets
         const extendedTypeArray = JSON.parse(extendedType);
         // Filtrer et mapper les valeurs pour obtenir les labels correspondants
-        const labels = values.map(value => {
+        return values.map(value => {
             // Trouver l'objet dans extendedTypeArray dont le code correspond au value actuel
             const foundObject = extendedTypeArray.find(item => item.code === value);
             // Retourner le label correspondant, ou undefined si le code n'est pas trouvé
             return foundObject ? ' ' + foundObject.label : undefined;
         });
-        return labels;
     }
-
-
-    protected readonly Text = Text;
 }

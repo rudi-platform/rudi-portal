@@ -1,6 +1,12 @@
 @use "app/styles/common-style";
 
 
+// Espace vertical sous le <hr> (entre le hr et le premier élément du contenu)
+// Appliqué à toutes les instances de app-workflow-expansion (projekt + organization)
+hr {
+    margin-bottom: 16px;
+}
+
 .periode-container {
     display: flex;
     flex-direction: row;

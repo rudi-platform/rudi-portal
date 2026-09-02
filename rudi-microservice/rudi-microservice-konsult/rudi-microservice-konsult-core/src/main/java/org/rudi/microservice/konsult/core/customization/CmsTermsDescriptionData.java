@@ -3,6 +3,8 @@
  */
 package org.rudi.microservice.konsult.core.customization;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,12 +18,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class CmsTermsDescriptionData extends AbstractCmsDescriptionData {
 
+	// Doit rester pour la page d'inscription
 	private String cguCategory;
 
-	private String legalMentionCategory;
-
-	private String privacyPolicyCategory;
-
-	private String copyrightsCategory;
+	private List<String> termsCategories;
 
 }

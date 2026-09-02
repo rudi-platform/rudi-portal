@@ -1,7 +1,7 @@
 <ng-container [formGroup]="formGroup">
   <label for="input-{{userInputFormControlName}}">
     <span class="title">{{label}}@if (required && !readonly) {
-      <span class="required-symbol">*</span>
+      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
     }</span>
     <br/>
     @if (!readonly) {
@@ -13,7 +13,9 @@
       <!-- Saisie manuelle de l'utilisateur -->
       <input id="input-{{userInputFormControlName}}" type="text" [matAutocomplete]="auto" matInput
         [formControlName]="userInputFormControlName"
-        [readonly]="readonly">
+        [readonly]="readonly"
+        [required]="required && !readonly"
+        autocomplete="street-address">
         <!-- Liste des adresses correspondant à la saisie -->
         <mat-autocomplete #auto="matAutocomplete" [displayWith]="formatAddress"
           (optionSelected)="setSelectedAddress($event.option.value)">
@@ -39,7 +41,8 @@
         <input id="input-{{userInputFormControlName}}" type="text" matInput
           [class.input-error]="hasError"
           [formControlName]="userInputFormControlName"
-          [readonly]="readonly">
+          [readonly]="readonly"
+          autocomplete="street-address">
         </mat-form-field>
       }
     </ng-container>

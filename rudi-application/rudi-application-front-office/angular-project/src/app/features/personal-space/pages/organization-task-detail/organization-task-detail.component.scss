@@ -8,6 +8,14 @@
         padding-bottom: 24px;
         flex: 0 0 100%;
         max-width: 100%;
+
+        app-workflow-expansion {
+            display: block;
+
+            &:not(:last-child) {
+                margin-bottom: 15px;
+            }
+        }
     }
 
     .owner-information-container {
@@ -18,12 +26,12 @@
 
     .organization-modified-expansion {
         margin-top: 15px;
-
-        .mat-expansion-panel-header.mat-expanded {
-            padding-top: 16px;
-            height: 48px;
-        }
     }
+}
+
+// Aligne l'espace titre → hr sur celui de project-task-detail (remonte le corps du panneau)
+:host ::ng-deep .mat-expansion-panel-body {
+    margin-top: -20px;
 }
 
 @media (min-width: 992px) {

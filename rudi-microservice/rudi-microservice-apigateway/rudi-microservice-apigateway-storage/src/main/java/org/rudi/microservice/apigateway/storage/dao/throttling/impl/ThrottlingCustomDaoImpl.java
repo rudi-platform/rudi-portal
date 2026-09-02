@@ -55,7 +55,7 @@ public class ThrottlingCustomDaoImpl extends AbstractCustomDaoImpl<ThrottlingEnt
 			}
 
 			if (StringUtils.isNotEmpty(searchCriteria.getCode())) {
-				predicateStringCriteria(searchCriteria.getCode(), FIELD_CODE, predicates, builder, root);
+				predicateStringCriteria(searchCriteria.getCode(), FIELD_CODE, false, false, predicates, builder, root);
 			}
 
 		}

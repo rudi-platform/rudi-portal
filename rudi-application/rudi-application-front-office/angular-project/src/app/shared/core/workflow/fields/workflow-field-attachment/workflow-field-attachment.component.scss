@@ -1,9 +1,8 @@
 @use "app/styles/common-style";
+@use "app/shared/core/workflow/fields/workflow-field/workflow-field.component";
 
 .title-hint {
     width: 608px;
-    height: 20px;
-    margin: 5px 32px 12px 0;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -13,12 +12,6 @@
     color: #71757e;
 }
 
-
-.label {
-    font-size: 16px;
-    color: var(--secondary-text);
-    line-height: 2
-}
 
 .attachment {
     margin: 24px 0 0 0;

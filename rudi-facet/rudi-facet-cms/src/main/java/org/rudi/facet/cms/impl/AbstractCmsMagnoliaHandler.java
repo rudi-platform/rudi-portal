@@ -23,10 +23,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FNI18300
  */
+@Slf4j
 public abstract class AbstractCmsMagnoliaHandler<T extends CmsMagnoliaJCRNode> {
 
 	@Getter
@@ -174,12 +176,13 @@ public abstract class AbstractCmsMagnoliaHandler<T extends CmsMagnoliaJCRNode> {
 		StringBuilder filterBuilder = new StringBuilder();
 		if (CollectionUtils.isNotEmpty(categories)) {
 			if (categories.size() == 1) {
-				filterBuilder.append("categories=").append(StringUtils.join(categories.toArray()));
+				filterBuilder.append("categories=").append(categories.getFirst());
 			} else {
-				filterBuilder.append("categories[in]=").append(StringUtils.join(categories.toArray()));
+				// L'opérateur "in" est utilisé pour des plages de valeurs.
+				// On utilise donc un séparateur "|" pour indiquer que l'on veut toutes les catégories en "OR".
+				filterBuilder.append("categories=").append(StringUtils.join(categories, "|"));
 			}
 		}
-
 		return filterBuilder.toString();
 	}
 
@@ -190,7 +193,7 @@ public abstract class AbstractCmsMagnoliaHandler<T extends CmsMagnoliaJCRNode> {
 				.retrieve().bodyToMono(new ParameterizedTypeReference<CmsMagnoliaPage<T>>() {
 				}).block();
 		if (page != null && CollectionUtils.isNotEmpty(page.getResults())) {
-			return page.getResults().get(0);
+			return page.getResults().getFirst();
 		} else {
 			return null;
 		}

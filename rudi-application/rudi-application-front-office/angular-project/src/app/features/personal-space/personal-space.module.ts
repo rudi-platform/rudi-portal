@@ -11,8 +11,8 @@ import {
 } from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
 import {OrganizationFormComponent} from '@features/personal-space/components/organization-form/organization-form.component';
 import {
-    OrganizationInformationComponent
-} from '@features/personal-space/components/organization-information/organization-information.component';
+    TaskOrganizationInformationComponent
+} from '@features/personal-space/components/organization-information/task-organization-information.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
 import {RemoveKeysDialogComponent} from '@features/personal-space/components/remove-keys-dialog/remove-keys-dialog.component';
 import {
@@ -83,7 +83,7 @@ import {PersonalSpaceRoutingModule} from './personal-space-routing.module';
         OrganizationFormDialogComponent,
         LinkedProducerTaskDetailComponent,
         OwnerContactCardComponent,
-        OrganizationInformationComponent,
+        TaskOrganizationInformationComponent,
         RemoveKeysDialogComponent,
         MyAccountComponent,
         MyNotificationsComponent,

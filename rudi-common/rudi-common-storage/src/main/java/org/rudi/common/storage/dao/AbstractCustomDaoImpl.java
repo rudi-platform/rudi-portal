@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.rudi.common.core.util.StringUtils2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -39,28 +41,50 @@ public class AbstractCustomDaoImpl<E, C> {
 	 *
 	 * @param criteria
 	 * @param type
+	 * @param ignoreCase ignore la casse
+	 * @param unAccent   compare les chaînes sans tenir compte des accents
 	 * @param predicates
 	 * @param builder
 	 * @param root
 	 */
-	protected void predicateStringCriteria(String criteria, String type, List<Predicate> predicates,
-			CriteriaBuilder builder, From<?, ?> root) {
+	protected void predicateStringCriteria(String criteria, String type, boolean ignoreCase, boolean unAccent,
+			List<Predicate> predicates, CriteriaBuilder builder, From<?, ?> root) {
 		if (criteria != null) {
-			predicates.add(buildPredicateStringCriteria(criteria, type, builder, root));
+			predicates.add(buildPredicateStringCriteria(criteria, type, ignoreCase, unAccent, builder, root));
 		}
 	}
 
-	protected void predicateStringCriteria(List<String> criterias, String type, List<Predicate> predicates,
-			CriteriaBuilder builder, From<?, ?> root) {
+	/**
+	 * Ajout d'un prédicat sur la requête pour une liste de critères
+	 *
+	 * @param criterias  liste de critères
+	 * @param type       type du critère
+	 * @param ignoreCase ignore la casse
+	 * @param unAccent   compare les chaînes sans tenir compte des accents
+	 * @param predicates liste des prédicats
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 */
+	protected void predicateStringCriteria(List<String> criterias, String type, boolean ignoreCase, boolean unAccent,
+			List<Predicate> predicates, CriteriaBuilder builder, From<?, ?> root) {
 		if (CollectionUtils.isNotEmpty(criterias)) {
 			List<Predicate> predicateOrList = new ArrayList<>();
 			for (String criteria : criterias) {
-				predicateOrList.add(buildPredicateStringCriteria(criteria, type, builder, root));
+				predicateOrList.add(buildPredicateStringCriteria(criteria, type, ignoreCase, unAccent, builder, root));
 			}
 			predicates.add(builder.or(predicateOrList.toArray(Predicate[]::new)));
 		}
 	}
 
+	/**
+	 * Ajout d'un prédicat sur la requête pour une liste de critères
+	 *
+	 * @param criterias  liste de critères
+	 * @param type       type du critère
+	 * @param predicates liste des prédicats
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 */
 	protected void predicateUuidCriteria(List<UUID> criterias, String type, List<Predicate> predicates,
 			CriteriaBuilder builder, From<?, ?> root) {
 		if (CollectionUtils.isNotEmpty(criterias)) {
@@ -72,10 +96,23 @@ public class AbstractCustomDaoImpl<E, C> {
 		}
 	}
 
-	protected <T extends Enum<T>> void predicateStringCriteria(T criteria, String type, List<Predicate> predicates,
-			CriteriaBuilder builder, From<?, ?> root) {
+	/**
+	 * Ajout d'un prédicat sur la requête pour un critère de type Enum
+	 *
+	 * @param <T>        le type d'énuméré
+	 * @param criteria   le critère
+	 * @param type       le type
+	 * @param ignoreCase ignore la casse
+	 * @param unAccent   compare les chaînes sans tenir compte des accents
+	 * @param predicates la liste des prédicats
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 */
+	protected <T extends Enum<T>> void predicateStringCriteria(T criteria, String type, boolean ignoreCase,
+			boolean unAccent, List<Predicate> predicates, CriteriaBuilder builder, From<?, ?> root) {
 		if (criteria != null) {
-			predicates.add(buildPredicateStringCriteria(criteria.toString(), type, builder, root));
+			predicates
+					.add(buildPredicateStringCriteria(criteria.toString(), type, ignoreCase, unAccent, builder, root));
 		}
 	}
 
@@ -177,13 +214,43 @@ public class AbstractCustomDaoImpl<E, C> {
 		}
 	}
 
-	protected Predicate buildPredicateStringCriteria(String criteria, String type, CriteriaBuilder builder,
-			From<?, ?> root) {
+	/**
+	 * Construit un prédicat pour un critère de type String
+	 *
+	 * @param criteria   le critère
+	 * @param type       le type
+	 * @param ignoreCase ignore la casse
+	 * @param unaccent   compare les chaînes sans tenir compte des accents
+	 * @param builder    le builder
+	 * @param root       l'objet racine
+	 * @return le prédicat construit ou null si le critère est vide
+	 */
+	protected Predicate buildPredicateStringCriteria(String criteria, String type, boolean ignoreCase, boolean unaccent,
+			CriteriaBuilder builder, From<?, ?> root) {
 		if (StringUtils.isNotEmpty(criteria)) {
-			if (criteria.indexOf('*') == -1) {
-				return builder.equal(root.get(type), criteria);
+			boolean like = false;
+			Expression<String> expression = null;
+			if (StringUtils2.containsWildcard(criteria)) {
+				like = true;
+				criteria = StringUtils2.convertWildcard(criteria);
+			}
+
+			if (unaccent) {
+				criteria = StringUtils2.normalize(criteria);
+				expression = builder.function("unaccent", String.class, root.get(type));
 			} else {
-				return builder.like(root.get(type), criteria.replace("*", "%"));
+				expression = root.get(type);
+			}
+
+			if (ignoreCase) {
+				criteria = criteria.toLowerCase();
+				expression = builder.lower(expression);
+			}
+
+			if (like) {
+				return builder.like(expression, criteria);
+			} else {
+				return builder.equal(expression, criteria);
 			}
 		}
 		return null;

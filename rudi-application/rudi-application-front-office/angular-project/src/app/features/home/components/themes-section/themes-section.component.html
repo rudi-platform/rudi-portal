@@ -13,10 +13,11 @@
       ariaRoledescription="carrousel">
       @for (theme of themes; track theme; let i = $index) {
         <fieldset class="slide-group" [attr.aria-label]="theme.name + ' ' + (i + 1) + ' sur ' + themes.length" aria-roledescription="diapositive">
-          <button
-            type="button"
+          <a
             class="theme-card"
-            [attr.aria-pressed]="selectedThemeCode === theme.code"
+            [routerLink]="catalogueUrl"
+            [queryParams]="queryParamsFor(theme.code)"
+            [attr.aria-current]="selectedThemeCode === theme.code ? 'true' : null"
             [attr.aria-label]="theme.name"
             [class.theme-card--selected]="selectedThemeCode === theme.code"
             (click)="onClickThemeCard(theme.code)">
@@ -27,7 +28,7 @@
               aria-hidden="false">
             </mat-icon>
             <span class="theme-name">{{theme.name}}</span>
-          </button>
+          </a>
         </fieldset>
       }
     </app-rudi-swiper>
@@ -36,10 +37,11 @@
     <ul class="theme-container">
       @for (theme of themes; track theme) {
         <li class="theme-list-item">
-          <button
-            type="button"
+          <a
             class="theme-card"
-            [attr.aria-pressed]="selectedThemeCode === theme.code"
+            [routerLink]="catalogueUrl"
+            [queryParams]="queryParamsFor(theme.code)"
+            [attr.aria-current]="selectedThemeCode === theme.code ? 'true' : null"
             [attr.aria-label]="theme.name"
             [class.theme-card--selected]="selectedThemeCode === theme.code"
             (click)="onClickThemeCard(theme.code)">
@@ -50,7 +52,7 @@
               aria-hidden="false">
             </mat-icon>
             <span class="theme-name">{{theme.name}}</span>
-          </button>
+          </a>
         </li>
       }
     </ul>

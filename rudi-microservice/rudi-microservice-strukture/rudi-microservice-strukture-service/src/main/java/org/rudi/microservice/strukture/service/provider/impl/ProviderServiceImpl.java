@@ -126,6 +126,10 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	@Transactional // readOnly = false
 	public Provider updateProvider(Provider provider) {
+		if (provider == null) {
+			throw new IllegalArgumentException("Provider missing");
+		}
+
 		if (provider.getUuid() == null) {
 			throw new IllegalArgumentException(UUID_PROVIDER_MISSING_MESSAGE);
 		}
@@ -278,7 +282,7 @@ public class ProviderServiceImpl implements ProviderService {
 	public DocumentContent downloadMedia(@NotNull UUID providerUuid, @NotNull KindOfData kindOfData)
 			throws AppServiceException {
 		try {
-			final var logo = mediaService.getMediaFor(MediaOrigin.PROVIDER, providerUuid, KindOfData.LOGO);
+			final var logo = mediaService.getMediaFor(MediaOrigin.PROVIDER, providerUuid, kindOfData);
 			if (logo == null) {
 				return strukureResourceHelper.getDefaultLogo();
 			}

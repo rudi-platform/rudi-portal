@@ -1,8 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
-import {FiltersService} from '@core/services/filters.service';
 import {Theme} from '@features/home/types';
 import {TranslatePipe} from '@ngx-translate/core';
 import {RudiSwiperComponent} from '@shared/business/home/rudi-swiper/rudi-swiper.component';
@@ -13,7 +12,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
     selector: 'app-themes-section',
     templateUrl: './themes-section.component.html',
     styleUrls: ['./themes-section.component.scss'],
-    imports: [LoaderComponent, RudiSwiperComponent, MatIcon, TranslatePipe]
+    imports: [LoaderComponent, RudiSwiperComponent, MatIcon, TranslatePipe, RouterLink]
 })
 export class ThemesSectionComponent implements OnInit {
     @Input() themes: Theme[];
@@ -45,19 +44,27 @@ export class ThemesSectionComponent implements OnInit {
     };
 
     constructor(
-        private readonly filtersService: FiltersService,
-        private readonly router: Router,
         private readonly breakpointObserver: BreakpointObserverService
     ) {
         this.themes = [];
         this.isLoading = true;
     }
 
+    /**
+     * Commandes de route vers le catalogue filtré sur une thématique, utilisées par [routerLink]
+     * (balise <a>) afin de bénéficier du comportement natif du navigateur (clic simple : navigation
+     * dans le même onglet ; clic droit / ctrl+clic / clic molette : ouverture dans un nouvel onglet).
+     */
+    get catalogueUrl(): string[] {
+        return ['/catalogue'];
+    }
+
+    queryParamsFor(themeCode: string): { themes: string } {
+        return {themes: themeCode};
+    }
+
     onClickThemeCard(themeCode: string): void {
         this.selectedThemeCode = themeCode;
-        this.filtersService.deleteAllFilters();
-        this.filtersService.themesFilter.value = [themeCode];
-        this.router.navigate(['/catalogue']);
     }
 
     ngOnInit(): void {

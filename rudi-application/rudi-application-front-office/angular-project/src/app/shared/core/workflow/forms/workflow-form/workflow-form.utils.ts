@@ -3,7 +3,7 @@ import {Validators} from '@angular/forms';
 import {LogService} from '@core/services/log.service';
 import {Validator} from '@shared/core/workflow/forms/workflow-form/workflow-form.types';
 import {ObjectUtils} from '@shared/utils/object-utils';
-import {Field, Section, Validator as WorkflowValidator} from 'micro_service_modules/api-bpmn';
+import {Field, Section, Validator as WorkflowValidator, ValidatorType} from 'micro_service_modules/api-bpmn';
 import {Form} from 'micro_service_modules/projekt/projekt-api';
 
 const REQUIRED_WORKFLOW_VALIDATOR: WorkflowValidator = {
@@ -54,18 +54,46 @@ export class WorkflowFormUtils {
         return Array.from(validators.values());
     }
 
-    private buildValidatorFromWorkflow(workflowValidator: WorkflowValidator, field: Field): Validator {
-        if (workflowValidator.type === 'REQUIRED') {
-            if (field.definition.type === 'BOOLEAN') {
-                return Validators.requiredTrue;
-            }
-            return Validators.required;
+    /**
+     * Convertit un pattern déclaré côté back (littéral JS entouré de {@code /.../}, avec flags
+     * optionnels) en {@link RegExp} exploitable par {@link Validators.pattern}.
+     */
+    private parsePattern(pattern: string, field: Field): RegExp | null {
+        try {
+            const delimited = /^\/(.*)\/([a-z]*)$/.exec(pattern);
+            return delimited ? new RegExp(delimited[1], delimited[2]) : new RegExp(pattern);
+        } catch (error) {
+            this.logger.warning(
+                `Le pattern "${pattern}" du champ "${field.definition.name}" est invalide.`,
+                error
+            );
+            return null;
         }
-        this.logger.warning(
-            `Le validateur "${workflowValidator.type}" du workflow n'a pas d'équivalent côté Angular.`,
-            workflowValidator
-        );
-        return null;
+    }
+
+    private buildValidatorFromWorkflow(workflowValidator: WorkflowValidator, field: Field): Validator {
+        let validatorType = workflowValidator.type;
+        let attribute = workflowValidator.attribute;
+        switch (validatorType) {
+            case ValidatorType.Required:
+                return Validators.required;
+            case ValidatorType.Maxlength:
+                return Validators.maxLength(parseInt(attribute ?? '0'));
+            case ValidatorType.Positive:
+                return Validators.min(0);
+            case ValidatorType.Negative:
+                return Validators.max(0);
+            case ValidatorType.Regexp: {
+                const regexp = this.parsePattern(attribute ?? '', field);
+                return regexp ? Validators.pattern(regexp) : () => null;
+            }
+            case ValidatorType.Email:
+                return Validators.email;
+            default:
+                return () => {
+                    return null;
+                };
+        }
     }
 }
 

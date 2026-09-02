@@ -1,13 +1,5 @@
 package org.rudi.facet.kaccess.helper.search.mapper;
 
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.DOI;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.GDPR_SENSITIVE;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.GLOBAL_ID;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.LOCAL_ID;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.RESTRICTED_ACCESS;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.TEMPORAL_SPREAD_END_DATE;
-import static org.rudi.facet.kaccess.constant.RudiMetadataField.TEMPORAL_SPREAD_START_DATE;
-
 import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
@@ -30,6 +22,13 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.DOI;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.GDPR_SENSITIVE;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.GLOBAL_ID;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.LOCAL_ID;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.RESTRICTED_ACCESS;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.TEMPORAL_SPREAD_END_DATE;
+import static org.rudi.facet.kaccess.constant.RudiMetadataField.TEMPORAL_SPREAD_START_DATE;
 
 /**
  * Mapper qui construit la requete SOLR pour le dataverse à partir des critères de recherche définis dans DatasetSearchCriteria.
@@ -54,7 +53,7 @@ public class SearchCriteriaMapper extends DatasetSearchCriteriaMapper {
 	private static final String DELIMITER_FOR_CLASSIC_TOKENIZER_REGEX = "[^-/_A-Za-zÀ-ÖØ-öø-ÿ0-9]";
 
 	private static final FieldSpec[] FREE_TEXT_FIELDS = { RudiMetadataField.RESOURCE_TITLE,
-			RudiMetadataField.SYNOPSIS_TEXT };
+			RudiMetadataField.SYNOPSIS_TEXT, RudiMetadataField.SUMMARY_TEXT };
 	private static final String SCORE_DESC_ORDER = "-" + DATAVERSE_SCORE_PROPERTY;
 
 	private final DateTimeMapper dateTimeMapper;

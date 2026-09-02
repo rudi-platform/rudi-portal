@@ -1,9 +1,9 @@
-<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card"
-    tabindex="0"
-    role="button"
-    [attr.aria-label]="projectTitle"
-    (click)="clickCard()"
-    (keydown.enter)="clickCard()">
+<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card">
+    <a
+        class="stretched-link"
+        [routerLink]="detailUrl"
+        [attr.aria-label]="projectTitle">
+    </a>
     <img mat-card-image [src]="projectPicture" [alt]="projectTitle">
     <mat-card-content>
         <div class="project-card-content">

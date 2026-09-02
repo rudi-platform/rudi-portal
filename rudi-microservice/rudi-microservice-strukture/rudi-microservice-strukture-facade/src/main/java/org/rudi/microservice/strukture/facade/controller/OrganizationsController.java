@@ -81,8 +81,8 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	}
 
 	@Override
-	public ResponseEntity<Organization> getOrganization(UUID uuid) throws AppServiceException {
-		return ResponseEntity.ok(organizationService.getOrganization(uuid));
+	public ResponseEntity<Organization> getOrganization(UUID uuid, Boolean full) throws Exception {
+		return ResponseEntity.ok(organizationService.getOrganization(uuid, Boolean.TRUE.equals(full)));
 	}
 
 	@Override

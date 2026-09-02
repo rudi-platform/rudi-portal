@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class DescriptionProcessor implements CreateOrganizationFieldProcessor, UpdateOrganizationFieldProcessor {
 
 	@Override
-	public void processBeforeCreate(OrganizationEntity organization) throws AppServiceBadRequestException {
+	public void processBeforeCreate(OrganizationEntity organization, Organization organizationDto) throws AppServiceBadRequestException {
 		if (organization == null || StringUtils.isEmpty(organization.getDescription()) ||
 				organization.getDescription().length() > 800) {
 			throw new AppServiceBadRequestException("La description de l'organisation est trop longue ( > 800 caractères)");

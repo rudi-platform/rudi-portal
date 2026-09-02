@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
+import {AddressRoleSearchCriteria} from '@core/bean/strukture/address-role-search-criteria';
 import {UserService} from '@core/services/user.service';
 import {PageResultUtils} from '@shared/utils/page-result-utils';
 import {KindOfData} from 'micro_service_modules/api-kmedia';
-import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
+import {OrganizationService, StruktureService} from 'micro_service_modules/strukture/api-strukture';
 import {
     Organization,
     OrganizationMember,
@@ -23,6 +24,7 @@ export abstract class OrganizationMetierService {
         protected imageLogoService: ImageLogoService,
         protected organizationService: OrganizationService,
         protected userService: UserService,
+        protected strukureService: StruktureService,
     ) {
     }
 
@@ -50,8 +52,8 @@ export abstract class OrganizationMetierService {
         );
     }
 
-    getOrganizationByUuid(userUuid: string): Observable<Organization> {
-        return this.organizationService.getOrganization(userUuid);
+    getOrganizationByUuid(userUuid: string, full: boolean = false): Observable<Organization> {
+        return this.organizationService.getOrganization(userUuid, full);
     }
 
     getOrganizationOwnerInfo(organizationUuid: string): Observable<OwnerInfo> {
@@ -89,5 +91,9 @@ export abstract class OrganizationMetierService {
 
     updateOrganizationMember(organizationUuid: string, userUuid: string, organizationMember: OrganizationMember): Observable<any> {
         return this.organizationService.updateOrganizationMember(organizationUuid, userUuid, organizationMember);
+    }
+
+    searchAddressRole(criteria: AddressRoleSearchCriteria): Observable<any> {
+        return this.strukureService.searchAddressRoles(criteria.code, criteria.type, criteria.active);
     }
 }

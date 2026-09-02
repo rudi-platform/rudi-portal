@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class NameProcessor implements CreateOrganizationFieldProcessor, UpdateOrganizationFieldProcessor {
 
 	@Override
-	public void processBeforeCreate(OrganizationEntity organization) throws AppServiceBadRequestException {
+	public void processBeforeCreate(OrganizationEntity organization, Organization organizationDto) throws AppServiceBadRequestException {
 		if(organization != null && StringUtils.isNotBlank(organization.getName()) &&
 			organization.getName().length() > 100) {
 			throw new AppServiceBadRequestException("Le nom de l'organisation est trop long ( > 100 caractères)");

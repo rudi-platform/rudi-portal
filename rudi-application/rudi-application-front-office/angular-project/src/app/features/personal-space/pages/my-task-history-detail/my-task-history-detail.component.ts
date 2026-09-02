@@ -12,8 +12,8 @@ import {
     NewDatasetRequestInfoComponent
 } from '@features/personal-space/components/new-dataset-request-info/new-dataset-request-info.component';
 import {
-    OrganizationInformationComponent
-} from '@features/personal-space/components/organization-information/organization-information.component';
+    TaskOrganizationInformationComponent
+} from '@features/personal-space/components/organization-information/task-organization-information.component';
 import {ProjectTaskHistoricComponent} from '@features/personal-space/components/project-task-historic/project-task-historic.component';
 import {AssetResolverService, ResolvedAsset} from '@features/personal-space/services/asset-resolver.service';
 import {ProjectBearer, ProjectBearerResolverService} from '@features/personal-space/services/project-bearer-resolver.service';
@@ -57,7 +57,7 @@ import {catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil
         TabsComponent,
         TabComponent,
         ProjectMainInformationsComponent,
-        OrganizationInformationComponent,
+        TaskOrganizationInformationComponent,
         LinkedDatasetInfoComponent,
         NewDatasetRequestInfoComponent,
         MatCard,

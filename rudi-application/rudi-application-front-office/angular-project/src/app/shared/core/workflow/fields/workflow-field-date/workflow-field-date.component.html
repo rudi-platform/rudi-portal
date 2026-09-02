@@ -1,16 +1,21 @@
 <ng-container [formGroup]="formGroup">
-  <div class="d-flex">
-    <mat-label>{{label}}@if (required) {
-      <span class="required-symbol">*</span>
-    }</mat-label>
-  </div>
-  <mat-hint class="title-hint">{{help}}</mat-hint>
+  <label [for]="'input-' + formControlName" class="d-flex">
+    <span class="field-label">{{label}}@if (required) {
+      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+    }</span>
+  </label>
+  @if (help) {
+    <mat-hint [id]="'hint-' + formControlName" class="title-hint">{{help}}</mat-hint>
+  }
   <mat-form-field appearance="outline">
     <input
       matInput
       type="date"
+      [id]="'input-' + formControlName"
       [formControlName]="formControlName"
+      [attr.aria-describedby]="help ? 'hint-' + formControlName : null"
       [readonly]="readonly"
+      [required]="required"
       (keydown.control.enter)="submitForm.emit()"
       />
       <mat-error>

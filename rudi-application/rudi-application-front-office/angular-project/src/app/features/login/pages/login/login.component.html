@@ -1,3 +1,4 @@
+<main id="main-content" tabindex="-1">
 <mat-sidenav-container class="main-container">
   <mat-sidenav>
   </mat-sidenav>
@@ -86,7 +87,7 @@
                 <div class="login-form-container">
                   <mat-form-field appearance="fill">
                     <mat-label [translate]="'authentification.login'"></mat-label>
-                    <input matInput type="text" formControlName="login" autocomplete="off">
+                    <input matInput type="text" formControlName="login" autocomplete="username">
                     @if (formControls.login.errors) {
                       <mat-error>
                         {{'authentification.loginRequired'|translate}}
@@ -97,9 +98,10 @@
                   <mat-form-field appearance="fill">
                     <mat-label [translate]="'authentification.password'"></mat-label>
                     <input matInput [type]="hidePassword ? 'password' : 'text'"
-                      formControlName="password" autocomplete="off">
+                      formControlName="password" autocomplete="current-password">
                       <mat-icon matSuffix class="visibility-icon"
-                        (click)="hidePassword = !hidePassword">
+                        (click)="hidePassword = !hidePassword"
+                        [attr.aria-label]="(hidePassword ? 'common.showPassword' : 'common.hidePassword')|translate">
                         {{hidePassword ? 'visibility' : 'visibility_off'}}
                       </mat-icon>
                       @if (formControls.password.errors) {
@@ -224,3 +226,4 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
+</main>

@@ -19,6 +19,7 @@ import reactor.netty.http.client.HttpClient;
 		"org.rudi.facet.dataverse.helper", 
 		"org.rudi.facet.kaccess.service", 
 		"org.rudi.facet.kaccess.helper",
+		"org.rudi.facet.kaccess.datafactory",
 		"org.rudi.facet.kaccess.config"
 		})
 public class SpringBootTestApplication {

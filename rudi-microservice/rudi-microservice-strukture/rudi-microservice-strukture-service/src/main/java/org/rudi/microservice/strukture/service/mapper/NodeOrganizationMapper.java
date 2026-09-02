@@ -22,6 +22,9 @@ import org.rudi.microservice.strukture.core.bean.NodeOrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.Organization;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationWorkflowHelper;
 import org.rudi.microservice.strukture.storage.bean.NodeOrganizationProjectionBean;
+import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
+import org.rudi.microservice.strukture.storage.entity.address.AddressType;
+import org.rudi.microservice.strukture.storage.entity.address.WebsiteAddressEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus;
@@ -52,7 +55,7 @@ public abstract class NodeOrganizationMapper {
 	@Mapping(source = "closingDate", target = "organizationClosingDate")
 	@Mapping(source = "description", target = "organizationSummary")
 	@Mapping(source = "address", target = "organizationAddress")
-	@Mapping(source = "url", target = "organizationUrl")
+	@Mapping(target = "organizationUrl", ignore = true)
 	@Mapping(source = "position", target = "organizationCoordinates", ignore = true)
 	@Mapping(source = "creationDate", target = "organizationDates.created")
 	@Mapping(source = "updatedDate", target = "organizationDates.modified")
@@ -68,7 +71,7 @@ public abstract class NodeOrganizationMapper {
 	@Mapping(source = "closingDate", target = "organizationClosingDate")
 	@Mapping(source = "description", target = "organizationSummary")
 	@Mapping(source = "address", target = "organizationAddress")
-	@Mapping(source = "url", target = "organizationUrl")
+	@Mapping(target = "organizationUrl", ignore = true)
 	@Mapping(source = "position", target = "organizationCoordinates", ignore = true)
 	@Mapping(source = "creationDate", target = "organizationDates.created")
 	@Mapping(source = "updatedDate", target = "organizationDates.modified")
@@ -145,5 +148,23 @@ public abstract class NodeOrganizationMapper {
 				nodeDto.setLinkedProducerStatus(NodeLinkedProducerStatus.valueOf(bean.getLinkedProducerStatus().name()));
 			}
 		}
+	}
+
+	@AfterMapping
+	public void handleOrganizationUrl(OrganizationEntity entity, @MappingTarget NodeOrganization nodeDto) {
+		if (entity == null || entity.getAddresses() == null) {
+			return;
+		}
+
+		final String websiteUrl = entity.getAddresses().stream()
+				.filter(address -> address.getType() == AddressType.WEBSITE)
+				.filter(address -> address.getAddressRole() != null)
+				.filter(address -> AddressRoleEntity.CODE_CONTACT.equals(address.getAddressRole().getCode()))
+				.map(WebsiteAddressEntity.class::cast)
+				.map(WebsiteAddressEntity::getUrl)
+				.findFirst()
+				.orElse(null);
+
+		nodeDto.setOrganizationUrl(websiteUrl);
 	}
 }

@@ -1,6 +1,8 @@
 @use "app/styles/common-style";
 
 .block-upload {
+    outline: none;
+    cursor: pointer;
     ::ng-deep {
         :host {
             display: block;
@@ -45,6 +47,7 @@
             max-height: 165px !important;
             height: 165px !important;
             padding: 12px 0 !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .container {
@@ -52,6 +55,7 @@
             flex-direction: column;
             align-items: center;
             border-radius: 4px;
+            pointer-events: none;
 
             .item {
                 margin-top: 13px;
@@ -90,6 +94,13 @@
             max-width: unset; // par défaut la librairie fixe 440px
         }
     }
+}
+// Style de focus pour le dropZone quand le parent est focus
+.block-upload:focus ::ng-deep #dropZone,
+.block-upload:focus-within ::ng-deep #dropZone {
+    border: 2px solid var(--focus, #0066cc) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.15) !important;
 }
 
 ::ng-deep {

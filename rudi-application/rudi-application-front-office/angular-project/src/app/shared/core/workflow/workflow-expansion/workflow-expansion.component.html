@@ -1,50 +1,48 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="true" class="project-modified-expansion" (opened)="panelTaskOpenState.set(true)" (closed)="panelTaskOpenState.set(false)">
+  <mat-expansion-panel [expanded]="expanded" class="project-modified-expansion" (opened)="panelTaskOpenState.set(true)" (closed)="panelTaskOpenState.set(false)">
     <mat-expansion-panel-header>
-      <mat-panel-title class="expansion-title"> {{ title ?? (section.label ?? section.fields[0].definition.label) }} </mat-panel-title>
+      <mat-panel-title class="expansion-title"> {{ title ?? panelTitle }} </mat-panel-title>
     </mat-expansion-panel-header>
     <hr>
-      @for (field of section.fields; track field) {
-        @if (field.values) {
-          @switch (field.definition.type) {
-            @case (fieldType.String) {
-              <app-workflow-expansion-label
-                [label]="field.definition.label"
-                [value]="field.values[0]"
-              ></app-workflow-expansion-label>
-            }
-            @case (fieldType.Date) {
-              <app-workflow-expansion-date
-                [label]="field.definition.label"
-                [value]="field.values[0]"
-              ></app-workflow-expansion-date>
-            }
-            @case (fieldType.List) {
-              <app-workflow-expansion-label
-                [label]="field.definition.label"
-                [value]="getFieldListLabel(field.definition.extendedType, field.values)"
-              ></app-workflow-expansion-label>
-            }
-            @case (fieldType.Attachment) {
-              <app-workflow-expansion-image
-                [label]="field.definition.label"
-                [uuid]="field.values[0]"
-              ></app-workflow-expansion-image>
-            }
-            @case (fieldType.Hidden) {
-            }
-            @case (fieldType.Richtext) {
-              <app-worklfow-expansion-rich-label
-                [label]="field.definition.label"
-                [value]="field.values[0]"
-              ></app-worklfow-expansion-rich-label>
-            }
-            @default {
-              <app-workflow-expansion-label
-                [label]="field.definition.label"
-                [value]="field.values[0]"
-              ></app-workflow-expansion-label>
-            }
+      @for (field of displayFields; track field) {
+        @switch (field.type) {
+          @case (fieldType.String) {
+            <app-workflow-expansion-label
+              [label]="fieldLabel ?? field.label"
+              [value]="field.value"
+            ></app-workflow-expansion-label>
+          }
+          @case (fieldType.Date) {
+            <app-workflow-expansion-date
+              [label]="fieldLabel ?? field.label"
+              [value]="field.value"
+            ></app-workflow-expansion-date>
+          }
+          @case (fieldType.List) {
+            <app-workflow-expansion-label
+              [label]="fieldLabel ?? field.label"
+              [value]="field.value"
+            ></app-workflow-expansion-label>
+          }
+          @case (fieldType.Attachment) {
+            <app-workflow-expansion-image
+              [label]="fieldLabel ?? field.label"
+              [uuid]="field.value"
+            ></app-workflow-expansion-image>
+          }
+          @case (fieldType.Hidden) {
+          }
+          @case (fieldType.Richtext) {
+            <app-worklfow-expansion-rich-label
+              [label]="fieldLabel ?? field.label"
+              [value]="field.value"
+            ></app-worklfow-expansion-rich-label>
+          }
+          @default {
+            <app-workflow-expansion-label
+              [label]="fieldLabel ?? field.label"
+              [value]="field.value"
+            ></app-workflow-expansion-label>
           }
         }
       }
@@ -54,5 +52,6 @@
           [uuid]="pictureUuid"
         ></app-workflow-expansion-image>
       }
+      <ng-content></ng-content>
     </mat-expansion-panel>
   </mat-accordion>

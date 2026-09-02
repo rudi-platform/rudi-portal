@@ -14,7 +14,7 @@
 .menu-container {
     &-mobile {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: row;
     }
 
     &-desktop {
@@ -101,8 +101,8 @@
 
         &:hover {
             text-decoration: none;
-            border-color: var(--accent-color-svg);
-            color: var(--accent-color-svg);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
     }
 }
@@ -210,13 +210,17 @@
     font-weight: 700;
     text-transform: uppercase;
     white-space: nowrap;
+    padding-bottom: 1px;
+    border-bottom: 2px solid transparent;
 
     &.active {
-        color: var(--accent-color-svg);
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
     }
 
     &:hover {
-        color: var(--accent-color-svg);
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
     }
 }
 
@@ -224,16 +228,71 @@
     &-xs, &-sm, &-md {
         @extend .nav-link-global;
         font-size: 16px;
+        border-bottom: none;
+
+        &.active::before,
+        &.active::after {
+            content: "•";
+            margin: 0 8px;
+        }
     }
 
     &-lg {
         @extend .nav-link-global;
         margin-right: 20px;
+        margin-bottom: 4px;
         font-size: 12px;
     }
 
     &-xl, &-xxl {
         @extend .nav-link-global;
         margin-right: 30px;
+        margin-bottom: 4px;
     }
+}
+
+.fr-skiplinks {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #d5d8de;
+    z-index: 10001;
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+}
+
+.fr-skiplinks:focus-within {
+    clip: auto;
+    clip-path: unset;
+}
+
+.fr-skiplinks:focus-within ~ .header-container {
+    margin-top: 56px;
+}
+
+.fr-skiplinks__list {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 12px 24px;
+    margin: 0;
+    list-style: none;
+}
+
+.skip-link {
+    display: inline-block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    margin: 0 8px;
+}
+
+.skip-link:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }

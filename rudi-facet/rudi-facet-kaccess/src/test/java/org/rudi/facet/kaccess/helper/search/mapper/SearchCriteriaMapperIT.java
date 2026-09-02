@@ -1,8 +1,5 @@
 package org.rudi.facet.kaccess.helper.search.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.rudi.common.core.util.DateTimeUtils.toUTC;
-
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -18,6 +15,9 @@ import org.rudi.facet.dataverse.bean.SearchType;
 import org.rudi.facet.dataverse.helper.dataset.metadatablock.mapper.DateTimeMapper;
 import org.rudi.facet.dataverse.model.search.SearchParams;
 import org.rudi.facet.kaccess.bean.DatasetSearchCriteria;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.rudi.common.core.util.DateTimeUtils.toUTC;
 
 class SearchCriteriaMapperIT {
 
@@ -127,9 +127,9 @@ class SearchCriteriaMapperIT {
 
 	@ParameterizedTest
 	@CsvSource({
-			"09/09/2021,      (rudi_resource_title:09\\/09\\/2021) OR (rudi_abstract_text:09\\/09\\/2021) OR (rudi_resource_title:09\\/09\\/2021*) OR (rudi_abstract_text:09\\/09\\/2021*)", // one word with handled special characters
-			"31/08+,               (rudi_resource_title:31\\/08) OR (rudi_abstract_text:31\\/08) OR (rudi_resource_title:31\\/08*) OR (rudi_abstract_text:31\\/08*)", // one word with not handled special characters
-			"911992100 09/09/2021, (rudi_resource_title:911992100 09\\/09\\/2021) OR (rudi_abstract_text:911992100 09\\/09\\/2021) OR ((rudi_resource_title:911992100*) AND (rudi_resource_title:09\\/09\\/2021*)) OR ((rudi_abstract_text:911992100*) AND (rudi_abstract_text:09\\/09\\/2021*))", // two words with handled special characters
+			"09/09/2021,      (rudi_resource_title:09\\/09\\/2021) OR (rudi_abstract_text:09\\/09\\/2021) OR (rudi_summary_text:09\\/09\\/2021) OR (rudi_resource_title:09\\/09\\/2021*) OR (rudi_abstract_text:09\\/09\\/2021*) OR (rudi_summary_text:09\\/09\\/2021*)", // one word with handled special characters
+			"31/08+,               (rudi_resource_title:31\\/08) OR (rudi_abstract_text:31\\/08) OR (rudi_summary_text:31\\/08) OR (rudi_resource_title:31\\/08*) OR (rudi_abstract_text:31\\/08*) OR (rudi_summary_text:31\\/08*)", // one word with not handled special characters
+			"911992100 09/09/2021, (rudi_resource_title:911992100 09\\/09\\/2021) OR (rudi_abstract_text:911992100 09\\/09\\/2021) OR (rudi_summary_text:911992100 09\\/09\\/2021) OR ((rudi_resource_title:911992100*) AND (rudi_resource_title:09\\/09\\/2021*)) OR ((rudi_abstract_text:911992100*) AND (rudi_abstract_text:09\\/09\\/2021*)) OR ((rudi_summary_text:911992100*) AND (rudi_summary_text:09\\/09\\/2021*))", // two words with handled special characters
 	})
 	void datasetSearchCriteriaToSearchParams_freeText(final String freeText, final String expectedQuery) {
 		final DatasetSearchCriteria datasetSearchCriteria = new DatasetSearchCriteria().freeText(freeText);

@@ -1,5 +1,7 @@
 package org.rudi.microservice.strukture.service.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -16,12 +18,7 @@ import org.rudi.microservice.strukture.storage.entity.organization.OrganizationE
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.minidev.json.JSONObject;
-
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class,
-		AbstractAddressMapper.class })
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { MapperUtils.class })
 @Component
 public abstract class OrganizationMapper implements AssetDescriptionMapper<OrganizationEntity, Organization> {
 
@@ -34,10 +31,12 @@ public abstract class OrganizationMapper implements AssetDescriptionMapper<Organ
 	@Override
 	@InheritInverseConfiguration
 	@Mapping(source = "position", target = "position", ignore = true)
+	@Mapping(target = "addresses", ignore = true)
 	public abstract OrganizationEntity dtoToEntity(Organization dto);
 
 	@Override
 	@Mapping(source = "position", target = "position", ignore = true)
+	@Mapping(target = "addresses", ignore = true)
 	public abstract Organization entityToDto(OrganizationEntity entity);
 
 	/**
@@ -46,6 +45,7 @@ public abstract class OrganizationMapper implements AssetDescriptionMapper<Organ
 	 */
 	@Mapping(source = "uuid", target = "uuid", ignore = true)
 	@Mapping(source = "position", target = "position", ignore = true)
+	@Mapping(target = "addresses", ignore = true)
 	public abstract void dtoToEntity(Organization dto, @MappingTarget OrganizationEntity entity);
 
 	@AfterMapping

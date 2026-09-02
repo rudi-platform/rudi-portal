@@ -7,6 +7,8 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,8 +36,8 @@ public class ProviderEntity extends AbstractStampedEntity {
 
 	private static final long serialVersionUID = -6508639499690690560L;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "provider_fk")
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "provider_address", schema = SchemaConstants.DATA_SCHEMA, joinColumns = @JoinColumn(name = "provider_fk"), inverseJoinColumns = @JoinColumn(name = "address_fk"))
 	private Set<AbstractAddressEntity> addresses;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

@@ -61,7 +61,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 			CriteriaQuery<?> criteriaQuery, Root<OrganizationEntity> root, List<Predicate> predicates) {
 
 		predicateCollectionCriteria(searchCriteria.getUuids(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
-		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
+		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, false, false, predicates, builder, root);
 		addExcludedOrganizationPredicates(searchCriteria.getExcludeOrganizationUuids(), predicates, builder, root);
 
 		if (BooleanUtils.isTrue(searchCriteria.getActive())) {
@@ -132,6 +132,9 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 		// Ajout des critères de recherche dans le where de la requête principale sur les organisations
 		addWhereSearchNodeOrganization(searchCriteria, builder, searchQuery, searchRoot);
 
+		// URL non projetee ici : elle est remontee ailleurs dans les parcours entity->DTO.
+		// Cela evite une incompatibilite Hibernate 6 sur treat/join de collection polymorphe.
+
 		// le select construit un bean de projection avec les infos de l'organisation et du lien avec le producteur
 		searchQuery.select(builder.construct(NodeOrganizationProjectionBean.class,
 				// infos de l'organisation
@@ -139,7 +142,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 				searchRoot.get(OrganizationEntity.FIELD_ORGANIZATION_STATUS),
 				searchRoot.get(OrganizationEntity.FIELD_STATUS), searchRoot.get(RepositoryConstants.FIELD_OPENING_DATE),
 				searchRoot.get(RepositoryConstants.FIELD_CLOSING_DATE),
-				searchRoot.get(OrganizationEntity.FIELD_DESCRIPTION), searchRoot.get(OrganizationEntity.FIELD_URL),
+				searchRoot.get(OrganizationEntity.FIELD_DESCRIPTION), builder.nullLiteral(String.class),
 				searchRoot.get(OrganizationEntity.FIELD_ADDRESS),
 				searchRoot.get(OrganizationEntity.FIELD_CREATION_DATE),
 				searchRoot.get(OrganizationEntity.FIELD_UPDATED_DATE),
@@ -244,7 +247,7 @@ public class OrganizationCustomDaoImpl extends AbstractCustomDaoImpl<Organizatio
 
 
 		predicateCollectionCriteria(searchCriteria.getUuids(), RepositoryConstants.FIELD_UUID, predicates, builder, root);
-		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, predicates, builder, root);
+		predicateStringCriteria(searchCriteria.getName(), OrganizationEntity.FIELD_NAME, false, false, predicates, builder, root);
 		addExcludedOrganizationPredicates(searchCriteria.getExcludeOrganizationUuids(), predicates, builder, root);
 
 		if (searchCriteria.getStatus() != null) {

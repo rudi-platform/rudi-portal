@@ -1,6 +1,6 @@
 <ng-container [formGroup]="formGroup">
   <div class="d-flex">
-    <mat-label class="label">{{label}}@if (required && !readonly) {
+    <mat-label [id]="'label-' + formControlName" class="field-label">{{label}}@if (required && !readonly) {
       <span class="required-symbol">*</span>
     }
   </mat-label>
@@ -20,6 +20,7 @@
     imageText="metaData.selfdataInformationRequest.imageUploader"
     imageFormat="metaData.selfdataInformationRequest.formatImage"
     errorText="metaData.selfdataInformationRequest.creation.error.errorUpload"
+    [ariaLabelledby]="'label-' + formControlName"
   ></app-uploader>
 }
 <app-loader [allPage]="false" [isLight]="true" [noText]="true"

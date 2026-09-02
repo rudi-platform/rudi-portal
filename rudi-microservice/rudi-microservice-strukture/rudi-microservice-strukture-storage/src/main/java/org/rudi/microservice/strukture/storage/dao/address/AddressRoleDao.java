@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AddressRoleDao extends StampedRepository<AddressRoleEntity> {
 
+
 }

@@ -248,6 +248,8 @@ abstract class org.rudi.microservice.strukture.storage.entity.address.AbstractAd
  {TableName=abstract_address}
  {TableSchema=strukture_data}
 --
+	{field} {static} +FIELD_ADDRESS_ROLE : String
+	{field} {static} +FIELD_TYPE : String
 	{field} {static} -serialVersionUID : long
 	{method} +equals ( o : Object ) : boolean
 	{method} +hashCode () : int
@@ -259,6 +261,7 @@ class org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity <
  {TableName=address_role}
  {TableSchema=strukture_data}
 --
+	{field} {static} +CODE_CONTACT : String
 	{field} {static} -serialVersionUID : long
 	{method} +equals ( obj : Object ) : boolean
 	{method} +hashCode () : int
@@ -318,6 +321,7 @@ class org.rudi.microservice.strukture.storage.entity.address.WebsiteAddressEntit
  {TableName=web_site_address}
  {TableSchema=strukture_data}
 --
+	{field} {static} +FIELD_URL : String
 	{field} {static} -serialVersionUID : long
 	{field} +@Column("url") url : String
 	{method} +equals ( obj : Object ) : boolean
@@ -331,6 +335,7 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
  {TableSchema=strukture_data}
 --
 	{field} {static} +FIELD_ADDRESS : String
+	{field} {static} +FIELD_ADDRESSES : String
 	{field} {static} +FIELD_CREATION_DATE : String
 	{field} {static} +FIELD_DATA : String
 	{field} {static} +FIELD_DESCRIPTION : String
@@ -340,14 +345,12 @@ class org.rudi.microservice.strukture.storage.entity.organization.OrganizationEn
 	{field} {static} +FIELD_POSITION : String
 	{field} {static} +FIELD_STATUS : String
 	{field} {static} +FIELD_UPDATED_DATE : String
-	{field} {static} +FIELD_URL : String
 	{field} +@Column("address") address : String
 	{field} +closingDate : java.time.LocalDateTime
 	{field} +name : String
 	{field} +openingDate : java.time.LocalDateTime
 	{field} +@Column("position") position : org.locationtech.jts.geom.Geometry
 	{field} {static} -serialVersionUID : long
-	{field} +@Column("url") url : String
 	{method} +equals ( o : Object ) : boolean
 	{method} +hashCode () : int
 	{method} +toString () : String
@@ -471,6 +474,7 @@ org.rudi.microservice.strukture.storage.entity.address.EmailAddressEntity --|>  
 org.rudi.microservice.strukture.storage.entity.address.PostalAddressEntity --|>  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity
 org.rudi.microservice.strukture.storage.entity.address.TelephoneAddressEntity --|>  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity
 org.rudi.microservice.strukture.storage.entity.address.WebsiteAddressEntity --|>  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity
+org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity :  @ManyToMany\naddresses
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity : members
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity -->  org.rudi.microservice.strukture.storage.entity.organization.OrganizationStatus :  @Column("organization_status")\norganizationStatus
 org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity --|>  org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
@@ -481,7 +485,7 @@ org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity -->
 org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity --|>  org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity
 org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus ..|>  org.rudi.common.storage.entity.PositionedStatus
 org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity --|>  org.rudi.common.storage.entity.AbstractLongIdEntity
-org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity :  @OneToMany\naddresses
+org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity :  @ManyToMany\naddresses
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity :  @OneToMany\nlinkedProducers
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity "1" o-- "0..*"  org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity :  @OneToMany\nnodeProviders
 org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity --|>  org.rudi.common.storage.entity.AbstractStampedEntity

@@ -111,39 +111,8 @@ export class HeaderComponent implements OnInit {
     }
 
     /**
-     * Event click sur le bouton : Mon Compte
+     * Event click sur le bouton : Déconnexion
      */
-    handleClickGoMonCompte(): void {
-        // Si on est co : go /account
-        if (this.isConnectedAsUser) {
-            this.router.navigate(['/personal-space/my-account']);
-        }
-        // pas co ? go login
-        else {
-            this.router.navigate(['/login']);
-        }
-    }
-
-    handleClickGoReceivedLinkedDatasets(): Promise<boolean> {
-        return this.router.navigate(['/personal-space/my-notifications']);
-    }
-
-    handleClickGoToReuse(): Promise<boolean> {
-        return this.router.navigate(['/personal-space/my-activity']);
-    }
-
-    getUrlToDoc(): void {
-        this.propertiesMetierService.get('front.docRudi').subscribe({
-            next: (link: string) => {
-                this.urlToDoc = link;
-            }
-        });
-    }
-
-    handleClickGoToMySelfdata(): Promise<boolean> {
-        return this.router.navigate(['/personal-space/selfdata-datasets']);
-    }
-
     handleClickLogout(): void {
         this.authenticationService.logout().subscribe({
             next: (logoutUri: string) => {
@@ -173,6 +142,13 @@ export class HeaderComponent implements OnInit {
         this.router.navigate(['/catalogue']);
     }
 
+    getUrlToDoc(): void {
+        this.propertiesMetierService.get('front.docRudi').subscribe({
+            next: (link: string) => {
+                this.urlToDoc = link;
+            }
+        });
+    }
 
     private initCustomizationDescription(): void {
         this.logoIsLoading = true;
@@ -202,5 +178,23 @@ export class HeaderComponent implements OnInit {
         });
     }
 
+    /**
+     * Gère le clic sur les skip-links pour placer le focus sans rechargement
+     */
+    handleSkipLinkClick(event: Event, targetId: string): void {
+        // EMpeche le rechargemeent complet de la page propre au SPA
+        event.preventDefault();
+        
+        const targetElement = document.getElementById(targetId);
+        if (!targetElement) {
+            return;
+        }
+        window.history.replaceState(null, '', `#${targetId}`);
+        
+        // Focus sur l'élément
+        targetElement.focus();
+        // Fallback : scroll si focus ne l'a pas fait
+        targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
 
 }

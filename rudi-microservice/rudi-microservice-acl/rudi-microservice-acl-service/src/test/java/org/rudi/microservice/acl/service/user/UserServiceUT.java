@@ -38,12 +38,13 @@ import org.rudi.microservice.acl.service.password.PasswordLengthException;
 import org.rudi.microservice.acl.service.role.RoleService;
 import org.rudi.microservice.acl.storage.dao.address.AbstractAddressDao;
 import org.rudi.microservice.acl.storage.dao.address.AddressRoleDao;
+import org.rudi.microservice.acl.storage.dao.token.TokenDao;
 import org.rudi.microservice.acl.storage.dao.user.UserDao;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import lombok.val;
 
@@ -73,6 +74,9 @@ class UserServiceUT {
 
 	@Autowired
 	private AddressRoleDao addressRoleDao;
+
+	@Autowired
+	private TokenDao tokenDao;
 
 	// donnees existant en base par défaut
 	private Role roleUtilisateur;
@@ -118,7 +122,8 @@ class UserServiceUT {
 	}
 
 	@AfterEach
-	public void cleanData() {
+	void cleanData() {
+		tokenDao.deleteAll();
 		userDao.deleteAll();
 		abstractAddressDao.deleteAll();
 		addressRoleDao.deleteAll();

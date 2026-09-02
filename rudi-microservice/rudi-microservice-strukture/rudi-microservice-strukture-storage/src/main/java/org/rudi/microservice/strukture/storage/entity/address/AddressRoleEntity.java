@@ -19,6 +19,8 @@ import lombok.ToString;
 @ToString
 public class AddressRoleEntity extends AbstractStampedEntity {
 
+	public static final String CODE_CONTACT = "CONTACT";
+
 	private static final long serialVersionUID = 911619997745516430L;
 
 	@Column(name = "type", nullable = false)

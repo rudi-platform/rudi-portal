@@ -1,17 +1,18 @@
-<div class="ag-grid-div">
-    <ag-grid-angular
-        class="ag-theme-alpine ag-grid-style"
-        [rowData]="rowData"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
-        [rowHeight]="50"
-        [gridOptions]="gridOptions"
-        (gridReady)="fitColumnSize()"
-        (modelUpdated)="fitColumnSize()"
-    >
-    </ag-grid-angular>
+<div class="ag-grid-figure">
+    @if (caption) {
+        <h2 [id]="headingId" class="spreadsheet-caption">{{caption}}</h2>
+    }
+    <div class="ag-grid-div">
+        <ag-grid-angular
+            class="ag-theme-alpine ag-grid-style"
+            [rowData]="rowData"
+            [columnDefs]="columnDefs"
+            [defaultColDef]="defaultColDef"
+            [rowHeight]="50"
+            [gridOptions]="gridOptions"
+            (gridReady)="fitColumnSize()"
+            (modelUpdated)="fitColumnSize()"
+        >
+        </ag-grid-angular>
+    </div>
 </div>
-
-
-
-

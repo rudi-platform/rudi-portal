@@ -9,23 +9,20 @@ export type Base64EncodedLogo = string;
 export class ImageLogoService {
 
     /**
-     * Conversion asynchrone d'un Blob en image64
+     * Conversion asynchrone d'un Blob en data URL base64 (compatible PNG, SVG, JPEG...).
      * @param image le blob contenant l'image
      */
     public createImageFromBlob(image: Blob): Observable<Base64EncodedLogo> {
         return new Observable((observer: Observer<Base64EncodedLogo>) => {
             const reader = new FileReader();
-            let logo;
             reader.addEventListener('load', () => {
-                logo = reader.result;
-                observer.next(logo);
+                observer.next(reader.result as Base64EncodedLogo);
                 observer.complete();
             }, false);
 
             if (image) {
                 reader.readAsDataURL(image);
-            }
-            else {
+            } else {
                 observer.error('Erreur tentative de conversion avec un blob nul');
             }
         });

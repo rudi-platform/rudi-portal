@@ -1280,11 +1280,11 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "active",
-						"description": "Elements actif ou tous",
+						"name": "code",
+						"description": "Code du rôle",
 						"required": false,
 						"schema": {
-							"type": "boolean"
+							"type": "string"
 						}
 					},
 					{
@@ -1294,6 +1294,15 @@
 						"required": false,
 						"schema": {
 							"$ref": "rudi-strukture-model.json#/components/schemas/AddressType"
+						}
+					},
+					{
+						"in": "query",
+						"name": "active",
+						"description": "Elements actif ou tous",
+						"required": false,
+						"schema": {
+							"type": "boolean"
 						}
 					}
 				],
@@ -1665,6 +1674,15 @@
 						"schema": {
 							"type": "string",
 							"format": "uuid"
+						}
+					},
+					{
+						"in": "query",
+						"name": "full",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
 						}
 					}
 				],

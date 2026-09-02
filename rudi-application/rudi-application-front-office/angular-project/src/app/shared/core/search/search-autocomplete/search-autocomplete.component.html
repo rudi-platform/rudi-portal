@@ -1,10 +1,14 @@
 <div>
+  <label for="search-autocomplete-input" class="visually-hidden">{{placeholder}}</label>
   <div class="input-and-loader">
     <input type="text" class="form-control text-indent"
+      id="search-autocomplete-input"
       [placeholder]="placeholder"
       [formControl]="formControl"
       [matAutocomplete]="auto"
       [title]="formControl.value"
+      [attr.aria-label]="placeholder"
+      autocomplete="off"
       >
       @if (loading) {
         <div class="spinner-on-input">

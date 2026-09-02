@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {MatError, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatError} from '@angular/material/form-field';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {TranslatePipe} from '@ngx-translate/core';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
@@ -10,7 +10,7 @@ import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-fiel
     selector: 'app-workflow-field-boolean',
     templateUrl: './workflow-field-boolean.component.html',
     styleUrls: ['./workflow-field-boolean.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatCheckbox, MatLabel, MatHint, MatError, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatCheckbox, MatError, TranslatePipe]
 })
 export class WorkflowFieldBooleanComponent extends WorkflowFieldComponent {
 

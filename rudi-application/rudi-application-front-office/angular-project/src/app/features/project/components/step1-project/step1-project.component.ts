@@ -2,7 +2,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption} from '@angular/material/core';
-import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatSelect} from '@angular/material/select';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
@@ -21,7 +21,9 @@ import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_serv
     selector: 'app-step1-project',
     templateUrl: './step1-project.component.html',
     styleUrls: ['./step1-project.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, UploaderComponent, MatSelect, MatOption, MonthYearDatepickerComponent, RadioListComponent, TranslatePipe, RichTextEditorComponent]
+    imports: [FormsModule, ReactiveFormsModule, MatHint, MatFormField,
+        MatInput, MatError, UploaderComponent, MatSelect, MatOption, MonthYearDatepickerComponent,
+        RadioListComponent, TranslatePipe, RichTextEditorComponent]
 })
 export class Step1ProjectComponent implements OnInit {
 

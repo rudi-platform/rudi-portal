@@ -1,4 +1,5 @@
 <!-- On ajoute ce contexte de sidenav pour éviter trop de régressions suite à la refonte du front -->
+<main id="main-content" tabindex="-1">
 <mat-sidenav-container>
   <mat-sidenav-content class="sidebar-content-pd">
     <app-loader [active]="isLoading"></app-loader>
@@ -30,7 +31,7 @@
                 [licenceLabel]="licenceLabel"
                 [conceptUri]="conceptUri"
                 [themeLabel]="themeLabel"
-                [downloadableMedias]="downloadableMedias"
+                [downloadableMedias]="usersDownloadableMedias"
                 [isLoading]="isLoading"
                 [otherDatasets]="otherDatasets"
                 [themeCode]="themeCode"
@@ -71,7 +72,7 @@
             </app-tab>
           }
           <!-- Boutton télécharger -->
-            @if (!isSelfdata && hasDownloadableMedia) {
+            @if (!isSelfdata && hasDownloadAccess) {
             <app-banner-button #clickMenuFormatTrigger="matMenuTrigger" [matMenuTriggerFor]="formatMenu">
               <div class="d-flex align-items-center">
                 <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
@@ -88,7 +89,7 @@
                             (click)="$event.stopPropagation()"
                             aria-label="Select an option"
                             formControlName="options" class="d-flex flex-column">
-                            @for (item of downloadableMedias; track item; let i = $index) {
+                            @for (item of usersDownloadableMedias; track item; let i = $index) {
                               <mat-radio-button
                                 [checked]="i === 0"
                                 [value]="item"
@@ -124,7 +125,7 @@
             </app-banner-button>
           }
           <!-- Demander l'accès à un JDD restreint -->
-            @if (!isSelfdata && isRestricted && hasDownloadableMedia) {
+            @if (!isSelfdata && isRestricted && containsFileMedia) {
             <app-banner-button
               (click)="handleClickRequestAccess()">
               <div class="d-flex align-items-center">
@@ -132,7 +133,7 @@
                 <span>{{ 'metaData.restrictedDatasetRequest'|translate }}</span>
               </div>
             </app-banner-button>
-          }
+            }
         </app-tabs>
         <!-- Fin Bandeau -->
         <div
@@ -172,3 +173,4 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 <router-outlet></router-outlet>
+</main>

@@ -27,9 +27,15 @@
     </p>
     <p>
         Votre demande concerne l'ajout du jeu de données : ${asset.title} : ${asset.description}</p>
-    <p>
-        Voici les informations complémentaires apportées à votre demande : ${messageToProjectOwner}</a>
-    </p>
+    <#if messageToProjectOwner??>
+        <p>
+            Message adossé à votre demande : <#if messageToProjectOwner?matches(".*[.!?]$")>
+            "${messageToProjectOwner}"
+            <#else>
+            "${messageToProjectOwner}."
+        </#if>
+        </p>
+    </#if>
     <p>
         À très bientôt, <br>
         L'équipe ${teamName} <br>

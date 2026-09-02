@@ -1,0 +1,57 @@
+<div class="card-description-keyword">
+  <mat-card class="card">
+    <app-loader [active]="loading" [allPage]="false" [isLight]="true" [noText]="true"></app-loader>
+    @if (!loading) {
+      <mat-card-content>
+        @if (organization.uuid) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.identifiant'|translate }}</span>
+            <span class="data-value">{{ organization.uuid }}</span>
+          </div>
+        }
+        @if (organization.name) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.nom'|translate }}</span>
+            <span class="data-value">{{ organization.name }}</span>
+          </div>
+        }
+        @if (organization.description) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.description'|translate }}</span>
+            <span class="data-value">{{ organization.description }}</span>
+          </div>
+        }
+        @if (organization.address) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.adresse' | translate }}</span>
+            <span class="data-value">{{ organization.address }}</span>
+          </div>
+        }
+        @if (organizationAddresses.url) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.url'|translate }}</span>
+            <span class="data-value">{{ organizationAddresses.url }}</span>
+          </div>
+        }
+        @if (organizationAddresses.email) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.email'|translate }}</span>
+            <span class="data-value">{{ organizationAddresses.email }}</span>
+          </div>
+        }
+        @if (organizationAddresses.phoneNumber) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.phone'|translate }}</span>
+            <span class="data-value">{{ organizationAddresses.phoneNumber }}</span>
+          </div>
+        }
+        @if (imageBase64) {
+          <div class="vertical-space">
+            <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.image'|translate }}</span>
+            <img class="organization-detail-image" [src]="imageBase64" [attr.alt]="'personalSpace.organizationDetails.imageAlt' | translate : { name: organization.name }">
+          </div>
+        }
+      </mat-card-content>
+    }
+  </mat-card>
+</div>

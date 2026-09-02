@@ -1,17 +1,22 @@
 <ng-container [formGroup]="formGroup">
-  <div class="d-flex">
-    <mat-label>{{ label }}@if (required) {
-      <span class="required-symbol">*</span>
-    }</mat-label>
-  </div>
-  <mat-hint class="title-hint">{{ help }}</mat-hint>
+  <label [for]="'select-' + formControlName" class="d-flex">
+    <span class="field-label">{{ label }}@if (required) {
+      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+    }</span>
+  </label>
+  @if (help) {
+    <mat-hint [id]="'hint-' + formControlName" class="title-hint">{{ help }}</mat-hint>
+  }
   <div class="wf-list-field-wrapper">
     @if (options) {
       <mat-form-field appearance="outline" class="wf-list-form-field">
         <mat-select
+          [id]="'select-' + formControlName"
           [formControlName]="formControlName"
+          [attr.aria-describedby]="help ? 'hint-' + formControlName : null"
           [placeholder]="'common.select.oneOptionPlaceHolder'|translate"
           [multiple]="field.definition.multiple"
+          [required]="required"
           panelClass="wf-list-panel">
           @for (option of options; track option) {
             <mat-option

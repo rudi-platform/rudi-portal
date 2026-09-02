@@ -28,6 +28,7 @@ public class OrganizationSearchCriteria implements SearchCriteria {
 	private List<OrganizationStatus> organizationStatus;
 	private Status status;
 	private Boolean loadAllInformations;
+	private Boolean full;
 	private List<UUID> excludeOrganizationUuids ;
 
 	private Integer offset;

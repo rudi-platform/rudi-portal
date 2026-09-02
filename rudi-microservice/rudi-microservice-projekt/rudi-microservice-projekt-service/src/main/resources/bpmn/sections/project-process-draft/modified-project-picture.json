@@ -1,5 +1,5 @@
 {
-	"help": "Zone pour la définition de l'image",
+	"help": "Image",
 	"fieldDefinitions": [
 		{
 			"name": "projectPicture",

@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 import {SwiperBreakpoint} from '@shared/business/home/rudi-swiper/types';
 import Swiper from 'swiper';
 import {Autoplay, Controller, Grid, Keyboard, Navigation, Pagination} from 'swiper/modules';
@@ -6,7 +7,8 @@ import {Autoplay, Controller, Grid, Keyboard, Navigation, Pagination} from 'swip
 @Component({
     selector: 'app-rudi-swiper',
     templateUrl: './rudi-swiper.component.html',
-    styleUrls: ['./rudi-swiper.component.scss']
+    styleUrls: ['./rudi-swiper.component.scss'],
+    imports: [MatIcon],
 })
 export class RudiSwiperComponent implements AfterViewInit {
     private swiper: Swiper;
@@ -50,7 +52,7 @@ export class RudiSwiperComponent implements AfterViewInit {
             element.classList.add('swiper-slide');
         });
 
-        if (!!this.swiper) {
+        if (this.swiper) {
             this.swiper.destroy(true, true);
         }
 

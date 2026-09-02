@@ -1,10 +1,5 @@
 package org.rudi.microservice.strukture.service.address;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +16,11 @@ import org.rudi.microservice.strukture.storage.dao.address.AddressRoleDao;
 import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Class de test du service AddressRoleService
@@ -170,13 +170,14 @@ class AddressRoleServiceUT {
 		List<AddressRole> addressRoles = addressRoleService.searchAddressRoles(new AddressRoleSearchCriteria());
 		assertEquals(nbAddressRole + 1, addressRoles.size());
 
-		// recherche tous critères
+		// recherche tous critères sauf code
 		criteria = new AddressRoleSearchCriteria();
 		criteria.setType(AddressType.PHONE);
 		criteria.setActive(true);
 		addressRoles = addressRoleService.searchAddressRoles(criteria);
 		assertEquals(1 + initialCountPhone, addressRoles.size());
-		assertEquals(updatedAddressRole.getUuid(), addressRoles.get(0).getUuid());
+		assertThat(addressRoles).as("L'uuid du role telephone pro doit être présent")
+				.anyMatch(a -> a.getUuid().equals(updatedAddressRole.getUuid()));
 
 		// recherche par type
 		criteria = new AddressRoleSearchCriteria();

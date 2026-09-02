@@ -1,17 +1,16 @@
 <ng-container [formGroup]="formGroup">
   <div class="checkbox-container">
     <div class="checkbox-area">
-      <mat-checkbox [formControlName]="formControlName"></mat-checkbox>
+      <mat-checkbox [id]="'checkbox-' + formControlName" [formControlName]="formControlName"></mat-checkbox>
     </div>
     <div class="label-area">
-      <div class="d-inline">
-        <mat-label [innerHTML]="safeLabel">
-        </mat-label>
+      <label [for]="'checkbox-' + formControlName" class="d-inline">
+        <span [innerHTML]="safeLabel"></span>
         @if (required) {
-          <span class="required-symbol">*</span>
+          <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
         }
-      </div>
-      <mat-hint class="title-hint">{{help}}</mat-hint>
+      </label>
+      <div class="title-hint">{{help}}</div>
       @if (formControl.touched && formControl.errors) {
         <mat-error>
           <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.requiredCheckboxError'|translate}}

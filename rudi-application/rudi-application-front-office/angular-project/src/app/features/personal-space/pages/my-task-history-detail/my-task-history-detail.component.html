@@ -1,3 +1,4 @@
+<main id="main-content" tabindex="-1">
 <app-page>
   <app-task-detail-header
     [headingLoading]="loading"
@@ -64,10 +65,10 @@
                   @if (resolvedAsset.type == 'organization') {
                     <div class="producer-link-details-container">
                       <div class="producer-link-information-container">
-                        <app-organization-information
+                        <app-task-organization-information
                           [organization]="resolvedAsset.organization"
                           [loading]="false">
-                        </app-organization-information>
+                        </app-task-organization-information>
                       </div>
                       <div class="owner-information-container">
                         <app-owner-contact-card
@@ -83,10 +84,10 @@
                   @if (resolvedAsset.type == 'organization') {
                     <div class="producer-link-details-container">
                       <div class="producer-link-information-container">
-                        <app-organization-information
+                        <app-task-organization-information
                           [organization]="resolvedAsset.organization"
                           [loading]="false">
-                        </app-organization-information>
+                        </app-task-organization-information>
                       </div>
                       <div class="owner-information-container">
                         <app-owner-contact-card
@@ -197,3 +198,4 @@
       </app-tabs>
 }
 </app-page>
+</main>

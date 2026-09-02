@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>${projectName} - Demande de partenariat acceptée pour la réutilisation ${asset.title}</title>
+    <title>${projectName} - Demande de partenariat à une réutilisation acceptée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -23,14 +23,13 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        L'organisation ${organizationName} a accepté votre demande de partenariat pour la réutilisation :
-        ${asset.title}.
-        <#if reason??><#if reason?matches(".*[.!?]$")>Message adossé à sa réponse : "${reason}"<#else>Message adossé à sa réponse : "${reason}."</#if></#if>
+        Votre demande de partenariat à la réutilisation <a
+                href="${urlServer}/projets/detail/${asset.uuid}">${asset.title}</a> a été acceptée par <a
+                href="${urlServer}/organization/detail/${organizationUuid}">${organizationName}</a>
     </p>
-    <p>
-        Vous pouvez contacter l'équipe ${teamName} pour toute information supplémentaire en cliquant <a
-            href="${urlContact}">ici</a>.
-    </p>
+
+    <#if reason??><#if reason?matches(".*[.!?]$")><p>Le message renseigné par l'utilisateur : "${reason}"</p><#else><p>
+        Le message renseigné par l'utilisateur : "${reason}."</p></#if></#if>
     <p>
         À très bientôt, <br>
         L'équipe ${teamName} <br>

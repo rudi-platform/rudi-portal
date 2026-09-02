@@ -249,6 +249,7 @@ public class OrganizationWorkflowContext
 			log.warn(ERROR_HYDRATING_DATA);
 		}
 
+
 		if (data != null && data.containsKey(FIELD_NAME_IMAGE_ORGANIZATION)) {
 			UUID mediaUuid = UUID.fromString((String) data.get(FIELD_NAME_IMAGE_ORGANIZATION));
 
@@ -578,4 +579,8 @@ public class OrganizationWorkflowContext
 		}
 	}
 
+	@Override
+	public void updateStatus(ScriptContext scriptContext, ExecutionEntity executionEntity, String statusValue, String functionalStatusValue) {
+		super.updateStatus(scriptContext, executionEntity, statusValue, functionalStatusValue);
+	}
 }

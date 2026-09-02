@@ -31,7 +31,8 @@ const PROJECT_STATUS: ProjectStatus[] = [ProjectStatus.Validated];
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    imports: [LoaderComponent, HeroSectionComponent, ThemesSectionComponent, CmsNewsSectionComponent, CmsProjectValuesSectionComponent, JddSectionComponent, ProjectsSectionComponent, KeyFiguresSectionComponent]
+    imports: [LoaderComponent, HeroSectionComponent, ThemesSectionComponent, CmsNewsSectionComponent,
+        CmsProjectValuesSectionComponent, JddSectionComponent, ProjectsSectionComponent, KeyFiguresSectionComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
     private readonly destroyed$: Subject<boolean>;

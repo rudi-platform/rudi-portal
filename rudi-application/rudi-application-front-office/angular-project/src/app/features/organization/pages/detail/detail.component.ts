@@ -45,7 +45,7 @@ export class DetailComponent implements OnInit {
                 // Si uuid, on charge l'organization
                 if (params.organizationUuid) {
                     this.isLoading = true;
-                    return this.organizationService.getOrganizationByUuid(params.organizationUuid);
+                    return this.organizationService.getOrganizationByUuid(params.organizationUuid, true);
                 } else {
                     // Sinon erreur on peut pas afficher la page
                     throw Error('Erreur pas d\'UUID de d\'organisation');

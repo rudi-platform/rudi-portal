@@ -20,6 +20,8 @@ import lombok.ToString;
 @ToString
 public class WebsiteAddressEntity extends AbstractAddressEntity {
 
+	public static final String FIELD_URL = "url";
+
 	private static final long serialVersionUID = 6532289280799661093L;
 
 	@Column(name = "url", length = 1024, nullable = false)
@@ -28,9 +30,7 @@ public class WebsiteAddressEntity extends AbstractAddressEntity {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getUrl() == null) ? 0 : getUrl().hashCode());
-		return result;
+		return prime * super.hashCode();
 	}
 
 	@Override
@@ -41,18 +41,7 @@ public class WebsiteAddressEntity extends AbstractAddressEntity {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (!(obj instanceof WebsiteAddressEntity)) {
-			return false;
-		}
-		WebsiteAddressEntity other = (WebsiteAddressEntity) obj;
-		if (getUrl() == null) {
-			if (other.getUrl() != null) {
-				return false;
-			}
-		} else if (!getUrl().equals(other.getUrl())) {
-			return false;
-		}
-		return true;
+		return obj instanceof WebsiteAddressEntity;
 	}
 
 }

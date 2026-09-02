@@ -1,14 +1,13 @@
-import { NgClass } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {MatIcon} from '@angular/material/icon';
 import {DataSetAccessService} from '@core/services/data-set/data-set-access.service';
 import {DisplayTableDataInterface} from '@core/services/data-set/display-table-data.interface';
 import {DisplayTableService} from '@core/services/data-set/display-table.service';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {LogService} from '@core/services/log.service';
+import {SpreadsheetSearchComponent} from '@features/data-set/components/spreadsheet-search/spreadsheet-search.component';
 import {TranslatePipe} from '@ngx-translate/core';
 import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
@@ -25,7 +24,10 @@ const EMPTY_SEARCH = '';
     selector: 'app-spreadsheet-tab',
     templateUrl: './spreadsheet-tab.component.html',
     styleUrls: ['./spreadsheet-tab.component.scss'],
-    imports: [LoaderComponent, FormsModule, MatIcon, NgClass, MatButton, MatCheckbox, ErrorBoxComponent, SpreadsheetComponent, TranslatePipe]
+    imports: [
+        LoaderComponent, FormsModule, MatButton, MatCheckbox,
+        ErrorBoxComponent, SpreadsheetComponent, TranslatePipe, SpreadsheetSearchComponent
+    ]
 })
 export class SpreadsheetTabComponent implements OnInit {
 
@@ -103,6 +105,14 @@ export class SpreadsheetTabComponent implements OnInit {
                 }
             });
         }
+    }
+
+    /**
+     * Méthode déclenchée lors de l'émission de l'event "searchTermsEmitter" du composant de recherche
+     */
+    onSearchChanged(searchTerms: string): void {
+        this.searchTerms = searchTerms;
+        this.onChanges();
     }
 
     /**

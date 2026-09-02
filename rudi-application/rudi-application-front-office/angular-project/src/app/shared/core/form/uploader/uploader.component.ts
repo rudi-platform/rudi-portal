@@ -1,5 +1,5 @@
 import {KeyValuePipe} from '@angular/common';
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, AfterViewInit, ElementRef} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {MatError} from '@angular/material/form-field';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
@@ -17,7 +17,10 @@ import saveAs from 'file-saver';
     styleUrls: ['./uploader.component.scss'],
     imports: [FilePickerComponent, MatIcon, MatError, KeyValuePipe, TranslatePipe]
 })
-export class UploaderComponent<T> {
+export class UploaderComponent<T> implements AfterViewInit {
+
+    @ViewChild(FilePickerComponent, {static: false}) filePickerComponent: FilePickerComponent;
+    @ViewChild('blockUpload', {static: false}) blockUploadRef: ElementRef;
 
     @Input()
     set adapter(adapter: UploaderAdapter<T>) {
@@ -40,6 +43,9 @@ export class UploaderComponent<T> {
     @Input() fileMaxSize: number;
     @Input() fileExtensions: string[];
     @Input() cropperOptions: object;
+    @Input() ariaLabelledby: string;
+    @Input() ariaDescribedby: string;
+    @Input() id: string;
 
     @Output() fileChanged: EventEmitter<FilePreviewModel> = new EventEmitter<FilePreviewModel>();
 
@@ -68,11 +74,13 @@ export class UploaderComponent<T> {
         let formatsText: string;
         // Vérifie si l'erreur est liée aux extensions de fichiers.
         if (error === 'EXTENSIONS') {
-            // Si la longueur de la liste des extensions de fichiers est égale à 1, on affiche seulement cette extension.
+            // Si la longueur de la liste des extensions de fichiers est égale à 1,
+            // on affiche seulement cette extension.
             if (this.fileExtensions.length === 1) {
                 formatsText = `.${this.fileExtensions[0]}`;
             } else {
-                // Si plusieurs extensions sont présentes, on les affiche avec un espace entre chaque extension sauf la dernière, à laquelle on ajoute "ou"
+                // Si plusieurs extensions sont présentes, on les affiche avec un espace entre chaque extension
+                // sauf la dernière, à laquelle on ajoute "ou"
                 formatsText = this.fileExtensions.map(format => `.${format}`).slice(0, -1).join(' ') + this.translateService.instant('common.fileValidationError.or') + this.fileExtensions[this.fileExtensions.length - 1];
             }
         }
@@ -108,5 +116,38 @@ export class UploaderComponent<T> {
             saveAs($event.file, $event.fileName, {autoBom: false});
         }
     }
-}
 
+    /**
+     * Méthode appelée quand on clique sur la dropzone
+     */
+    public onDropzoneClick(): void {
+        this.triggerFileInput();
+    }
+
+    /**
+     * Déclenche le clic sur l'input file
+     */
+    private triggerFileInput(): void {
+        if (this.blockUploadRef?.nativeElement) {
+            const fileInput = this.blockUploadRef.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+    }
+
+    /**
+     * Gère l'activation du file picker via le clavier (Enter ou Space)
+     */
+    public handleKeyboardActivation(event: KeyboardEvent): void {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            event.stopPropagation();
+            this.triggerFileInput();
+        }
+    }
+
+    ngAfterViewInit(): void {
+        // Permet au composant de s'initialiser
+    }
+}

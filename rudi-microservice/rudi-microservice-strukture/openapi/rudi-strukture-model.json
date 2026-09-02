@@ -241,11 +241,14 @@
 							"description": {
 								"type": "string"
 							},
-							"url": {
-								"type": "string"
-							},
 							"address": {
 								"type": "string"
+							},
+							"addresses": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/AbstractAddress"
+								}
 							},
 							"position": {
 								"$ref": "./rudi-strukture-geojson.json#/components/schemas/GeoJsonObject"

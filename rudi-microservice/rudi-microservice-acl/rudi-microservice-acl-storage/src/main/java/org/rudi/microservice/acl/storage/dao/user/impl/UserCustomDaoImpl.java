@@ -93,16 +93,16 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 			List<Predicate> predicates = new ArrayList<>();
 
 			// login
-			predicateStringCriteria(searchCriteria.getLogin(), FIELD_LOGIN, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getLogin(), FIELD_LOGIN, false, false, predicates, builder, root);
 
 			// firstname
-			predicateStringCriteria(searchCriteria.getFirstname(), FIELD_FIRSTNAME, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getFirstname(), FIELD_FIRSTNAME, false, false, predicates, builder, root);
 
 			// lastname
-			predicateStringCriteria(searchCriteria.getLastname(), FIELD_LASTNAME, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getLastname(), FIELD_LASTNAME, false, false, predicates, builder, root);
 
 			// company
-			predicateStringCriteria(searchCriteria.getCompany(), FIELD_COMPANY, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getCompany(), FIELD_COMPANY, false, false, predicates, builder, root);
 
 			// type
 			if (searchCriteria.getType() != null) {

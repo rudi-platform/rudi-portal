@@ -13,10 +13,15 @@
             text-decoration: none;
 
             .icon-container {
-                //Les icons doivent posséder la classe suivant:
-                .social-network-logo {
+                //Les icons doivent posséder une des classes suivantes:
+                .social-network-logo-stroke {
                     stroke: var(--accent-color-svg);
                 }
+
+                .social-network-logo-fill {
+                    fill: var(--accent-color-svg);
+                }
+
             }
         }
     }

@@ -62,10 +62,10 @@ public class RoleCustomDaoImpl extends AbstractCustomDaoImpl<RoleEntity, RoleSea
 			List<Predicate> predicates = new ArrayList<>();
 
 			// code
-			predicateStringCriteria(searchCriteria.getCode(), FIELD_CODE, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getCode(), FIELD_CODE, false, false, predicates, builder, root);
 
 			// label
-			predicateStringCriteria(searchCriteria.getLabel(), FIELD_LABEL, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getLabel(), FIELD_LABEL, false, false, predicates, builder, root);
 
 			// inactif
 			if (Boolean.TRUE.equals(searchCriteria.getActive())) {

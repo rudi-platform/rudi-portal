@@ -12,6 +12,24 @@
 				{
 					"type": "MAXLENGTH",
 					"attribute": "10"
+				},
+				{
+					"type": "REGEXP",
+					"attribute": "/^[a-zA-Z0-9]+$/"
+				}
+			]
+		},
+		{
+			"name": "string",
+			"label": "E-Mail",
+			"type": "STRING",
+			"readOnly": false,
+			"required": true,
+			"multiple": false,
+			"extendedType": "",
+			"validators": [
+				{
+					"type": "EMAIL"
 				}
 			]
 		},

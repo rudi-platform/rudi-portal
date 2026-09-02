@@ -10,14 +10,15 @@
   <form [formGroup]="step1FormGroup">
     <!-- Title Field-->
     <ng-container>
-      <div class="d-flex">
-        <mat-label>{{ 'project.stepper.submission.step1.title'|translate }}</mat-label>
-        <span class="ms-1 required-symbol">{{ 'signup.etoile'|translate }}</span>
-      </div>
-      <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.titleHint'|translate }}
-      </mat-hint>
+      <label for="project-title" class="d-flex">
+        <span>{{ 'project.stepper.submission.step1.title'|translate }}
+        <span class="ms-1 required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></span>
+      </label>
+      <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.titleHint'|translate }}</mat-hint>
       <mat-form-field appearance="outline" hideRequiredMarker>
         <input type="text" formControlName="title" matInput
+          id="project-title"
+          required
           autocomplete="off">
           @if (step1FormGroup.get('title').errors?.required) {
             <mat-error class="stepper-mat-error"
@@ -30,20 +31,18 @@
 
       <!-- Description Field-->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.description'|translate }}</mat-label>
-          <span class="ms-1 required-symbol">{{ 'signup.etoile'|translate }}</span>
-        </div>
+        <label for="project-description" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.description'|translate }}
+          <span class="ms-1 required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></span>
+        </label>
 
-        <mat-hint
-          class="title-hint">{{ 'project.stepper.submission.step1.descriptionHint'|translate }}
-        </mat-hint>
+        <span class="title-hint">{{ 'project.stepper.submission.step1.descriptionHint'|translate }}</span>
 
         <!-- Conteneur qui pilote le style rouge de l'éditeur -->
         <div class="rich-text-editor-container">
           <div
             [class.is-invalid-editor]="step1FormGroup.get('description').invalid && step1FormGroup.get('description').touched">
-            <app-rich-text-editor formControlName="description"></app-rich-text-editor>
+            <app-rich-text-editor formControlName="description" id="project-description"></app-rich-text-editor>
           </div>
 
           <!-- Affichage des erreurs -->
@@ -65,16 +64,16 @@
 
       <!-- Image Field-->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.image'|translate }}</mat-label>
-        </div>
+        <label for="project-image" id="project-image-label" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.image'|translate }}</span>
+        </label>
 
-        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.imageHint'|translate }}
-        </mat-hint>
+        <span class="title-hint">{{ 'project.stepper.submission.step1.imageHint'|translate }}</span>
 
         @if (fileMaxSize && fileExtensions) {
           <div class="uploader-container">
             <app-uploader [fileFormControl]="step1FormGroup?.controls?.image"
+              [id]="'project-image'"
               [adapter]="adapter"
               (fileChanged)="handleImageChanged()"
               [enableCropper]="true"
@@ -82,7 +81,8 @@
               [fileMaxSize]="fileMaxSize.toMegabytes()"
               [fileExtensions]="fileExtensions"
               [imageText]="'project.imageUploader.ajouterImage'"
-              [imageFormat]="'project.imageUploader.formatImage'">
+              [imageFormat]="'project.imageUploader.formatImage'"
+              [ariaLabelledby]="'project-image-label'">
             </app-uploader>
           </div>
         }
@@ -93,17 +93,16 @@
 
       <!--  Statut de la réutilisation -->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.reuseStatus'|translate }}</mat-label>
-          <span class="ms-1 required-symbol">{{ 'signup.etoile'|translate }}</span>
-        </div>
-        <mat-hint
-          class="title-hint">{{ 'project.stepper.submission.step1.reuseStatusHint'|translate }}
-        </mat-hint>
+        <label for="project-reuse-status" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.reuseStatus'|translate }}
+          <span class="ms-1 required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></span>
+        </label>
+        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.reuseStatusHint'|translate }}</mat-hint>
         <mat-form-field appearance="outline" hideRequiredMarker>
-          <mat-select placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}"
+          <mat-select id="project-reuse-status" placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}"
             [compareWith]="compareObjects"
-            formControlName="reuse_status">
+            formControlName="reuse_status"
+            required>
             @for (status of reuseStatus; track status) {
               <mat-option [value]="status" class="single-select">
                 {{ status.label }}
@@ -122,15 +121,13 @@
 
       <!-- période de realisation -->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.periode'|translate }}</mat-label>
-        </div>
+        <span id="project-periode-label" class="d-flex" role="group" aria-label="{{ 'project.stepper.submission.step1.periode'|translate }}">
+          <span>{{ 'project.stepper.submission.step1.periode'|translate }}</span>
+        </span>
 
-        <mat-hint
-          class="title-hint">{{ 'project.stepper.submission.step1.periodeHint'|translate }}
-        </mat-hint>
+        <span class="title-hint">{{ 'project.stepper.submission.step1.periodeHint'|translate }}</span>
 
-        <div class="d-flex justify-content-between flex-wrap text-sm-center">
+        <div class="d-flex justify-content-between flex-wrap text-sm-center" role="group" aria-labelledby="project-periode-label">
           <app-month-year-datepicker [formGroup]="step1FormGroup" controlName="begin_date"
             [errorMessage]="'project.stepper.submission.step1.periodeBeginError' | translate"
             [placeholder]="'project.stepper.submission.step1.periodeBeginPlaceholder' | translate">
@@ -144,15 +141,13 @@
 
       <!--  Public cible-->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.targetAudience'|translate }}</mat-label>
-        </div>
+        <label for="project-public-cible" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.targetAudience'|translate }}</span>
+        </label>
 
-        <mat-hint
-          class="title-hint">{{ 'project.stepper.submission.step1.targetAudienceHint'|translate }}
-        </mat-hint>
+        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.targetAudienceHint'|translate }}</mat-hint>
         <mat-form-field appearance="outline">
-          <mat-select multiple placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}"
+          <mat-select id="project-public-cible" multiple placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}"
             [compareWith]="compareObjects"
             formControlName="publicCible">
             @for (cible of publicCible; track cible) {
@@ -166,15 +161,13 @@
 
       <!--    Echelle-->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.echelle'|translate }}</mat-label>
-        </div>
+        <label for="project-echelle" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.echelle'|translate }}</span>
+        </label>
 
-        <mat-hint
-          class="title-hint">{{ 'project.stepper.submission.step1.echelleHint'|translate }}
-        </mat-hint>
+        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.echelleHint'|translate }}</mat-hint>
         <mat-form-field appearance="outline">
-          <mat-select placeholder="{{'project.stepper.submission.step1.selectOption'|translate}}"
+          <mat-select id="project-echelle" placeholder="{{'project.stepper.submission.step1.selectOption'|translate}}"
             [compareWith]="compareObjects"
             formControlName="echelle">
             @for (echelle of territoireScale; track echelle) {
@@ -189,13 +182,13 @@
 
       <!--  territoire concerne-->
       <ng-container>
-        <div class="d-flex">
-          <mat-label>{{ 'project.stepper.submission.step1.territoireConcerne'|translate }}</mat-label>
-        </div>
-        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.territoireConcerneHint'|translate }}
-        </mat-hint>
+        <label for="project-territoire" class="d-flex">
+          <span>{{ 'project.stepper.submission.step1.territoireConcerne'|translate }}</span>
+        </label>
+        <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.territoireConcerneHint'|translate }}</mat-hint>
         <mat-form-field appearance="outline" hideRequiredMarker>
           <input type="text" formControlName="territoire" matInput
+            id="project-territoire"
             autocomplete="off">
             @if (step1FormGroup.get('territoire').errors?.required) {
               <mat-error class="stepper-mat-error"
@@ -208,18 +201,17 @@
 
         <!--    Type reutilisation-->
         <ng-container>
-          <div class="d-flex">
-            <mat-label>{{ 'project.stepper.submission.step1.reuseType'|translate }}</mat-label>
-            <span class="ms-1 required-symbol">{{ 'signup.etoile'|translate }}</span>
-          </div>
+          <label for="project-type" class="d-flex">
+            <span>{{ 'project.stepper.submission.step1.reuseType'|translate }}
+            <span class="ms-1 required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></span>
+          </label>
 
-          <mat-hint
-            class="title-hint">{{ 'project.stepper.submission.step1.reuseTypeHint'|translate }}
-          </mat-hint>
+          <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.reuseTypeHint'|translate }}</mat-hint>
           <mat-form-field appearance="outline" hideRequiredMarker>
-            <mat-select placeholder="{{'project.stepper.submission.step1.selectOption'|translate}}"
+            <mat-select id="project-type" placeholder="{{'project.stepper.submission.step1.selectOption'|translate}}"
               [compareWith]="compareObjects"
-              formControlName="type">
+              formControlName="type"
+              required>
               @for (project of projectType; track project) {
                 <mat-option class="single-select"
                   [value]="project">{{ project.label }}
@@ -237,15 +229,13 @@
         </ng-container>
         <!--    Accompagnement souhaité-->
         <ng-container>
-          <div class="d-flex">
-            <mat-label>{{ 'project.stepper.submission.step1.accompagnementSouhaite'|translate }}</mat-label>
-          </div>
+          <label for="project-accompagnement" class="d-flex">
+            <span>{{ 'project.stepper.submission.step1.accompagnementSouhaite'|translate }}</span>
+          </label>
 
-          <mat-hint
-            class="title-hint">{{ 'project.stepper.submission.step1.accompagnementSouhaiteHint'|translate }}
-          </mat-hint>
+          <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.accompagnementSouhaiteHint'|translate }}</mat-hint>
           <mat-form-field appearance="outline">
-            <mat-select multiple
+            <mat-select id="project-accompagnement" multiple
               placeholder="{{'project.stepper.submission.step1.selectOptions'|translate}}"
               [compareWith]="compareObjects"
               formControlName="accompagnement">
@@ -261,14 +251,14 @@
 
         <!-- URL d'accès Field-->
         <ng-container>
-          <div class="d-flex">
-            <mat-label>{{ 'project.stepper.submission.step1.accessUrl'|translate }}</mat-label>
-          </div>
-          <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.accessUrlHint'|translate }}
-          </mat-hint>
+          <label for="project-url" class="d-flex">
+            <span>{{ 'project.stepper.submission.step1.accessUrl'|translate }}</span>
+          </label>
+          <mat-hint class="title-hint">{{ 'project.stepper.submission.step1.accessUrlHint'|translate }}</mat-hint>
           <mat-form-field appearance="outline">
             <input type="url" formControlName="url" matInput
-              autocomplete="off">
+              id="project-url"
+              autocomplete="url">
 
               @if (step1FormGroup.get('url').hasError('pattern')) {
                 <mat-error class="stepper-mat-error"
@@ -282,15 +272,16 @@
           <!-- Niveau de confidentialité -->
           <ng-container>
 
-            <div class="d-flex">
-              <mat-label
-                class="mb-1">{{ 'project.stepper.submission.step1.projectConfidentiality'|translate }}
-              </mat-label>
-              <span class="ms-1 required-symbol">{{ 'signup.etoile'|translate }}</span>
-            </div>
+            <span id="project-confidentiality-label" class="d-flex mb-1" role="group" aria-label="{{ 'project.stepper.submission.step1.projectConfidentiality'|translate }}">
+              <span>{{ 'project.stepper.submission.step1.projectConfidentiality'|translate }}
+              <span class="ms-1 required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></span>
+            </span>
+            <span id="project-confidentiality-hint" class="title-hint mb-2">{{ 'project.stepper.submission.step1.projectConfidentialityHint'|translate }}</span>
             <app-radio-list [formGroup]="step1FormGroup" controlName="confidentiality"
               [suggestions]="suggestions"
-            [isConfidentialityValid]="isConfidentialityValid"></app-radio-list>
+            [isConfidentialityValid]="isConfidentialityValid"
+            [attr.aria-labelledby]="'project-confidentiality-label'"
+            [attr.aria-describedby]="'project-confidentiality-hint'"></app-radio-list>
             @if (!isConfidentialityValid && step1FormGroup.get('confidentiality').errors?.required) {
               <mat-error class="stepper-mat-error"
                 >

@@ -3,7 +3,10 @@ import {AttachmentService} from '@core/services/attachment.service';
 import {OrganizationAttachmentService} from '@core/services/organization-attachment.service';
 import {OrganizationMetierService} from '@core/services/organization/organization-metier.service';
 import {OrganizationAttachmentAdapter} from '@core/services/tasks/strukture/organization/organization-attachment.adapter';
+import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
 import {OrganizationTaskSearchCriteria} from '@core/services/tasks/strukture/organization/organization-task-search-criteria.interface';
+import {TaskDependencies} from '@core/services/tasks/task-dependencies.interface';
+import {TaskDependencyFetchers, TaskWithDependenciesService} from '@core/services/tasks/task-with-dependencies-service';
 import {DataSize} from '@shared/models/data-size';
 import {DependencyFetcher} from '@shared/utils/dependencies-utils';
 import {TaskWithDependencies} from '@shared/utils/task-utils';
@@ -12,9 +15,6 @@ import {Field, Task} from 'micro_service_modules/api-bpmn';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {AllowedAttachementType, Organization, OrganizationLogoInformations} from 'micro_service_modules/strukture/strukture-model';
 import {Observable, of} from 'rxjs';
-import {OrganizationTaskMetierService} from 'src/app/core/services/tasks/strukture/organization/organization-task-metier.service';
-import {TaskDependencies} from 'src/app/core/services/tasks/task-dependencies.interface';
-import {TaskDependencyFetchers, TaskWithDependenciesService} from 'src/app/core/services/tasks/task-with-dependencies-service';
 
 export interface OrganizationDependencies extends TaskDependencies {
     organization?: Organization;
@@ -66,7 +66,7 @@ export class OrganizationTaskDependencyFetchers extends TaskDependencyFetchers<O
         return {
             hasPrerequisites: (input: OrganizationTask) => OrganizationTaskDependencyFetchers.hasOrganizationUuid(input),
             getKey: taskWithDependencies => taskWithDependencies.asset.uuid,
-            getValue: uuid => this.organizationMetierService.getOrganizationByUuid(uuid)
+            getValue: uuid => this.organizationMetierService.getOrganizationByUuid(uuid, true)
         };
     }
 

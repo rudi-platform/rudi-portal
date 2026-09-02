@@ -32,7 +32,7 @@ export class OrganizationLogoComponent implements OnInit {
         private readonly providersMetierService: ProvidersMetierService,
         private readonly translteService: TranslateService,
     ) {
-        this.defaultLogo = '/assets/images/rudi_default_picto_organization.png';
+        this.defaultLogo = '/assets/images/rudi_default_picto_organization.svg';
     }
 
     ngOnInit(): void {

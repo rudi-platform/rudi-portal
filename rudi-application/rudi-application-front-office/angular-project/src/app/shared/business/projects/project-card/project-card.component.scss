@@ -6,15 +6,25 @@
     cursor: pointer;
     overflow: hidden;
     padding: 0;
+    position: relative;
 
-    &:focus {
+    .stretched-link {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        outline: none;
+    }
+
+    &:focus,
+    &:focus-within {
         outline: none;
         box-shadow: 0 0 10px 0 var(--focus-background);
         border-color: var(--primary-color);
         background-color: var(--focus-background);
     }
 
-    &:focus-visible {
+    &:focus-visible,
+    &:has(.stretched-link:focus-visible) {
         outline: 3px solid var(--primary-color);
         outline-offset: 2px;
     }

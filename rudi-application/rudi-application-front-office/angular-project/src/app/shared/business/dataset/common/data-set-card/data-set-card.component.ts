@@ -5,7 +5,7 @@ import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {LanguageService} from '@core/i18n/language.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
@@ -20,7 +20,7 @@ import {OrganizationLogoComponent} from '../../../organisation/organization-logo
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
-    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe]
+    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe, RouterLink]
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;
@@ -38,7 +38,6 @@ export class DataSetCardComponent implements OnInit {
         private readonly uriComponentCodec: URIComponentCodec,
         private readonly matIconRegistry: MatIconRegistry,
         private readonly domSanitizer: DomSanitizer,
-        private readonly router: Router,
     ) {
         this.matIconRegistry.addSvgIcon(
             'key_icon_88_blue',
@@ -109,12 +108,15 @@ export class DataSetCardComponent implements OnInit {
     }
 
     /**
-     * Fonction de permet de naviguer vers le detail d'un jdd
+     * Commandes de route vers le detail d'un jdd, utilisées par [routerLink] (balise <a>) afin de
+     * bénéficier du comportement natif du navigateur (clic droit "ouvrir dans un nouvel onglet",
+     * ctrl/cmd+clic, clic molette). Retourne null si la navigation n'est pas possible.
      */
-    ifNotSelectableGoToDetail(): void {
-        if (!this.isSelectable && this.metadata.global_id && this.metadata.resource_title) {
-            this.router.navigate(['/catalogue/detail/' + this.metadata.global_id + '/' + this.uriComponentCodec.normalizeString(this.metadata.resource_title)]);
+    get detailUrl(): string[] | null {
+        if (this.metadata?.global_id && this.metadata?.resource_title) {
+            return ['/catalogue/detail', this.metadata.global_id, this.uriComponentCodec.normalizeString(this.metadata.resource_title)];
         }
+        return null;
     }
 
     /**
@@ -136,6 +138,7 @@ export class DataSetCardComponent implements OnInit {
      */
     singleClickSelect(isSelected = true): void {
         this.isSingleClick = true;
+        // eslint-disable-next-line no-undef
         setTimeout(() => {
             if (this.isSingleClick) {
                 this.select(isSelected);
@@ -148,6 +151,7 @@ export class DataSetCardComponent implements OnInit {
      * @param isSelected
      */
     doubleClickSelect(isSelected = true): void {
+        this.isSelected = isSelected;
         this.isSingleClick = false;
         this.dbSelectMetadata.emit(this.metadata);
     }

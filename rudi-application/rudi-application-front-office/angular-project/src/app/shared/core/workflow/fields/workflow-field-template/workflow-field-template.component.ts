@@ -6,6 +6,7 @@ import {WorkflowFieldBooleanComponent} from '@shared/core/workflow/fields/workfl
 import {WorkflowFieldDateComponent} from '@shared/core/workflow/fields/workflow-field-date/workflow-field-date.component';
 import {WorkflowFieldHiddenComponent} from '@shared/core/workflow/fields/workflow-field-hidden/workflow-field-hidden.component';
 import {WorkflowFieldListComponent} from '@shared/core/workflow/fields/workflow-field-list/workflow-field-list.component';
+import {WorkflowFieldPhoneComponent} from '@shared/core/workflow/fields/workflow-field-phone/workflow-field-phone.component';
 import {WorkflowFieldRichTextComponent} from '@shared/core/workflow/fields/workflow-field-rich-text/workflow-field-rich-text.component';
 import {WorkflowFieldTextComponent} from '@shared/core/workflow/fields/workflow-field-text/workflow-field-text.component';
 import {WorkflowFieldComponent} from '@shared/core/workflow/fields/workflow-field/workflow-field.component';
@@ -102,6 +103,11 @@ export class WorkflowFieldTemplateComponent implements OnInit {
     }
 
     private getTypeFromAlreadyImportedModules(): Type<WorkflowFieldComponent> {
+        // Certains champs STRING ont un composant dédié sélectionné sur le nom du champ.
+        if (this.field.definition.name === 'phoneNumber') {
+            return WorkflowFieldPhoneComponent;
+        }
+
         const type = this.field.definition.type;
         switch (type) {
             case 'STRING':

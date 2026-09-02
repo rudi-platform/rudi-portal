@@ -264,6 +264,7 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 		if (user != null) {
 			assignUserData(user, authenticatedUser);
 			userService.updateUser(user);
+			userService.recordAuthentication(user.getUuid(), true);
 		} else {
 			user = new User();
 			// Le mot de passe n'est pas utilisé dans ce contexte
@@ -272,6 +273,7 @@ public class CasOAuth2AuthenticationSuccessHandler extends AbstractAuthenticatio
 			user.setLogin(authenticatedUser.getLogin());
 			assignUserData(user, authenticatedUser);
 			userService.createUser(user);
+			userService.recordAuthentication(user.getUuid(), true);
 		}
 	}
 

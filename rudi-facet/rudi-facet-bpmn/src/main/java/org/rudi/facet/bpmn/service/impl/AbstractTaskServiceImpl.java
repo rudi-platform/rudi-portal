@@ -32,8 +32,10 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Action;
 import org.rudi.bpmn.core.bean.AssetDescription;
+import org.rudi.bpmn.core.bean.Field;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
+import org.rudi.bpmn.core.bean.Section;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.bpmn.core.bean.Task;
 import org.rudi.common.core.DocumentContent;
@@ -56,6 +58,7 @@ import org.rudi.facet.bpmn.service.AssetDescriptionActionListener;
 import org.rudi.facet.bpmn.service.InitializationService;
 import org.rudi.facet.bpmn.service.TaskConstants;
 import org.rudi.facet.bpmn.service.TaskService;
+import org.rudi.facet.bpmn.validator.FieldValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +131,9 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 
 	@Autowired(required = false)
 	private List<AssetDescriptionActionListener<E>> assetListeners;
+
+	@Autowired(required = false)
+	private List<FieldValidator> fieldValidators;
 
 	@Autowired
 	private HistoricHelper historicHelper;
@@ -429,6 +435,21 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	protected E updateDraftAsset(Task task, E assetDescriptionEntity)
 			throws FormDefinitionException, FormConvertException, InvalidDataException {
 		D assetDescription = (D) task.getAsset();
+
+		if (CollectionUtils.isNotEmpty(fieldValidators) && assetDescription.getForm() != null
+				&& CollectionUtils.isNotEmpty(assetDescription.getForm().getSections())) {
+			for (Section section : assetDescription.getForm().getSections()) {
+				if (CollectionUtils.isNotEmpty(section.getFields())) {
+					for (Field field : section.getFields()) {
+						for (FieldValidator validator : fieldValidators) {
+							if (validator.accept(field)) {
+								validator.check(field);
+							}
+						}
+					}
+				}
+			}
+		}
 
 		// mise à jour de l'entité
 		fireBeforeUpdate(assetDescriptionEntity);

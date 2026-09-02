@@ -29,7 +29,7 @@ public interface OrganizationService {
 
 	OwnerInfo getOrganizationOwnerInfo(UUID uuid) throws AppServiceBadRequestException, IllegalArgumentException;
 
-	Organization getOrganization(UUID uuid) throws AppServiceException;
+	Organization getOrganization(UUID uuid, boolean full) throws AppServiceException;
 
 	User getOrganizationUserFromOrganizationUuid(UUID organizationUuid)
 			throws AppServiceNotFoundException, AppServiceUnauthorizedException, AppServiceForbiddenException;
@@ -39,6 +39,7 @@ public interface OrganizationService {
 	void deleteOrganization(UUID uuid) throws AppServiceNotFoundException;
 
 	Page<Organization> searchOrganizations(OrganizationSearchCriteria searchCriteria, Pageable pageable);
+
 
 	OrganizationMember addOrganizationMember(UUID organizationUuid, OrganizationMember organizationMember)
 			throws AppServiceException;
@@ -65,6 +66,7 @@ public interface OrganizationService {
 			throws AppServiceException;
 
 	Page<Organization> searchMyOrganizations(OrganizationSearchCriteria criteria, Pageable pageable) throws AppServiceException;
+
 
 	NodeOrganization getNodeOrganization(UUID uuid) throws AppServiceException;
 }

@@ -28,9 +28,7 @@ public class EmailAddressEntity extends AbstractAddressEntity {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getEmail() == null) ? 0 : getEmail().hashCode());
-		return result;
+		return prime * super.hashCode();
 	}
 
 	@Override
@@ -41,18 +39,7 @@ public class EmailAddressEntity extends AbstractAddressEntity {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (!(obj instanceof EmailAddressEntity)) {
-			return false;
-		}
-		EmailAddressEntity other = (EmailAddressEntity) obj;
-		if (getEmail() == null) {
-			if (other.getEmail() != null) {
-				return false;
-			}
-		} else if (!getEmail().equals(other.getEmail())) {
-			return false;
-		}
-		return true;
+		return obj instanceof EmailAddressEntity;
 	}
 
 }

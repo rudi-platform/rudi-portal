@@ -16,5 +16,11 @@
 module.exports = {
     rules: {
         'mat-icon-requires-aria': require('./rules/mat-icon-requires-aria'),
+        'form-field-requires-label': require('./rules/form-field-requires-label'),
+        'no-positive-tabindex': require('./rules/no-positive-tabindex'),
+        'form-button-requires-name': require('./rules/form-button-requires-name'),
+        'autocomplete-on-personal-fields': require('./rules/autocomplete-on-personal-fields'),
+        'heading-hierarchy': require('./rules/heading-hierarchy'),
+        'list-structure': require('./rules/list-structure'),
     },
 };

@@ -7,7 +7,16 @@
 			"label": "Message à l'attention des équipes ${projectName}",
 			"type": "TEXT",
 			"readonly": false,
-			"required": true
+			"required": true,
+			"validators": [
+				{
+					"type": "REQUIRED"
+				},
+				{
+					"type": "MAXLENGTH",
+					"attribute": "3000"
+				}
+			]
 		}
 	]
 }

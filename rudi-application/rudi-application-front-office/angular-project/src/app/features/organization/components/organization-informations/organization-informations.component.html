@@ -1,83 +1,96 @@
 <app-loader [allPage]="false" [isLight]="true" [noText]="true"
-[active]="isLoading"></app-loader>
+            [active]="isLoading"></app-loader>
 @if (!isLoading) {
-  <div class="title"> {{ 'organization.label'|translate }}</div>
-  <div class="row">
-    <div class="col-sm-12 col-lg-8 mb-lg-3">
-      <app-card [header]="true" [title]="'organization.description'">
-        <div class="mt-3">
-          @if (organization?.description) {
-            <div>{{ organization?.description }}</div>
-          }
-          @if (!organization?.description) {
-            <div>{{ 'organization.noDescription' | translate }}</div>
-          }
+    <div class="title"> {{ 'organization.label'|translate }}</div>
+    <div class="row">
+        <div class="col-sm-12 col-lg-8 mb-lg-3">
+            <app-card [header]="true" [title]="'organization.description'">
+                <div class="mt-3">
+                    @if (organization?.description) {
+                        <div>{{ organization?.description }}</div>
+                    }
+                    @if (!organization?.description) {
+                        <div>{{ 'organization.noDescription' | translate }}</div>
+                    }
+                </div>
+            </app-card>
         </div>
-      </app-card>
-    </div>
-    <div class="col-sm-12 col-lg-4">
-      <app-card [header]="true" [title]="organization?.name" [icon]="'icon_tab_organization'">
-        <hr>
-          @if (organization?.url) {
-            <app-contact-card [copiedButton]="true"
-            [toCopy]="organization?.url"></app-contact-card>
-          }
-          @if (!organization?.url) {
-            <div>{{ 'organization.noUrl' | translate }}</div>
-          }
-        </app-card>
-      </div>
-    </div>
-  }
+        <div class="col-sm-12 col-lg-4">
+            <app-card [header]="true" [title]="organization?.name" [icon]="'icon_tab_organization'">
+                <hr>
+                <div class="title">{{ 'organization.contactTitle' | translate }}</div>
 
-  <ng-container>
+                @if (organizationAddresses?.email) {
+                    <div class="contact-title">{{ 'organization.emailTitle' | translate }}</div>
+                    <app-contact-card [copiedButton]="true"
+                                      [toCopy]="organizationAddresses?.email"></app-contact-card>
+                }
+                @if (organizationAddresses?.phoneNumber) {
+                    <div class="contact-title">{{ 'organization.phoneTitle' | translate }}</div>
+                    <app-contact-card [copiedButton]="true"
+                                      [toCopy]="organizationAddresses?.phoneNumber"></app-contact-card>
+                }
+                @if (organizationAddresses?.url) {
+                    <div class="contact-title">{{ 'organization.urlTitle' | translate }}</div>
+                    <app-contact-card [copiedButton]="true"
+                                      [toCopy]="organizationAddresses?.url"></app-contact-card>
+                }
+                @if (!organizationAddresses?.url && !organizationAddresses?.phoneNumber && !organizationAddresses?.email) {
+                    <div>{{ 'organization.noUrl' | translate }}</div>
+                }
+            </app-card>
+        </div>
+    </div>
+}
+
+<ng-container>
     <!--résultats JDD-->
-    @if (metadataListTotal===0) {
-      <div class="no-result">
-        {{ 'organization.noMetadata'|translate }}
-      </div>
+    @if (metadataListTotal === 0) {
+        <div class="no-result">
+            {{ 'organization.noMetadata'|translate }}
+        </div>
     }
-    @if (metadataListTotal!=0) {
-      <div class="w-50 search-count">
-        {{ 'organization.datasetTotal'|translate }}{{ metadataListTotal > 1 ? 's' : '' }}  ({{ metadataListTotal }})
-      </div>
+    @if (metadataListTotal != 0) {
+        <div class="w-50 search-count">
+            {{ 'organization.datasetTotal'|translate }}{{ metadataListTotal > 1 ? 's' : '' }}  ({{ metadataListTotal }})
+        </div>
     }
     @if (organization) {
-      <app-dataset-list
-        [accessStatusHiddenValues]="null"
-        [isSelectable]="false"
-        [limit]="limit"
-        [mediaSize]="mediaSize"
-        [producerUuid]="organization?.uuid"
-        (metadataListTotal)="setMetadataListTotal($event)"
-      ></app-dataset-list>
+        <app-dataset-list
+            [accessStatusHiddenValues]="null"
+            [isSelectable]="false"
+            [limit]="limit"
+            [mediaSize]="mediaSize"
+            [producerUuid]="organization?.uuid"
+            (metadataListTotal)="setMetadataListTotal($event)"
+        ></app-dataset-list>
     }
-  </ng-container>
+</ng-container>
 
-  @if (!isMemberLoading) {
+@if (!isMemberLoading) {
     <!--résultats Réutilisations-->
-    @if (projectListTotal===0) {
-      <div class="no-result">
-        {{ 'organization.noReuse'|translate }}
-      </div>
+    @if (projectListTotal === 0) {
+        <div class="no-result">
+            {{ 'organization.noReuse'|translate }}
+        </div>
     }
     <!--résultats Réutilisations-->
-    @if (projectListTotal!=0) {
-      <div class="w-50 search-count bottom">
-        {{ 'organization.reusesTotal'|translate }}{{ reuseListTotal > 1 ? 's' : '' }}  ({{ reuseListTotal }})
-      </div>
+    @if (projectListTotal != 0) {
+        <div class="w-50 search-count bottom">
+            {{ 'organization.reusesTotal'|translate }}{{ reuseListTotal > 1 ? 's' : '' }}  ({{ reuseListTotal }})
+        </div>
     }
     <app-project-list (projectListChange)="projectListTotal = $event.total"
-      (runningSearch)="searchIsRunning = $event"
-      (reuseListTotal)="setReuseListTotal($event)"
-      [order]="order"
-      [maxResultsPerPage]="3"
-      [producerUuid]="organization.uuid"
-      [disableScrollOnPageChange]="true"
-      [resultsPerRow]="3"
-      [isMember]="isMember"
+                      (runningSearch)="searchIsRunning = $event"
+                      (reuseListTotal)="setReuseListTotal($event)"
+                      [order]="order"
+                      [maxResultsPerPage]="3"
+                      [producerUuid]="organization.uuid"
+                      [disableScrollOnPageChange]="true"
+                      [resultsPerRow]="3"
+                      [isMember]="isMember"
     ></app-project-list>
-  } @else {
+} @else {
     <app-loader [active]="true" [allPage]="false" [isTransparent]="true"></app-loader>
-  }
+}
 

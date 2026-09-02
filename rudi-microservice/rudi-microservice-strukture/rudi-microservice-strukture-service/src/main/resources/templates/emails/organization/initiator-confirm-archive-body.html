@@ -33,6 +33,13 @@
         Mes réutilisations et l’ensemble des informations qui lui sont rattachées peuvent rester visibles depuis le
         catalogue ${projectName}.
     </#if>
+    <#if messageToOrganizationCreator??>
+        <p>Message adossé à votre demande : <#if messageToOrganizationCreator?matches(".*[.!?]$")>
+            "${messageToOrganizationCreator}"
+            <#else>
+            "${messageToOrganizationCreator}."
+        </#if></p>
+    </#if>
     </p>
     <p>
         À très bientôt, <br>

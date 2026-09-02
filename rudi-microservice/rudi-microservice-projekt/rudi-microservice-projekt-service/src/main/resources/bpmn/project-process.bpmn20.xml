@@ -619,9 +619,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization2ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 1);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 1);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 1, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -631,9 +633,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization3ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 2);
+var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 2);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 2, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -643,9 +647,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization4ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 3);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 3);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 3, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -655,9 +661,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization5ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 4);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 4);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 4, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -667,9 +675,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization6ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 5);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 5);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 5, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -679,9 +689,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization7ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 6);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 6);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 6, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -691,9 +703,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization8ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 7);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 7);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 7, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -703,9 +717,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization9ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 8);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 8);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 8, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -715,9 +731,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization10ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 9);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 9);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 9, true);</bpmn:script>
     </bpmn:scriptTask>
@@ -727,9 +745,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization2ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 1);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 1);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 1, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -739,9 +759,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization3ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 2);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 2);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 2, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -751,9 +773,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization4ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 3);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 3);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 3, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -763,9 +787,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization5ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 4);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 4);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 4, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -775,9 +801,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization6ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 5);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 5);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 5, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -787,9 +815,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization7ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 6);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 6);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 6, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -799,9 +829,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization8ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 7);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 7);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 7, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -811,9 +843,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization9ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 8);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 8);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 8, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -823,9 +857,11 @@
       <bpmn:script>projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization10ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 9);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 9);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 9, false);</bpmn:script>
     </bpmn:scriptTask>
@@ -986,9 +1022,11 @@
         projectWorkflowContext.info(&quot;Update RelatedOrganisation : Accepted&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization1ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 0);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 0);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-accepted-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-accepted-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 0, true);
       </bpmn:script>
@@ -1004,9 +1042,11 @@
         projectWorkflowContext.info(&quot;Update RelatedOrganisation : Refused&quot;);
         var reason = execution.getVariable(&quot;relatedOrganization1ResponseToProjectOwner&quot;);
         var organizationName = projectWorkflowContext.computeRelatedOrganizationName(context, execution, 0);
+        var organizationUuid = projectWorkflowContext.computeRelatedOrganizationUuid(context, execution, 0);
         var emailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/project/related-organization-refused-subject.txt&quot;,&quot;file:templates/emails/project/related-organization-refused-body.html&quot;);
         emailData.addData(&quot;reason&quot;, reason);
         emailData.addData(&quot;organizationName&quot;, organizationName);
+        emailData.addData(&quot;organizationUuid&quot;, organizationUuid);
         projectWorkflowContext.sendEmailToProjectOwner(context, execution, emailData);
         projectWorkflowContext.updateRelatedOrganisation(context, execution, 0, false);
         </bpmn:script>

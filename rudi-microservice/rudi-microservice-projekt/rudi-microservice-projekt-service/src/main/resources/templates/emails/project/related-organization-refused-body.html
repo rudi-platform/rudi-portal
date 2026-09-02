@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>${projectName} - Demande de partenariat refusée pour la réutilisation ${asset.title}</title>
+    <title>${projectName} - Demande de partenariat à une réutilisation refusée</title>
     <style type="text/css">
         body {
             font-family: Montserrat;
@@ -23,12 +23,10 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        L'organisation ${organizationName} a refusé votre demande de partenariat pour la réutilisation :
-        ${asset.title}, pour le motif suivant : <#if reason??><#if reason?matches(".*[.!?]$")>"${reason}"<#else>"${reason}."</#if></#if>
-    </p>
-    <p>
-        Vous pouvez contacter l'équipe ${teamName} pour toute information supplémentaire en cliquant <a
-            href="${urlContact}">ici</a>.
+        Votre demande de partenariat à la réutilisation <a
+                href="${urlServer}/projets/detail/${asset.uuid}">${asset.title}</a> a été refusée par <a
+                href="${urlServer}/organization/detail/${organizationUuid}">${organizationName}</a> pour la raison
+        suivante : <#if reason??><#if reason?matches(".*[.!?]$")>"${reason}"<#else>"${reason}."</#if></#if>
     </p>
     <p>
         À très bientôt, <br>

@@ -1,3 +1,4 @@
+<main id="main-content" tabindex="-1">
 <app-page>
   <app-task-detail-header
     [headingLoading]="isLoading"
@@ -13,18 +14,25 @@
           <ng-template>
             <div class="organization-details-container">
               <div class="organization-information-container">
+                @if (hasSections && !isDeclaration) {
+                  @for (section of currentTask?.asset?.form?.sections; track section) {
+                    @if (isSectionVisible(section)) {
+                      <app-workflow-expansion [section]="section"></app-workflow-expansion>
+                    }
+                  }
+                }
                 <mat-accordion>
                   <mat-expansion-panel [expanded]="true" class="organization-modified-expansion" (opened)="panelInitialTaskOpenState.set(true)" (closed)="panelInitialTaskOpenState.set(false)">
                     <mat-expansion-panel-header>
                       <mat-panel-title class="expansion-title">
-                        {{ 'personalSpace.organizationDetails.organizationInformations' | translate }}
+                        {{ 'personalSpace.organizationDetails.currentOrganization' | translate }}
                       </mat-panel-title>
                     </mat-expansion-panel-header>
                     <hr>
-                      <app-organization-information
-                      [organization]="dependencies?.organization"
-                      [imageBase64]="organizationImageBase64"
-                    ></app-organization-information>
+                      <app-task-organization-information
+                      [organization]="displayedOrganization"
+                      [imageBase64]="currentOrganizationImageBase64"
+                    ></app-task-organization-information>
                     </mat-expansion-panel>
                   </mat-accordion>
                 </div>
@@ -49,3 +57,4 @@
       </div>
     }
   </app-page>
+</main>

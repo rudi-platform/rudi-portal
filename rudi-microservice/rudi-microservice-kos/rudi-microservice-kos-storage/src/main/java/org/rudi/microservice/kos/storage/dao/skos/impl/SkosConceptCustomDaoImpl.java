@@ -189,19 +189,19 @@ public class SkosConceptCustomDaoImpl extends AbstractCustomDaoImpl<SkosConceptE
 
 		if (searchCriteria != null) {
 			// codes concepts
-			predicateStringCriteria(searchCriteria.getCodes(), FIELD_CODE, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getCodes(), FIELD_CODE, false, false, predicates, builder, root);
 
 			// labels
 			buildLabelsQuery(searchCriteria, builder, predicates, root);
 
 			// roles
-			predicateStringCriteria(searchCriteria.getRoles(), FIELD_ROLE, predicates, builder, root);
+			predicateStringCriteria(searchCriteria.getRoles(), FIELD_ROLE, false, false, predicates, builder, root);
 
 			// codes scheme
 			if (CollectionUtils.isNotEmpty(searchCriteria.getCodesScheme())) {
 				Join<SkosConceptEntity, SkosSchemeEntity> skosSchemeJoin = root.join(FIELD_SCHEME,
 						JoinType.LEFT);
-				predicateStringCriteria(searchCriteria.getCodesScheme(), FIELD_CODE, predicates, builder, skosSchemeJoin);
+				predicateStringCriteria(searchCriteria.getCodesScheme(), FIELD_CODE, false, false, predicates, builder, skosSchemeJoin);
 			}
 		}
 
@@ -232,7 +232,7 @@ public class SkosConceptCustomDaoImpl extends AbstractCustomDaoImpl<SkosConceptE
 				buildLangJoinsQuery(searchCriteria.getLang(), labelColumn, builder, root);
 		if (StringUtils.isNotEmpty(searchCriteria.getText())) {
 			skosConceptAlternateTranslationJoins.forEach(skosConceptAlternateTranslationJoin ->
-					predicateStringCriteria(searchCriteria.getText(), FIELD_TEXT, predicates, builder, skosConceptAlternateTranslationJoin));
+					predicateStringCriteria(searchCriteria.getText(), FIELD_TEXT, false, false, predicates, builder, skosConceptAlternateTranslationJoin));
 		}
 	}
 

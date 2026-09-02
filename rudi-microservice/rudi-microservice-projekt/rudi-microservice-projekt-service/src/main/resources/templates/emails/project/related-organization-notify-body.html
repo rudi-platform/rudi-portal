@@ -23,11 +23,14 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        Le réutilisateur ${projectOwner} a émis une demande de partenariat pour la réutilisation :
-        ${asset.title}.
+        Une demande de partenariat à la réutilisation <a
+                href="${urlServer}/projets/detail/${asset.uuid}">${asset.title}</a> a été émise
+        par <#if asset.ownerType?? && asset.ownerType == "ORGANIZATION"><a
+        href="${urlServer}/organization/detail/${asset.ownerUuid}">${projectOwner}</a><#else>${projectOwner}</#if>.
     </p>
     <p>
-        Veuillez-vous connecter afin de traiter la demande.
+        Veuillez-vous connecter afin de traiter la demande depuis votre espace personnel en cliquant <a
+                href="${urlServer}/login">ici</a>.
     </p>
     <p>
         À très bientôt, <br>

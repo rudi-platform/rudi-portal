@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -33,6 +34,7 @@ public class AddressRoleCustomDaoImpl extends AbstractCustomDaoImpl<AddressRoleE
 
 	// Champs utilisés pour le filtrage
 	public static final String FIELD_TYPE = "type";
+	public static final String FIELD_CODE = "code";
 	public static final String FIELD_OPENING_DATE = "openingDate";
 	public static final String FIELD_CLOSING_DATE = "closingDate";
 
@@ -64,6 +66,10 @@ public class AddressRoleCustomDaoImpl extends AbstractCustomDaoImpl<AddressRoleE
 			if (searchCriteria.getType() != null) {
 				predicates
 						.add(builder.equal(root.get(FIELD_TYPE), AddressType.valueOf(searchCriteria.getType().name())));
+			}
+
+			if(StringUtils.isNotEmpty(searchCriteria.getCode())){
+				predicates.add(builder.equal(root.get(FIELD_CODE), searchCriteria.getCode()));
 			}
 
 			// inactif

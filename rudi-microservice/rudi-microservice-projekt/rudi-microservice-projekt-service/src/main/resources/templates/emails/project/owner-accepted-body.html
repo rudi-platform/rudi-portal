@@ -32,6 +32,15 @@
     <p>
         Veuillez-vous connecter afin de traiter la demande.</p>
     <p>
+    <#if messageToProjectOwner??>
+        <p>
+            Message adossé à votre demande : <#if messageToProjectOwner?matches(".*[.!?]$")>
+    "${messageToProjectOwner}"
+    <#else>
+    "${messageToProjectOwner}."
+</#if>
+        </p>
+    </#if>
         À très bientôt, <br>
         L'équipe ${teamName} <br>
         <a href="${urlServer}">${urlServer}</a>

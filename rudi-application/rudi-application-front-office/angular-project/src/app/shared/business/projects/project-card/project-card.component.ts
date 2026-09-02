@@ -1,7 +1,7 @@
 import {NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardImage} from '@angular/material/card';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
@@ -13,7 +13,7 @@ import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
     selector: 'app-project-card',
     templateUrl: './project-card.component.html',
     styleUrls: ['./project-card.component.scss'],
-    imports: [MatCard, NgClass, MatCardImage, MatCardContent]
+    imports: [MatCard, NgClass, MatCardImage, MatCardContent, RouterLink]
 })
 export class ProjectCardComponent implements OnInit {
     @Input() projectCatalogItem: ProjectCatalogItem;
@@ -23,7 +23,6 @@ export class ProjectCardComponent implements OnInit {
     constructor(
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly uriComponentCodec: URIComponentCodec,
-        private readonly router: Router,
         private readonly projektMetierService: ProjektMetierService,
         private readonly htmlService: HtmlService,
     ) {
@@ -76,7 +75,16 @@ export class ProjectCardComponent implements OnInit {
         return (this.projectCatalogItem?.project != null);
     }
 
-    clickCard(): void {
-        this.router.navigate(['/projets/detail/' + this.projectCatalogItem.project.uuid + '/' + this.uriComponentCodec.normalizeString(this.projectCatalogItem.project.title)]);
+    /**
+     * Commandes de route vers le detail d'un projet (réutilisation), utilisées par [routerLink]
+     * (balise <a>) afin de bénéficier du comportement natif du navigateur (clic droit "ouvrir
+     * dans un nouvel onglet", ctrl/cmd+clic, clic molette). Retourne null si la navigation
+     * n'est pas possible.
+     */
+    get detailUrl(): string[] | null {
+        if (this.projectIsNotNull()) {
+            return ['/projets/detail', this.projectCatalogItem.project.uuid, this.uriComponentCodec.normalizeString(this.projectCatalogItem.project.title)];
+        }
+        return null;
     }
 }

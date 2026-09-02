@@ -3,8 +3,6 @@
  */
 package org.rudi.facet.cms.impl;
 
-import static java.nio.file.StandardOpenOption.WRITE;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -52,10 +50,11 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * @author FNI18300

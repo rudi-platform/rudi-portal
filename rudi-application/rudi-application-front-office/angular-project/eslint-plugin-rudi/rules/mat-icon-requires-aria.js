@@ -75,15 +75,9 @@ function checkMatIcon(context, node) {
         return;
     }
 
-    // 5. Vérifier si le parent (<button>, <a>) a un aria-label → l'icône est décorative dans ce contexte
-    const parent = node.parent;
-    if (parent && (parent.name === 'button' || parent.name === 'a')) {
-        const parentAttrs = parent.attributes || [];
-        const parentInputs = parent.inputs || [];
-        if (hasStaticAttr(parentAttrs, 'aria-label') || hasStaticAttr(parentAttrs, 'aria-labelledby') ||
-            hasBoundAttr(parentInputs, 'aria-label') || hasBoundAttr(parentInputs, 'aria-labelledby')) {
-            return;
-        }
+    // 5. Vérifier si un ancêtre <button>/<a> a un aria-label → l'icône est décorative dans ce contexte
+    if (hasAccessibleAncestor(node)) {
+        return;
     }
 
     // 6. Vérifier le suffixe matSuffix / matPrefix → icône décorative d'un champ Material
@@ -109,4 +103,24 @@ function hasStaticAttr(attrs, name, expectedValue) {
 
 function hasBoundAttr(inputs, name) {
     return inputs.some(input => input.name === name);
+}
+
+/**
+ * Remonte les ancêtres à la recherche d'un <button>/<a> porteur d'un nom accessible
+ * (aria-label / aria-labelledby, statique ou bindé) rendant l'icône décorative.
+ */
+function hasAccessibleAncestor(node) {
+    let current = node.parent;
+    while (current) {
+        if (current.name === 'button' || current.name === 'a') {
+            const attrs = current.attributes || [];
+            const inputs = current.inputs || [];
+            if (hasStaticAttr(attrs, 'aria-label') || hasStaticAttr(attrs, 'aria-labelledby') ||
+                hasBoundAttr(inputs, 'aria-label') || hasBoundAttr(inputs, 'aria-labelledby')) {
+                return true;
+            }
+        }
+        current = current.parent;
+    }
+    return false;
 }

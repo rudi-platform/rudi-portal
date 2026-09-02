@@ -14,23 +14,24 @@
       </div>
 
       <div class="content-dialog">
-        <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.mail' |translate}}
-          <span
-          class="required-symbol">*</span></div>
+        <label for="member-login" class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.mail' |translate}}
+          <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label>
           <div
           class="dialog-description">{{organizationMemberDialogData.fieldLoginDescription}} </div>
 
-          <input matInput type="text" [disabled]="disableLoginField" class="mail-input"
+          <input matInput type="email" [disabled]="disableLoginField" class="mail-input"
+            id="member-login"
+            autocomplete="email"
+            required
             [(ngModel)]="loginValue">
 
-            <div class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
-              <span
-              class="required-symbol">*</span></div>
+            <label for="member-role" class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
+              <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label>
               <div
               class="dialog-description">{{organizationMemberDialogData.fieldRoleDescription}}</div>
 
               <mat-form-field appearance="outline">
-                <mat-select [(value)]="role">
+                <mat-select id="member-role" [(value)]="role" required>
                   @for (role of roles; track role) {
                     <mat-option [value]="role">
                       {{computeRoleLabel(role)}}

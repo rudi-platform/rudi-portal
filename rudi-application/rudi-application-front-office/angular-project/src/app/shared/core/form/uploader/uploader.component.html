@@ -1,4 +1,13 @@
-<div class="block-upload">
+<div class="block-upload"
+     #blockUpload
+     [id]="id"
+     tabindex="0"
+     role="button"
+     (keydown)="handleKeyboardActivation($event)"
+     (click)="onDropzoneClick()"
+     [attr.aria-labelledby]="ariaLabelledby"
+     [attr.aria-describedby]="ariaDescribedby"
+     [attr.aria-label]="!ariaLabelledby ? (imageText | translate) : null">
   <ngx-awesome-uploader
     class="awesome-uploader-style"
     [adapter]="adapterProxy"
@@ -11,19 +20,17 @@
     [fileExtensions]="fileExtensions"
     (validationError)="onValidationError($event)"
     (uploadSuccess)="onUploadSuccess($event)"
-    (fileDownload)="onDownLoadFile($event)"
-    >
+    (fileDownload)="onDownLoadFile($event)">
 
-    <div class="dropzoneTemplate container pointer">
+    <div class="dropzoneTemplate container">
       <div class="item">
-        <mat-icon class="upload-icon" svgIcon="rudi_picto_image.svg" aria-hidden="false"
-        aria-label="icon pour le upload d'image"></mat-icon>
+        <mat-icon class="upload-icon" svgIcon="rudi_picto_image.svg" aria-hidden="true"></mat-icon>
       </div>
       <div class="item">
         <span class="ajouter-une-image d-block">{{imageText | translate}}</span>
       </div>
       <div class="item mt-0">
-        <span class="au-format-png-pdf-o">{{imageFormat|translate: {fileMaxSize: fileMaxSize} }}</span>
+        <span class="au-format-png-pdf-o">{{imageFormat | translate: {fileMaxSize: fileMaxSize} }}</span>
       </div>
     </div>
 
@@ -32,7 +39,7 @@
   @if (fileFormControl.touched && fileFormControl.errors) {
     <mat-error>
       @for (error of fileFormControl.errors | keyvalue; track error) {
-        <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.validatorsErrors.' + error.key |translate}}<br/>
+        <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.validatorsErrors.' + error.key | translate}}<br/>
       }
     </mat-error>
   }

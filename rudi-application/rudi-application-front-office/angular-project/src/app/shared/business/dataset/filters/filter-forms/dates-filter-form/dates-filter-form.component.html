@@ -1,7 +1,7 @@
 @if (formGroup) {
   <form (ngSubmit)="submitForm()" [class]="formClass"
     [formGroup]="formGroup">
-    <div [class]="debutDivClass" class="mb-2">{{'filterBox.dateDebutCouvertureTemporelle' | translate}}</div>
+    <label for="date-start-input" [class]="debutDivClass + 'mb-2'">{{'filterBox.dateDebutCouvertureTemporelle' | translate}}</label>
     <mat-form-field appearance="outline">
       <input
         [matDatepicker]="picker1"
@@ -9,11 +9,12 @@
         formControlName="startDate"
         matInput
         readonly
+        id="date-start-input"
         >
         <mat-datepicker-toggle [for]="picker1" matSuffix></mat-datepicker-toggle>
         <mat-datepicker #picker1></mat-datepicker>
       </mat-form-field>
-      <div [class]="finDivClass" class="mb-2">{{'filterBox.dateFinCouvertureTemporelle' | translate}}</div>
+      <label for="date-end-input" [class]="finDivClass + 'mb-2'">{{'filterBox.dateFinCouvertureTemporelle' | translate}}</label>
       <mat-form-field appearance="outline">
         <input
           [matDatepicker]="picker2"
@@ -21,6 +22,7 @@
           formControlName="endDate"
           matInput
           readonly
+          id="date-end-input"
           >
           <mat-datepicker-toggle [for]="picker2" matSuffix></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>

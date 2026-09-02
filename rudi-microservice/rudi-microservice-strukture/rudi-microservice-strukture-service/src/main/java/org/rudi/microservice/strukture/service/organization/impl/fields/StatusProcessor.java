@@ -21,7 +21,7 @@ public class StatusProcessor implements CreateOrganizationFieldProcessor {
 	private final TaskService<Organization> organizationTaskService;
 
 	@Override
-	public void processBeforeCreate(OrganizationEntity organization) throws AppServiceBadRequestException {
+	public void processBeforeCreate(OrganizationEntity organization, Organization organizationDto) throws AppServiceBadRequestException {
 		organization.setProcessDefinitionKey(organizationTaskService.getProcessDefinitionKey());
 		organization.setStatus(Status.DRAFT);
 		organization.setOrganizationStatus(OrganizationStatus.DRAFT);

@@ -9,10 +9,15 @@
         <div class="dialog-content">
             <div class="dialog-title">{{ title || ('personalSpace.organization.dialog.title'|translate) }}</div>
             <div class="dialog-description">{{ description || ('personalSpace.organization.dialog.description'|translate) }}</div>
+            <div class="dialog-description">
+                <span class="required-symbol">*</span>
+                {{ 'personalSpace.organization.dialog.requiredFields'|translate }}
+            </div>
 
             <app-organization-form #OrganizationForm
             [draftForm]="draftForm"
-            [organization]="organization">
+            [organization]="organization"
+            [messageControlName]="messageControlName">
             </app-organization-form>
 
             <mat-dialog-actions class="dialog-buttons">

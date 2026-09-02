@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +28,8 @@ import org.rudi.facet.acl.datafactory.UserDataFactory;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.projekt.helper.ProjektHelper;
+import org.rudi.microservice.strukture.core.bean.AbstractAddress;
+import org.rudi.microservice.strukture.core.bean.EmailAddress;
 import org.rudi.microservice.strukture.core.bean.Feature;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.NodeLinkedProducerStatus;
@@ -38,9 +41,15 @@ import org.rudi.microservice.strukture.core.bean.OrganizationMember;
 import org.rudi.microservice.strukture.core.bean.OrganizationRole;
 import org.rudi.microservice.strukture.core.bean.OrganizationStatus;
 import org.rudi.microservice.strukture.core.bean.Point;
+import org.rudi.microservice.strukture.core.bean.TelephoneAddress;
+import org.rudi.microservice.strukture.core.bean.WebsiteAddress;
 import org.rudi.microservice.strukture.core.bean.criteria.NodeOrganizationSearchCriteria;
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.StruktureSpringBootTest;
+import org.rudi.microservice.strukture.service.datafactory.abstractaddress.AbstractAddressDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.abstractaddress.EmailAddressRoleDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.abstractaddress.TelephoneAddressRoleDataFactory;
+import org.rudi.microservice.strukture.service.datafactory.abstractaddress.WebsiteAddressRoleDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.organization.OrganizationDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.organizationmember.OrganizationMemberDataFactory;
 import org.rudi.microservice.strukture.service.datafactory.provider.LinkedProducerDataFactory;
@@ -51,9 +60,14 @@ import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.mapper.ProviderMapper;
 import org.rudi.microservice.strukture.service.provider.ProviderService;
+import org.rudi.microservice.strukture.storage.dao.address.AbstractAddressDao;
+import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerDao;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderDao;
+import org.rudi.microservice.strukture.storage.entity.address.EmailAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.address.TelephoneAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.address.WebsiteAddressEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
@@ -86,6 +100,9 @@ class OrganizationServiceUT {
 
 	@Autowired
 	private OrganizationDao organizationDao;
+
+	@Autowired
+	private OrganizationCustomDao organizationCustomDao;
 
 	@MockitoBean
 	private ACLHelper aclHelper;
@@ -121,6 +138,9 @@ class OrganizationServiceUT {
 	private ProviderMapper providerMapper;
 
 	@Autowired
+	private AbstractAddressDao abstractAddressDao;
+
+	@Autowired
 	private ProviderDao providerDao;
 
 	@Autowired
@@ -135,10 +155,26 @@ class OrganizationServiceUT {
 	@Autowired
 	private ProviderDataFactory providerDataFactory;
 
+	@Autowired
+	private WebsiteAddressRoleDataFactory websiteAddressRoleDataFactory;
+
+
+	@Autowired
+	private TelephoneAddressRoleDataFactory telephoneAddressRoleDataFactory;
+
+	@Autowired
+	private EmailAddressRoleDataFactory emailAddressRoleDataFactory;
+	@Autowired
+	private AbstractAddressDataFactory abstractAddressDataFactory;
+
 	@BeforeEach
 	void init() {
 		doNothing().when(projektHelper).notifyUserHasBeenAdded(any(), any());
 		doNothing().when(projektHelper).notifyUserHasBeenRemoved(any(), any());
+		// Required by ContactAddressesProcessor: merge/update/remove is keyed on role code CONTACT.
+		emailAddressRoleDataFactory.getOrCreateContactRole();
+		websiteAddressRoleDataFactory.getOrCreateContactRole();
+		telephoneAddressRoleDataFactory.getOrCreateContactRole();
 	}
 
 	@AfterEach
@@ -230,11 +266,21 @@ class OrganizationServiceUT {
 		return nodeProvider;
 	}
 
+	private List<AbstractAddress> createTestAddresses() {
+		List<AbstractAddress> addresses = new ArrayList<>();
+		addresses.add(abstractAddressDataFactory.createWebsiteAddressDto(null));
+		addresses.add(abstractAddressDataFactory.createEmailAddressDto(null));
+		addresses.add(abstractAddressDataFactory.createTelephoneAddressDto(null));
+
+		return addresses;
+	}
+
 	private Organization createTestOrganization() throws AppServiceBadRequestException {
+
 		Organization organization = new Organization();
 		organization.setName("Ableton Live");
 		organization.setDescription("DAW très bien");
-		organization.setUrl("http://www.ableton.com");
+		organization.setAddresses(createTestAddresses());
 		organization.setInitiator("initiator@mail.fr");
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
@@ -262,14 +308,14 @@ class OrganizationServiceUT {
 	}
 
 	@Test
+	@Transactional
 	@DisplayName("Création d'une organization - champs minimums")
-	void createOrganization() throws AppServiceBadRequestException {
-
+	void createOrganization() throws AppServiceException {
 		Organization organization = new Organization();
 		organization.setName("Ableton Live");
 		organization.setDescription("DAW très bien");
 		organization.setInitiator("initiator@mail.fr");
-		organization.setUrl("http://www.ableton.com");
+		organization.setAddresses(createTestAddresses());
 
 		LocalDateTime date = LocalDateTime.of(2022, Month.APRIL, 14, 23, 38, 12, 0);
 		organization.setOpeningDate(date);
@@ -295,7 +341,20 @@ class OrganizationServiceUT {
 				.matches(o -> o.getClosingDate().equals(organization.getClosingDate()))
 				.as("La description doit correspondre à celle saiaie")
 				.matches(o -> o.getDescription().equals(organization.getDescription()))
-				.as("L'url doit correspondre à celui saisi").matches(o -> o.getUrl().equals(organization.getUrl()));
+				.as("Extraction des addresses")
+				.extracting(OrganizationEntity::getAddresses)
+				.as("La liste doit comporter 3 adresses")
+				.matches(addresses -> addresses.size() == 3)
+				.as("L'une doit être un site web et contenir le bon URL")
+				.matches(addresses -> addresses.stream().anyMatch(a -> a instanceof WebsiteAddressEntity
+						&& ((WebsiteAddressEntity) a).getUrl().equals(AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE)))
+				.as("L'une doit être une adresse email et contenir le bon email")
+				.matches(o -> o.stream().anyMatch(a -> a instanceof EmailAddressEntity
+						&& ((EmailAddressEntity) a).getEmail().equals(AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE)))
+				.as("L'une doit être un numéro de téléphone et contenir le bon numéro")
+				.matches(o -> o.stream().anyMatch(a -> a instanceof TelephoneAddressEntity
+						&& ((TelephoneAddressEntity) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE)));
+
 
 		organizationDao.delete(inDb);
 	}
@@ -320,8 +379,9 @@ class OrganizationServiceUT {
 
 		Organization organization = new Organization();
 		organization.setName(
-				"Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long "
-						+ "Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long");
+				"Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long " +
+						"Nom trop long Nom trop long Nom trop long "
+						+ "Nom trop long Nom trop long Nom trop long Nom trop long Nom trop long");
 		organization.setOpeningDate(LocalDateTime.now());
 
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
@@ -363,7 +423,7 @@ class OrganizationServiceUT {
 	}
 
 	@Test
-	@DisplayName("Création d'une organization avec une description OK")
+	@DisplayName("Création d'une organzation avec une description OK")
 	void createOrganization_description_OK() throws AppServiceBadRequestException {
 
 		Organization organization = new Organization();
@@ -415,7 +475,7 @@ class OrganizationServiceUT {
 		organization.setName("Url OK");
 		organization.setDescription("Une description OK");
 		organization.setInitiator("initiator@mail.fr");
-		organization.setUrl("https://mavieskoa.com");
+		organization.setAddresses(List.of(abstractAddressDataFactory.createWebsiteAddressDto(null)));
 		organization.setOpeningDate(LocalDateTime.now());
 
 		Organization created = organizationService.createOrganization(organization);
@@ -427,9 +487,10 @@ class OrganizationServiceUT {
 	void createOrganization_url_KO() {
 
 		Organization organization = new Organization();
-		organization.setName("Url OK");
-		organization.setUrl(
-				"https://mavieskoa?query=recherche+trop+longue+faut+pas+faire+ca+surtout+que+je+renvoie+oui.com");
+		organization.setName("Url KO");
+		// URL dépassant la limite de 1024 caractères
+
+		organization.setAddresses(List.of(abstractAddressDataFactory.createWebsiteAddressDtoTooLong()));
 		organization.setOpeningDate(LocalDateTime.now());
 
 		assertThrows(AppServiceBadRequestException.class, () -> organizationService.createOrganization(organization));
@@ -737,7 +798,7 @@ class OrganizationServiceUT {
 		Organization organization = new Organization();
 		organization.setName("Ableton Live");
 		organization.setDescription("DAW très bien");
-		organization.setUrl("http://www.ableton.com");
+
 		organization.setInitiator("initiator@mail.fr");
 		organization.setAddress("some address");
 
@@ -963,7 +1024,7 @@ class OrganizationServiceUT {
 	void getNodeOrganizationValidatedCompleted() throws AppServiceException {
 		ProviderEntity provider = providerDataFactory.createTestProvider();
 		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
-		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity rmLinked = organizationDataFactory.getOrCreateRMOrganization();
 		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createValidatedLinkedProducer(provider.getUuid(),
 				rmLinked.getUuid(),
 				nodeProviderUuid);
@@ -1004,7 +1065,7 @@ class OrganizationServiceUT {
 	void getNodeOrganizationAttachInProgress() throws AppServiceException {
 		ProviderEntity provider = providerDataFactory.createTestProvider();
 		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
-		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity rmLinked = organizationDataFactory.getOrCreateRMOrganization();
 		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createAttachLinkedProducer(provider.getUuid(),
 				rmLinked.getUuid(),
 				nodeProviderUuid);
@@ -1045,7 +1106,7 @@ class OrganizationServiceUT {
 	void getNodeOrganizationDetachInProgress() throws AppServiceException {
 		ProviderEntity provider = providerDataFactory.createTestProvider();
 		UUID nodeProviderUuid = provider.getNodeProviders().iterator().next().getUuid();
-		OrganizationEntity rmLinked = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity rmLinked = organizationDataFactory.getOrCreateRMOrganization();
 		LinkedProducerEntity linkedProducer = linkedProducerDataFactory.createDetachLinkedProducer(provider.getUuid(),
 				rmLinked.getUuid(),
 				nodeProviderUuid);
@@ -1093,15 +1154,15 @@ class OrganizationServiceUT {
 		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
 
 		mockAuthenticationData(jacques);
-		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		OrganizationEntity organization = organizationDataFactory.getOrCreateIRISAOrganization();
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
 
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
-		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		OrganizationEntity organization2 = organizationDataFactory.getOrCreateOpenOrganization();
 		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
 
-		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity organization3 = organizationDataFactory.getOrCreateRMOrganization();
 		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
 
 		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
@@ -1133,15 +1194,15 @@ class OrganizationServiceUT {
 		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
 
 		mockAuthenticationData(jacques);
-		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		OrganizationEntity organization = organizationDataFactory.getOrCreateIRISAOrganization();
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
 
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
-		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		OrganizationEntity organization2 = organizationDataFactory.getOrCreateOpenOrganization();
 		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
 
-		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity organization3 = organizationDataFactory.getOrCreateRMOrganization();
 		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
 
 		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
@@ -1169,19 +1230,19 @@ class OrganizationServiceUT {
 		Page<Organization> originPage = organizationService.searchMyOrganizations(criteria, pageable);
 
 		mockAuthenticationData(jacques);
-		OrganizationEntity organization = organizationDataFactory.createIRISAOrganization(null);
+		OrganizationEntity organization = organizationDataFactory.getOrCreateIRISAOrganization();
 		organization = organizationMemberDataFactory.createOrganizationMemberJacquesAdministrator(organization);
 
 		mockAuthenticationData(jean);
 		// Ces deux là ont été créées avec l'utilisateur connecté en tant qu'initiator
-		OrganizationEntity organization2 = organizationDataFactory.createOpenOrganization(LOGIN);
+		OrganizationEntity organization2 = organizationDataFactory.getOrCreateOpenOrganization();
 		organization2 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization2);
 
-		OrganizationEntity organization3 = organizationDataFactory.createRMOrganization(LOGIN);
+		OrganizationEntity organization3 = organizationDataFactory.getOrCreateRMOrganization();
 		organization3 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization3);
 
 		// Organization en Draft qui ne doit pas être remontée
-		OrganizationEntity organization4 = organizationDataFactory.createBlockOrganization(LOGIN);
+		OrganizationEntity organization4 = organizationDataFactory.getOrCreateBlockOrganization();
 		organization4 = organizationMemberDataFactory.createOrganizationMemberJeanAdministrator(organization4);
 
 		List<OrganizationEntity> expectedOrganizations = List.of(organization2, organization3);
@@ -1203,7 +1264,422 @@ class OrganizationServiceUT {
 	}
 
 
+	// ----------------------------------------------------------------
+	// Tests portant sur le stockage des coordonnées de contact
+	// (url, email, phoneNumber) via AbstractAddressEntity
+	// ----------------------------------------------------------------
+
+	@Test
+	@DisplayName("Création organisation - URL stockée comme WebsiteAddress")
+	void createOrganization_url_stored_as_website_address() throws AppServiceException {
+		// Utilise la DataFactory pour créer une organisation avec une URL persistée en BDD
+		Organization created = organizationService.getOrganization(
+				organizationDataFactory.getOrCreateMinimalOrganizationWithWebsite().getUuid(), true);
+		assertThat(created.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.as("L'URL doit être remontée dans le DTO")
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE));
+	}
+
+	@Test
+	@DisplayName("Création organisation - l'email est stocké dans les adresses en EmailAddressEntity")
+	void createOrganization_email_stored_as_email_address() throws AppServiceException {
+		mockAuthenticationData();
+		mockExternalCalls();
+		// Crée une organisation avec email via la DataFactory et l'appelle via le service
+		Organization dto = organizationDataFactory.getOrCreateMinimalOrganizationWithEmailDto();
+
+		Organization created = organizationService.createOrganization(dto);
+
+		// Vérifie que l'email est présent dans les adresses retournées
+		assertThat(created.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.as("L'email doit être remonté dans le DTO")
+				.anyMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE));
+
+	}
+
+	@Test
+	@DisplayName("Création organisation - le téléphone est stocké dans les adresses en TelephoneAddressEntity")
+	void createOrganization_phoneNumber_stored_as_telephone_address() throws AppServiceException {
+		mockAuthenticationData();
+		mockExternalCalls();
+		// Crée une organisation avec téléphone via la DataFactory et l'appelle via le service
+		Organization dto = organizationDataFactory.getOrCreateMinimalOrganizationWithPhoneDto();
+
+		Organization created = organizationService.createOrganization(dto);
+		// Vérifie que le téléphone est présent dans les adresses retournées
+		assertThat(created.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.as("Le téléphone doit être remonté dans le DTO")
+				.anyMatch(a -> a instanceof TelephoneAddress && ((TelephoneAddress) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE));
+	}
+
+	@Test
+	@DisplayName("Création organisation - roundtrip url/email/phone : les 3 champs sont retournés dans le DTO")
+	void createOrganization_contact_fields_roundtrip() throws AppServiceException {
+		mockAuthenticationData();
+		mockExternalCalls();
+		// Crée une organisation avec les 3 adresses (URL, email, téléphone) via la DataFactory
+		Organization dto = organizationDataFactory.getOrCreateOrganizationWithAllAddressesDtoDto();
+
+		Organization created = organizationService.createOrganization(dto);
+
+		// Vérifie que chacune des 3 adresses est bien remontée dans le DTO sans confusion
+		assertThat(created.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE))
+				.anyMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE))
+				.anyMatch(a -> a instanceof TelephoneAddress && ((TelephoneAddress) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE));
+	}
+
+	@Test
+	@DisplayName("Get organization - mode light : URL/email/téléphone ne sont pas exposés")
+	void getOrganization_light_mode_without_contact_fields() throws AppServiceException {
+		// Prépare les roles pour les adresses de contact
+		websiteAddressRoleDataFactory.getOrCreateContactRole();
+		emailAddressRoleDataFactory.getOrCreateContactRole();
+		telephoneAddressRoleDataFactory.getOrCreateContactRole();
+
+		// Crée une organisation avec les 3 adresses (URL, email, téléphone)
+		OrganizationEntity organizationEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithAllAddresses();
+		// Appelle le service en mode LIGHT (full=false)
+		Organization found = organizationService.getOrganization(organizationEntity.getUuid(), false);
+
+		// Vérifie qu'en mode light, les adresses de contact ne sont pas chargées/retournées
+		assertThat(found.getAddresses())
+				.as("""
+						On ne charge pas les adresses de contact en mode light
+						%s
+						""", found.getAddresses() == null ? "found.getAddresses() == null" : found.getAddresses().toString())
+				.isNullOrEmpty();
+	}
+
+
+	@Test
+	@DisplayName("Get organization - mode full : URL/email/téléphone sont exposés")
+	void getOrganization_full_mode_with_contact_fields() throws AppServiceException {
+		// Crée une organisation avec les 3 adresses (URL, email, téléphone)
+		Organization found = organizationService.getOrganization(
+				organizationDataFactory.getOrCreateMinimalOrganizationWithAllAddresses().getUuid(), true);
+		// Appelle le service en mode FULL (full=true) et vérifie que toutes les adresses sont retournées
+		assertThat(found.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE))
+				.anyMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE))
+				.anyMatch(a -> a instanceof TelephoneAddress && ((TelephoneAddress) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE));
+
+	}
+
+	@Test
+	@DisplayName("Update organisation - l'URL est mise à jour (pas de doublon dans les adresses)")
 	@Transactional
+	void updateOrganization_url_updated_not_duplicated() throws AppServiceException {
+		final String oldUrl = AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE;
+		final String newUrl = "https://new-url.fr/";
+
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithWebsite();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+
+		assertThat(created.getAddresses())
+				.as("L'organisation doit contenir au moins une addresse")
+				.isNotEmpty()
+				.as("La liste doit contenir le site web renseigné")
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(oldUrl));
+
+		created.getAddresses().stream().filter(a -> a instanceof WebsiteAddress).findFirst().ifPresent(a -> ((WebsiteAddress) a).setUrl(newUrl));
+		assertThat(created.getAddresses())
+				.as("Le nouvel URL est set")
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(newUrl))
+				.as("L'ancien url n'est plus présent")
+				.noneMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(oldUrl));
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("Il ne doit y avoir qu'une seule WebsiteAddressEntity (pas de doublon)")
+				.filteredOn(WebsiteAddressEntity.class::isInstance)
+				.hasSize(1)
+				.map(WebsiteAddressEntity.class::cast)
+				.as("L'ancienne URL ne doit plus être présente en base")
+				.noneMatch(a -> a.getUrl().equals(oldUrl))
+				.as("La nouvelle URL doit être présente en base")
+				.anyMatch(a -> newUrl.equals(a.getUrl()));
+	}
+
+	@Test
+	@DisplayName("Update organisation - l'URL mise à null supprime la WebsiteAddressEntity")
+	@Transactional
+	void updateOrganization_url_removed_when_null() throws AppServiceException {
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithWebsite();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+		assertThat(created.getAddresses()).as("Il y a au moins une addresse de renseignée").isNotEmpty()
+				.as("Cette addresse doit être de type WebsiteAddress et valoir " + AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE)
+				.anyMatch(a -> a instanceof WebsiteAddress && ((WebsiteAddress) a).getUrl().equals(AbstractAddressDataFactory.WEBSITE_EXPECTED_VALUE));
+
+		created.setAddresses(null);
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("Il ne doit y avoir aucune WebsiteAddressEntity")
+				.isEmpty();
+	}
+
+	@Test
+	@DisplayName("Update organisation - l'email est mis à jour (pas de doublon dans les adresses)")
+	@Transactional
+	void updateOrganization_email_updated_not_duplicated() throws AppServiceException {
+		final String oldEmail = AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE;
+		final String newEmail = "new@contact.fr";
+
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithEmail();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+		assertThat(created.getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.as("""
+							Et cette addresse doit être de type EmailAddress et valoir
+							%s
+							""",
+						oldEmail)
+				.anyMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(oldEmail));
+
+		// Changement de l'email
+		created.getAddresses().stream().filter(a -> a instanceof EmailAddress).findFirst().ifPresent(a -> ((EmailAddress) a).setEmail(newEmail));
+		assertThat(created.getAddresses())
+				.as("Le nouvel email est set")
+				.anyMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(newEmail))
+				.as("L'ancien email n'est plus présent")
+				.noneMatch(a -> a instanceof EmailAddress && ((EmailAddress) a).getEmail().equals(oldEmail));
+
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("La liste des adresses doit au moins contenir une adresse.")
+				.isNotEmpty()
+				.as("""
+						Et cette addresse doit être de type EmailAddress et valoir
+						%s
+						""", newEmail)
+				.anyMatch(a -> a instanceof EmailAddressEntity && ((EmailAddressEntity) a).getEmail().equals(newEmail)
+				)
+				.as("""
+						Il ne doit plus y l'ancienne addresse
+						""")
+				.noneMatch(a -> a instanceof EmailAddressEntity && ((EmailAddressEntity) a).getEmail().equals(oldEmail));
+	}
+
+	@Test
+	@DisplayName("Update organisation - l'email mis à null supprime la EmailAddressEntity")
+	@Transactional
+	void updateOrganization_email_removed_when_null() throws AppServiceException {
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithEmail();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+
+		created.setAddresses(null);
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("La liste des adresses doit être vide après mise à null")
+				.isEmpty();
+	}
+
+	@Test
+	@DisplayName("Update organisation - le téléphone est mis à jour (pas de doublon dans les adresses)")
+	@Transactional
+	void updateOrganization_phoneNumber_updated_not_duplicated() throws AppServiceException {
+		final String oldPhone = AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE;
+		final String newPhone = "0211111111";
+
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithPhone();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+
+		created.setAddresses(List.of(abstractAddressDataFactory.createTelephoneAddressDto(newPhone)));
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("La liste des adresses doit au moins contenir une addresse.")
+				.isNotEmpty()
+				.as("""
+						Et cette addresse doit être de type TelephoneAddress et valoir
+						%s
+						""", newPhone)
+				.anyMatch(a -> a instanceof TelephoneAddressEntity && ((TelephoneAddressEntity) a).getPhoneNumber().equals(newPhone))
+				.as("""
+						Il ne doit plus y l'ancienne addresse :
+						%s
+						""", oldPhone)
+				.noneMatch(a -> a instanceof TelephoneAddressEntity && ((TelephoneAddressEntity) a).getPhoneNumber().equals(oldPhone));
+
+	}
+
+
+	@Test
+	@DisplayName("Update organisation - le téléphone mis à null supprime la TelephoneAddressEntity")
+	@Transactional
+	void updateOrganization_phoneNumber_removed_when_null() throws AppServiceException {
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithPhone();
+		Organization created = organizationService.getOrganization(createdEntity.getUuid(), true);
+
+		assertThat(created.getAddresses()).as("Il y a au moins une addresse de renseignée").isNotEmpty()
+				.as("Cette addresse doit être de type TelephoneAddress et valoir " + AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE)
+				.anyMatch(a -> a instanceof TelephoneAddress && ((TelephoneAddress) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE));
+
+		created.setAddresses(null);
+		organizationService.updateOrganization(created);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.uuids(List.of(created.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("La liste des adresses doit être vide après mise à null")
+				.isEmpty();
+	}
+
+	@Test
+	@DisplayName("Update organisation - suppression URL uniquement, email et téléphone conservés")
+	@Transactional
+	void updateOrganization_remove_url_keeps_email_and_phone() throws AppServiceException {
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithAllAddresses();
+		Organization createdDto = organizationService.getOrganization(createdEntity.getUuid(), true);
+
+		List<AbstractAddress> addressesLight = List.of(
+				abstractAddressDataFactory.createEmailAddressDto(null),
+				abstractAddressDataFactory.createTelephoneAddressDto(null)
+		);
+
+		createdDto.setAddresses(addressesLight);
+		organizationService.updateOrganization(createdDto);
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+						.builder()
+						.uuids(List.of(createdEntity.getUuid()))
+				.full(true)
+				.build();
+
+		Page<OrganizationEntity> organizations = organizationCustomDao.searchOrganizations(criteria, Pageable.unpaged());
+		assertThat(organizations.getContent())
+				.as("L'organisation doit exister")
+				.isNotEmpty()
+				.as("La liste ne doit contenir qu'une seule organization avec cet UUID")
+				.hasSize(1);
+
+		assertThat(organizations.getContent().getFirst().getAddresses())
+				.as("La liste des adresses doit contenir exactement 2 adresses (email et téléphone)")
+				.hasSize(2)
+				.as("L'URL de contact ne doit pas être présente")
+				.noneMatch(a -> a instanceof WebsiteAddressEntity)
+				.as("L'email de contact doit être présent")
+				.anyMatch(a -> a instanceof EmailAddressEntity && ((EmailAddressEntity) a).getEmail().equals(AbstractAddressDataFactory.EMAIL_EXPECTED_VALUE))
+				.as("Le téléphone de contact doit être présent")
+				.anyMatch(a -> a instanceof TelephoneAddressEntity && ((TelephoneAddressEntity) a).getPhoneNumber().equals(AbstractAddressDataFactory.TELEPHONE_EXPECTED_VALUE));
+	}
+
+	@Test
+	@DisplayName("Suppression organisation - les adresses associées sont supprimées de la base")
+	void deleteOrganization_addresses_are_deleted() throws AppServiceException {
+		// Crée une organisation avec les 3 adresses (URL, email, téléphone)
+		OrganizationEntity createdEntity = organizationDataFactory.getOrCreateMinimalOrganizationWithAllAddresses();
+
+		// Mémorise le nombre d'adresses avant la suppression
+		final long initialAddressCount = abstractAddressDao.count();
+		assertThat(initialAddressCount).as("Des adresses doivent exister après création").isGreaterThan(0L);
+
+		// Supprime l'organisation
+		organizationService.deleteOrganization(createdEntity.getUuid());
+
+		// Vérifie que l'organisation est bien supprimée en base
+		assertThat(organizationDao.findByUuid(createdEntity.getUuid()))
+				.as("L'organisation doit être supprimée")
+				.isNull();
+
+		// Vérifie que les adresses associées ont été supprimées avec l'organisation (cascade delete)
+		assertThat(abstractAddressDao.count())
+				.as("La suppression de l'organisation doit nettoyer les adresses créées pour ce test")
+				.isLessThan(initialAddressCount);
+	}
+
+
+	// ----------------------------------------------------------------
+
 	protected void attachWithStatus(Organization organization, ProviderEntity provider, NodeProvider nodeProvider,
 			final org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus expectedStatus)
 			throws AppServiceException {
@@ -1228,4 +1704,6 @@ class OrganizationServiceUT {
 		return orga1Created;
 	}
 
+
 }
+

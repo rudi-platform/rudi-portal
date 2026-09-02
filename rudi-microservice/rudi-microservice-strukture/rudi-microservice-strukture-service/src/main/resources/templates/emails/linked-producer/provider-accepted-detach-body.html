@@ -24,10 +24,17 @@
 <p>
     L'équipe ${projectName} a accepté votre demande de détachement pour l'organisation ${asset.organization.name}.
 </p>
-<#if messageToDetachmentInitiator??><p>Voici le commentaire associé à la demande : ${messageToDetachmentInitiator}</p></#if>
 <p>
     L'organisation ${asset.organization.name} est désormais détachée de votre nœud producteur.
 </p>
+<#if messageToDetachmentInitiator??>
+    <p>Message adossé à votre demande : <#if messageToDetachmentInitiator?matches(".*[.!?]$")>
+        "${messageToDetachmentInitiator}"
+        <#else>
+        "${messageToDetachmentInitiator}."
+    </#if>
+</p>
+</#if>
 <p>
     Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant <a
         href="${urlContact}">ici</a>.

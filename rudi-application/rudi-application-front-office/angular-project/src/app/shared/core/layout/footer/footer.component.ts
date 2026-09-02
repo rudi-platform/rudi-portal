@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass } from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDivider} from '@angular/material/divider';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
@@ -8,6 +8,7 @@ import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.ser
 import {LogService} from '@core/services/log.service';
 import {RedirectService} from '@core/services/redirect.service';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {SocialMediaSectionComponent} from '@shared/business/home/social-media-section/social-media-section.component';
 import {FooterUtils} from '@shared/utils/footer-utils';
 import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
 import {AppInfo} from 'micro_service_modules/acl/acl-api/model/models';
@@ -15,11 +16,11 @@ import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CustomizationDescription, KonsultService, MiscellaneousService} from 'micro_service_modules/konsult/konsult-api';
 import {CmsTermsDescription} from 'micro_service_modules/konsult/konsult-model';
 import {switchMap} from 'rxjs';
-import {SocialMediaSectionComponent} from '../../../business/home/social-media-section/social-media-section.component';
 
 const OFFSET = 0;
-const LIMIT = 3;
+const LIMIT = 4;
 const DEFAULT_PICTO: Base64EncodedLogo = '/assets/images/logo_bleu_orange.svg';
+
 
 @Component({
     selector: 'app-footer',
@@ -71,16 +72,27 @@ export class FooterComponent implements OnInit {
     }
 
     initTerms(): void {
+        // Construire le tableau de catégories à partir des champs disponibles
+        const categories: string[] = this.cmsTermsDescription.termsCategories ?? [this.cmsTermsDescription.category];
+        // Augmenter la limite pour s'assurer de récupérer tous les assets disponibles
+        const limit = categories.length ?? LIMIT;
+
         this.konsultService.renderAssets(
             'TERMS',
             this.cmsTermsDescription.template_simple,
-            [this.cmsTermsDescription.category],
+            categories,
             [],
             this.translateService.getCurrentLang(),
             OFFSET,
-            LIMIT
+            limit
         ).subscribe({
             next: (pagedCmsAssets: PagedCmsAssets): void => {
+
+                if (pagedCmsAssets.total === 0) {
+                    this.displayComponent = false;
+                    return;
+                }
+
                 this.displayComponent = pagedCmsAssets.total > 0;
                 if (this.displayComponent) {
                     pagedCmsAssets.elements.forEach((cmsAsset: CmsAsset) => {
@@ -88,8 +100,8 @@ export class FooterComponent implements OnInit {
                     });
                 }
             },
-            error(err): void {
-                this.logService.error(err);
+            error: (err) => {
+                this.logger.error(err);
                 this.displayComponent = false;
             }
         });
@@ -114,6 +126,7 @@ export class FooterComponent implements OnInit {
                     this.footerLogoLink = this.customizationDescription.footer_description.footerLogo.url;
                     this.cmsTermsDescription = customizationDescription.cms_terms_description;
                     this.customizationDescriptionIsLoading = false;
+                    console.log(this.customizationDescription);
                     this.initTerms();
                 },
                 error: (error) => {

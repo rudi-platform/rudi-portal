@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
+import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {TranslatePipe} from '@ngx-translate/core';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
@@ -14,7 +14,7 @@ import {Field} from 'micro_service_modules/api-bpmn';
     selector: 'app-workflow-field',
     templateUrl: './workflow-field.component.html',
     styleUrls: ['./workflow-field.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatInput, MatError, TranslatePipe]
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatError, MatHint, TranslatePipe]
 })
 export class WorkflowFieldComponent {
     /**
@@ -67,5 +67,9 @@ export class WorkflowFieldComponent {
      */
     addOtherControls(): void {
         // Par défaut on ne rajoute, les components fils en rajoutent si besoin
+    }
+
+    get fullLabel() {
+        return this.label ? this.label + ' : ' : '';
     }
 }

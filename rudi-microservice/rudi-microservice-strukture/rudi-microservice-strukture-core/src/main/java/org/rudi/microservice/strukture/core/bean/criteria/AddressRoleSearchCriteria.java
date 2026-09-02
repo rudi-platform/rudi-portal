@@ -13,8 +13,7 @@ import lombok.Data;
  */
 @Data
 public class AddressRoleSearchCriteria {
-
-	private Boolean active;
-
+	private String code;
 	private AddressType type;
+	private Boolean active;
 }

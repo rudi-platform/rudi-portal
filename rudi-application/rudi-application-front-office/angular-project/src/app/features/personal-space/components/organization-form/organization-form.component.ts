@@ -1,146 +1,124 @@
-
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
+import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {OrganizationAddresses} from '@core/services/organization/organization-addresses';
+import {OrganizationAddressesMapper} from '@core/services/organization/organization-addresses-mapper';
 import {ObjectType} from '@core/services/tasks/object-type.enum';
 import {ORGANIZATION_PROCESS_KEY_DEFINITION} from '@core/services/tasks/TaskDependencyFetcherFactory';
-import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {WorkflowFormComponent} from '@shared/core/workflow/forms/workflow-form/workflow-form.component';
 import {WorkflowProperties} from '@shared/core/workflow/forms/workflow-form/workflow-properties';
 import {Form} from 'micro_service_modules/strukture/api-strukture';
 import {Organization} from 'micro_service_modules/strukture/strukture-model';
-import {MAX_ADDRESS_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_MESSAGE_LENGTH, MAX_NAME_LENGTH, MAX_URL_LENGTH, URL_PATTERN} from './organization-form.constants';
+import {map, Observable} from 'rxjs';
 
 @Component({
     selector: 'app-organization-form',
     templateUrl: './organization-form.component.html',
     styleUrls: ['./organization-form.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, WorkflowFormComponent, TranslatePipe]
+    imports: [WorkflowFormComponent]
 })
 export class OrganizationFormComponent implements OnInit {
     @ViewChild(WorkflowFormComponent) workflowFormComponent: WorkflowFormComponent;
     @Input() draftForm: Form;
     @Input() organization: Organization;
-    form: FormGroup;
-    FORM_CONTROL_NAME_MESSAGE = 'messageToModerator';
+    @Input() messageControlName = 'messageToModerator';
+
     FORM_CONTROL_NAME_NAME = 'name';
     FORM_CONTROL_NAME_DESCRIPTION = 'description';
-    FORM_CONTROL_NAME_URL = 'url';
     FORM_CONTROL_NAME_ADDRESS = 'address';
+    FORM_CONTROL_NAME_URL = 'url';
+    FORM_CONTROL_NAME_EMAIL = 'email';
+    FORM_CONTROL_NAME_PHONE_NUMBER = 'phoneNumber';
+    organizationAddresses: OrganizationAddresses = {};
 
-    constructor(
-        private readonly formBuilder: FormBuilder,
-        private readonly translateService: TranslateService
-    ) {
-    }
-
-    get isModification(): boolean {
-        return !!this.organization;
-    }
-
-    ngOnInit(): void {
-        const formFields = [
-            ...(this.isModification
-                ? [{name: this.FORM_CONTROL_NAME_MESSAGE, validators: [Validators.maxLength(MAX_MESSAGE_LENGTH)]}]
-                : []),
-            {name: this.FORM_CONTROL_NAME_NAME, validators: [Validators.required, Validators.maxLength(MAX_NAME_LENGTH)]},
-            {name: this.FORM_CONTROL_NAME_DESCRIPTION, validators: [Validators.required, Validators.maxLength(MAX_DESCRIPTION_LENGTH)]},
-            {
-                name: this.FORM_CONTROL_NAME_URL,
-                validators: [Validators.pattern(URL_PATTERN), Validators.maxLength(MAX_URL_LENGTH)]
-            },
-            {name: this.FORM_CONTROL_NAME_ADDRESS, validators: [Validators.maxLength(MAX_ADDRESS_LENGTH)]},
-        ];
-
-        this.form = this.formBuilder.group(
-            formFields.reduce((acc, field) => {
-                acc[field.name] = ['', field.validators];
-                return acc;
-            }, {})
-        );
-
-        if (this.organization) {
-            this.form.patchValue({
-                [this.FORM_CONTROL_NAME_NAME]: this.organization.name || '',
-                [this.FORM_CONTROL_NAME_DESCRIPTION]: this.organization.description || '',
-                [this.FORM_CONTROL_NAME_URL]: this.organization.url || '',
-                [this.FORM_CONTROL_NAME_ADDRESS]: this.organization.address || '',
-            });
-        }
-    }
-
-    isValidForm(): boolean {
-        return this.form.valid;
-    }
-
-    get messageToModerator(): string {
-        return this.form.get(this.FORM_CONTROL_NAME_MESSAGE)?.value || null;
-    }
-
-    submitWorkflowForm(): boolean {
-        return this.workflowFormComponent?.submit() ?? true;
-    }
-
-    getOrganization(): Organization {
-        return {
-            name: this.form.get(this.FORM_CONTROL_NAME_NAME).value,
-            description: this.form.get(this.FORM_CONTROL_NAME_DESCRIPTION).value,
-            url: this.form.get(this.FORM_CONTROL_NAME_URL).value ? this.form.get(this.FORM_CONTROL_NAME_URL).value : null,
-            address: this.form.get(this.FORM_CONTROL_NAME_ADDRESS).value ? this.form.get(this.FORM_CONTROL_NAME_ADDRESS).value : null,
-            object_type: ObjectType.ORGANIZATION,
-        };
-    };
-
-    isErrorOnField(formControlName: string): boolean {
-        return this.form.controls[formControlName].hasError('required')
-            || this.form.controls[formControlName].hasError('pattern')
-            || this.form.controls[formControlName].hasError('maxlength');
-    }
-
-    getErrorMessage(formControlName: string): string {
-        const control = this.form.controls[formControlName];
-
-        if (control.hasError('required')) {
-            return this.translateService.instant('personalSpace.organization.form.errorRequired');
-        }
-
-        if (control.hasError('pattern')) {
-            return this.translateService.instant('personalSpace.organization.form.errorPattern');
-        }
-
-        if (control.hasError('maxlength')) {
-            return this.getMaxLengthError(formControlName);
-        }
-
-        return '';
-    }
-
-    private getMaxLengthForField(formControlName: string): number {
-        switch (formControlName) {
-            case this.FORM_CONTROL_NAME_NAME:
-                return MAX_NAME_LENGTH;
-            case this.FORM_CONTROL_NAME_DESCRIPTION:
-                return MAX_DESCRIPTION_LENGTH;
-            case this.FORM_CONTROL_NAME_URL:
-                return MAX_URL_LENGTH;
-            case this.FORM_CONTROL_NAME_ADDRESS:
-                return MAX_ADDRESS_LENGTH;
-            case this.FORM_CONTROL_NAME_MESSAGE:
-                return MAX_MESSAGE_LENGTH;
-            default:
-                return 0;
-        }
-    }
-
-    private getMaxLengthError(formControlName: string): string {
-        return this.translateService.instant('personalSpace.organization.form.errorMaxlength', {maxLength: this.getMaxLengthForField(formControlName)});
-    }
+    private readonly organizationAddressesMapper = inject(OrganizationAddressesMapper);
 
     get properties(): WorkflowProperties {
         return {
             fileMaxSize: undefined,
             processDefinitionKey: ORGANIZATION_PROCESS_KEY_DEFINITION,
         };
+    }
+
+    get messageToModerator(): string | null {
+        return this.getControlValue(this.messageControlName);
+    }
+
+    isValidForm(): boolean {
+        return this.workflowFormComponent ? !this.workflowFormComponent.invalid : false;
+    }
+
+    submitWorkflowForm(): boolean {
+        return this.workflowFormComponent?.submit() ?? true;
+    }
+
+    getOrganization$(): Observable<Organization> {
+        const organizationAddresses: OrganizationAddresses = {
+            email: this.getControlValue(this.FORM_CONTROL_NAME_EMAIL) ?? '',
+            phoneNumber: this.getControlValue(this.FORM_CONTROL_NAME_PHONE_NUMBER) ?? '',
+            url: this.getControlValue(this.FORM_CONTROL_NAME_URL) ?? ''
+        };
+
+        return this.organizationAddressesMapper
+            .mapOrganizationAddressesToAbstractAddresses(organizationAddresses)
+            .pipe(
+                map((addresses) => ({
+                    name: this.getControlValue(this.FORM_CONTROL_NAME_NAME) ?? '',
+                    description: this.getControlValue(this.FORM_CONTROL_NAME_DESCRIPTION) ?? '',
+                    address: this.getControlValue(this.FORM_CONTROL_NAME_ADDRESS) ?? '',
+                    object_type: ObjectType.ORGANIZATION,
+                    addresses
+                }))
+            );
+    }
+
+    private getControlValue(fieldName: string): string | null {
+        const formGroup = this.workflowFormComponent?.formGroup;
+        if (!formGroup) {
+            return null;
+        }
+
+        // Les contrôles du workflow sont nommés "section_field".
+        const controlKey = Object.keys(formGroup.controls)
+            .find(name => name === fieldName || name.endsWith(`_${fieldName}`));
+
+        if (!controlKey) {
+            return null;
+        }
+
+        const value = formGroup.controls[controlKey]?.value;
+        return value === undefined || value === null || value === '' ? null : String(value);
+    }
+
+    ngOnInit(): void {
+        this.organizationAddresses = this.organizationAddressesMapper
+            .mapAbstractAddressesToOrganizationAddresses(this.organization?.addresses ?? []);
+        this.prefillDraftFormIfEmpty();
+    }
+
+    private prefillDraftFormIfEmpty(): void {
+        if (!this.draftForm || !this.organization) {
+            return;
+        }
+
+        const orgValues: Record<string, string | undefined> = {
+            name: this.organization.name,
+            description: this.organization.description,
+            url: this.organizationAddresses.url,
+            address: this.organization.address,
+            email: this.organizationAddresses.email,
+            phoneNumber: this.organizationAddresses.phoneNumber,
+        };
+
+        this.draftForm.sections?.forEach(section => {
+            section.fields?.forEach(field => {
+                const key = field.definition?.name;
+                const incomingValue = key ? orgValues[key] : undefined;
+                const currentValue = field.values?.[0];
+
+                const isEmpty = currentValue === undefined || currentValue === null || currentValue === '';
+                if (isEmpty && incomingValue !== undefined && incomingValue !== null && incomingValue !== '') {
+                    field.values = [incomingValue];
+                }
+            });
+        });
     }
 }

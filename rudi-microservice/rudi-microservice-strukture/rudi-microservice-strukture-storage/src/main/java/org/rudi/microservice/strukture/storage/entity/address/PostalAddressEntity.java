@@ -40,15 +40,7 @@ public class PostalAddressEntity extends AbstractAddressEntity {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((getAdditionalIdentification() == null) ? 0 : getAdditionalIdentification().hashCode());
-		result = prime * result + ((getDistributionService() == null) ? 0 : getDistributionService().hashCode());
-		result = prime * result + ((getLocality() == null) ? 0 : getLocality().hashCode());
-		result = prime * result
-				+ ((getRecipientIdentification() == null) ? 0 : getRecipientIdentification().hashCode());
-		result = prime * result + ((getStreetNumber() == null) ? 0 : getStreetNumber().hashCode());
-		return result;
+		return prime * super.hashCode();
 	}
 
 	@Override
@@ -60,46 +52,7 @@ public class PostalAddressEntity extends AbstractAddressEntity {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (!(obj instanceof PostalAddressEntity)) {
-			return false;
-		}
-		PostalAddressEntity other = (PostalAddressEntity) obj;
-		if (getAdditionalIdentification() == null) {
-			if (other.getAdditionalIdentification() != null) {
-				return false;
-			}
-		} else if (!getAdditionalIdentification().equals(other.getAdditionalIdentification())) {
-			return false;
-		}
-		if (getDistributionService() == null) {
-			if (other.getDistributionService() != null) {
-				return false;
-			}
-		} else if (!getDistributionService().equals(other.getDistributionService())) {
-			return false;
-		}
-		if (getLocality() == null) {
-			if (other.getLocality() != null) {
-				return false;
-			}
-		} else if (!getLocality().equals(other.getLocality())) {
-			return false;
-		}
-		if (getRecipientIdentification() == null) {
-			if (other.getRecipientIdentification() != null) {
-				return false;
-			}
-		} else if (!getRecipientIdentification().equals(other.getRecipientIdentification())) {
-			return false;
-		}
-		if (getStreetNumber() == null) {
-			if (other.getStreetNumber() != null) {
-				return false;
-			}
-		} else if (!getStreetNumber().equals(other.getStreetNumber())) {
-			return false;
-		}
-		return true;
+		return obj instanceof PostalAddressEntity;
 	}
 
 }

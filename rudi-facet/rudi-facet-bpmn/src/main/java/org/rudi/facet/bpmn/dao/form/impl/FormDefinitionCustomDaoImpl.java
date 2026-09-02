@@ -5,13 +5,6 @@ package org.rudi.facet.bpmn.dao.form.impl;
 
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
@@ -24,6 +17,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 /**
  * @author FNI18300
@@ -52,8 +53,8 @@ public class FormDefinitionCustomDaoImpl extends
 			CriteriaQuery<?> criteriaQuery, Root<FormDefinitionEntity> root, List<Predicate> predicates) {
 		if (searchCriteria != null) {
 			if (StringUtils.isNotEmpty(searchCriteria.getFormName())) {
-				predicates
-						.add(buildPredicateStringCriteria(searchCriteria.getFormName(), NAME_PROPERTY, builder, root));
+				predicates.add(buildPredicateStringCriteria(searchCriteria.getFormName(), NAME_PROPERTY, false, false,
+						builder, root));
 			}
 			if (StringUtils.isNotEmpty(searchCriteria.getSectionName())) {
 				Join<FormDefinitionEntity, SectionDefinitionEntity> joinSections = root
