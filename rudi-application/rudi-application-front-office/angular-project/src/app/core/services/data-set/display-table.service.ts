@@ -59,9 +59,12 @@ export class DisplayTableService {
             }),
             // parse du blob en XLSX ou CSV
             map((arrayBuffer: ArrayBuffer) => {
-                return read(arrayBuffer, {
-                    type: 'array'
-                });
+                try {
+                    const text = new TextDecoder('utf-8', {fatal: true}).decode(arrayBuffer);
+                    return read(text, {type: 'string'});
+                } catch {
+                    return read(arrayBuffer, {type: 'array'});
+                }
             })
         );
     }
