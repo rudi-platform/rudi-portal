@@ -6,6 +6,7 @@ import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPa
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ASSET_IMAGE_FIELD_NAME} from '@core/const';
 import {ProjectConsultationService} from '@core/services/asset/project/project-consultation.service';
 import {LinkedDatasetMetadatas} from '@core/services/asset/project/project-dependencies.service';
 import {ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
@@ -166,8 +167,9 @@ export class ProjectTaskDetailComponent
                     this.currentTask = task;
                     this.hasSections = !!task?.asset?.form?.sections;
                     this.projectPictureUuid = task?.asset?.form?.sections
-                        ?.find(s => s.name?.includes('modified-project-picture'))
-                        ?.fields?.[0]?.values?.[0];
+                        ?.flatMap(s => s.fields)
+                        ?.find(f => f.definition?.name === ASSET_IMAGE_FIELD_NAME)
+                        ?.values?.[0];
                 },
                 error: (err) => this.logger.error('Error fetching task:', err)
             });
@@ -426,9 +428,6 @@ export class ProjectTaskDetailComponent
 
 
     isSectionVisible(section: Section): boolean {
-        if (section.name?.includes('modified-project-picture')) {
-            return false;
-        }
         return section.fields?.some(f =>
             f.definition?.type !== 'HIDDEN' && f.values?.some(v => v != null && v.trim() !== '')
         ) ?? false;

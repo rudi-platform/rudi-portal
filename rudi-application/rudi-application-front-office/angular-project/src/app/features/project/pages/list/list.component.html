@@ -8,7 +8,16 @@
       >
       <app-page-title [title1]="'project.catalogue'|translate"
         [title2]="'project.reutilisations'|translate"
+        [title3]="'project.reutilisationsSubtitle'|translate"
       class="d-flex justify-content-center w-100"></app-page-title>
+
+      <!--Composant de recherche libre-->
+      <app-search-box
+        [mediaSize]="mediaSize"
+        [libelle]="'searchbox.rechercherReutilisation'"
+        (searchTermsEmitter)="freeText = $event.trim()"
+        class="d-flex justify-content-center w-100">
+      </app-search-box>
 
       <!--Composant reutilisation banner-->
       <app-banner [mediaSize]="mediaSize">
@@ -20,14 +29,18 @@
         class="mt-4">
         <div class="list-headers">
           <!--Nombre de résultats-->
-          <div class=" w-50 search-count">
+          <output class=" w-50 search-count" aria-live="polite">
             @if (searchIsRunning) {
               {{ 'searchbox.searchIsRunning'|translate }}
             }
             @if (!searchIsRunning) {
               @if (projectListTotal >= 1) {
                 <div>
-                  <span>{{ projectListTotal }} {{ 'searchbox.results'|translate }}{{ projectListTotal > 1 ? 's' : '' }}</span>
+                  <span>{{ projectListTotal }} {{ 'searchbox.results'|translate }}{{ projectListTotal > 1 ? 's' : '' }}
+                    @if (freeText) {
+                      {{ 'searchbox.resultsFor' | translate: resultsForParams }}
+                    }
+                  </span>
                 </div>
               }
               @if (projectListTotal == 0) {
@@ -37,7 +50,7 @@
               }
             }
 
-          </div>
+          </output>
 
           <app-project-order [(order)]="order">
           </app-project-order>
@@ -48,6 +61,7 @@
           (projectListChange)="projectListTotal = $event.total"
           (runningSearch)="searchIsRunning = $event"
           [order]="order"
+          [freeText]="freeText"
         ></app-project-list>
 
       </div>

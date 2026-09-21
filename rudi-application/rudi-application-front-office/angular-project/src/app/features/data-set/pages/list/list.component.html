@@ -32,15 +32,6 @@
         </div>
       </div>
 
-      <div (click)="sidenavDates.open(); sidenav.close()" class="rudi-sidenav-container-filter">
-        {{'filterBox.couvertureTemporelle'|translate}}
-        <div>
-          <mat-icon [matBadge]="datesForm.counter$ | async" aria-hidden="false" aria-label="close icon"
-            class="toolbar-icon pointer">chevron_right
-          </mat-icon>
-        </div>
-      </div>
-
       @if (accessStatusfilterForcedValue === undefined) {
         <div (click)="sidenavRestrictedAccess.open(); sidenav.close()"
           class="rudi-sidenav-container-filter bottom-border"
@@ -103,21 +94,6 @@
     </app-filter-sidenav-container>
   </mat-sidenav>
 
-  <mat-sidenav #sidenavDates (keydown.escape)="sidenav.close()" disableClose>
-    <app-filter-sidenav-container (closeSidenav)="datesForm.revert(); sidenavDates.close(); sidenav.open()"
-      titleKey="filterBox.couvertureTemporelle">
-      <app-dates-filter-form
-        #datesForm
-        (selectedItemsChange)="selectedDatesItems = $event"
-        (submitFormEvent)="sidenavDates.close()"
-        debutDivClass="d-flex"
-        finDivClass="d-flex mt-3"
-        formClass="d-flex flex-column justify-content-center"
-        ulClass="ps-5"
-        >
-      </app-dates-filter-form>
-    </app-filter-sidenav-container>
-  </mat-sidenav>
 
   <mat-sidenav #sidenavRestrictedAccess (keydown.escape)="sidenav.close()" disableClose>
     <app-filter-sidenav-container
@@ -138,8 +114,9 @@
       [ngClass]="{'p-small': mediaSize.isXs || mediaSize.isSm,'p-medium': mediaSize.isMd, 'p-large': mediaSize.isDeviceDesktop}">
 
 
-      <app-page-title [title1]="'searchbox.jeux'|translate"
-        [title2]="'searchbox.donnees'|translate"
+      <app-page-title [title1]="'searchbox.catalogue'|translate"
+        [title2]="'searchbox.jeuxDonnees'|translate"
+        [title3]="'searchbox.catalogueSubtitle'|translate"
       class="d-flex justify-content-center w-100"></app-page-title>
 
       <app-list-container [accessStatusForcedValue]="accessStatusfilterForcedValue"

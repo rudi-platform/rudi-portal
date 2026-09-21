@@ -10,6 +10,7 @@ import {
     searchDefaultPageSize,
     SearchOrganizationsService
 } from '@shared/business/organisation/list-organization-card/search-organizations.service';
+import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.component';
 import {OrganizationBean} from 'micro_service_modules/strukture/api-strukture';
 import {Observable} from 'rxjs';
 
@@ -22,7 +23,8 @@ import {Observable} from 'rxjs';
         OrganizationOrderComponent,
         ListOrganizationCardComponent,
         AsyncPipe,
-        TranslatePipe
+        TranslatePipe,
+        SearchBoxComponent
     ]
 })
 export class ListContainerComponent implements OnInit, OnDestroy {
@@ -35,7 +37,13 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     projectCountLoading$: Observable<boolean>;
     currentPage$: Observable<number>;
 
+    searchedTerm = '';
+
     @Input() mediaSize: MediaSize;
+
+    get resultsForParams(): { term: string } {
+        return {term: this.searchedTerm};
+    }
 
     constructor(
         private readonly searchOrganizationsService: SearchOrganizationsService,
@@ -50,7 +58,8 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     }
 
     onChangesSearchTerms($event: string): void {
-        throw new Error('Search not implemented yet');
+        this.searchedTerm = $event?.trim() ?? '';
+        this.searchOrganizationsService.onFreeTextChange($event);
     }
 
     onOrderChange($event: Order): void {

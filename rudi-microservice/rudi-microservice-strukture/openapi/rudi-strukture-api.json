@@ -1558,6 +1558,14 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom ou la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "uuids",
 						"required": false,
 						"schema": {
@@ -2062,6 +2070,14 @@
 				"description": "Retourne une liste d'organisations",
 				"operationId": "searchOrganizationsBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"description": "user lié aux organizations",
@@ -3871,6 +3887,14 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "uuids",
 						"required": false,
 						"schema": {
@@ -3929,6 +3953,14 @@
 				"description": "Retourne une liste d'organisation-beans liées à l'utilisateur connecté",
 				"operationId": "searchMyOrganizationBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "uuids",
@@ -3997,6 +4029,14 @@
 				"description": "Retourne une liste d'organisations-beans dans des états permettant leur visibilité pour le grand publique.",
 				"operationId": "searchPublicOrganizationsBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "name",

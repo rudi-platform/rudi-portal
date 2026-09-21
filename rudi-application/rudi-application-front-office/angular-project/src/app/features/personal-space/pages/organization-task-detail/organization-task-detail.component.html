@@ -15,10 +15,8 @@
             <div class="organization-details-container">
               <div class="organization-information-container">
                 @if (hasSections && !isDeclaration) {
-                  @for (section of currentTask?.asset?.form?.sections; track section) {
-                    @if (isSectionVisible(section)) {
-                      <app-workflow-expansion [section]="section"></app-workflow-expansion>
-                    }
+                  @for (item of displayableSections; track item.section) {
+                    <app-workflow-expansion [section]="item.section" [title]="item.title"></app-workflow-expansion>
                   }
                 }
                 <mat-accordion>

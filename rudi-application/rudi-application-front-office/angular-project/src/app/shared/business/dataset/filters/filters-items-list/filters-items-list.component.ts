@@ -3,10 +3,6 @@ import {FiltersService} from '@core/services/filters.service';
 import {
     AccessStatusFilterItem
 } from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
-import {
-    DEBUT_NAME_PREFIX,
-    FIN_NAME_PREFIX
-} from '@shared/business/dataset/filters/filter-forms/dates-filter-form/dates-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 
 import {MatIcon} from '@angular/material/icon';
@@ -22,7 +18,6 @@ import {TranslatePipe} from '@ngx-translate/core';
 ],
 })
 export class FiltersItemsListComponent {
-    @Input() selectedDatesItems: Item[];
     @Input() selectedAccessStatusItems: AccessStatusFilterItem[];
     @Input() selectedProducerItems: Item[];
     @Input() selectedThemeItems: Item[];
@@ -52,8 +47,6 @@ export class FiltersItemsListComponent {
             return this.selectedThemeItems.some(value => value.value !== null);
         } else if (this.selectedProducerItems.length > 0) {
             return this.selectedProducerItems.some(value => value.value !== null);
-        } else if (this.selectedDatesItems.length > 0) {
-            return this.selectedDatesItems.some(value => value.value !== null);
         } else if (this.selectedAccessStatusItems.length > 0) {
             return this.selectedAccessStatusItems.some(value => value.value !== null);
         }
@@ -69,27 +62,11 @@ export class FiltersItemsListComponent {
         this.filtersService.producerNamesFilter.remove(producer.name);
     }
 
-    deleteDateFilter(date: Item): void {
-        if (date.name.startsWith(DEBUT_NAME_PREFIX)) {
-            this.deleteDateDebutFilter();
-        } else if (date.name.startsWith(FIN_NAME_PREFIX)) {
-            this.deleteDateFinFilter();
-        }
-    }
-
     deleteAllFilters(): void {
         this.filtersService.deleteAllFilters();
     }
 
     deleteRestrictedAccessFilter(): void {
         this.filtersService.accessStatusFilter.clear();
-    }
-
-    private deleteDateDebutFilter(): void {
-        this.filtersService.datesFilter.dateDebut = null;
-    }
-
-    private deleteDateFinFilter(): void {
-        this.filtersService.datesFilter.dateFin = null;
     }
 }

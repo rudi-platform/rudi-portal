@@ -23,11 +23,9 @@ export class SelfdataInformationRequestCreationSuccessComponent implements OnIni
     constructor(private readonly route: ActivatedRoute,
                 private readonly konsultMetierService: KonsultMetierService,
                 private readonly logService: LogService,) {
-        console.log('SelfdataInformationRequestCreationSuccessComponent');
     }
-    
+
     ngOnInit(): void {
-        console.log('Initializing SelfdataInformationRequestCreationSuccessComponent');
         this.route.params.pipe(
             switchMap((params: Params) => {
                 // Si uuid, on charge le JDD

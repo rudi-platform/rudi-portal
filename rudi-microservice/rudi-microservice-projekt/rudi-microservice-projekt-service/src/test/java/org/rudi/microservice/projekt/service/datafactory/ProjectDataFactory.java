@@ -354,4 +354,50 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 		relatedOrganization.setRelationStatus(relationStatus != null ? relationStatus : RelationStatus.PENDING);
 		return relatedOrganization;
 	}
+
+	/**
+	 * Crée ou récupère un projet avec un titre spécifique pour test de recherche
+	 */
+	public ProjectEntity getOrCreateProjectByTitle(String title, UUID ownerUuid, OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(title + "-title-search", ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, title, "Projet pour test de recherche sur titre", ownerUuid,
+				ownerType);
+		project.setProjectStatus(ProjectStatus.VALIDATED);
+		return repository.save(project);
+	}
+
+	/**
+	 * Crée ou récupère un projet avec une description spécifique pour test de recherche
+	 */
+	public ProjectEntity getOrCreateProjectByDescription(String description, UUID ownerUuid, OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(description + "-description-search", ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, "Projet pour test de recherche sur description",
+				description, ownerUuid, ownerType);
+		return repository.save(project);
+	}
+
+	/**
+	 * Crée ou récupère un projet avec titre et description pour test de recherche multi-champs
+	 */
+	public ProjectEntity getOrCreateProjectWithTitleAndDescription(String title, String description, UUID ownerUuid,
+			OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(title + "-" + description, ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, title, description, ownerUuid, ownerType);
+		return repository.save(project);
+	}
 }

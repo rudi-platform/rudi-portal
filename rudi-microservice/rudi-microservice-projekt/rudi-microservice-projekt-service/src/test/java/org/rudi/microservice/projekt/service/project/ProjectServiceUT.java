@@ -739,7 +739,7 @@ class ProjectServiceUT {
 		// on fait en sorte que le helper renvoit un autre utilisateur que celui connecté
 		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(UUID.randomUUID()));
 
-		// Test random UUID (ne renvoit aucun projet)
+		// Test random UUID (ne renvoi aucun projet)
 		assertThrows(AppServiceNotFoundException.class,
 				() -> projectService.isAuthenticatedUserProjectOwner(projectUuid));
 		// Test UUID du projet est null
@@ -1511,6 +1511,133 @@ class ProjectServiceUT {
 		assertThatThrownBy(() -> projectService.createProject(projectToCreate))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("RelatedOrganization cannot be the owner of the project");
+	}
+
+	@Test
+	@DisplayName("Recherche un projet par titre uniquement")
+	void test_searchProjectByTitleOnly() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Cartographie des routes", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse des données", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().titleOrDescription("*Cartographie*").build(), pageable);
+
+		// Assert
+		assertThat(projects)
+				.as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull()
+				.as("On retrouve uniquement le projet avec le titre contenant 'Cartographie'")
+				.extracting("title").containsExactly("Cartographie des routes");
+	}
+
+	@Test
+	@DisplayName("Recherche un projet par description uniquement")
+	void test_searchProjectByDescriptionOnly() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByDescription("Projet de suivi des carpes en rivière", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Projet de suivi des lampadaires", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().titleOrDescription("*carpes*").build(), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve uniquement le projet avec la description contenant 'carpes'")
+				.extracting("description").containsExactly("Projet de suivi des carpes en rivière");
+	}
+
+	@Test
+	@DisplayName("Recherche un projet avec titre et description matchant - deux resultats")
+	void test_searchProjectTitleAndDescriptionBothMatching() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		// Projet 1 : match sur le titre
+		projectDataFactory.getOrCreateProjectWithTitleAndDescription("Cartographie des routes",
+				"Projet de suivi des axes routiers", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		// Projet 2 : match sur la description
+		projectDataFactory.getOrCreateProjectWithTitleAndDescription("Suivi des infrastructures",
+				"Analyse cartographique des zones urbaines", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().titleOrDescription("*Cartographi*").build(), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve deux projets : un match sur titre, un sur description").hasSize(2)
+				.extracting("title").containsExactlyInAnyOrder("Cartographie des routes",
+						"Suivi des infrastructures");
+	}
+
+	@Test
+	@DisplayName("Recherche avec wildcard - 'car' remonte 'cartes', 'carpes', 'carrière'")
+	void test_searchProjectWithWildcardPartialMatch() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Cartes interactives", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Élevage de carpes", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Projet de carrière professionnelle", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse des bâtiments", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().titleOrDescription("*car*").build(), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve tous les projets commençant par 'car'").hasSize(3);
+
+		List<Project> projectsWithTitleContainingCar = projects.stream()
+				.filter(p -> p.getTitle().toLowerCase().contains("car")).toList();
+		List<Project> projectsWithDescriptionContainingCar = projects.stream()
+				.filter(p -> p.getDescription().toLowerCase().contains("car")).toList();
+
+		assertThat(projectsWithTitleContainingCar).as("On retrouve tous les projets dont le titre contient car, soit 2").hasSize(2)
+				.extracting("title").containsExactlyInAnyOrder("Cartes interactives", "Élevage de carpes");
+		assertThat(projectsWithDescriptionContainingCar).as("On retrouve tous les projets contenant 'car' dans la description, soit 1").hasSize(1)
+				.extracting("description").containsExactlyInAnyOrder("Projet de carrière professionnelle");
+	}
+
+	@Test
+	@DisplayName("Recherche insensible aux accents et majuscules")
+	void test_searchProjectCaseAndAccentInsensitive() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Réseau de circulation routière", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Étude sur la mobilité urbaine", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse de données", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act - Recherche avec accents et majuscules différents
+		final Page<Project> projects = projectService.searchProjects(
+				ProjectSearchCriteria.builder().titleOrDescription("*RESEAU*").build(), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve le projet 'Réseau de circulation routière' malgré la casse et les accents")
+				.extracting("title").containsExactly("Réseau de circulation routière");
 	}
 
 	private ProjectKeyCredential createKeyCredential(String name) {

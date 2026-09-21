@@ -1,4 +1,12 @@
 <div class="container-fluid">
+  <!--Composant de recherche libre-->
+  <app-search-box
+    [mediaSize]="mediaSize"
+    [libelle]="'searchbox.rechercherOrganisation'"
+    (searchTermsEmitter)="onChangesSearchTerms($event)"
+    class="d-flex justify-content-center w-100">
+  </app-search-box>
+
   @if (mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl) {
     <mat-toolbar
       class="rudi-filters-toolbar">
@@ -8,27 +16,27 @@
   @if (organizations$ | async; as organizations) {
     <div class="d-flex py-3 justify-content-between">
       <!--Nombre de résultats-->
-      <div class=" w-50 search-count">
-        @if (totalOrganizations$ | async; as totalOrganizations) {
-          <div>
-            @if ((totalOrganizations$ | async) > 0) {
-              <div>
-                {{totalOrganizations}} {{'searchbox.results'|translate}}{{totalOrganizations > 1 ? 's' : ''}}
-              </div>
-            }
-            @if ((totalOrganizations$ | async) == 0) {
-              <div>
-                {{'searchbox.noResult' | translate}}
-              </div>
-            }
-          </div>
-        }
-        @if (isLoadingCatalogue$ | async; as isLoading) {
+      <output class=" w-50 search-count" aria-live="polite">
+        @if (isLoadingCatalogue$ | async) {
           <div>
             {{'searchbox.searchIsRunning'|translate}}
           </div>
+        } @else {
+          @let total = (totalOrganizations$ | async) ?? 0;
+          @if (total === 0) {
+            <div>
+              {{'searchbox.noResult' | translate}}
+            </div>
+          } @else {
+            <div>
+              {{ total }} {{'searchbox.results'|translate}}{{ total > 1 ? 's' : '' }}
+              @if (searchedTerm) {
+                {{ 'searchbox.resultsFor' | translate: resultsForParams }}
+              }
+            </div>
+          }
         }
-      </div>
+      </output>
       @if (mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl) {
         <app-organization-order
           (orderChangeEvent)="onOrderChange($event)">

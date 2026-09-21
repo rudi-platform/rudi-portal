@@ -25,9 +25,6 @@ import {DatasetListBannerComponent} from '../../common/dataset-list-banner/datas
 import {DatasetListComponent} from '../../common/dataset-list/dataset-list.component';
 import {FiltersItemsListComponent} from '../filters-items-list/filters-items-list.component';
 import {OrderComponent} from '../order/order.component';
-
-
-const FIRST_PAGE = 1;
 const EMPTY_METADATA_LIST: MetadataList = {
     total: 0,
     items: []
@@ -80,7 +77,6 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     private filtersServiceSubscription?: Subscription;
     producerNames: string[];
     private readonly isDestroyed$: Subject<void> = new Subject<void>();
-    selectedDatesItems: Item[] = [];
     selectedThemeItems: Item[] = [];
     selectedProducerItems: Item[] = [];
     selectedAccessStatusItems: AccessStatusFilterItem[] = [];
@@ -100,7 +96,6 @@ export class ListContainerComponent implements OnInit, OnDestroy {
 
     get hasSelectedItems(): boolean {
         return (
-            this.selectedDatesItems?.length > 0 ||
             this.selectedAccessStatusItems?.length > 0 ||
             this.selectedProducerItems?.length > 0 ||
             this.selectedThemeItems?.length > 0

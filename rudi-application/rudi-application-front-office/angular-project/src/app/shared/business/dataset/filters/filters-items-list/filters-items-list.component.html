@@ -26,19 +26,6 @@
         </div>
       </div>
     }
-    <!-- DATE -->
-    @for (date of selectedDatesItems; track date) {
-      <div
-        class="button-filter-container">
-        <div class="button-filter-texte">
-          {{ date.name }}
-        </div>
-        <div class="button-filter-icon-container" (click)="deleteDateFilter(date)">
-          <mat-icon aria-hidden="false" aria-label="close icon">close
-          </mat-icon>
-        </div>
-      </div>
-    }
     <!-- JDD STATUS -->
     @for (restrictedAccessItem of notNullSelectedAccessStatusItems; track restrictedAccessItem) {
       <div class="button-filter-container">

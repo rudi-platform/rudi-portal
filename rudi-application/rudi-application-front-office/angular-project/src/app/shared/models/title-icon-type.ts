@@ -5,7 +5,7 @@ export type TitleIconType =
     'key_icon_circle' |
     'api_icon' |
     'jdd_icon' |
-    'projet' |
+    'project' |
     'croix-rouge' |
     'coche-verte' |
     'self-data-icon' |
@@ -53,7 +53,7 @@ export const ALL_TYPES: TitleIconType[] = [
     'key_icon_circle',
     'api_icon',
     'jdd_icon',
-    'projet',
+    'project',
     'icon_tab_infos',
     'croix-rouge',
     'coche-verte',

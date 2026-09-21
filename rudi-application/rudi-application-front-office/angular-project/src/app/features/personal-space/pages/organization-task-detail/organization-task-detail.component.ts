@@ -3,6 +3,7 @@ import {Component, OnInit, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ASSET_IMAGE_FIELD_NAME} from '@core/const';
 import {AttachmentService} from '@core/services/attachment.service';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
@@ -32,7 +33,7 @@ import {injectDependencies} from '@shared/utils/dependencies-utils';
 import {ProjectStatus, Section, Task} from 'micro_service_modules/projekt/projekt-api';
 import {OrganizationService} from 'micro_service_modules/strukture/api-strukture';
 import {Organization, OrganizationStatus, OwnerInfo} from 'micro_service_modules/strukture/strukture-model';
-import {Observable, of} from 'rxjs';
+import {Observable, of, switchMap} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 import {OwnerContactCardComponent} from 'src/app/features/personal-space/components/contact-card/owner-contact-card.component';
 import {
@@ -59,6 +60,8 @@ export class OrganizationTaskDetailComponent
     currentTask: Task;
     hasSections = false;
     isDeclaration = false;
+    /** Sections affichables (avec leur titre) précalculées pour éviter les appels de méthode dans le template. */
+    displayableSections: { section: Section; title: string }[] = [];
     ownerInfo: Observable<OwnerInfo>;
     headerLibelle: string;
     currentOrganizationImageBase64: Base64EncodedLogo;
@@ -96,6 +99,9 @@ export class OrganizationTaskDetailComponent
                 next: (task: Task) => {
                     this.currentTask = task;
                     this.hasSections = !!task?.asset?.form?.sections;
+                    this.displayableSections = (task?.asset?.form?.sections ?? [])
+                        .filter(section => this.isSectionVisible(section))
+                        .map(section => ({section, title: this.getSectionTitle(section)}));
                 },
                 error: (err) => this.logger.error('Error fetching task:', err)
             });
@@ -161,9 +167,31 @@ export class OrganizationTaskDetailComponent
     /**
      * Une section est affichable si elle contient au moins un champ non masqué avec une valeur renseignée.
      */
-    isSectionVisible(section: Section): boolean {
+    private isSectionVisible(section: Section): boolean {
         return section?.fields?.some(field =>
             field.definition?.type !== 'HIDDEN' && field.values?.some(value => value != null && value.trim() !== '')
+        ) ?? false;
+    }
+
+    /**
+     * Titre affiché pour une section dans la vue modérateur.
+     * Le label de la section "update-organization" a été retiré du JSON partagé
+     * (pour ne pas apparaître en doublon dans la modale d'édition) : on le réinjecte ici.
+     */
+    private getSectionTitle(section: Section): string {
+        if (this.isUpdateOrganizationSection(section)) {
+            return this.translateService.instant('personalSpace.organizationDetails.update.sectionTitle');
+        }
+        return section?.label;
+    }
+
+    /**
+     * Identifie la section de modification d'organisation par son champ marqueur "draftType"
+     * (extendedType "update"), plutôt que par son nom, pour éviter un couplage fragile au libellé.
+     */
+    private isUpdateOrganizationSection(section: Section): boolean {
+        return section?.fields?.some(field =>
+            field.definition?.name === 'draftType' && field.definition?.extendedType === 'update'
         ) ?? false;
     }
 
@@ -175,23 +203,7 @@ export class OrganizationTaskDetailComponent
      */
     get displayedOrganization(): Organization {
         const organization = {...this.dependencies?.organization};
-        const orga = {...this.dependencies?.organization} as Organization;
-        // if (this.isDeclaration) {
-        //     const target = organization as unknown as Record<string, string>;
-        //     this.currentTask?.asset?.form?.sections?.forEach(section =>
-        //         section?.fields?.forEach(field => {
-        //             const fieldName = field?.definition?.name;
-        //             const value = field?.values?.find(fieldValue => fieldValue != null && fieldValue.trim() !== '');
-        //             if (fieldName && value != null) {
-        //                 target[fieldName] = value;
-        //             }
-        //         })
-        //     );
-        // }
-        console.log('OrganizationTaskDetail', 'organization', organization);
-        console.log('OrganizationTaskDetail', 'organization.addresses', organization.addresses);
-        console.log('OrganizationTaskDetail', 'orga', orga);
-        console.log('OrganizationTaskDetail', 'orga.addresses', orga.addresses);
+
         return organization;
     }
 
@@ -204,11 +216,35 @@ export class OrganizationTaskDetailComponent
      * Isolé avec catchError : une organisation sans logo ne doit pas casser l'affichage des autres informations.
      */
     private loadCurrentOrganizationLogo(organizationUuid: string): void {
-        this.producersMetierService.getLogo(organizationUuid).pipe(
-            catchError(() => of(null))
-        ).subscribe({
-            next: (logo: string) => this.currentOrganizationImageBase64 = logo,
-            error: () => this.currentOrganizationImageBase64 = null
-        });
+        if (this.isDeclaration) {
+            this.loadDraftOrganizationImage(this.currentTask);
+        } else {
+            this.producersMetierService.getLogo(organizationUuid).pipe(
+                catchError(() => of(null))
+            ).subscribe({
+                next: (logo: string) => this.currentOrganizationImageBase64 = logo,
+                error: () => this.currentOrganizationImageBase64 = null
+            });
+        }
+
+    }
+
+    private loadDraftOrganizationImage(task: Task): void {
+        const imageUuid = task?.asset?.form?.sections
+            ?.flatMap(s => s.fields)
+            ?.find(f => f.definition?.name === ASSET_IMAGE_FIELD_NAME)
+            ?.values?.[0];
+
+
+        if (imageUuid) {
+            this.organizationAttachmentService.downloadAttachement(imageUuid).pipe(
+                switchMap((blob: Blob) => this.imageLogoService.createImageFromBlob(blob))
+            ).subscribe({
+                next: (base64: Base64EncodedLogo) => {
+                    this.currentOrganizationImageBase64 = base64;
+                },
+                error: (err) => this.logger.error('Failed to load organization image', err)
+            });
+        }
     }
 }

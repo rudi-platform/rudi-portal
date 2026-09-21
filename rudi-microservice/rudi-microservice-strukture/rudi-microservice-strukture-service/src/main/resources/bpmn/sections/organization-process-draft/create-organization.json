@@ -37,7 +37,7 @@
 			]
 		},
 		{
-			"name": "organizationImage",
+			"name": "elementImage",
 			"label": "Image",
 			"help": "Nous vous conseillons de choisir l'image de votre organisation. Cette image est visible depuis le catalogue. Si vous n'en avez pas, une image par défaut sera utilisée.",
 			"type": "ATTACHMENT",

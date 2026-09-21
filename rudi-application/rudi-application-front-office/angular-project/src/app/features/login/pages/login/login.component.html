@@ -13,7 +13,7 @@
       <div>
         <!-- Le titre de la page -->
         <div class="d-flex justify-content-center">
-          <h1 class="login-header-title" [translate]="'authentification.seConnection'"></h1>
+          <h1 class="login-header-title">{{'authentification.seConnection' | translate}}</h1>
         </div>
         <!--Lien vers inscription -->
         <div class="d-flex justify-content-center mb-2">
@@ -161,8 +161,7 @@
                     }
                     <!-- interaction mdp oublié -->
                     <div class="d-flex justify-content-end p-2">
-                      <a class="forgot-password" routerLink="forgot-password"
-                      [translate]="'authentification.passwordForget'"></a>
+                      <a class="forgot-password" routerLink="forgot-password">{{'authentification.passwordForget' | translate}}</a>
                     </div>
                   </div>
                 </div>

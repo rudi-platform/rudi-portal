@@ -11,7 +11,8 @@
     line-height: 1.5;
     text-align: center;
     color: var(--primary-text);
-    width: 730px;
+    max-width: 60ch;
+    margin: 12px auto 32px;
 }
 
 .subtitle-4 {

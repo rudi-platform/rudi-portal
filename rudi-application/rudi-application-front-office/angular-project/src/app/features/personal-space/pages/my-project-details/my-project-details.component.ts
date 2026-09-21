@@ -239,66 +239,77 @@ export class MyProjectDetailsComponent implements OnInit {
         form: FormGroup,
         messageToModerator?: string
     }): void {
+        // Garde-fou : ne lance pas le workflow de mise à jour si le projet n'est pas encore chargé.
         if (this.project) {
             this.childrenIsLoading = true;
             this.isUpdateInProgress = true;
+
+            // Etape 1 : créer une tâche de brouillon à partir du projet courant.
             this.taskService.createProjectDraft(this.project).pipe(
                 switchMap(task => {
                     this.draftTask = task;
-                    const resultMap = {
-                        title: this.getFieldValue(formModified.form.value.title),
-                        description: this.getFieldValue(formModified.form.value?.description),
-                        expectedCompletionStartDate: this.getFieldValue(formModified.form.value.begin_date, this.formatDate),
-                        expectedCompletionEndDate: this.getFieldValue(formModified.form.value.end_date, this.formatDate),
-                        targetAudiences: this.getFieldList(
-                            formModified.form.value.publicCible,
-                            (audience: TargetAudience) => audience?.code
-                        ),
-                        territorialScale: this.getFieldList([formModified.form.value?.echelle], (scale: TerritorialScale) => scale?.code),
-                        detailedTerritorialScale: this.getFieldValue(formModified.form.value?.territoire),
-                        desiredSupports: this.getFieldList(formModified.form.value.accompagnement, (support: Support) => support?.code),
-                        type: this.getFieldList([formModified.form.value?.type], (type: ProjectType) => type?.code),
-                        reutilisationStatus: this.getFieldValue(formModified.form.value.reuse_status?.code),
-                        confidentiality: this.getFieldValue(formModified.form.value?.confidentiality?.code),
-                        accessUrl: this.getFieldValue(formModified.form.value?.url),
-                        messageToModerator: this.getFieldValue(formModified.messageToModerator),
-                    };
 
-                    const firstSection = this.draftTask.asset.form.sections[0].fields?.map((field: Field) => {
-                        return {...field, values: resultMap.messageToModerator};
-                    });
-                    const secondSection = this.draftTask.asset.form.sections[1]?.fields.map(field => {
-                        return {...field, values: resultMap[field.definition.name]};
-                    });
+                    // Le champ image a été migré dans la section "modified-project" sous le nom "elementImage".
+                    // Par sécurité, on accepte aussi l'ancien nom de contrôle front "image" si encore présent côté UI.
+                    const imageBlob: Blob = formModified.form.value?.elementImage?.file
+                        ?? formModified.form.value?.image?.file
+                        ?? null;
 
-                    const sections = [
-                        {...this.draftTask.asset.form.sections[0], fields: firstSection},
-                        {...this.draftTask.asset.form.sections[1], fields: secondSection},
-                    ];
-                    const imageBlob: Blob = formModified.form.value?.image?.file ?? null;
-                    const pictureSections$ = (this.draftTask.asset.form.sections[2] && imageBlob)
-                        ? this.projektService.uploadAttachment(imageBlob, 'body').pipe(
-                            map((uuid: string) => {
-                                const pictureSection = this.draftTask.asset.form.sections[2];
-                                sections.push({
-                                    ...pictureSection,
-                                    fields: pictureSection.fields?.map(f => ({...f, values: [uuid]})) ?? []
-                                });
-                            })
-                        )
-                        : of(null).pipe(
-                            map(() => {
-                                if (this.draftTask.asset.form.sections[2]) {
-                                    const pictureSection = this.draftTask.asset.form.sections[2];
-                                    sections.push({
-                                        ...pictureSection,
-                                        fields: pictureSection.fields?.map(f => ({...f, values: f.values ?? []})) ?? []
-                                    });
+                    // Si une nouvelle image est fournie, on l'upload d'abord pour récupérer son UUID BPMN.
+                    // Sinon, on n'envoie rien de nouveau et on conservera la valeur existante du champ.
+                    const elementImageValues$ = imageBlob
+                        ? this.projektService.uploadAttachment(imageBlob, 'body').pipe(map((uuid: string) => [uuid]))
+                        : of(null);
+
+                    // Etape 2 : une fois l'UUID image connu (ou null), reconstruire les sections du formulaire.
+                    return elementImageValues$.pipe(
+                        switchMap((elementImageValues: string[] | null) => {
+                            // Mapping UI -> champs backend/BPMN.
+                            const resultMap = {
+                                title: this.getFieldValue(formModified.form.value.title),
+                                description: this.getFieldValue(formModified.form.value?.description),
+                                elementImage: elementImageValues,
+                                expectedCompletionStartDate: this.getFieldValue(formModified.form.value.begin_date, this.formatDate),
+                                expectedCompletionEndDate: this.getFieldValue(formModified.form.value.end_date, this.formatDate),
+                                targetAudiences: this.getFieldList(
+                                    formModified.form.value.publicCible,
+                                    (audience: TargetAudience) => audience?.code
+                                ),
+                                territorialScale: this.getFieldList([formModified.form.value?.echelle], (scale: TerritorialScale) => scale?.code),
+                                detailedTerritorialScale: this.getFieldValue(formModified.form.value?.territoire),
+                                desiredSupports: this.getFieldList(formModified.form.value.accompagnement, (support: Support) => support?.code),
+                                type: this.getFieldList([formModified.form.value?.type], (type: ProjectType) => type?.code),
+                                reutilisationStatus: this.getFieldValue(formModified.form.value.reuse_status?.code),
+                                confidentiality: this.getFieldValue(formModified.form.value?.confidentiality?.code),
+                                accessUrl: this.getFieldValue(formModified.form.value?.url),
+                                messageToModerator: this.getFieldValue(formModified.messageToModerator),
+                            };
+
+                            // Section 0 : message au modérateur.
+                            const firstSection = this.draftTask.asset.form.sections[0].fields?.map((field: Field) => {
+                                return {...field, values: resultMap.messageToModerator};
+                            });
+
+                            // Section 1 : projet modifié (inclut désormais elementImage).
+                            const secondSection = this.draftTask.asset.form.sections[1]?.fields.map(field => {
+                                const fieldName = field.definition.name;
+
+                                // Si aucune nouvelle image n'est uploadée, on conserve l'UUID déjà présent.
+                                // Cela reproduit le comportement historique où l'image était conservée.
+                                if (fieldName === 'elementImage' && !resultMap.elementImage) {
+                                    return {...field, values: field.values ?? []};
                                 }
-                            })
-                        );
-                    return pictureSections$.pipe(
-                        switchMap(() => {
+
+                                return {...field, values: resultMap[fieldName]};
+                            });
+
+                            // Nouvelle structure : uniquement 2 sections (messageToModerator + modified-project).
+                            const sections = [
+                                {...this.draftTask.asset.form.sections[0], fields: firstSection},
+                                {...this.draftTask.asset.form.sections[1], fields: secondSection},
+                            ];
+
+                            // Démarrage la tâche workflow avec le draft enrichi.
                             const draftTaskModified = {
                                 ...this.draftTask, asset: {
                                     ...this.draftTask.asset, form: {
@@ -311,7 +322,7 @@ export class MyProjectDetailsComponent implements OnInit {
                     );
                 })
             ).subscribe({
-                next: (task) => {
+                next: () => {
                     this.loadProject();
                     this.snackBarService.showSuccess(this.translateService.instant('personalSpace.project.tabs.update.success'));
                     this.childrenIsLoading = false;
@@ -325,7 +336,6 @@ export class MyProjectDetailsComponent implements OnInit {
                 }
             });
         }
-
 
     }
 

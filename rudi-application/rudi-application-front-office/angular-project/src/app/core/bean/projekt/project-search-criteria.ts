@@ -2,6 +2,7 @@ import {SearchCriteria} from '@core/bean/search-criteria';
 import {ProjectStatus, TargetAudience} from 'micro_service_modules/projekt/projekt-model';
 
 export class ProjectSearchCriteria extends SearchCriteria {
+    titleOrDescription?: string;
     dataset_uuids?: string[];
     linked_dataset_uuids?: string[];
     new_request_dataset_uuids?: string[];

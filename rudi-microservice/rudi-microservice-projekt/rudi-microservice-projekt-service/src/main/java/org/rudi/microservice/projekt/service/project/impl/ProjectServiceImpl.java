@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
@@ -43,6 +44,7 @@ import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
+import org.rudi.microservice.projekt.core.bean.RelationStatus;
 import org.rudi.microservice.projekt.core.bean.criteria.EnhancedProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.service.exception.DataverseExternalServiceException;
@@ -81,10 +83,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 @Service
@@ -177,7 +178,7 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public Page<Project> searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
+	public Page<Project>        searchProjects(ProjectSearchCriteria searchCriteria, Pageable pageable)
 			throws AppServiceException {
 		User user = aclHelper.getAuthenticatedUser();
 		if (projektAuthorisationHelper.hasAnyRole(user, List.of(RoleCodes.ANONYMOUS))) {
@@ -481,6 +482,8 @@ public class ProjectServiceImpl implements ProjectService {
 		if (organizationsUuid != null) {
 			// Add userUuid to this list before to searchProjects
 			searchCriteria.setOwnerUuids(ListUtils.union(ListUtils.emptyIfNull(organizationsUuid), List.of(userUuid)));
+			searchCriteria.setRelatedOrganizationUuids(organizationsUuid);
+			searchCriteria.setRelationStatus(List.of(RelationStatus.ACCEPTED));
 		} else {
 			searchCriteria.setOwnerUuids(organizationsUuid);
 		}

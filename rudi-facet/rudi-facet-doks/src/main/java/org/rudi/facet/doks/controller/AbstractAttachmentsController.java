@@ -46,7 +46,7 @@ public abstract class AbstractAttachmentsController {
 	}
 
 
-	public ResponseEntity<UUID> upload(MultipartFile file) throws Exception {
+	public ResponseEntity<UUID> upload(MultipartFile file) throws AppServiceUnauthorizedException, IOException, SQLException, GeneralSecurityException {
 		final UUID authenticatedUserUuid = aclHelper.getAuthenticatedUserUuid();
 
 		DocumentContent documentContent = controllerHelper.documentContentFrom(file);

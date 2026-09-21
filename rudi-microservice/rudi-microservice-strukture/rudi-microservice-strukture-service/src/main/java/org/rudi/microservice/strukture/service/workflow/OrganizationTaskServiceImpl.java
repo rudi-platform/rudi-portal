@@ -44,7 +44,7 @@ import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEnt
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
 
 @Slf4j
 @Service
@@ -136,8 +136,8 @@ public class OrganizationTaskServiceImpl extends
 			Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
 			try {
 				// Si l'image est présente, on récupère ses metadatas
-				if (data != null && data.containsKey(FIELD_NAME_IMAGE_ORGANIZATION)) {
-					UUID mediaUuid = UUID.fromString((String) data.get(FIELD_NAME_IMAGE_ORGANIZATION));
+				if (data != null && data.containsKey(ASSET_PICTURE_FIELD_NAME)) {
+					UUID mediaUuid = UUID.fromString((String) data.get(ASSET_PICTURE_FIELD_NAME));
 					// Pour vérifier que l'initiator est bien le "créateur de l'image"
 					attachmentsHelper.checkIfAuthenticatedUserCanDeleteDocument(mediaUuid);
 				}
@@ -165,7 +165,7 @@ public class OrganizationTaskServiceImpl extends
 		}
 
 		if (assetDescriptionEntity.getData() != null) {
-			variables.put(StruktureWorkflowConstants.ORGANIZATION_DRAFT_TYPE,
+			variables.put(StruktureWorkflowConstants.DRAFT_TYPE,
 					organizationWorkflowHelper.getDraftType(assetDescriptionEntity));
 		}
 	}

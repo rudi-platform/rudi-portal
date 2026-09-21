@@ -94,6 +94,7 @@ export class Step2ProjectComponent implements OnInit {
             // Premier appel : charger toutes les organisations depuis l'API
             this.relatedOrganizationsLoading = true;
             this.organizationService.searchPublicOrganizationsBeans(
+                '',
                 undefined,                                    // name (toutes)
                 [],                                           // uuids
                 [],                                           // excludedUuids

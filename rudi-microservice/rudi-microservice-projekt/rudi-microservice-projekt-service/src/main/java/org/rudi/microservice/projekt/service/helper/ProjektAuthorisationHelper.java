@@ -31,6 +31,7 @@ import org.rudi.microservice.projekt.service.helper.project.ProjectWorkflowHelpe
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelationStatus;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -63,6 +64,7 @@ public class ProjektAuthorisationHelper {
 		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT_ADMINISTRATOR, Boolean.TRUE);
 		ADMINISTRATOR_ACCESS.put(RoleCodes.MODULE_PROJEKT, Boolean.TRUE);
 	}
+
 	/**
 	 * Map des droits d'accès pour ouvrir l'accès à l'administrateur et au profil technique du module ainsi qu'à Kalim
 	 */
@@ -132,11 +134,13 @@ public class ProjektAuthorisationHelper {
 	}
 
 	/**
-	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité projet : l'utilisateur doit avoir le rôle "PROJECT_MANAGER" ou "USER" et être
-	 * owner ou membre de l'organisation owner
+	 * Vérifie si l'utilisateur connecté a le droit d'accéder à l'entité projet.
+	 * L'utilisateur doit avoir le rôle "PROJECT_MANAGER" ou "USER" ET:
+	 * - être owner du projet (direct ou via organisation), OU
+	 * - être membre d'une organisation liée dont le statut est ACCEPTED
 	 *
 	 * @param projectEntity le projet
-	 * @return true si l'utilisateur a accès
+	 * @return true si l'utilisateur a accès, false sinon
 	 * @throws GetOrganizationMembersException : erreur lors de la récupération des membres d'une organisation
 	 * @throws MissingParameterException       : erreur paramètre manquant ou incomplet
 	 */
@@ -146,31 +150,64 @@ public class ProjektAuthorisationHelper {
 		try {
 			User user = aclHelper.getAuthenticatedUser();
 
-			if (projectEntity != null && hasAnyRole(user, Arrays.asList(RoleCodes.PROJECT_MANAGER, RoleCodes.USER))) {
-				// Vérification comme dans le ownerprocessor
-				val ownerUuid = projectEntity.getOwnerUuid();
-
-				if (ownerUuid == null) {
-					throw new MissingParameterException("owner_uuid manquant");
-				}
-
-				switch (projectEntity.getOwnerType()) {
-					case USER:
-						return user.getUuid() != null && ownerUuid.equals(user.getUuid());
-
-					case ORGANIZATION:
-						return user.getUuid() != null
-								&& organizationHelper.organizationContainsUser(ownerUuid, user.getUuid());
-
-					default:
-						break;
-				}
+			// Vérification des prérequis : projet non null, user avec rôles appropriés
+			if (projectEntity == null || !hasAnyRole(user, Arrays.asList(RoleCodes.PROJECT_MANAGER, RoleCodes.USER))) {
+				return DEFAULT_ACCESS_GRANT;
 			}
 
-			return DEFAULT_ACCESS_GRANT;
+			UUID userUuid = user.getUuid();
+			UUID ownerUuid = projectEntity.getOwnerUuid();
+			if (ownerUuid == null) {
+				throw new MissingParameterException("owner_uuid manquant");
+			}
+
+			// Check 1: utilisateur est owner (direct ou via organisation owner)
+			// Check 2: utilisateur est membre d'une organisation liée avec statut ACCEPTED
+			return isUserOwnerOfProject(projectEntity, userUuid, ownerUuid) || isUserMemberOfAcceptedRelatedOrganization(projectEntity, userUuid);
+
 		} catch (AppServiceUnauthorizedException e) {
 			return DEFAULT_ACCESS_GRANT;
 		}
+	}
+
+	/**
+	 * Vérifie si l'utilisateur est owner du projet (direct ou via organisation).
+	 *
+	 * @param projectEntity l'entité projet
+	 * @param userUuid      l'UUID de l'utilisateur
+	 * @param ownerUuid     l'UUID du propriétaire
+	 * @return true si l'utilisateur est owner, false sinon
+	 * @throws GetOrganizationMembersException en cas d'erreur lors de la vérification d'appartenance organisationnelle
+	 */
+	private boolean isUserOwnerOfProject(ProjectEntity projectEntity, UUID userUuid, UUID ownerUuid)
+			throws GetOrganizationMembersException {
+		return switch (projectEntity.getOwnerType()) {
+			case USER -> userUuid.equals(ownerUuid);
+			case ORGANIZATION -> organizationHelper.organizationContainsUser(ownerUuid, userUuid);
+		};
+	}
+
+	/**
+	 * Vérifie si l'utilisateur est membre d'une organisation liée au projet avec un statut ACCEPTED.
+	 *
+	 * @param projectEntity l'entité projet
+	 * @param userUuid      l'UUID de l'utilisateur
+	 * @return true si l'utilisateur est membre d'une organisation liée acceptée, false sinon
+	 * @throws GetOrganizationMembersException en cas d'erreur lors de la vérification d'appartenance organisationnelle
+	 */
+	private boolean isUserMemberOfAcceptedRelatedOrganization(ProjectEntity projectEntity, UUID userUuid)
+			throws GetOrganizationMembersException {
+		if (CollectionUtils.isEmpty(projectEntity.getRelatedOrganizations())) {
+			return false;
+		}
+
+		for (RelatedOrganizationEntity relatedOrganization : projectEntity.getRelatedOrganizations()) {
+			if (RelationStatus.ACCEPTED.equals(relatedOrganization.getRelationStatus())
+					&& organizationHelper.organizationContainsUser(relatedOrganization.getOrganizationUuid(), userUuid)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isAccessGrantedForUserAsRelatedOnProject(ProjectEntity projectEntity) throws AppServiceUnauthorizedException, GetOrganizationException {
@@ -365,12 +402,11 @@ public class ProjektAuthorisationHelper {
 		// Vérification des droits d'accès
 		// les droits autorisés dans accessRights doivent être cohérents avec ceux définis en PreAuth coté Controller
 		if ((isAccessGrantedByRole(accessRightsByRole) || isAccessGrantedForUserOnProject(projectEntity))) {
-			if(!BooleanUtils.isTrue(force)){
+			if (!BooleanUtils.isTrue(force)) {
 				// Vérification du statut du projet avant de supprimer le lien sur le dataset
 				checkStatusForProjectModification(projectEntity);
 			}
-		}
-		else {
+		} else {
 			throw new AppServiceUnauthorizedException(USER_GENERIC_MSG_UNAUTHORIZED);
 		}
 	}

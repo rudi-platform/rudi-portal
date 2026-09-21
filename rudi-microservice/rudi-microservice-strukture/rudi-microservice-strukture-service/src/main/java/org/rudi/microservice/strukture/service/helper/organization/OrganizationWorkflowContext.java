@@ -69,20 +69,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_UPDATE_USER_TASK_ID;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_ARCHIVE_FORM_SECTION_NAME;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_UPDATE_FORM_SECTION_NAME;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVAGE_COMMENT_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVAGE_TYPE_DISENGAGED_VALUE;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVE_MODE_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_CREATION_COMMENT_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_DRAFT_ARCHIVE_FORM_SECTION_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME;
 
 @Component(value = "organizationWorkflowContext")
 @Transactional
 @Slf4j
 public class OrganizationWorkflowContext
 		extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
-
-	private static final String CREATION_COMMENT_KEY = "messageToOrganizationCreator";
-	private static final String ARCHIVAGE_COMMENT_KEY = "messageToOrganizationArchiver";
-	private static final String ORGANIZATION_ARCHIVE_MODE_KEY = "organizationArchiveMode";
-	private static final String ARCHIVAGE_TYPE_DISENGAGED_VALUE = "DISENGAGED";
 
 	private static final String BASE_COMMENT_ARCHIVE = "Archivage et détachement de l'organisation";
 
@@ -181,7 +180,7 @@ public class OrganizationWorkflowContext
 					email = providerContactEmail;
 				}
 
-				Report report = buildReport(assetDescription, CREATION_COMMENT_KEY, isValidated,
+				Report report = buildReport(assetDescription, ORGANIZATION_CREATION_COMMENT_KEY, isValidated,
 						assetDescription.getCreationDate(), Method.POST, null);
 
 				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts,
@@ -250,8 +249,8 @@ public class OrganizationWorkflowContext
 		}
 
 
-		if (data != null && data.containsKey(FIELD_NAME_IMAGE_ORGANIZATION)) {
-			UUID mediaUuid = UUID.fromString((String) data.get(FIELD_NAME_IMAGE_ORGANIZATION));
+		if (data != null && data.containsKey(ASSET_PICTURE_FIELD_NAME)) {
+			UUID mediaUuid = UUID.fromString((String) data.get(ASSET_PICTURE_FIELD_NAME));
 
 			attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescriptionEntity.getUuid());
 		}
@@ -302,7 +301,7 @@ public class OrganizationWorkflowContext
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
 		// Envoi d'un rapport à l'ensemble des providers liés à l'organisation :
-		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
+		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ORGANIZATION_ARCHIVAGE_COMMENT_KEY,
 				isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
 	}
 
@@ -366,7 +365,7 @@ public class OrganizationWorkflowContext
 	public void resetArchiveDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		OrganizationEntity assetDescriptionB = lookupAssetDescriptionEntity(executionEntity);
 		resetFormData(context, executionEntity, FormHelper.DRAFT_ARCHIVE_USER_TASK_ID, null,
-				DRAFT_ARCHIVE_FORM_SECTION_NAME);
+				ORGANIZATION_DRAFT_ARCHIVE_FORM_SECTION_NAME);
 		OrganizationEntity assetDescriptionA = lookupAssetDescriptionEntity(executionEntity);
 		log.debug("WkC - resetArchiveDraftForm - assetDescriptionA: {}", assetDescriptionA);
 	}
@@ -374,7 +373,7 @@ public class OrganizationWorkflowContext
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
 	public void resetUpdateDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		resetFormData(context, executionEntity, DRAFT_UPDATE_USER_TASK_ID, null,
-				DRAFT_UPDATE_FORM_SECTION_NAME);
+				ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME);
 	}
 
 
@@ -398,19 +397,19 @@ public class OrganizationWorkflowContext
 			// On remplit le formulaire avec les données pour appliquer uniquement la section de mise à jour.
 			getFormHelper().fillForm(draftForm, data);
 			draftForm.getSections().stream()
-					.filter(section -> section.getName().equals(DRAFT_UPDATE_FORM_SECTION_NAME)).findFirst()
+					.filter(section -> section.getName().equals(ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME)).findFirst()
 					.ifPresentOrElse(section -> applyUpdateOrganizationProcessors(section.getFields(), assetDescription),
 							() -> {
 								throw new NoSuchElementException(String.format(
 										"Update organization : No section found draft form: %s",
-										DRAFT_UPDATE_FORM_SECTION_NAME));
+										ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME));
 							});
 
 			assetDescription.setUpdatedDate(LocalDateTime.now());
 			getAssetDescriptionDao().save(assetDescription);
 
 			// On modifie l'image si la donnée est présente.
-			Object mediaUuidValue = data.get(FIELD_NAME_IMAGE_ORGANIZATION);
+			Object mediaUuidValue = data.get(ASSET_PICTURE_FIELD_NAME);
 			if (mediaUuidValue != null && StringUtils.isNotBlank(mediaUuidValue.toString())) {
 				saveOrganizationMedia(mediaUuidValue, assetDescription);
 			}
@@ -444,7 +443,7 @@ public class OrganizationWorkflowContext
 	}
 
 	private ProjektArchiveMode mapOrganizationArchiveModeToProjektArchiveMode(String organizationArchiveMode) {
-		return organizationArchiveMode.equals(ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
+		return organizationArchiveMode.equals(ORGANIZATION_ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
 				: ProjektArchiveMode.ARCHIVED;
 	}
 

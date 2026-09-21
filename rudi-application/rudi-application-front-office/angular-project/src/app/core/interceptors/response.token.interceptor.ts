@@ -157,8 +157,6 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
      * 3. Erreur 498 : Token JWT expiré (deux sous-cas selon l'état du refresh)
      */
     function handleHttpError(request: HttpRequestAny, error: HttpErrorResponse): Observable<HttpEventAny> {
-        const isAuthenticatedAsUser = authenticationService.isAuthenticatedAsUser();
-
         /**
          * CAS 1 : Erreur 401 - Session utilisateur expirée côté serveur
          *

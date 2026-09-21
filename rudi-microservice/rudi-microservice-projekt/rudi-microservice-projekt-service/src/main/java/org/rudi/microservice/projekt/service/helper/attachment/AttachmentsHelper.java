@@ -35,8 +35,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_FIELD_NAME;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_SECTION_NAME;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
 
 @Component
 @RequiredArgsConstructor
@@ -68,18 +67,19 @@ public class AttachmentsHelper {
 	 * @throws InvalidDataException if the extended type is invalid
 	 */
 	private ProjectPictureInformations extractExtendedType(Form form) throws FormDefinitionException, InvalidDataException {
-		Optional<Section> imageSection = form.getSections().stream().filter(s -> s.getName().equals(PROJECT_PICTURE_SECTION_NAME)).findFirst();
-		if (imageSection.isEmpty()) {
-			throw new FormDefinitionException("Draft form must contain an image section");
-		}
+		Optional<Field> field = form.getSections()
+				.stream()
+				.map(Section::getFields)
+				.flatMap(List::stream)
+				.filter(f -> f.getDefinition() != null && ASSET_PICTURE_FIELD_NAME.equals(f.getDefinition().getName()))
+				.findFirst();
 
-		Optional<Field> imageField = imageSection.get().getFields().stream().filter(f -> f.getDefinition() != null && f.getDefinition().getName().equals(PROJECT_PICTURE_FIELD_NAME)).findFirst();
-		if (imageField.isEmpty()) {
+		if(field.isPresent()) {
+			String extendedType = field.get().getDefinition().getExtendedType();
+			return hydrateExtentedType(extendedType);
+		} else {
 			throw new FormDefinitionException("Draft form must contain an image field");
 		}
-
-		String extendedType = imageField.get().getDefinition().getExtendedType();
-		return hydrateExtentedType(extendedType);
 	}
 
 	/**

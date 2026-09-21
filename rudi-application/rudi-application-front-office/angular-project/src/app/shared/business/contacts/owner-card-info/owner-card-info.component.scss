@@ -1,6 +1,13 @@
 .owner-card-info {
     display: block;
 
+    // Hauteur d'une carte "organisation partenaire" et espacement de la liste :
+    // sert de source unique pour dériver la hauteur max de défilement (2 cartes + 1 gap).
+    // NB : doit correspondre à la hauteur réelle d'une carte (nom + bouton contact) pour que
+    // 2 cartes s'affichent entièrement ; ajuster si le contenu change.
+    $related-contact-height: 70px;
+    $related-list-gap: 15px;
+
     .section-title {
         font-weight: bold;
         display: block;
@@ -26,13 +33,24 @@
     .related-organizations-list {
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        margin-top: 10px;
+        gap: $related-list-gap;
+        margin-top: 20px;
+
+        // Au-delà de 2 organisations partenaires : hauteur limitée à 2 cartes + 1 gap, puis défilement vertical.
+        // La région est rendue focusable au clavier (tabindex) côté template pour rester accessible (RGAA).
+        &.scrollable {
+            max-height: calc(2 * #{$related-contact-height} + #{$related-list-gap});
+            overflow-y: auto;
+            // évite que le contenu passe sous l'ascenseur
+            padding-right: 8px;
+        }
     }
 
     app-owner-contact-information.related-organization-contact {
         display: block;
         margin: 0;
+        // Hauteur minimale pour une liste régulière (évite le rognage si le contenu dépasse).
+        min-height: $related-contact-height;
     }
 }
 

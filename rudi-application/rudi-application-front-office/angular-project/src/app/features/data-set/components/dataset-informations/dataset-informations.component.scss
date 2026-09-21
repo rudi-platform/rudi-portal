@@ -204,26 +204,23 @@
     }
 
     .date-publication, .date-mise-jour {
-
-
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 11px 0 11px;
+        height: 40px;
         border-radius: 4px;
         border: solid 1px var(--blocks-and-menus-outline);
         background-color: var(--banner-solid-color);
-        display: flex;
-        flex-wrap: wrap;
 
         .label-date-publication {
             font-size: 12px;
-            font-weight: normal;
-            flex: 0 0 100%;
-            max-width: 100%;
+            font-weight: normal
         }
 
         .value-date-publication {
             font-size: 14px;
             font-weight: 600;
-            flex: 0 0 100%;
-            max-width: 100%;
         }
 
         @include responsive.md {

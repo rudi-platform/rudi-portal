@@ -63,18 +63,6 @@ class DatasetServiceIT {
 	@Autowired
 	private MetadataBlockHelper metadataBLockHelper;
 
-	/**
-	 * Pour éviter des erreurs avec Dataverse, on remplace certains UUID par des UUID aléatoires
-	 *
-	 * @param metadata JDD à traiter
-	 */
-	private static void randomizeUuids(Metadata metadata) {
-		if (metadata.getGlobalId() != null) {
-			metadata.setGlobalId(UUID.randomUUID());
-		}
-		metadata.getAvailableFormats().forEach(media -> media.setMediaId(UUID.randomUUID()));
-	}
-
 	@AfterEach
 	void tearDown() {
 		createdDatasets.forEach(createdDataset -> {
@@ -85,8 +73,9 @@ class DatasetServiceIT {
 				log.error("Error when deleting Dataset with globalId " + globalId, e);
 			}
 		});
-//		metadataDataFactory.cleanupAllCreatedDatasets();
 		createdDatasets.clear();
+		// Si besoin de nettoyer tous les jeux de données créés par les tests, on peut utiliser la méthode
+		// deleteAllTestsDatasets() mais elle est désactivée par défaut pour éviter de supprimer des jeux de données existants
 	}
 
 	@Test
@@ -215,10 +204,8 @@ class DatasetServiceIT {
 		// ----------------------------------------------------------
 		// Recherche pour s'assurer que seuls les jdd correspondant aux valeurs exactes sont remontés
 		// ----------------------------------------------------------
-		final Metadata metadataKeolisStarAgriculture = metadataDataFactory.getOrCreateMetadataJddProducerKeolisStarThemeAgriculture();
-
+		metadataDataFactory.getOrCreateMetadataJddProducerKeolisStarThemeAgriculture();
 		metadataDataFactory.getOrCreateMetadataJddProducerStarThemeAgricultureBiologique();
-		final Metadata metadataStarAgricultureBiologique = metadataDataFactory.getOrCreateMetadataJddProducerStarThemeAgricultureBiologique();
 
 		MetadataList metadataList10 = datasetService
 				.searchDatasets(new DatasetSearchCriteria().offset(0).limit(100).addProducerNamesItem("STAR"),
@@ -287,7 +274,7 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void testCreateDatasetWithMandatoryPropertiesOnly() throws DataverseAPIException, IOException {
+	void testCreateDatasetWithMandatoryPropertiesOnly() throws DataverseAPIException {
 		// test si la création avec les données minimales marche bien
 		final Metadata metadataMandatoryProperties = metadataDataFactory.getOrCreateMetadataMinimal();
 		final String dataverseDoi = metadataMandatoryProperties.getDataverseDoi();
@@ -299,7 +286,7 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void testCreateDatasetWithoutUpdatedReferenceDates() throws IOException, DataverseAPIException {
+	void testCreateDatasetWithoutUpdatedReferenceDates() throws DataverseAPIException {
 		// test de la valeur dataset_dates.updated
 		assertThatThrownBy(() -> metadataDataFactory.getOrCreateMetadataWithoutReferenceDatesUpdated())
 				.isInstanceOf(NullPointerException.class)
@@ -336,7 +323,7 @@ class DatasetServiceIT {
 	}
 
 	@Test
-	void testUpdateDataset() throws DataverseAPIException, IOException {
+	void testUpdateDataset() throws DataverseAPIException {
 		// création du jeu de données à mettre à jour
 		final List<Media> medias = availableFormatsDataFactory.createAvailableFormatsForUpdate();
 
@@ -367,11 +354,11 @@ class DatasetServiceIT {
 	 */
 	@ParameterizedTest(name = "{0}")
 	@ValueSource(strings = { "séparateurs", "09/09/2021", "2021-09-20", "31.91", })
-	void searchDatasetsFreeTextFieldResourceTitle(final String freeText) throws DataverseAPIException, IOException {
+	void searchDatasetsFreeTextFieldResourceTitle(final String freeText) throws DataverseAPIException {
 		searchDatasetsFreeText(freeText);
 	}
 
-	private void searchDatasetsFreeText(String freeText) throws IOException, DataverseAPIException {
+	private void searchDatasetsFreeText(String freeText) throws DataverseAPIException {
 
 		// On ajoute un autre JDD pour être sûr que seul le JDD souhaité remonte
 		metadataDataFactory.getOrCreateMetadataJddSansMotsCommunsAvecJddAvecSeparateurs();
@@ -391,7 +378,7 @@ class DatasetServiceIT {
 	 */
 	@ParameterizedTest(name = "{0}")
 	@ValueSource(strings = { "Résumé court", "français" })
-	void searchDatasetsFreeTextFieldAbstractTextFr(final String freeText) throws DataverseAPIException, IOException {
+	void searchDatasetsFreeTextFieldAbstractTextFr(final String freeText) throws DataverseAPIException {
 		searchDatasetsFreeText(freeText);
 	}
 
@@ -400,7 +387,7 @@ class DatasetServiceIT {
 	 */
 	@ParameterizedTest(name = "{0}")
 	@ValueSource(strings = { "English short" })
-	void searchDatasetsFreeTextFieldAbstractTextEn(final String freeText) throws DataverseAPIException, IOException {
+	void searchDatasetsFreeTextFieldAbstractTextEn(final String freeText) throws DataverseAPIException {
 		searchDatasetsFreeText(freeText);
 	}
 
@@ -409,7 +396,7 @@ class DatasetServiceIT {
 	 */
 	@ParameterizedTest(name = "{0}")
 	@ValueSource(strings = { "31/08+", "09/09/2021", })
-	void searchDatasetsFreeTextSpecialCharacters(final String freeText) throws DataverseAPIException, IOException {
+	void searchDatasetsFreeTextSpecialCharacters(final String freeText) throws DataverseAPIException {
 		searchDatasetsFreeText(freeText);
 	}
 
@@ -418,7 +405,7 @@ class DatasetServiceIT {
 	 */
 	@ParameterizedTest(name = "{0}")
 	@ValueSource(strings = { "911992100 | 09/09/2021", "911992100 09/09/2021", })
-	void searchDatasetsFreeTextSeparators(final String freeText) throws DataverseAPIException, IOException {
+	void searchDatasetsFreeTextSeparators(final String freeText) throws DataverseAPIException {
 		searchDatasetsFreeText(freeText);
 	}
 
@@ -510,7 +497,7 @@ class DatasetServiceIT {
 		final DatasetSearchCriteria existingCriteria = new DatasetSearchCriteria();
 		existingCriteria.setLimit(100);
 		existingCriteria.addProducerUuidsItem(UUID.fromString("426ba491-718a-404a-9521-edeb94cd7d80"));
-		// existingCriteria.addProducerNamesItem("IRISA - RM_MIGRATION");
+		// initialement test également sur le producer name "IRISA - RM_MIGRATION"
 		boolean continuer = true;
 		while (continuer) {
 			MetadataListFacets existingResult = datasetService.searchDatasets(existingCriteria,

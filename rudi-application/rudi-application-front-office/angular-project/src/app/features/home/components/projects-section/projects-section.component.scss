@@ -2,7 +2,8 @@
 @import url("swiper/css");
 
 .section-container {
-    padding-top: 20px;
+    padding-top: 0;
+    margin-bottom: 20px;
 }
 
 .title-container {
@@ -34,7 +35,7 @@
 
 .description-container {
     max-width: 700px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 
     .description {
         text-align: center;
@@ -47,6 +48,10 @@
 
 .card-container {
     padding: 0 10px;
+}
+
+.button-redirect {
+    margin: 20px 0 0 0;
 }
 
 .submit-project-link {

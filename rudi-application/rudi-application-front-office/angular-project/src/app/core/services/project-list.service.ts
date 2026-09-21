@@ -3,6 +3,7 @@ import {ProjectSearchCriteria} from '@core/bean/projekt/project-search-criteria'
 import {ProjectCatalogItem, ProjectCatalogItemPage} from '@features/project/model/project-catalog-item';
 import {injectDependenciesEach} from '@shared/utils/dependencies-utils';
 import {mapEach} from '@shared/utils/observable-utils';
+import {StringUtils} from '@shared/utils/string-utils';
 import {PagedProjectList, Project, ProjectStatus} from 'micro_service_modules/projekt/projekt-model';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -29,16 +30,21 @@ export class ProjectListService {
      * @param order la colonne sur léquelles on trie
      * @param producerUuid UUIDs des organisations ayant déclaré la réutilisation ou soumis le projet
      * @param isMember true if authenticated user is member of the producer, false otherwise
+     * @param freeText recherche libre sur le nom et la description du projet
      */
     public searchProjectsCatalog(linkedDatasetsGlobalIds: string[], offset: number, limit: number,
-                                 order = DEFAULT_PROJECT_ORDER, producerUuid?: string, isMember: boolean = false): Observable<ProjectCatalogItemPage> {
+                                 order = DEFAULT_PROJECT_ORDER, producerUuid?: string, isMember: boolean = false,
+                                 freeText?: string): Observable<ProjectCatalogItemPage> {
         // La page renvoyée
         const page = new ProjectCatalogItemPage();
         // Tout va partir des projets à récupérer
         const criteria: ProjectSearchCriteria = {
+            titleOrDescription: StringUtils.toWildcardSearch(freeText),
             dataset_uuids: linkedDatasetsGlobalIds,
             owner_uuids: [producerUuid],
-            status: isMember ? [ProjectStatus.Validated, ProjectStatus.Archived, ProjectStatus.Disengaged] : [ProjectStatus.Validated, ProjectStatus.Archived],
+            status: isMember ?
+                [ProjectStatus.Validated, ProjectStatus.Archived, ProjectStatus.Disengaged]
+                : [ProjectStatus.Validated, ProjectStatus.Archived],
             offset,
             limit
         };

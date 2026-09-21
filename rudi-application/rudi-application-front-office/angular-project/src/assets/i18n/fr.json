@@ -7,6 +7,7 @@
         "heroSection": {
             "title1": "Portail de partage et d'accès aux données territoriales",
             "title2": "de {projectName}",
+            "subtitle": "Explorer, publier et valoriser les données locales",
             "searchbarPlaceholder": "Rechercher un jeu de données..."
         },
         "themesSection": {
@@ -62,6 +63,7 @@
     "project": {
         "catalogue": "Catalogue",
         "reutilisations": " des réutilisations",
+        "reutilisationsSubtitle": "Découvrez les réutilisations en cours ou terminées utilisant les données du portail",
         "buttonPopover": {
             "submitProject": "Déclarer une réutilisation",
             "genericUnauthorizedMessage": "Veuillez vous connecter ou vous inscrire pour accéder à cette page."
@@ -236,7 +238,8 @@
     },
     "news": {
         "decouvrir": "Découvrir",
-        "toutes_actualites": "toutes les actualités"
+        "toutes_actualites": "toutes les actualités",
+        "subtitle": "Retrouvez ici les dernières actualités du portail"
     },
     "popup": {
         "ok": "Ok",
@@ -452,13 +455,16 @@
         "successInitPassword": "Un mail de réinitialisation de votre mot de passe vous a été envoyé si votre adresse est connue de {projectName}. Vous n'avez pas reçu de mail ? Consulter vos spams et si le mail n'y figure pas, veuillez contacter"
     },
     "searchbox": {
-        "jeux": "Jeux",
-        "donnees": "de données",
+        "catalogue": "Catalogue",
+        "jeuxDonnees": "des jeux de données",
+        "catalogueSubtitle": "Parcourez et accédez à l’ensemble des données publiées sur le portail par les acteurs du territoire",
         "rechercherJeuDonnees": "Rechercher un jeu de données...",
         "rechercherOrganisation": "Rechercher une organisation...",
+        "rechercherReutilisation": "Rechercher une réutilisation...",
         "searchIsRunning": "Recherche en cours",
         "results": "résultat",
-        "noResult": "Aucun résultat",
+        "resultsFor": "pour « {term} »",
+        "noResult": "Aucun résultat.",
         "filtres": "Filtres",
         "pour": " pour ",
         "search": "Rechercher... ",
@@ -470,7 +476,6 @@
         "toutEffacer": "Effacer tout",
         "thematique": "Thématique",
         "producteur": "Producteur",
-        "couvertureTemporelle": "Couverture temporelle",
         "restrictedAccess": {
             "statut": "Statut",
             "true": "Restreint",
@@ -1253,7 +1258,8 @@
                     "accordionTitle": "Demande de modification d'organisation"
                 },
                 "additionalInformation": "Informations complémentaires",
-                "currentOrganization": "Organisation actuelle"
+                "currentOrganization": "Organisation actuelle",
+                "sectionTitle": "Organisation modifiée"
             }
         },
         "organization": {
@@ -1698,6 +1704,7 @@
         "description": "Description",
         "catalogue": "Catalogue ",
         "desOrganisations": "des organisations",
+        "organisationsSubtitle": "Retrouvez toutes les organisations qui contribuent au portail en publiant des données ou des réutilisations",
         "organizationLogo": "Logo de l'organisation",
         "card": {
             "projectsCount": {

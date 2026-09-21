@@ -173,16 +173,19 @@ export class DetailComponent implements OnInit {
     }
 
     private loadRelatedOrganizations(project: Project): void {
-        const validatedRelatedOrganizations = project.related_organizations?.filter(
-            relatedOrganization => relatedOrganization.relation_status === RelationStatus.Accepted
+        // On affiche toutes les organisations partenaires concernées par la réutilisation (acceptées ou en attente
+        // de réponse), à l'exception de celles ayant refusé, afin que le producteur (ou tout visiteur) voit
+        // l'ensemble des réutilisateurs et organisations partenaires dans la liste des contacts.
+        const visibleRelatedOrganizations = project.related_organizations?.filter(
+            relatedOrganization => relatedOrganization.relation_status !== RelationStatus.Refused
         ) ?? [];
 
-        if (!validatedRelatedOrganizations.length) {
+        if (!visibleRelatedOrganizations.length) {
             this.relatedOrganizations = [];
             return;
         }
 
-        const ownerInfoRequests: OwnerInfoRequest[] = validatedRelatedOrganizations.map(relatedOrganization => ({
+        const ownerInfoRequests: OwnerInfoRequest[] = visibleRelatedOrganizations.map(relatedOrganization => ({
             owner_uuid: relatedOrganization.organization_uuid,
             owner_type: OwnerType.Organization
         }));

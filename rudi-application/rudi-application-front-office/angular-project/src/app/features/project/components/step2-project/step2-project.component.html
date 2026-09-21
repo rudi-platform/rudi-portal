@@ -9,6 +9,8 @@
 </div>
 
 <form [formGroup]="step2FormGroup">
+  <!-- Encart englobant toute la section "Identité du réutilisateur" -->
+  <div class="step-identity-card">
   <span class="step-form-card-label" id="ownerTypeLabel">
     <span
       class="step-form-card-label-title">{{'project.stepper.submission.step2.ownerType.title' | translate}}
@@ -17,6 +19,7 @@
       class="step-form-card-label-description">{{'project.stepper.submission.step2.ownerType.description' | translate}}</span>
     </span>
 
+    <!-- Encart englobant le choix Individuel / Organisation -->
     <div class="step-form-card">
     <mat-radio-group
       formControlName="ownerType"
@@ -98,6 +101,8 @@
               </mat-error>
             }
           </mat-radio-group>
+          </div>
+          <!-- Fin de l'encart Individuel / Organisation -->
 
           <!-- Organisations partenaires -->
           <section class="related-organizations-section">
@@ -130,6 +135,7 @@
           </section>
 
           </div>
+          <!-- Fin de l'encart Identité du réutilisateur -->
 
           <label class="step-form-card-label" for="contactEmail">
             <span

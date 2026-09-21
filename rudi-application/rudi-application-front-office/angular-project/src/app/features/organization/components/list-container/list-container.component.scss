@@ -1,10 +1,8 @@
 @use "common-style";
 
 .rudi-filters-toolbar {
-    width: auto;
-    margin: 42px -95px 35px -95px;
+    @include common-style.rudi-filters-toolbar-base;
     background-color: #e7e9ed;
-    padding-left: 95px;
 }
 .search-count {
     font-size: 1.4em;

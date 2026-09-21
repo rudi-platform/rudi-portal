@@ -3,7 +3,7 @@ import {LanguageService} from '@core/i18n/language.service';
 import {DictionaryEntry} from 'micro_service_modules/api-kaccess';
 import {BarChartData, BarChartValues, BarModel, GroupedBarModel, LineAndPlot, Serie, TpbcDataInterface} from './tpbcData.interface';
 
-export const DEFAULT_COLOURS = ['#ff8d6d', '#004680', '#498100', '#00D7D2', '#313c53', '#7BD500', '#98abc5', '#8a89a6'];
+export const DEFAULT_COLOURS = ['#F36B43', '#004680', '#498100', '#00D7D2', '#313c53', '#7BD500', '#98abc5', '#8a89a6'];
 export const MARGIN = {top: 40, right: 20, bottom: 50, left: 40};
 export const WINDOWS_WIDTH = 400;
 export const WINDOWS_HEIGHT = 400;

@@ -11,7 +11,6 @@ import {NgClass} from '@angular/common';
 import {FilterMenuComponent} from '../../filters/filter-menu/filter-menu.component';
 import {ThemesFilterFormComponent} from '../../filters/filter-forms/themes-filter-form/themes-filter-form.component';
 import {ProducerNamesFilterFormComponent} from '../../filters/filter-forms/producer-names-filter-form/producer-names-filter-form.component';
-import {DatesFilterFormComponent} from '../../filters/filter-forms/dates-filter-form/dates-filter-form.component';
 import {AccessStatusFilterFormComponent} from '../../filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
 
 @Component({
@@ -24,13 +23,11 @@ import {AccessStatusFilterFormComponent} from '../../filters/filter-forms/access
         FilterMenuComponent,
         ThemesFilterFormComponent,
         ProducerNamesFilterFormComponent,
-        DatesFilterFormComponent,
         AccessStatusFilterFormComponent,
     ],
 })
 export class DatasetListBannerComponent {
     @Input() mediaSize: MediaSize;
-    @Output() selectedDatesItemsChange = new EventEmitter<Item[]>();
     @Output() selectedProducerItemsChange = new EventEmitter<Item[]>();
     @Output() selectedThemeItemsChange = new EventEmitter<Item[]>();
     @Output() selectedAccessStatusItemsChange = new EventEmitter<AccessStatusFilterItem[]>();

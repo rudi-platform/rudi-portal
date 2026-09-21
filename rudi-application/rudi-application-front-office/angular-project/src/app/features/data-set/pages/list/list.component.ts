@@ -17,7 +17,6 @@ import {
     AccessStatusFilterFormComponent,
     AccessStatusFilterItem
 } from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
-import {DatesFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/dates-filter-form/dates-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {OrderFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/order-filter-form/order-filter-form.component';
 import {
@@ -37,7 +36,7 @@ import {switchMap, takeUntil} from 'rxjs/operators';
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, DatesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
 })
 export class ListComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;
@@ -55,7 +54,6 @@ export class ListComponent implements OnInit, OnDestroy {
     ];
 
     producerNames: string[];
-    selectedDatesItems: Item[] = [];
     selectedThemeItems: Item[] = [];
     selectedProducerItems: Item[] = [];
 

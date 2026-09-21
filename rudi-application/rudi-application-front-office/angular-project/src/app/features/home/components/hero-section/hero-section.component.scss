@@ -37,6 +37,15 @@
     color: var(--accent-color);
 }
 
+.hero-helper {
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--primary-text);
+    max-width: 60ch;
+    margin: 12px auto 32px;
+}
+
 .hero-section-right-edge-picto {
     position: absolute;
     top: 0;

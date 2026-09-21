@@ -13,7 +13,11 @@
                 {{ relatedTitle }}
             </div>
         }
-        <div class="related-organizations-list">
+        <div class="related-organizations-list"
+            [class.scrollable]="relatedOrganizations.length > 2"
+            [attr.tabindex]="relatedOrganizations.length > 2 ? 0 : null"
+            [attr.role]="relatedOrganizations.length > 2 ? 'group' : null"
+            [attr.aria-label]="relatedOrganizations.length > 2 ? relatedTitle : null">
             @for (relatedOrganization of relatedOrganizations; track relatedOrganization.name) {
                 <app-owner-contact-information class="related-organization-contact" [name]="relatedOrganization.name" [email]="relatedOrganization.adminEmail" [showEmailDirectly]="showRelatedEmailDirectly"></app-owner-contact-information>
             }

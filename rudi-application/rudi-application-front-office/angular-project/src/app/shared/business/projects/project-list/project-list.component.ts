@@ -39,6 +39,7 @@ export class ProjectListComponent implements OnInit {
     @Output() reuseListTotal = new EventEmitter<number>();
     readonly maxPageDesktop = 9;
     orderValue: Order;
+    freeTextValue: string;
     /** minimum = 5 */
     readonly maxPageMobile = 5;
     private currentPage = FIRST_PAGE;
@@ -76,6 +77,16 @@ export class ProjectListComponent implements OnInit {
         this.searchProjects(order);
     }
 
+    @Input() set freeText(freeText: string) {
+        this.freeTextValue = freeText;
+        if (!this.projectList) {
+            // component is not init
+            return;
+        }
+        // Reset à la première page puis relance la recherche avec le nouveau texte
+        this.page = FIRST_PAGE;
+    }
+
     get paginationControlsNgClass(): NgClassObject {
         return this.breakpointObserver.getNgClassFromMediaSize('pagination-spacing');
     }
@@ -108,7 +119,7 @@ export class ProjectListComponent implements OnInit {
     searchProjects(order: Order = DEFAULT_PROJECT_ORDER): void {
         this.isLoading = true;
         setTimeout(() => this.runningSearch.emit(true)); // setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid, this.isMember)
+        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid, this.isMember, this.freeTextValue)
             .subscribe({
                 next: (data: ProjectCatalogItemPage) => {
                     this.isLoading = false;

@@ -29,10 +29,8 @@ export class SnackBarService {
         const level = (data as Data).level;
         if (level === Level.ERROR) {
             return 'red-snackbar';
-        } else if (level === Level.SUCCESS) {
-            return 'blue-snackbar';
         }
-        return undefined;
+        return 'blue-snackbar';
     }
 
     add(message: string): void {

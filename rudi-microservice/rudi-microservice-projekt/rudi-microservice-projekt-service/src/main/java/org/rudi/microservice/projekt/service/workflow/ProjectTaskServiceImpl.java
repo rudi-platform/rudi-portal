@@ -50,9 +50,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
 import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_TYPE_FORM_ARCHIVE_VALUE;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_FIELD_NAME;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_DRAFT_FORM_SECTION_NAME;
 
 /**
  * @author FNI18300
@@ -120,7 +120,7 @@ public class ProjectTaskServiceImpl extends
 			variables.put(ProjektWorkflowConstants.PROJECT_STATUS, assetDescriptionEntity.getProjectStatus().name());
 		}
 		if (assetDescriptionEntity.getData() != null) {
-			variables.put(ProjektWorkflowConstants.PROJECT_DRAFT_TYPE,
+			variables.put(ProjektWorkflowConstants.DRAFT_TYPE,
 					projectWorkflowHelper.getDraftType(assetDescriptionEntity));
 		}
 	}
@@ -173,8 +173,8 @@ public class ProjectTaskServiceImpl extends
 			Map<String, Object> data = getFormHelper().hydrateData(assetDescriptionEntity.getData());
 			try {
 				// Si l'image est présente on récupère ses metadatas
-				if (data != null && data.containsKey(PROJECT_PICTURE_FIELD_NAME)) {
-					UUID mediaUuid = UUID.fromString((String) data.get(PROJECT_PICTURE_FIELD_NAME));
+				if (data != null && data.containsKey(ASSET_PICTURE_FIELD_NAME)) {
+					UUID mediaUuid = UUID.fromString((String) data.get(ASSET_PICTURE_FIELD_NAME));
 					// Vérifie que l'utilisateur connecté est bien le "créateur" de l'image ou un Moderator / Administrator
 					attachmentsHelper.checkIfAuthenticatedUserCanDeleteDocument(mediaUuid);
 				}
@@ -266,7 +266,7 @@ public class ProjectTaskServiceImpl extends
 		Form form = super.lookupDraftForm(formType);
 
 		if (form != null) {
-			form.getSections().stream().filter(s -> s.getName().equals(DRAFT_FORM_SECTION_NAME)).findFirst()
+			form.getSections().stream().filter(s -> s.getName().equals(PROJECT_DRAFT_FORM_SECTION_NAME)).findFirst()
 					.ifPresent(value -> projektFormEnhancerHelper.enhance(value));
 		}
 

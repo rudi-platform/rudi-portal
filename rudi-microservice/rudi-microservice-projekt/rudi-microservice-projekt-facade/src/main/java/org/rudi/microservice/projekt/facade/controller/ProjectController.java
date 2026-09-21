@@ -1,17 +1,9 @@
 package org.rudi.microservice.projekt.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
-import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Status;
@@ -56,9 +48,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_KALIM;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODULE_PROJEKT_ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROJECT_MANAGER;
+import static org.rudi.common.core.security.QuotedRoleCodes.PROVIDER;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,35 +87,48 @@ public class ProjectController implements ProjectsApi {
 
 	/**
 	 * GET /projects : Recherche de projets Recherche de projets
-	 *
-	 * @param datasetUuids           UUIDs des jeux de données liés aux projets recherchés (optional)
-	 * @param linkedDatasetUuids     UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
-	 * @param newRequestDatasetUuids UUIDs des NewDatasetRequest (des demandes de nouveau JDD) liées aux projets recherchés (optional)
-	 * @param ownerUuids             UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet (optional)
-	 * @param projectUuids           UUIDs des projets (optional)
-	 * @param status                 (optional)
-	 * @param themes                 (optional)
-	 * @param keywords               (optional)
-	 * @param targetAudiennces       (optional)
-	 * @param offset                 Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
-	 * @param limit                  Le nombre de résultats à retourner par page (optional)
-	 * @param order                  (optional)
-	 * @return OK (status code 200) or Service Unavailable (status code 500)
+	 * @param titleOrDescription Texte libre présent dans le titre, la description du projet (optional)
+	 * @param datasetUuids UUIDs des jeux de données liés aux projets recherchés (optional)
+	 * @param linkedDatasetUuids UUIDs des LinkedDatasetEntity (des demandes d&#39;accès) liées aux projets recherchés (optional)
+	 * @param newRequestDatasetUuids UUIDs des NewRequestDatasetEntiy (des demandes de nouveaux jeux de données) liées aux projets recherchés (optional)
+	 * @param ownerUuids UUIDs des utilisateurs ou des organisations ayant déclaré la réutilisation ou soumis le projet (optional)
+	 * @param projectUuids UUIDs des projets (optional)
+	 * @param status  (optional)
+	 * @param themes  (optional)
+	 * @param keywords  (optional)
+	 * @param targetAudiennces  (optional)
+	 * @param offset Index de début (positionne le curseur pour parcourir les résultats de la recherche) (optional)
+	 * @param limit Le nombre de résultats à retourner par page (optional)
+	 * @param order  (optional)
+	 * @return une liste paginée de projets
+	 * @throws Exception
 	 */
 	@Override
-	public ResponseEntity<PagedProjectList> searchProjects(List<UUID> datasetUuids, List<UUID> linkedDatasetUuids,
-			List<UUID> newRequestDatasetUuids, List<UUID> ownerUuids, List<UUID> projectUuids,
-			List<ProjectStatus> status, List<String> themes, List<String> keywords,
+	public ResponseEntity<PagedProjectList> searchProjects(String titleOrDescription, List<UUID> datasetUuids,
+			List<UUID> linkedDatasetUuids, List<UUID> newRequestDatasetUuids, List<UUID> ownerUuids,
+			List<UUID> projectUuids, List<ProjectStatus> status, List<String> themes, List<String> keywords,
 			List<TargetAudience> targetAudiennces, Integer offset, Integer limit, String order) throws Exception {
-		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria.builder().datasetUuids(datasetUuids)
-				.linkedDatasetUuids(linkedDatasetUuids).newRequestDatasetUuids(newRequestDatasetUuids)
-				.ownerUuids(ownerUuids).projectUuids(projectUuids).projectStatus(status).themes(themes)
-				.keywords(keywords).targetAudiences(targetAudiennces).build();
+		ProjectSearchCriteria searchCriteria = ProjectSearchCriteria
+				.builder()
+				.titleOrDescription(titleOrDescription)
+				.datasetUuids(datasetUuids)
+				.linkedDatasetUuids(linkedDatasetUuids)
+				.newRequestDatasetUuids(newRequestDatasetUuids)
+				.ownerUuids(ownerUuids)
+				.projectUuids(projectUuids)
+				.projectStatus(status)
+				.themes(themes)
+				.keywords(keywords)
+				.targetAudiences(targetAudiennces)
+				.build();
 
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
 		Page<Project> page = projectService.searchProjects(searchCriteria, pageable);
+
 		return ResponseEntity.ok(new PagedProjectList().total(page.getTotalElements()).elements(page.getContent()));
 	}
+
+
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ", " + MODULE_PROJEKT + ", "

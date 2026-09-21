@@ -861,6 +861,14 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "titleOrDescription",
+						"description": "Texte libre présent dans le titre ou la description du projet",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "datasetUuids",
 						"description": "UUIDs des jeux de données liés aux projets recherchés",
 						"schema": {

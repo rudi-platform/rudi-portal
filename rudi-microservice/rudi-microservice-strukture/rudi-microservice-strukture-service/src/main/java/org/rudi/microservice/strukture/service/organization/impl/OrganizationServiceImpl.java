@@ -6,10 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
@@ -415,23 +413,5 @@ public class OrganizationServiceImpl implements OrganizationService {
 				.filter(orgaMember -> OrganizationRole.ADMINISTRATOR.equals(orgaMember.getRole()))
 				.toList();
 		return adminMembers.size() == 1 && adminMembers.get(0).getUserUuid().equals(userUuid);
-	}
-
-	private void deleteOrphanAddresses(Set<AbstractAddressEntity> previousAddresses,
-			Set<AbstractAddressEntity> currentAddresses) {
-		if (previousAddresses == null || previousAddresses.isEmpty()) {
-			return;
-		}
-
-		// L'association est en ManyToMany : on conserve un nettoyage manuel des adresses détachées.
-		final Set<UUID> currentAddressUuids = currentAddresses == null ? Set.of()
-				: currentAddresses.stream().map(AbstractAddressEntity::getUuid).filter(Objects::nonNull)
-				.collect(Collectors.toSet());
-
-		for (final AbstractAddressEntity previousAddress : previousAddresses) {
-			if (previousAddress.getUuid() != null && !currentAddressUuids.contains(previousAddress.getUuid())) {
-				abstractAddressDao.delete(previousAddress);
-			}
-		}
 	}
 }

@@ -961,7 +961,7 @@
             "FreeTextParam": {
                 "in": "query",
                 "name": "freeText",
-                "description": "Texte libre présent dans le titre ou dans le synopsis du jeu de données",
+                "description": "Texte libre présent dans le titre ou dans le synopsis le résumé du jeu de données",
                 "schema": {
                     "type": "string"
                 }

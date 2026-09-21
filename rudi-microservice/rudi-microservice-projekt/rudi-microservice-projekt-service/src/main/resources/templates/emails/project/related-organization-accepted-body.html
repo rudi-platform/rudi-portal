@@ -23,8 +23,8 @@
 <div>
     <p>Bonjour,</p>
     <p>
-        Votre demande de partenariat à la réutilisation <a
-                href="${urlServer}/projets/detail/${asset.uuid}">${asset.title}</a> a été acceptée par <a
+        Votre demande de partenariat à la réutilisation <#if asset.confidentiality?? && asset.confidentiality.privateAccess>${asset.title}<#else><a
+            href="${urlServer}/projets/detail/${asset.uuid}">${asset.title}</a></#if> a été acceptée par <a
                 href="${urlServer}/organization/detail/${organizationUuid}">${organizationName}</a>
     </p>
 

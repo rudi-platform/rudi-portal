@@ -3,13 +3,13 @@ package org.rudi.microservice.projekt.core.bean.criteria;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.core.bean.criteria.SearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
 import org.rudi.microservice.projekt.core.bean.RelationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString
 public class ProjectSearchCriteria implements SearchCriteria {
+	private String titleOrDescription;
 	private List<String> themes;
 	private List<String> keywords;
 	private List<@Valid TargetAudience> targetAudiences;

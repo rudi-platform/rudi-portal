@@ -5,7 +5,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
 import org.rudi.microservice.projekt.core.bean.ComputeIndicatorsSearchCriteria;
@@ -29,14 +38,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.val;
 
 @Repository
@@ -69,8 +70,54 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 	}
 
 	@Override
+	protected void addPredicates(ProjectSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery, Root<ProjectEntity> root, List<Predicate> predicates) {
+		// Construit le prédicat owner (projets possédés par l'utilisateur ou l'une de ses organisations).
+		Predicate ownerPredicate = null;
+		if (CollectionUtils.isNotEmpty(searchCriteria.getOwnerUuids())) {
+			ownerPredicate = root.get(FIELD_OWNER_UUID).in(searchCriteria.getOwnerUuids());
+		}
+
+		// Construit le prédicat related (projets liés aux organisations de l'utilisateur, avec filtre optionnel sur le statut de relation).
+		Predicate relatedPredicate = null;
+		if (CollectionUtils.isNotEmpty(searchCriteria.getRelatedOrganizationUuids())) {
+			Join<ProjectEntity, RelatedOrganizationEntity> relatedOrganizationsJoin = root.join(FIELD_RELATED_ORGANIZATIONS, JoinType.LEFT);
+
+			Predicate relatedOrganizations = relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_ORGANIZATION_UUID)
+					.in(searchCriteria.getRelatedOrganizationUuids());
+
+			if (CollectionUtils.isNotEmpty(searchCriteria.getRelationStatus())) {
+				List<RelationStatus> relationStatusList = searchCriteria.getRelationStatus().stream()
+						.map(status -> RelationStatus.valueOf(status.name())).collect(Collectors.toList());
+
+				Predicate relationStatus = relatedOrganizationsJoin.get(RelatedOrganizationEntity.FIELD_RELATION_STATUS)
+						.in(relationStatusList);
+
+				relatedPredicate = builder.and(relatedOrganizations, relationStatus);
+			} else {
+				relatedPredicate = relatedOrganizations;
+			}
+		}
+
+		// Règle métier : visibilité en OWNER OU RELATED
+		if (ownerPredicate != null && relatedPredicate != null) {
+			predicates.add(builder.or(ownerPredicate, relatedPredicate));
+		} else if (ownerPredicate != null) {
+			predicates.add(ownerPredicate);
+		} else if (relatedPredicate != null) {
+			predicates.add(relatedPredicate);
+		}
+
+		if(StringUtils.isNotEmpty(searchCriteria.getTitleOrDescription())) {
+			Predicate titlePredicate = buildPredicateStringCriteria(searchCriteria.getTitleOrDescription(), ProjectEntity.FIELD_TITLE, true, true, builder, root);
+			Predicate descriptionPredicate = buildPredicateStringCriteria(searchCriteria.getTitleOrDescription(), ProjectEntity.FIELD_DESCRIPTION, true, true, builder, root);
+			predicates.add(builder.or(titlePredicate, descriptionPredicate));
+		}
+	}
+
+	@Override
 	protected void addPredicates(PredicateListBuilder<ProjectEntity, ProjectSearchCriteria> builder) {
-		val searchCriteria = builder.getSearchCriteria();
+		ProjectSearchCriteria searchCriteria = builder.getSearchCriteria();
+
 		builder.add(searchCriteria.getKeywords(), (project, keywords) -> project.join(FIELD_KEYWORDS).in(keywords))
 				.add(searchCriteria.getTargetAudiences(),
 						(project, targetAudiences) -> project.join(FIELD_TARGET_AUDIENCES).in(targetAudiences))
@@ -84,8 +131,6 @@ public class ProjectCustomDaoImpl extends AbstractCustomDaoImpl<ProjectEntity, P
 				.add(searchCriteria.getNewRequestDatasetUuids(),
 						(project, newRequestDatasetUuids) -> project.join(FIELD_DATASET_REQUESTS).get(FIELD_UUID)
 								.in(newRequestDatasetUuids))
-				.add(searchCriteria.getOwnerUuids(),
-						(project, ownerUuids) -> project.get(FIELD_OWNER_UUID).in(ownerUuids))
 				.add(searchCriteria.getProjectUuids(),
 						(project, projectUuids) -> project.get(FIELD_UUID).in(projectUuids))
 				.add(searchCriteria.getProjectStatus(), ProjectStatus::valueOf,

@@ -49,7 +49,7 @@ export const DEFAULT_PROJECT_ORDER: Order = '-updatedDate';
 const DEFAULT_LINKED_DATASET_STATUS: LinkedDatasetStatus = 'VALIDATED';
 const RESTRICTED_LINKED_DATASET_STATUS: LinkedDatasetStatus = 'DRAFT';
 export const DEFAULT_ORDER: Order = 'order_';
-export const DEFAULT_LIMIT: number = 10;
+export const DEFAULT_LIMIT = 10;
 
 @Injectable({
     providedIn: 'root'
@@ -80,6 +80,7 @@ export class ProjektMetierService {
      */
     searchProjects(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<PagedProjectList> {
         return this.projektService.searchProjects(
+            criteria.titleOrDescription,
             criteria.dataset_uuids,
             criteria.linked_dataset_uuids,
             criteria.new_request_dataset_uuids,
@@ -568,7 +569,7 @@ export class ProjektMetierService {
         });
     }
 
-    getNumberOfProjectsPerOwners(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<Array<ProjectByOrganization>> {
+    getNumberOfProjectsPerOwners(criteria: ProjectSearchCriteria, order = DEFAULT_PROJECT_ORDER): Observable<ProjectByOrganization[]> {
         return this.projektService.getNumberOfProjectsPerOwners(
             criteria.dataset_uuids,
             criteria.linked_dataset_uuids,

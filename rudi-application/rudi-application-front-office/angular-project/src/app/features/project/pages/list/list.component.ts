@@ -8,6 +8,7 @@ import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {TranslatePipe} from '@ngx-translate/core';
 import {ProjectListComponent} from '@shared/business/projects/project-list/project-list.component';
 import {PageTitleComponent} from '@shared/core/layout/page-title/page-title.component';
+import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.component';
 import {AclService} from 'micro_service_modules/acl/acl-api';
 import {BannerComponent} from '../../components/banner/banner.component';
 import {OrderComponent} from '../../components/order/order.component';
@@ -17,17 +18,21 @@ import {ProjectCatalogItem} from '../../model/project-catalog-item';
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenavContent, NgClass, PageTitleComponent, BannerComponent, OrderComponent, ProjectListComponent, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenavContent, NgClass, PageTitleComponent,
+        BannerComponent, OrderComponent, ProjectListComponent, TranslatePipe, SearchBoxComponent]
 })
 export class ListComponent implements OnInit {
     mediaSize: MediaSize;
     searchIsRunning = true;
     projectListTotal = 0;
     order = DEFAULT_PROJECT_ORDER;
+    freeText = '';
 
-    constructor(private readonly projektMetierService: ProjektMetierService,
-                private readonly aclService: AclService,
-                private readonly breakpointObserver: BreakpointObserverService,
+    get resultsForParams(): { term: string } {
+        return {term: this.freeText};
+    }
+
+    constructor(private readonly breakpointObserver: BreakpointObserverService,
                 private readonly router: Router,
                 private readonly uriComponentCodec: URIComponentCodec,
     ) {

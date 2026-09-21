@@ -29,19 +29,6 @@
         </app-producer-names-filter-form>
     </app-filter-menu>
 
-    <app-filter-menu
-        #datesMenu
-        (closed)="datesForm.revert()"
-        [counter$]="datesForm.counter$"
-        buttonTextKey="filterBox.couvertureTemporelle">
-        <app-dates-filter-form
-            #datesForm
-            (selectedItemsChange)="selectedDatesItemsChange.emit($event)"
-            (submitFormEvent)="datesMenu.close()"
-            debutDivClass="d-flex me-3"
-            finDivClass="d-flex mt-2 me-3">
-        </app-dates-filter-form>
-    </app-filter-menu>
 
     <app-filter-menu
         #accessStatusMenu
