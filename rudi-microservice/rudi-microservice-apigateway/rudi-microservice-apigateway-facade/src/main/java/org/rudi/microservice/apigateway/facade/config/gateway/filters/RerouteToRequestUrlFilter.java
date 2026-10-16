@@ -93,8 +93,13 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 
 		checkParameters(exchange, uri);
 
+		// Fusion dédoublonnée par clé (insensible à la casse) : les params de la requête entrante
+		// (GetMap) l'emportent sur ceux stockés dans l'url du connecteur (GetCapabilities), sinon
+		// SERVICE/REQUEST/VERSION apparaissent en double dans l'url sortante vers le serveur externe.
+		String mergedQuery = mergeQueryParams(oQuery, iQuery);
+
 		URI mergedUrl = UriComponentsBuilder.fromUri(uri).scheme(routeUri.getScheme()).host(routeUri.getHost())
-				.port(routeUri.getPort()).path(routeUri.getPath()).query(StringUtils.join(List.of(oQuery, iQuery), '&'))
+				.port(routeUri.getPort()).path(routeUri.getPath()).query(mergedQuery)
 				.build(encoded).toUri();
 		exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR, mergedUrl);
 		return chain.filter(exchange);
@@ -124,6 +129,25 @@ public class RerouteToRequestUrlFilter extends AbstractGlobalFilter implements G
 			}
 		}
 		return StringUtils.join(params, '&');
+	}
+
+	/**
+	 * Fusionne deux query strings « k=v&k2=v2 » en dédoublonnant par clé (insensible à la casse).
+	 * Les entrées de {@code incoming} écrasent celles de {@code base} à clé égale. L'ordre est stable.
+	 */
+	protected String mergeQueryParams(String base, String incoming) {
+		java.util.Map<String, String> merged = new java.util.LinkedHashMap<>();
+		for (String part : StringUtils.split(StringUtils.defaultString(base), '&')) {
+			int eq = part.indexOf('=');
+			String key = eq >= 0 ? part.substring(0, eq) : part;
+			merged.put(key.toLowerCase(), part);
+		}
+		for (String part : StringUtils.split(StringUtils.defaultString(incoming), '&')) {
+			int eq = part.indexOf('=');
+			String key = eq >= 0 ? part.substring(0, eq) : part;
+			merged.put(key.toLowerCase(), part);
+		}
+		return StringUtils.join(merged.values(), '&');
 	}
 
 	protected void checkParameters(ServerWebExchange exchange, URI uri) {
