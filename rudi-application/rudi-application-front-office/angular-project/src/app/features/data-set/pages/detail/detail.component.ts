@@ -651,12 +651,23 @@ export class DetailComponent implements OnInit {
      */
     private handleMetadataProperties(metadata: Metadata): void {
         if (this.isMapDisplayed) {
-            const connectorParameters: ConnectorConnectorParameters[] = metadata.available_formats[0].connector.connector_parameters;
-            if (connectorParameters) {
-                this.mapHasError = !this.hasAllRequiredKeys(connectorParameters, MAP_CONNECTOR_PARAMETERS_REQUIRED);
-            } else {
-                this.mapHasError = true;
+            // this.mediaToDisplayMap est positionné par le getter isMapDisplayed : c'est le média
+            // RÉELLEMENT rendu sur la carte, pas available_formats[0].
+            const media = this.mediaToDisplayMap;
+            const objet = media as MediaFile;
+
+            // Un GeoJSON téléchargé (média FILE) se rend directement depuis connector.url : il n'a
+            // jamais de connector_parameters et ne doit pas bloquer la carte.
+            if (objet.file_type === FileTypes.GEO_JSON) {
+                this.mapHasError = false;
+                return;
             }
+
+            // Média SERVICE (WMS/WFS/WMTS…) : les 4 clés sont réellement nécessaires pour construire
+            // la requête GetMap/GetFeature.
+            const connectorParameters: ConnectorConnectorParameters[] = media.connector.connector_parameters;
+            this.mapHasError = !connectorParameters
+                || !this.hasAllRequiredKeys(connectorParameters, MAP_CONNECTOR_PARAMETERS_REQUIRED);
         }
     }
 
