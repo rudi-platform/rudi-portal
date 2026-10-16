@@ -109,7 +109,11 @@ export function createWmsLayer(wmsUrl: string, layerName: string): BaseLayer {
 export function createGeoJsonLayer(geojsonObject: JSON): BaseLayer {
     return new VectorLayer<VectorSource<Geometry>>({
         source: new VectorSource({
-            features: new GeoJSON().readFeatures(geojsonObject),
+            // Sans featureProjection, readFeatures ne reprojette pas : les coordonnées EPSG:4326
+            // (lon/lat) du GeoJSON source sont utilisées telles quelles comme coordonnées de la vue
+            // (EPSG:3857, mètres Web Mercator) -> les features atterrissent près de l'origine de la
+            // projection, à des milliers de km de la zone affichée, donc invisibles à l'écran.
+            features: new GeoJSON().readFeatures(geojsonObject, {featureProjection: DEFAULT_VIEW_PROJECTION}),
         }),
         style: styleFunction
     });
