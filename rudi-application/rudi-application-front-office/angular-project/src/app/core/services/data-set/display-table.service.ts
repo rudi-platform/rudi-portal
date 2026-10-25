@@ -26,6 +26,24 @@ export class DisplayTableService {
      */
     private static readonly FIRST_SHEET_NAME = 'Sheet1';
 
+    /**
+     * Correspondance entre les valeurs du thésaurus RUDI `file_encoding` (cf. rudi-node-catalog,
+     * `src/definitions/thesaurus/Encodings.js`) et les labels reconnus par `TextDecoder`.
+     * 'Unicode' et 'ISO/IEC 10646' sont volontairement absents : c'est la valeur par défaut du
+     * schéma quand personne n'a renseigné le champ, pas une déclaration d'encodage exploitable.
+     * @private
+     */
+    private static readonly ENCODING_NAME_TO_DECODER_LABEL: {[fileEncoding: string]: string} = {
+        'UTF-8': 'utf-8',
+        'UTF-16': 'utf-16le',
+        'ISO/CEI 8859-1': 'iso-8859-1',
+        'MacRoman': 'macintosh',
+        'Windows-1252': 'windows-1252',
+        'US-ASCII': 'windows-1252',
+        'ASCII': 'windows-1252',
+        'ANSI': 'windows-1252'
+    };
+
     constructor(
         private readonly konsultMetierService: KonsultMetierService,
         private readonly getBackendPropertyPipe: GetBackendPropertyPipe,
@@ -37,10 +55,10 @@ export class DisplayTableService {
 
     /**
      * Téléchargement d'un fichier tabulaire et récupération du contenu en mémoire au format Workbook XLS
-     * @param globalId ID du JDD contenant le média
-     * @param mediaId ID du média XLS a télécharger
+     * @param mediaUrl URL du média à télécharger
+     * @param fileEncoding encodage source déclaré par le producteur (`MediaFile.file_encoding`), si disponible
      */
-    downloadTableFile(mediaUrl): Observable<WorkBook> {
+    downloadTableFile(mediaUrl, fileEncoding?: string): Observable<WorkBook> {
 
         return this.konsultMetierService.downloadMetadataMedia(mediaUrl).pipe(
             switchMap((responseBlob: HttpResponse<Blob>) => {
@@ -58,15 +76,37 @@ export class DisplayTableService {
                 );
             }),
             // parse du blob en XLSX ou CSV
-            map((arrayBuffer: ArrayBuffer) => {
-                try {
-                    const text = new TextDecoder('utf-8', {fatal: true}).decode(arrayBuffer);
-                    return read(text, {type: 'string'});
-                } catch {
-                    return read(arrayBuffer, {type: 'array'});
-                }
-            })
+            map((arrayBuffer: ArrayBuffer) => this.decodeTableFile(arrayBuffer, fileEncoding))
         );
+    }
+
+    /**
+     * Décodage du contenu brut d'un média tabulaire avant passage à SheetJS, qui décode en Latin-1
+     * par défaut tout texte sans BOM (XLS/XLSX binaires non concernés, SheetJS les détecte seul).
+     *
+     * Priorité à l'encodage déclaré par le producteur (`file_encoding`) quand il est exploitable :
+     * c'est la source de vérité. À défaut (champ absent, ou valeur par défaut générique du schéma
+     * type 'Unicode'), on tente un décodage UTF-8 strict puis on retombe sur le comportement
+     * SheetJS historique — la grande majorité des médias existants n'ayant pas encore cette
+     * métadonnée renseignée.
+     * @private
+     */
+    private decodeTableFile(arrayBuffer: ArrayBuffer, fileEncoding?: string): WorkBook {
+        const declaredLabel = fileEncoding ? DisplayTableService.ENCODING_NAME_TO_DECODER_LABEL[fileEncoding] : undefined;
+        if (declaredLabel) {
+            try {
+                const text = new TextDecoder(declaredLabel, {fatal: true}).decode(arrayBuffer);
+                return read(text, {type: 'string'});
+            } catch {
+                // L'encodage déclaré ne correspond pas aux octets réels : on se replie sur l'heuristique
+            }
+        }
+        try {
+            const text = new TextDecoder('utf-8', {fatal: true}).decode(arrayBuffer);
+            return read(text, {type: 'string'});
+        } catch {
+            return read(arrayBuffer, {type: 'array'});
+        }
     }
 
     /**

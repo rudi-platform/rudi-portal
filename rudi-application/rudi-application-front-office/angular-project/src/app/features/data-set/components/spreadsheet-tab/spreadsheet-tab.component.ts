@@ -14,7 +14,7 @@ import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.compone
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Media, Metadata} from 'micro_service_modules/api-kaccess';
+import {Media, MediaFile, Metadata} from 'micro_service_modules/api-kaccess';
 import {catchError, switchMap} from 'rxjs/operators';
 import {WorkBook} from 'xlsx';
 import {SpreadsheetComponent} from '../spreadsheet/spreadsheet.component';
@@ -69,7 +69,8 @@ export class SpreadsheetTabComponent implements OnInit {
                 switchMap((hasAccess: boolean) => {
                     if (hasAccess) {
                         this.errorAccess = false;
-                        return this.displayTableService.downloadTableFile(this.mediaToDisplay.connector.url).pipe(
+                        const fileEncoding = (this.mediaToDisplay as MediaFile)?.file_encoding;
+                        return this.displayTableService.downloadTableFile(this.mediaToDisplay.connector.url, fileEncoding).pipe(
                             catchError((error) => {
                                 // Cas erreur avec un message à afficher côté front
                                 if (error instanceof ErrorWithCause && error.code != null) {
