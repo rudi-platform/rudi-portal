@@ -11,8 +11,8 @@ import org.rudi.facet.bpmn.exception.FormDefinitionException;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

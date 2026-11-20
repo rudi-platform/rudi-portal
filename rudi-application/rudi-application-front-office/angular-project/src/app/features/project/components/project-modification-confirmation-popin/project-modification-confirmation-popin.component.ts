@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {TranslateModule} from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import {TranslateModule} from '@ngx-translate/core';
     selector: 'app-project-modification-confirmation-popin',
     imports: [
         MatDialogContent,
+        MatDialogTitle,
         MatButton,
         MatDialogActions,
         MatIcon,

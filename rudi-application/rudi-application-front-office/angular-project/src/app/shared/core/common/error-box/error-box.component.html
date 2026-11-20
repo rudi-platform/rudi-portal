@@ -1,6 +1,7 @@
-<div class="error-zone">
+<!-- Always rendered after an action or a failed load: announce it to screen readers -->
+<div class="error-zone" role="alert">
   <div class="icon-container">
-    <mat-icon class="error-icon">{{'error'}}</mat-icon>
+    <mat-icon class="error-icon" fontIcon="error" aria-hidden="true"></mat-icon>
   </div>
   <!-- Bloc erreur textuel -->
   @if (hasText()) {
@@ -9,8 +10,8 @@
       <span>{{text}}</span>
       <!-- le texte cliquable -->
       @if (hasClickableText()) {
-        <span class="error-clickable"
-        (click)="handleClickClickableText()">{{clickableText}}</span>
+        <button type="button" class="error-clickable"
+        (click)="handleClickClickableText()">{{clickableText}}</button>
       }
       <span>{{textAfterLink}}</span>
     </div>

@@ -26,7 +26,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Create directories for schemas, ldifs, and data
-RUN mkdir -p /schemas /ldifs /data/ldap /data/slapd.d && \
+RUN mkdir -p /schemas /ldifs /data/ldap /data/slapd.d /certs && \
     chmod -R 755 /schemas /ldifs /data
 
 # LDIF files are no longer baked into the image.
@@ -49,6 +49,14 @@ ENV LDAP_PORT_NUMBER=1389 \
     LDAP_LOGLEVEL=256 \
     LDAP_ALLOW_ANON_BINDING=yes \
     LDAP_ULIMIT_NOFILES=1024
+
+# LDAPS / TLS (mount cert, key and CA on /certs, e.g. from a Kubernetes TLS Secret)
+ENV LDAP_ENABLE_TLS=no \
+    LDAP_LDAPS_PORT_NUMBER=1636 \
+    LDAP_TLS_CERT_FILE=/certs/tls.crt \
+    LDAP_TLS_KEY_FILE=/certs/tls.key \
+    LDAP_TLS_CA_FILE=/certs/ca.crt \
+    LDAP_TLS_VERIFY_CLIENT=never
 
 # Additional LDAP configuration options (commented by default)
 # ENV LDAP_CONFIG_ADMIN_ENABLED=yes

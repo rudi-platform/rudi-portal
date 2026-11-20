@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import {DatePipe} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
@@ -14,6 +14,7 @@ import {
     MatRowDef,
     MatTable
 } from '@angular/material/table';
+import {SelfdataInformationRequestSearchCriteria} from '@core/bean/selfdata/selfdata-information-request-search-criteria';
 import {MyRequestsService} from '@core/services/my-requests/my-requests.service';
 import {ProcessDefinitionsKeyIconRegistryService} from '@core/services/process-definitions-key-icon-registry.service';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -22,7 +23,7 @@ import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {PagedLinkedDatasetList} from 'micro_service_modules/projekt/projekt-model';
-import {SelfdataInformationRequestSearchCriteria, SelfdataInformationRequestStatus} from 'micro_service_modules/selfdata/selfdata-api';
+import {SelfdataInformationRequestStatus} from 'micro_service_modules/selfdata/selfdata-api';
 import {SelfdataInformationRequest} from 'micro_service_modules/selfdata/selfdata-model';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {Observable} from 'rxjs';
@@ -53,16 +54,17 @@ export class MySelfdataRequestsComponent extends AbstractMyRequestTableComponent
     }
 
     protected getMyElements(offset: number, limit: number, order: string): Observable<RequestItem[]> {
-        const selfdataInformationRequestSearchCriteria: SelfdataInformationRequestSearchCriteria = {};
-        selfdataInformationRequestSearchCriteria.offset = offset;
-        selfdataInformationRequestSearchCriteria.limit = limit;
-        selfdataInformationRequestSearchCriteria.order = order;
-        selfdataInformationRequestSearchCriteria.status = [
-            SelfdataInformationRequestStatus.Completed,
-            SelfdataInformationRequestStatus.Cancelled,
-            SelfdataInformationRequestStatus.Rejected
-        ];
-        return this.myRequestsService.searchMyFinishedSelfdataInformationRequests(selfdataInformationRequestSearchCriteria).pipe(
+        const selfdataInformationRequestFrontendSearchCriteria: SelfdataInformationRequestSearchCriteria = {
+            offset: offset,
+            limit: limit,
+            order: order,
+            status: [
+                SelfdataInformationRequestStatus.Completed,
+                SelfdataInformationRequestStatus.Cancelled,
+                SelfdataInformationRequestStatus.Rejected
+            ]
+        };
+        return this.myRequestsService.searchMyFinishedSelfdataInformationRequests(selfdataInformationRequestFrontendSearchCriteria).pipe(
             map((page: PagedLinkedDatasetList) => {
                 this.total = page.total;
                 return page.elements.map((selfdataRequest: SelfdataInformationRequest) => {

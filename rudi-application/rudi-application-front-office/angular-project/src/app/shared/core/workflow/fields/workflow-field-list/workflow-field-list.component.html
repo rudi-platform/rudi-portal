@@ -1,7 +1,7 @@
 <ng-container [formGroup]="formGroup">
-  <label [for]="'select-' + formControlName" class="d-flex">
+  <label [for]="'select-' + formControlName" [id]="'label-' + formControlName" class="d-flex">
     <span class="field-label">{{ label }}@if (required) {
-      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+      <span class="required-symbol" aria-hidden="true">*</span>
     }</span>
   </label>
   @if (help) {
@@ -12,6 +12,7 @@
       <mat-form-field appearance="outline" class="wf-list-form-field">
         <mat-select
           [id]="'select-' + formControlName"
+          [aria-labelledby]="'label-' + formControlName"
           [formControlName]="formControlName"
           [attr.aria-describedby]="help ? 'hint-' + formControlName : null"
           [placeholder]="'common.select.oneOptionPlaceHolder'|translate"

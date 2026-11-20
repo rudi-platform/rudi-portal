@@ -1,12 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {RouterLinkActive} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-page-title',
     templateUrl: './page-title.component.html',
     styleUrls: ['./page-title.component.scss'],
-    imports: [RouterLinkActive]
+    imports: [TranslatePipe]
 })
 export class PageTitleComponent implements OnInit {
     mediaSize: MediaSize;

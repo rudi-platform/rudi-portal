@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EntityScan(basePackages = { "org.rudi.common.storage.entity", "org.rudi.microservice.acl.storage.entity" })
-@EnableJpaRepositories(basePackages = {"org.rudi.common.storage.dao", "org.rudi.microservice.acl.storage.dao"}, repositoryBaseClass = StampedRepositoryImpl.class)
+@EntityScan(basePackages = { "org.rudi.common.storage.entity", "org.rudi.microservice.acl.storage.entity",
+		"org.rudi.facet.bpmn.entity" })
+@EnableJpaRepositories(basePackages = { "org.rudi.common.storage.dao", "org.rudi.microservice.acl.storage.dao",
+		"org.rudi.facet.bpmn.dao" }, repositoryBaseClass = StampedRepositoryImpl.class)
 public class AclDatabaseConfiguration {
 
 }

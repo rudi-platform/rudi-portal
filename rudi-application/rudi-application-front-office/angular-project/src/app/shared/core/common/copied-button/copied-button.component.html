@@ -1,21 +1,24 @@
 <div class="main-container">
-  <button class="btn-action" (click)="clickOnButton()"
+  <button type="button" class="btn-action" (click)="clickOnButton()"
     mat-raised-button>
-    <div class="input-and-icon" [title]="getInputTitle()">
-      <input matInput [type]="hidePassword ? 'password' : 'text'" autocomplete="off"
-        class="fake-input" [value]="toCopy">
-        @if (!copiedSuccess) {
-          <mat-icon class="copy-icon-button">content_copy</mat-icon>
-        }
-        @if (copiedSuccess) {
-          <mat-icon class="copy-icon-button">done_all</mat-icon>
-        }
-      </div>
+    <span class="input-and-icon" [title]="getInputTitle()">
+      <span class="visually-hidden">{{ 'common.copiedButton.copy' | translate }}</span>
+      @if (hidePassword) {
+        <span class="fake-input" aria-hidden="true">{{ getMaskedValue() }}</span>
+        <span class="visually-hidden">{{ 'common.copiedButton.maskedValue' | translate }}</span>
+      } @else {
+        <span class="fake-input">{{ toCopy }}</span>
+      }
+      <mat-icon class="copy-icon-button" aria-hidden="true"
+        [fontIcon]="copiedSuccess ? 'done_all' : 'content_copy'"></mat-icon>
+    </span>
+  </button>
+  @if (masked) {
+    <button type="button" class="floating-icon-visibility"
+      [attr.aria-label]="'common.copiedButton.showValue' | translate"
+      [attr.aria-pressed]="!hidePassword"
+      (click)="hidePassword = !hidePassword">
+      <mat-icon aria-hidden="true" [fontIcon]="hidePassword ? 'visibility' : 'visibility_off'"></mat-icon>
     </button>
-    @if (masked) {
-      <mat-icon matSuffix class="floating-icon-visibility"
-        (click)="hidePassword = !hidePassword">
-        {{hidePassword ? 'visibility' : 'visibility_off'}}
-      </mat-icon>
-    }
-  </div>
+  }
+</div>

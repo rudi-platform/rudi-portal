@@ -4,5 +4,6 @@ export enum ObjectType {
     NEW_DATASET_REQUEST = 'NewDatasetRequest',
     PROJECT = 'Project',
     ORGANIZATION = 'Organization',
-    LINKED_PRODUCER = 'LinkedProducer'
+    LINKED_PRODUCER = 'LinkedProducer',
+    EXTERNAL_ACCOUNT_REQUEST = 'ExternalAccountRequest'
 }

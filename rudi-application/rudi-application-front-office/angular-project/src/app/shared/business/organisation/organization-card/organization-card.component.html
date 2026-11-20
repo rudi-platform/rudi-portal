@@ -1,5 +1,5 @@
 <mat-card
-  class="organization-card" [ngClass]="{'archived': isArchived()}">
+  class="organization-card" [ngClass]="{'archived': isArchived()}" appStretchedLinkClick>
   <a
     class="stretched-link"
     [routerLink]="detailUrl"
@@ -9,34 +9,53 @@
     <div class="d-flex my-3">
       <div class="align-items-center">
         <app-organization-logo [organizationId]="organizationBean.uuid"
+          [decorative]="true"
           cssClass="with-border"
           organizationType="producer"
         ></app-organization-logo>
       </div>
       <div class="organization-card-content">
-        <div class="resource-title">
-          {{ organizationBean.name }}
-        </div>
+        @if (titleLevel === 3) {
+          <h3 class="resource-title">
+            <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
+          </h3>
+        } @else {
+          <h2 class="resource-title">
+            <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
+          </h2>
+        }
+        <ng-template #cardTitle>
+          <app-truncated-text [focusable]="false" [text]="organizationBean.name" [lines]="2"></app-truncated-text>
+        </ng-template>
         <div class="ressource-description">
-          <p class="description">{{ organizationBean.description | truncateText: 181 }}</p>
+          <app-truncated-text
+            class="description"
+            [text]="organizationBean.description"
+            [lines]="4"
+            [focusable]="false"
+            ></app-truncated-text>
         </div>
       </div>
     </div>
   </mat-card-content>
-  <div class="d-flex d-table-cell ">
+  <ul class="d-flex d-table-cell organization-card-actions list-unstyled mb-0">
     @if (!datasetCountLoading) {
-      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">
+      <li class="rudi-btn-sm d-flex align-items-center">
         {{ datasetsCountTranslationKey | translate: {number: organizationBean.datasetCount} }}
-      </button>
+      </li>
     } @else {
-      <app-loader [allPage]="false" [isTransparent]="true" [noText]="true" [active]="true"></app-loader>
+      <li>
+        <app-loader [allPage]="false" [isTransparent]="true" [noText]="true" [active]="true"></app-loader>
+      </li>
     }
     @if (!projectCountLoading) {
-      <button class="rudi-btn-sm d-flex align-items-center" mat-flat-button tabindex="-1">
+      <li class="rudi-btn-sm d-flex align-items-center">
         {{ projectsCountTranslationKey | translate: {number: organizationBean.projectCount} }}
-      </button>
+      </li>
     } @else {
-      <app-loader [allPage]="false" [isTransparent]="true" [noText]="true" [active]="true"></app-loader>
+      <li>
+        <app-loader [allPage]="false" [isTransparent]="true" [noText]="true" [active]="true"></app-loader>
+      </li>
     }
-  </div>
+  </ul>
 </mat-card>

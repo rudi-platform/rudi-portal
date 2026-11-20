@@ -7,16 +7,20 @@
       <span class="search-box-icon me-5 mt-1">
         <mat-icon class="me-2" aria-hidden="true" svgIcon="search"></mat-icon>
       </span>
-      <input class="form-control text-indent" type="search" name="search" autocomplete="off"
+      <input #searchInput class="form-control text-indent" type="search" name="search" autocomplete="off"
         id="search-input"
         [(ngModel)]="searchTerms"
         (keydown.enter)="onChanges()"
         [placeholder]="libelle | translate"
+        [title]="libelle | translate"
         [attr.aria-label]="libelle | translate">
         @if (searchTerms) {
           <span class="search-box-clear" [ngClass]="searchTerms ? 'active' : ''">
-            <mat-icon class="pointer me-2" aria-hidden="false" [attr.aria-label]="'common.clearSearch'|translate"
-            (click)="onReset()">close</mat-icon>
+            <button type="button" class="search-box-clear-button pointer me-2"
+              [attr.aria-label]="'common.clearSearch'|translate"
+              (click)="onReset(); searchInput.focus()">
+              <mat-icon aria-hidden="true" fontIcon="close"></mat-icon>
+            </button>
           </span>
         }
       </div>

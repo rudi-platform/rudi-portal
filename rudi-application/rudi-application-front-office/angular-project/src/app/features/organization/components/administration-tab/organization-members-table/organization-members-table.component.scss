@@ -8,6 +8,8 @@
 
 .mat-table-members {
     width: 100%;
+    // Space formerly taken by the empty caption (Bootstrap reboot padding)
+    margin-bottom: 1rem;
 }
 
 .table-header {
@@ -52,6 +54,15 @@
                 position: absolute;
                 color: darkgrey;
                 padding-right: 10px;
+            }
+
+            &-clear-button {
+                display: flex;
+                padding: 0;
+                border: 0;
+                background: none;
+                color: inherit;
+                font: inherit;
             }
 
             &-icon {
@@ -128,6 +139,13 @@
     margin-bottom: 20px;
     display: flex;
     flex-direction: row;
+
+    h2 {
+        margin: 0;
+        font: inherit;
+        letter-spacing: inherit;
+        color: inherit;
+    }
 }
 
 .table-loader {
@@ -143,12 +161,6 @@
 
 .dash {
     cursor: pointer;
-}
-
-button {
-    &:focus {
-        outline: none;
-    }
 }
 
 .menu-open {

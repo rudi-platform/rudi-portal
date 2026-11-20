@@ -8,7 +8,7 @@ import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.facet.acl.helper.ACLHelper;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetCustomDao;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
@@ -17,6 +17,8 @@ import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetE
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetStatus;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,9 +65,9 @@ public class LinkedDatasetSubscriptionHelper {
 	 */
 	public void getOwnerAllRequests(List<UUID> ownerList, int offset,
 			List<LinkedDatasetEntity> linkedDatasetEntityList) {
-		val pageable = utilPageable.getPageable(offset, null, null);
-		val searchCriteria = new LinkedDatasetSearchCriteria().projectOwnerUuids(ownerList);
-		val pageResult = linkedDatasetCustomDao.searchLinkedDatasets(searchCriteria, pageable);
+		Pageable pageable = utilPageable.getPageable(offset, null, null);
+		LinkedDatasetSearchCriteria searchCriteria = LinkedDatasetSearchCriteria.builder().projectOwnerUuids(ownerList).build();
+		Page<LinkedDatasetEntity> pageResult = linkedDatasetCustomDao.searchLinkedDatasets(searchCriteria, pageable);
 		linkedDatasetEntityList.addAll(pageResult.getContent());
 		if (linkedDatasetEntityList.size() < pageResult.getTotalElements()) {
 			getOwnerAllRequests(ownerList, offset + pageResult.getNumberOfElements(), linkedDatasetEntityList);

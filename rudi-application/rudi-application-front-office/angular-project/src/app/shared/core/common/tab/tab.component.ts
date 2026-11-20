@@ -28,6 +28,14 @@ export class TabComponent {
     @Input()
     invisible?: boolean;
 
+    /** Id of the rendered tab button, set by app-tabs to enable the ARIA tab pattern */
+    @Input()
+    tabId?: string;
+
+    /** Id of the tab panel controlled by this tab */
+    @Input()
+    controls?: string;
+
     @ContentChild(TemplateRef)
         // tslint:disable-next-line:no-any
     templateRef: TemplateRef<any>;

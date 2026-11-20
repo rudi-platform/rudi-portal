@@ -49,18 +49,7 @@
         }
 
         &:hover {
-            --mat-button-outlined-outline-color: var(--accent-color);
-            --mat-button-outlined-label-text-color: var(--accent-color);
-        }
-
-        &:focus {
-            border: #1D1D1B 2px solid !important;
-        }
-    }
-
-    &-mobile {
-        &:focus {
-            border: #1D1D1B 2px solid !important;
+            --mat-button-outlined-outline-color: var(--ally-accent-color);
         }
     }
 }
@@ -95,14 +84,8 @@
         border: 1px solid rgb(25, 14, 11);
         color: var(--rudi-header-primary-color);
 
-        &:focus {
-            background-color: var(--mat-button-outlined-outline-color);
-        }
-
         &:hover {
-            text-decoration: none;
-            border-color: var(--accent-color);
-            color: var(--accent-color);
+            border-color: var(--ally-accent-color);
         }
     }
 }
@@ -125,11 +108,6 @@
         box-shadow: none !important;
     }
 
-    /* Bordure focus accessible (style M17) */
-    &:focus-visible {
-        border: 2px solid #1D1D1B !important;
-    }
-
     /* Icône plus grande et sombre */
     mat-icon {
         scale: 1.4;
@@ -148,10 +126,6 @@
     &:focus,
     &:active {
         box-shadow: none !important;
-    }
-
-    &:focus-visible {
-        border: 2px solid #1D1D1B !important;
     }
 }
 
@@ -207,20 +181,20 @@
 .nav-link-global {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 700;
     text-transform: uppercase;
     white-space: nowrap;
     padding-bottom: 1px;
     border-bottom: 2px solid transparent;
+    font-weight: normal;
 
     &.active {
-        color: var(--accent-color);
-        border-bottom-color: var(--accent-color);
+        font-weight: bold;
+        color: var(--ally-accent-color);
+        border-bottom-color: var(--ally-accent-color);
     }
 
     &:hover {
-        color: var(--accent-color);
-        border-bottom-color: var(--accent-color);
+        border-bottom-color: var(--ally-accent-color);
     }
 }
 
@@ -290,9 +264,4 @@
     text-transform: uppercase;
     padding: 4px 12px;
     margin: 0 8px;
-}
-
-.skip-link:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
 }

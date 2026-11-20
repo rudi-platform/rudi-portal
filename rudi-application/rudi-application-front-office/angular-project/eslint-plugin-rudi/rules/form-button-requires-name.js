@@ -22,7 +22,7 @@
 
 'use strict';
 
-const SUBMIT_TYPES = ['submit', 'reset', 'button'];
+const SUBMIT_TYPES = new Set(['submit', 'reset', 'button']);
 
 /** @type {import('@angular-eslint/utils').TemplateRuleModule} */
 module.exports = {
@@ -54,12 +54,7 @@ function checkButton(context, node) {
     const attrs = node.attributes || [];
     const inputs = node.inputs || [];
 
-    // aria-label / aria-labelledby
-    if (hasStaticAttr(attrs, 'aria-label') || hasStaticAttr(attrs, 'aria-labelledby')) return;
-    if (hasBoundAttr(inputs, 'aria-label') || hasBoundAttr(inputs, 'aria-labelledby')) return;
-
-    // title
-    if (hasStaticAttr(attrs, 'title') || hasBoundAttr(inputs, 'title')) return;
+    if (hasAccessibleNameAttr(attrs, inputs)) return;
 
     // matTooltip fournit un contexte accessible
     if (hasStaticAttr(attrs, 'matTooltip') || hasBoundAttr(inputs, 'matTooltip')) return;
@@ -84,21 +79,17 @@ function checkInputButton(context, node) {
     if (type === 'image') {
         // input[type="image"] nécessite alt
         if (hasStaticAttr(attrs, 'alt') || hasBoundAttr(inputs, 'alt')) return;
-        if (hasStaticAttr(attrs, 'aria-label') || hasBoundAttr(inputs, 'aria-label')) return;
-        if (hasStaticAttr(attrs, 'aria-labelledby') || hasBoundAttr(inputs, 'aria-labelledby')) return;
-        if (hasStaticAttr(attrs, 'title') || hasBoundAttr(inputs, 'title')) return;
+        if (hasAccessibleNameAttr(attrs, inputs)) return;
 
         context.report({ node, messageId: 'missingButtonName' });
         return;
     }
 
-    if (!SUBMIT_TYPES.includes(type)) return;
+    if (!SUBMIT_TYPES.has(type)) return;
 
     // input[type="submit|reset|button"] nécessite value
     if (hasStaticAttr(attrs, 'value') || hasBoundAttr(inputs, 'value')) return;
-    if (hasStaticAttr(attrs, 'aria-label') || hasBoundAttr(inputs, 'aria-label')) return;
-    if (hasStaticAttr(attrs, 'aria-labelledby') || hasBoundAttr(inputs, 'aria-labelledby')) return;
-    if (hasStaticAttr(attrs, 'title') || hasBoundAttr(inputs, 'title')) return;
+    if (hasAccessibleNameAttr(attrs, inputs)) return;
 
     context.report({ node, messageId: 'missingButtonName' });
 }
@@ -109,6 +100,23 @@ function checkInputButton(context, node) {
  * mais ignore le contenu des <mat-icon> (le ligature d'une icône n'est pas un intitulé).
  */
 function hasTextContent(node) {
+    // Blocs de contrôle Angular @if/@else : le nœud expose `branches` (IfBlockBranch[])
+    // au lieu de `children` directement (ex: @if (x) {...} @else {...}).
+    if (node.branches && node.branches.length > 0) {
+        return node.branches.some(branch => hasTextContent(branch));
+    }
+
+    // Bloc @switch : selon la version du parser, le nœud expose soit `cases`
+    // (SwitchBlockCase[], chaque case ayant directement `children` - forme produite par
+    // @angular-eslint/template-parser), soit `groups` (SwitchBlockCaseGroup[] du compilateur
+    // Angular brut, chaque groupe ayant ses propres `children`).
+    if (node.cases && node.cases.length > 0) {
+        return node.cases.some(switchCase => hasTextContent(switchCase));
+    }
+    if (node.groups && node.groups.length > 0) {
+        return node.groups.some(group => hasTextContent(group));
+    }
+
     const children = node.children || [];
     return children.some(child => {
         // Nœud texte avec contenu non vide
@@ -123,11 +131,30 @@ function hasTextContent(node) {
         if (child.name === 'mat-icon') {
             return false;
         }
+        // Bloc @if/@else imbriqué
+        if (child.branches && child.branches.length > 0) {
+            return hasTextContent(child);
+        }
+        // Bloc @switch imbriqué
+        if ((child.cases && child.cases.length > 0) || (child.groups && child.groups.length > 0)) {
+            return hasTextContent(child);
+        }
         if (child.children && child.children.length > 0) {
             return hasTextContent(child);
         }
         return false;
     });
+}
+
+/**
+ * Vrai si l'élément porte un nom accessible via aria-label, aria-labelledby ou title
+ * (statique ou lié), commun à tous les types de boutons/input vérifiés par cette règle.
+ */
+function hasAccessibleNameAttr(attrs, inputs) {
+    if (hasStaticAttr(attrs, 'aria-label') || hasBoundAttr(inputs, 'aria-label')) return true;
+    if (hasStaticAttr(attrs, 'aria-labelledby') || hasBoundAttr(inputs, 'aria-labelledby')) return true;
+    if (hasStaticAttr(attrs, 'title') || hasBoundAttr(inputs, 'title')) return true;
+    return false;
 }
 
 function hasStaticAttr(attrs, name, expectedValue) {

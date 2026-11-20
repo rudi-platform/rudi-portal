@@ -1,11 +1,12 @@
 <div id="content">
     <mat-dialog-content class="main-content">
         <div class="dialog-header-close-button d-flex justify-content-end align-items-center">
-            <button mat-icon-button [mat-dialog-close]="null">
-                <mat-icon svgIcon="icon-close" class="icon-close"></mat-icon>
+            <button mat-icon-button type="button" [mat-dialog-close]="null"
+                [aria-label]="'popup.close' | translate">
+                <mat-icon svgIcon="icon-close" class="icon-close" aria-hidden="true"></mat-icon>
             </button>
         </div>
-        <h1 class="title">{{'project.stepper.submission.publish.ok.title' | translate}}</h1>
+        <h1 class="title" [id]="titleId">{{'project.stepper.submission.publish.ok.title' | translate}}</h1>
         <p class="subtitle">{{'project.stepper.submission.publish.ok.title-info' | translate }}</p>
         <p class="content-text">
             <span class="body-text">{{'project.stepper.submission.publish.ok.description1' | translate }}</span>

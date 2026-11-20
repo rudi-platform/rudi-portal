@@ -3,6 +3,12 @@
 
 
 .my-profil-title {
+    // h2: cancel the .mat-typography / Bootstrap heading font and margins
+    font-family: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin-top: 0;
     font-size: 17px;
     font-weight: bold;
     margin-bottom: 22px;
@@ -66,7 +72,13 @@ mat-card-content {
     }
 
     .keyword {
-        color: var(--primary-color)
+        color: var(--primary-color);
+        font-weight: inherit;
+    }
+
+    dd {
+        margin: 0;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -81,6 +93,7 @@ img {
 }
 
 .my-profil-card-content {
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;

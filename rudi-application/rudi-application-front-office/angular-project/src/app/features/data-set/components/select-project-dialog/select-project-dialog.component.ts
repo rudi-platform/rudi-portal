@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatCard} from '@angular/material/card';
 import {MatOption} from '@angular/material/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
@@ -35,7 +35,7 @@ export interface SelectProjectDialogData {
     selector: 'app-restricted-dataset-request-dialog',
     templateUrl: './select-project-dialog.component.html',
     styleUrls: ['./select-project-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatCard, MatLabel, MatProgressSpinner, MatFormField, MatSelect, MatOption, MatError, ErrorBoxComponent, MatDialogActions, MatButton, TranslatePipe]
+    imports: [MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatCard, MatLabel, MatProgressSpinner, MatFormField, MatSelect, MatOption, MatError, ErrorBoxComponent, MatDialogActions, MatButton, TranslatePipe]
 })
 export class SelectProjectDialogComponent implements OnInit {
 

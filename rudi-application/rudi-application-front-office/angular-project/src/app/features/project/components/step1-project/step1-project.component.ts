@@ -1,5 +1,5 @@
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption} from '@angular/material/core';
 import {MatError, MatFormField, MatHint} from '@angular/material/form-field';
@@ -16,6 +16,14 @@ import {UploaderComponent} from '@shared/core/form/uploader/uploader.component';
 import {DataSize} from '@shared/models/data-size';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
 import {ProjectType, Support, TargetAudience, TerritorialScale} from 'micro_service_modules/projekt/projekt-model';
+
+// Focusable element of each kind of invalid field, matched in document order
+const FIRST_INVALID_FIELD_SELECTOR = [
+    'input.ng-invalid',
+    'mat-select.ng-invalid',
+    'app-rich-text-editor.ng-invalid [contenteditable="true"]',
+    'mat-radio-group.ng-invalid input[type="radio"]'
+].join(', ');
 
 @Component({
     selector: 'app-step1-project',
@@ -66,6 +74,8 @@ export class Step1ProjectComponent implements OnInit {
 
     constructor(
         private readonly projektMetierService: ProjektMetierService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly elementRef: ElementRef<HTMLElement>,
     ) {
     }
 
@@ -90,5 +100,14 @@ export class Step1ProjectComponent implements OnInit {
 
     compareObjects(object1: any, object2: any): boolean {
         return object1 && object2 && object1.uuid === object2.uuid;
+    }
+
+    /**
+     * Affiche les erreurs de tous les champs et place le focus sur le premier champ en erreur
+     */
+    public focusFirstInvalidField(): void {
+        this.step1FormGroup.markAllAsTouched();
+        this.changeDetectorRef.detectChanges();
+        this.elementRef.nativeElement.querySelector<HTMLElement>(FIRST_INVALID_FIELD_SELECTOR)?.focus();
     }
 }

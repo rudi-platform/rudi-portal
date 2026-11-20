@@ -42,6 +42,15 @@ LDAP_USER_DC=${LDAP_USER_DC:-users}
 LDAP_GROUP=${LDAP_GROUP:-readers}
 LDAP_EXTRA_SCHEMAS=${LDAP_EXTRA_SCHEMAS:-}
 
+# TLS / LDAPS configuration
+LDAP_ENABLE_TLS=${LDAP_ENABLE_TLS:-no}
+LDAP_LDAPS_PORT_NUMBER=${LDAP_LDAPS_PORT_NUMBER:-1636}
+LDAP_TLS_CERT_FILE=${LDAP_TLS_CERT_FILE:-/certs/tls.crt}
+LDAP_TLS_KEY_FILE=${LDAP_TLS_KEY_FILE:-/certs/tls.key}
+LDAP_TLS_CA_FILE=${LDAP_TLS_CA_FILE:-/certs/ca.crt}
+LDAP_TLS_VERIFY_CLIENT=${LDAP_TLS_VERIFY_CLIENT:-never}
+
+
 # Set ulimit
 ulimit -n "${LDAP_ULIMIT_NOFILES}"
 
@@ -339,8 +348,67 @@ EOF
     # This would need to be applied via ldapmodify if slapd is running
 fi
 
+# Configure TLS (applied at every start, offline via slapmodify)
+LDAP_URLS="ldap://0.0.0.0:${LDAP_PORT_NUMBER}/ ldapi:///"
+if [ "${LDAP_ENABLE_TLS}" = "yes" ]; then
+    info "Configuring TLS (LDAPS on port ${LDAP_LDAPS_PORT_NUMBER})..."
+    for f in "${LDAP_TLS_CERT_FILE}" "${LDAP_TLS_KEY_FILE}"; do
+        if [ ! -f "${f}" ]; then
+            error "TLS file not found: ${f}"
+            exit 1
+        fi
+    done
+
+    # Copy certs to a location readable by the openldap user (secrets are often root:0600)
+    TLS_DIR=/etc/ldap/certs
+    mkdir -p "${TLS_DIR}"
+    cp "${LDAP_TLS_CERT_FILE}" "${TLS_DIR}/tls.crt"
+    cp "${LDAP_TLS_KEY_FILE}" "${TLS_DIR}/tls.key"
+    if [ -f "${LDAP_TLS_CA_FILE}" ]; then
+        cp "${LDAP_TLS_CA_FILE}" "${TLS_DIR}/ca.crt"
+    else
+        warn "CA file ${LDAP_TLS_CA_FILE} not found, using server certificate as CA file"
+        cp "${LDAP_TLS_CERT_FILE}" "${TLS_DIR}/ca.crt"
+    fi
+    chown -R openldap:openldap "${TLS_DIR}"
+    chmod 750 "${TLS_DIR}"
+    chmod 644 "${TLS_DIR}/tls.crt" "${TLS_DIR}/ca.crt"
+    chmod 600 "${TLS_DIR}/tls.key"
+
+    cat > /tmp/tls.ldif <<EOF
+dn: cn=config
+changetype: modify
+replace: olcTLSCACertificateFile
+olcTLSCACertificateFile: ${TLS_DIR}/ca.crt
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: ${TLS_DIR}/tls.crt
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: ${TLS_DIR}/tls.key
+-
+replace: olcTLSVerifyClient
+olcTLSVerifyClient: ${LDAP_TLS_VERIFY_CLIENT}
+-
+replace: olcTLSProtocolMin
+olcTLSProtocolMin: 3.3
+EOF
+    # Make sure no slapd instance is still running before offline modification
+    pkill -TERM slapd 2>/dev/null || true
+    sleep 2
+    if ! slapmodify -n0 -F "${SLAPD_CONF_DIR}" -l /tmp/tls.ldif; then
+        error "Failed to apply TLS configuration"
+        exit 1
+    fi
+    LDAP_URLS="${LDAP_URLS} ldaps://0.0.0.0:${LDAP_LDAPS_PORT_NUMBER}/"
+else
+    # Stop temporary slapd if still running (first run)
+    pkill -TERM slapd 2>/dev/null || true
+    sleep 1
+fi
+
 info "Starting OpenLDAP server..."
-info "Listening on port ${LDAP_PORT_NUMBER}"
+info "Listening on: ${LDAP_URLS}"
 
 # Remove any existing PID file
 rm -f /var/run/slapd.pid
@@ -351,4 +419,4 @@ chmod 755 /var/run/slapd
 chown -R openldap:openldap /var/lib/ldap /etc/ldap/slapd.d /var/run/slapd 2>/dev/null || true
 
 # Start slapd with TCP listener as openldap user
-exec su -s /bin/sh openldap -c "slapd -h 'ldap://0.0.0.0:${LDAP_PORT_NUMBER}/ ldapi:///' -F ${SLAPD_CONF_DIR} -d 256"
+exec su -s /bin/sh openldap -c "slapd -h '${LDAP_URLS}' -F ${SLAPD_CONF_DIR} -d ${LDAP_LOGLEVEL}"

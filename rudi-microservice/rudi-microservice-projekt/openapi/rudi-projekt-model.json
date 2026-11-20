@@ -225,8 +225,7 @@
 							},
 							"contact_email": {
 								"description": "Adresse mail de contact (peut être différente du porteur de projet)",
-								"type": "string",
-								"format": "email"
+								"type": "string"
 							},
 							"owner_uuid": {
 								"$ref": "#/components/schemas/OwnerUuid"
@@ -417,117 +416,6 @@
 								"description": "Description de la demande",
 								"type": "string",
 								"example": "Je souhaiterais accéder à un JDD qui recense tous les lampadaires de la ville."
-							}
-						}
-					}
-				]
-			},
-			"LinkedDatasetSearchCriteria": {
-				"description": "Critère de recherche d'un dataset lié",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					},
-					{
-						"properties": {
-							"comment": {
-								"description": "Cherche un texte présent dans le commentaire",
-								"type": "string"
-							},
-							"datasetUuid": {
-								"description": "UUID du jeu de données lié",
-								"type": "string",
-								"format": "uuid",
-								"example": "b9887e0f-db4e-47f0-87cd-e2f7f8d80689"
-							},
-							"projectOwnerUuids": {
-								"description": "UUID du porteur de projet",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid",
-									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
-								}
-							},
-							"datasetOwnerUuids": {
-								"description": "UUID des owner de datasets",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid",
-									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
-								}
-							},
-							"status": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/LinkedDatasetStatus"
-								}
-							},
-							"endDateIsNotOver": {
-								"description": "Vérifie que la date de fin de la demande n'est pas encore atteinte",
-								"type": "boolean"
-							},
-							"endDateIsNull": {
-								"description": "Vérifie que la date de fin de la demande n'est pas renseignée",
-								"type": "boolean"
-							},
-							"endDateIsOver": {
-								"description": "Vérifie que la date de fin de la demande est expirée",
-								"type": "boolean"
-							},
-							"datasetConfidentiality": {
-								"description": "Cherche les linked dataset en lien avec avec des jdd d'une confidentialité donnée",
-								"type": "string"
-							},
-							"projectRelatedUuids": {
-								"description": "Cherche les linked dataset en lien avec des projets d'une organisation donnée",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid",
-									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
-								}
-							},
-							"organizationProjectRelationStatuses": {
-								"description": "Cherche les linked dataset en lien avec des projets d'une organisation donnée et dont le statut de relation est donné",
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/RelationStatus"
-								}
-							}
-						}
-					}
-				]
-			},
-			"NewDatasetRequestSearchCriteria": {
-				"description": "Critère de recherche d'une demande d'un nouveau jdd",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					},
-					{
-						"properties": {
-							"title_description": {
-								"description": "Cherche un texte présent dans le titre ou la description",
-								"type": "string"
-							},
-							"status": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/NewDatasetRequestStatus"
-								}
-							},
-							"projectOwnerUuids": {
-								"description": "UUID du porteur de projet",
-								"type": "array",
-								"items": {
-									"type": "string",
-									"format": "uuid",
-									"example": "39a9d56e-1c99-47b5-9367-7aef7f4c075f"
-								}
 							}
 						}
 					}

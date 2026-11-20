@@ -271,6 +271,21 @@
 					}
 				]
 			},
+			"CmsDatasetsButtonDescription": {
+				"description": "Bouton de publication des jeux de données",
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/CmsAbstractDescription"
+					},
+					{
+						"properties": {
+							"asset_type": {
+								"type": "string"
+							}
+						}
+					}
+				]
+			},
 			"CmsProjectValuesDescription": {
 				"description": "Element CMS pour les valeur de projet",
 				"allOf": [
@@ -331,6 +346,9 @@
 					},
 					"news_page_description": {
 						"$ref": "#/components/schemas/NewsPageDescription"
+					},
+					"cms_datasets_button_description": {
+						"$ref": "#/components/schemas/CmsDatasetsButtonDescription"
 					}
 				}
 			},

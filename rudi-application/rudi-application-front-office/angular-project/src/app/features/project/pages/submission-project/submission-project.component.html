@@ -10,9 +10,10 @@
 <p class="description">{{ 'project.stepper.submission.description' | translate }}</p>
 
 <mat-stepper #submissionStepper orientation="horizontal" [disableRipple]="true" class="rudi-stepper"
-  labelPosition="bottom" linear>
+  labelPosition="bottom" linear appSequentialStepper
+  [aria-label]="'project.stepper.submission.stepsLabel' | translate">
   <ng-template matStepperIcon="edit">
-    <mat-icon>check</mat-icon>
+    <mat-icon fontIcon="check" aria-hidden="true"></mat-icon>
   </ng-template>
 
   <!-- Etape 1 -->

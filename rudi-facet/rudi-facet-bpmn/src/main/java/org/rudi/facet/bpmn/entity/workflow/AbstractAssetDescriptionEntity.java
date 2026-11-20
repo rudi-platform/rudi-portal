@@ -29,6 +29,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class AbstractAssetDescriptionEntity extends AbstractLongIdEntity implements AssetDescriptionEntity {
 
+	public static final String FIELD_INITIATOR = "initiator";
+
 	private static final long serialVersionUID = -7893084539992454721L;
 
 	@Column(name = "process_definition_key", length = 150, nullable = false)

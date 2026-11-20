@@ -20,7 +20,6 @@ public interface DictionaryEntryMapper extends AbstractMapper<DictionaryEntryEnt
 	 * On ignore toutes les entités filles (sinon l'id de chaque entité fille est supprimé et elles sont recréées en base)
 	 */
 	@Override
-	// TODO ignorer les vraies entités filles (cf Javadoc ci-dessus)
 	void dtoToEntity(DictionaryEntry dto, @MappingTarget DictionaryEntryEntity entity);
 
 	/**

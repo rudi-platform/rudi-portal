@@ -7,7 +7,7 @@
       <div class="mb-4">
         <mat-card class="metadata-card">
           <mat-card-title
-          class="card-label-title px-3 pt-3">{{'metaData.description'|translate}}</mat-card-title>
+          class="card-label-title px-3 pt-3"><h2>{{'metaData.description'|translate}}</h2></mat-card-title>
           <mat-card-content class="mb-3 mt-3 scrollable-content">
             @if (metadata.summary) {
               <span [innerHTML]="getSummaryDescription(metadata)"></span>
@@ -19,24 +19,21 @@
       <div class="mb-4">
         <mat-card class="metadata-card">
           <mat-card-title
-          class="card-label-title px-3 pt-3">{{'metaData.thematiqueEtMotCle'|translate}}</mat-card-title>
+          class="card-label-title px-3 pt-3"><h2>{{'metaData.thematiqueEtMotCle'|translate}}</h2></mat-card-title>
           <mat-card-content class="mt-3 pb-3">
-            <div class="d-flex d-table-cell keywords-row flex-wrap">
+            <ul class="d-flex d-table-cell keywords-row flex-wrap list-unstyled mb-0">
               @if (themeLabel) {
-                <button [matTooltip]="themeLabel"
-                  class="rudi-btn-sm mb-2 rudi-btn-theme-detail"
-                  mat-flat-button>
-                  <mat-icon [svgIcon]="themePicto"></mat-icon>
+                <li class="rudi-btn-sm mb-2 rudi-btn-theme-detail keyword-tag theme-tag" [matTooltip]="themeLabel">
+                  <mat-icon aria-hidden="true" [svgIcon]="themePicto"></mat-icon>
                   {{themeLabel | uppercase}}
-                </button>
+                </li>
               }
               @if (metadata.keywords.length > 0) {
                 @for (keyword of metadata.keywords; track keyword) {
-                  <button class="rudi-btn-sm d-flex align-items-center mb-2"
-                  mat-flat-button>{{ keyword }}</button>
+                  <li class="rudi-btn-sm d-flex align-items-center mb-2 keyword-tag">{{ keyword }}</li>
                 }
               }
-            </div>
+            </ul>
           </mat-card-content>
         </mat-card>
       </div>
@@ -58,10 +55,10 @@
           @if (mediasTitle) {
             <div class="d-flex mb-3">
               <div class="icon-container">
-                <mat-icon fontIcon="description" class="icon-file"></mat-icon>
+                <mat-icon aria-hidden="true" fontIcon="description" class="icon-file"></mat-icon>
               </div>
               <div class="d-flex flex-column mb-2">
-                <span class="card-label-title mt-2 mb-1"> {{mediasTitle}} </span>
+                <h2 class="card-label-title mt-2 mb-1"> {{mediasTitle}} </h2>
                 <span class="file-status">{{metadata.storage_status}}</span>
               </div>
             </div>
@@ -140,6 +137,7 @@
                 <h2 class="card-label-title">{{'metaData.producteur'|translate}}</h2>
               </mat-card-title>
               <app-organization-logo [organizationId]="metadata?.producer.organization_id"
+                [decorative]="!!metadata?.producer.organization_name"
                 cssClass="with-border"
               organizationType="producer"></app-organization-logo>
             </div>
@@ -188,14 +186,13 @@
                 [organizationId]="element?.producer.organization_id"
                 [isRestricted]="element?.access_condition?.confidentiality?.restricted_access"
                 [resourceTitle]="element?.resource_title"
-                [divider]="true"
-                [goToDetails]="true"
+                [divider]="!$last"
               [currentJddId]="element.global_id"></app-dataset-infos>
             }
             <div class="see-more mt-3">
               @if (hasManyOtherDatasets()) {
-                <a class="link-primary pointer"
-                  (click)="filterOnTheSameThemeAndGoToCatalog()">
+                <a class="link-primary pointer" href="/catalogue"
+                  (click)="$event.preventDefault(); filterOnTheSameThemeAndGoToCatalog()">
                   <span>{{'metaData.seeMoreDatasets' | translate}}</span>
                 </a>
               }

@@ -8,6 +8,8 @@
 
 .hero-content-container {
     margin: 80px auto;
+    // Flex item: allows shrinking below the content width (reflow at 320px)
+    min-width: 0;
 }
 
 .hero-text-container {
@@ -37,6 +39,15 @@
     color: var(--accent-color);
 }
 
+.hero-helper {
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--primary-text);
+    max-width: 60ch;
+    margin: 12px auto 32px;
+}
+
 .hero-section-right-edge-picto {
     position: absolute;
     top: 0;
@@ -54,6 +65,10 @@
 @include responsive.xs() {
     .hero-left-picto-container, .hero-right-picto-container {
         display: none;
+    }
+
+    .hero-text-container {
+        padding: 10px 16px;
     }
 }
 

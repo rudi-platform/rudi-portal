@@ -42,11 +42,17 @@ export class DatasetListComponent implements OnInit, OnDestroy {
     /** On peut sélectionner une carte dans la liste ? */
     @Input() isSelectable = false;
     @Input() accessStatusHiddenValues;
+    @Input() cardTitleLevel: 2 | 3 = 2;
     @Output() selectMetadata = new EventEmitter<Metadata>();
     @Output() dbSelectMetadata = new EventEmitter<Metadata>();
     @Output() metadataListTotal = new EventEmitter<number>();
+    /** Emitted once the page requested through the pagination is displayed */
+    @Output() pageLoaded = new EventEmitter<void>();
 
     metadatasSearcher = new BehaviorSubject<null>(null);
+    /** Id of the selected card when isSelectable */
+    selectedMetadataId: string;
+    private pageChangePending = false;
 
     constructor(private readonly themeCacheService: ThemeCacheService,
                 private readonly breakpointObserver: BreakpointObserverService,
@@ -130,9 +136,14 @@ export class DatasetListComponent implements OnInit, OnDestroy {
                     this.metadataList = data ?? EMPTY_METADATA_LIST;
                     this.metadataListTotal.emit(data.total);
                     this.isLoading = false;
+                    if (this.pageChangePending) {
+                        this.pageChangePending = false;
+                        this.pageLoaded.emit();
+                    }
                 },
                 error: (error) => {
                     this.isLoading = false;
+                    this.pageChangePending = false;
                     this.logService.error('getMetadatas failed', error.message);
                 }
             });
@@ -142,7 +153,13 @@ export class DatasetListComponent implements OnInit, OnDestroy {
      * Fonction permettant la gestion la pagination
      */
     handlePageChange(page: number): void {
+        this.pageChangePending = true;
         this.page = page;
         window.scroll(0, 0);
+    }
+
+    onSelectMetadata(metadata: Metadata): void {
+        this.selectedMetadataId = metadata.global_id;
+        this.selectMetadata.emit(metadata);
     }
 }

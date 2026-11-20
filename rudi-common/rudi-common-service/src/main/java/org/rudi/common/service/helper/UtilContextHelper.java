@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
-import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,8 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 /**
  * Service utilitaire pour récupérer les infos sur l'utilisateur connecté.
@@ -95,11 +94,7 @@ public class UtilContextHelper {
 		return result;
 	}
 
-	public boolean hasAnyRoles(List<String> roles) throws AppServiceUnauthorizedException {
-		if (getAuthenticatedUser() == null) {
-			throw new AppServiceUnauthorizedException("Cannot informations without authentication");
-		}
-
+	public boolean hasAnyRoles(List<String> roles) {
 		for (String role : roles) {
 			if (hasRole(role)) {
 				return true;

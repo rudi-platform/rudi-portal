@@ -1,19 +1,28 @@
-<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card">
+<mat-card [ngClass]="ngClass" class="mat-elevation-z4 project-card" appStretchedLinkClick>
     <a
         class="stretched-link"
         [routerLink]="detailUrl"
         [attr.aria-label]="projectTitle">
     </a>
-    <img mat-card-image [src]="projectPicture" [alt]="projectTitle">
+    <img mat-card-image [src]="projectPicture" alt="">
     <mat-card-content>
         <div class="project-card-content">
-            <span class="project-card-producer">{{projectOwnerInfo}}</span>
+            <app-truncated-text class="project-card-producer" [text]="projectOwnerInfo" [lines]="1" [focusable]="false"></app-truncated-text>
         </div>
-        <div>
-            <span class="project-card-title">{{projectTitle}}</span>
-        </div>
+        @if (titleLevel === 3) {
+            <h3 class="project-card-heading">
+                <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
+            </h3>
+        } @else {
+            <h2 class="project-card-heading">
+                <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
+            </h2>
+        }
+        <ng-template #cardTitle>
+            <app-truncated-text class="project-card-title" [text]="projectTitle" [lines]="3" [focusable]="false"></app-truncated-text>
+        </ng-template>
         <div class="mt-1">
-            <span class="project-card-summary">{{projectDescription}}</span>
+            <app-truncated-text class="project-card-summary" [text]="projectDescription" [lines]="3" [focusable]="false"></app-truncated-text>
         </div>
     </mat-card-content>
 </mat-card>

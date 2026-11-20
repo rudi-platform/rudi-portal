@@ -18,7 +18,6 @@ public class OperationTreatmentNaturesProcessor extends TypeDictionaryEntrySetPr
 		super(dictionaryEntryDao);
 	}
 
-	// TODO: Trouver comment injecter correctement dans la hierarchie le DictionaryEntryDao
 	@Override
 	public void process(@Nullable TreatmentVersionEntity treatmentVersion, @Nullable TreatmentVersionEntity existingTreatmentVersion) throws AppServiceException {
 		if (treatmentVersion == null) {

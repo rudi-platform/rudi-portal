@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import {AfterViewInit, Component, ContentChild, ContentChildren, Inject, QueryList, ViewChild, ViewContainerRef, DOCUMENT} from '@angular/core';
+import {AfterViewInit, Component, ContentChild, ContentChildren, ElementRef, Inject, QueryList, ViewChild, ViewChildren, ViewContainerRef, DOCUMENT} from '@angular/core';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TabComponent} from '@shared/core/common/tab/tab.component';
 import {WorkInProgressComponent} from '@shared/core/common/work-in-progress/work-in-progress.component';
@@ -16,8 +16,18 @@ import {TabComponent as TabComponent_1} from '../tab/tab.component';
 })
 export class TabsComponent implements AfterViewInit {
 
+    private static nextId = 0;
+
+    /** Id kept as is: used by the component styles */
+    readonly tabPanelId = 'tab-content-container';
+
+    private readonly tabIdPrefix = `app-tabs-${TabsComponent.nextId++}-tab-`;
+
     @ContentChildren(TabComponent)
     tabs: QueryList<TabComponent>;
+
+    @ViewChildren(TabComponent_1, {read: ElementRef})
+    renderedTabs: QueryList<ElementRef<HTMLElement>>;
 
     @ViewChild('defaultLayoutTabContent', {read: ViewContainerRef})
     defaultLayoutTabContent: ViewContainerRef;
@@ -74,6 +84,53 @@ export class TabsComponent implements AfterViewInit {
 
     private isSelectable(tabToSelect: TabComponent): boolean {
         return tabToSelect !== this.selectedTab && !tabToSelect.disabled;
+    }
+
+    getTabId(index: number): string {
+        return this.tabIdPrefix + index;
+    }
+
+    getSelectedTabId(): string {
+        const index = this.tabs?.toArray().indexOf(this.selectedTab) ?? -1;
+        return index >= 0 ? this.getTabId(index) : null;
+    }
+
+    /**
+     * ARIA tabs pattern with manual activation: arrows, Home and End move the focus, Enter or Space selects
+     */
+    handleTabListKeydown(event: KeyboardEvent): void {
+        const tabs = this.tabs.toArray();
+        const rendered = this.renderedTabs.toArray();
+        const currentIndex = rendered.findIndex(ref => ref.nativeElement.contains(event.target as Node));
+        if (currentIndex < 0) {
+            return;
+        }
+        const focusableIndexes = tabs
+            .map((tab, index) => (tab.disabled || tab.invisible) ? -1 : index)
+            .filter(index => index >= 0);
+        if (focusableIndexes.length === 0) {
+            return;
+        }
+        const position = focusableIndexes.indexOf(currentIndex);
+        let targetIndex: number;
+        switch (event.key) {
+            case 'ArrowRight':
+                targetIndex = focusableIndexes[(position + 1) % focusableIndexes.length];
+                break;
+            case 'ArrowLeft':
+                targetIndex = focusableIndexes[(position - 1 + focusableIndexes.length) % focusableIndexes.length];
+                break;
+            case 'Home':
+                targetIndex = focusableIndexes[0];
+                break;
+            case 'End':
+                targetIndex = focusableIndexes.at(-1);
+                break;
+            default:
+                return;
+        }
+        event.preventDefault();
+        rendered[targetIndex]?.nativeElement.querySelector('button')?.focus();
     }
 
     private get viewContainerRef(): ViewContainerRef {

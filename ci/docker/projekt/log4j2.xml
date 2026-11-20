@@ -2,6 +2,7 @@
 <Configuration status="INFO">
 	<Properties>
 		<Property name="basePath">/var/log/rudi/projekt</Property>
+		<Property name="retentionPeriod">240d</Property>
 	</Properties>
 
 	<Appenders>
@@ -10,27 +11,48 @@
 				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
 			</PatternLayout>
 			<Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
 				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			<DefaultRolloverStrategy max="5" />
+			<DefaultRolloverStrategy max="1000">
+				<!-- purge par âge réel du fichier -->
+				<Delete basePath="${basePath}" maxDepth="1">
+					<IfFileName glob="rudi-projekt-*.log*" />
+					<IfLastModified age="${retentionPeriod}" />
+				</Delete>
+			</DefaultRolloverStrategy>
 		</RollingFile>
 		<RollingFile name="apiLogger" fileName="${basePath}/rudi-api-projekt.log" filePattern="${basePath}/rudi-api-rudi-projekt-%d{yyyy-MM-dd}.log">
 			<PatternLayout>
 				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
 			</PatternLayout>
 			<Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
 				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			<DefaultRolloverStrategy max="5" />
+			<DefaultRolloverStrategy max="1000">
+				<!-- purge par âge réel du fichier -->
+				<Delete basePath="${basePath}" maxDepth="1">
+					<IfFileName glob="rudi-api-rudi-projekt-*.log*" />
+					<IfLastModified age="${retentionPeriod}" />
+				</Delete>
+			</DefaultRolloverStrategy>
 		</RollingFile>
 		<RollingFile name="cleanExpiredLinkedDatasetLogger" fileName="${basePath}/rudi-expired-linked-dataset.log" filePattern="${basePath}/rudi-expired-linked-dataset-%d{yyyy-MM-dd}.log">
 			<PatternLayout>
 				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
 			</PatternLayout>
 			<Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
 				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			<DefaultRolloverStrategy max="5" />
+			<DefaultRolloverStrategy max="1000">
+				<!-- purge par âge réel du fichier -->
+				<Delete basePath="${basePath}" maxDepth="1">
+					<IfFileName glob="rudi-expired-linked-dataset-*.log*" />
+					<IfLastModified age="${retentionPeriod}" />
+				</Delete>
+			</DefaultRolloverStrategy>
 		</RollingFile>
 		<Console name="console" target="SYSTEM_OUT">
 			<PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />

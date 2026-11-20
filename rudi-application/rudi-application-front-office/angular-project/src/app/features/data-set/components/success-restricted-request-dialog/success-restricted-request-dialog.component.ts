@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
-import {MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
@@ -11,7 +11,7 @@ import {CloseEvent, DialogClosedData} from '../../models/dialog-closed-data';
     selector: 'app-success-restricted-request-dialog',
     templateUrl: './success-restricted-request-dialog.component.html',
     styleUrls: ['./success-restricted-request-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, TranslatePipe]
+    imports: [MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, TranslatePipe]
 })
 export class SuccessRestrictedRequestDialogComponent {
 

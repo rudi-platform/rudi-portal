@@ -1,0 +1,55 @@
+{
+	"fieldDefinitions": [
+		{
+			"name": "lastname",
+			"label": "Nom",
+			"help": "Votre nom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d'accès et vos réutilisations effectuées sur Rudi.",
+			"type": "STRING",
+			"required": true,
+			"validators": [
+				{
+					"type": "REQUIRED"
+				},
+				{
+					"type": "MAXLENGTH",
+					"attribute": "30"
+				}
+			]
+		},
+		{
+			"name": "firstname",
+			"label": "Prénom",
+			"help": "Votre prénom sera renseigné dans votre espace \"Mon compte\" ainsi que sur vos demandes d'accès et vos réutilisations effectuées sur Rudi.",
+			"type": "STRING",
+			"required": true,
+			"validators": [
+				{
+					"type": "REQUIRED"
+				},
+				{
+					"type": "MAXLENGTH",
+					"attribute": "30"
+				}
+			]
+		},
+		{
+			"name": "email",
+			"label": "Adresse e-mail",
+			"help": "Renseignez une adresse e-mail valide (ex. : nom@exemple.com). Celle-ci sera mobilisée en tant qu'identifiant Rudi, ainsi que support de contact.",
+			"type": "STRING",
+			"required": true,
+			"validators": [
+				{
+					"type": "REQUIRED"
+				},
+				{
+					"type": "EMAIL"
+				},
+				{
+					"type": "MAXLENGTH",
+					"attribute": "255"
+				}
+			]
+		}
+	]
+}

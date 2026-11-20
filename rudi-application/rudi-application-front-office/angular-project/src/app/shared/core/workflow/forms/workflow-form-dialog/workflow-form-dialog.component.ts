@@ -1,6 +1,6 @@
-import {Component, Inject, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, ViewChild} from '@angular/core';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -14,7 +14,7 @@ import {WorkflowFormComponent as WorkflowFormComponent_1} from '../workflow-form
     selector: 'app-workflow-form-dialog',
     templateUrl: './workflow-form-dialog.component.html',
     styleUrls: ['./workflow-form-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, WorkflowFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
+    imports: [MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, WorkflowFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class WorkflowFormDialogComponent {
     @ViewChild('workflowForm', {static: true})
@@ -23,6 +23,8 @@ export class WorkflowFormDialogComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public dialogData: WorkflowFormDialogInputData,
         public dialogRef: MatDialogRef<WorkflowFormDialogComponent, DialogClosedData<WorkflowFormDialogOutputData>>,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly elementRef: ElementRef<HTMLElement>,
     ) {
     }
 
@@ -49,7 +51,17 @@ export class WorkflowFormDialogComponent {
             this.handleFormSubmit();
             return;
         }
-        this.workflowFormComponent.submit();
+        if (!this.workflowFormComponent.submit()) {
+            this.focusFirstInvalidField();
+        }
+    }
+
+    // Moves focus to the first invalid field so its error is announced
+    private focusFirstInvalidField(): void {
+        this.changeDetectorRef.detectChanges();
+        this.elementRef.nativeElement
+            .querySelector<HTMLElement>('input.ng-invalid, textarea.ng-invalid, select.ng-invalid')
+            ?.focus();
     }
 
     handleFormSubmit(): void {

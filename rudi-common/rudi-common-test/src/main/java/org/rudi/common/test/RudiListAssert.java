@@ -8,9 +8,10 @@ import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.json.JSONException;
 
+@SuppressWarnings("java:S110") // trop de parents selon Sonar, mais ils sont nécessaires
 public class RudiListAssert<E> extends FactoryBasedNavigableListAssert<ListAssert<E>, List<? extends E>, E, ObjectAssert<E>> {
 	RudiListAssert(List<? extends E> actual) {
-		super(actual, RudiListAssert.class, (o) -> new ObjectAssert<>(o));
+		super(actual, RudiListAssert.class, ObjectAssert::new);
 	}
 
 	/**

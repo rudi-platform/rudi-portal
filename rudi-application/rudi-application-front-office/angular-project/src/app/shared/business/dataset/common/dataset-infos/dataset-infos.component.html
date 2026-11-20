@@ -1,10 +1,30 @@
-<div class="my-3" [ngClass]="{'jdd-card-lg container-global': mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl,'jdd-card-md flex-row': mediaSize.isMd || mediaSize.isSm,
-'jdd-card-xs flex-row': mediaSize.isXs}" (click)="handleClickOnDatasetCard(currentJddId, resourceTitle)">
+@if (detailsRouterLink) {
+  <a
+    class="my-3 jdd-card-link"
+    [ngClass]="{'jdd-card-lg container-global': mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl,'jdd-card-md flex-row': mediaSize.isMd || mediaSize.isSm,
+    'jdd-card-xs flex-row': mediaSize.isXs}"
+    [routerLink]="detailsRouterLink">
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </a>
+} @else {
+  <div
+    class="my-3"
+    [ngClass]="{'jdd-card-lg container-global': mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl,'jdd-card-md flex-row': mediaSize.isMd || mediaSize.isSm,
+    'jdd-card-xs flex-row': mediaSize.isXs}">
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </div>
+}
+@if (divider) {
+  <mat-divider></mat-divider>
+}
+
+<ng-template #cardContent>
   @if (showLogo) {
     <div class="logo-container">
       <app-organization-logo [organizationId]="organizationId"
         [defaultAlt]="defaultAlt"
         [defaultLogo]="defaultLogo"
+        [decorative]="!!organizationName"
         cssClass="with-border"
         organizationType="producer"
       ></app-organization-logo>
@@ -20,15 +40,15 @@
       <div
         class="dataset-info-resource_title">
         @if (isRestricted) {
+          @let restrictedLabel = 'conditionsUtilisationBox.donneesAccesRestreint' | translate;
           <mat-icon [svgIcon]="restrictedDatasetIcon"
-          class="svg-style"></mat-icon>
+          class="svg-style" aria-hidden="false"
+          [attr.aria-label]="restrictedLabel"
+          [attr.title]="restrictedLabel"></mat-icon>
         }
         {{ resourceTitle }}
       </div>
     }
   </div>
 </div>
-</div>
-@if (divider) {
-  <mat-divider></mat-divider>
-}
+</ng-template>

@@ -35,4 +35,7 @@ public class ProjektProperties {
 
 	private String archiveOwnerProjects = "/project-owners/{owner-uuid}/archive/{archive-mode}";
 
+	private String searchTasksPath = "/tasks";
+
+	private String handleUserDeactivationPath = "/notify/user-deactivation";
 }

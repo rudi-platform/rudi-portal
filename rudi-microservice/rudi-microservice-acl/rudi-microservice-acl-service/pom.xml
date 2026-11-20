@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-acl</artifactId>
-		<version>3.4.2</version>
+		<version>3.5.1</version>
 	</parent>
 
 	<artifactId>rudi-microservice-acl-service</artifactId>
@@ -127,6 +127,23 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-projekt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-organization</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-selfdata</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.rudi</groupId>
+			<artifactId>rudi-facet-acl</artifactId>
 		</dependency>
 
 	</dependencies>

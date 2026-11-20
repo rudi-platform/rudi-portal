@@ -1,4 +1,5 @@
 <app-search-count
+  [headingLevel]="2"
   [searchIsRunning]="searchIsRunning"
   [count]="total"
   [resultMessage]="'personalSpace.myRequests.myNewDatasetRequests.countMessage' | translate"
@@ -12,7 +13,7 @@
   <div class="table-and-loader-container">
 
     <!-- le tableau -->
-    <table mat-table aria-describedby="tableau des demandes d'accès à des jeux de données à accès restreints"
+    <table mat-table
                [dataSource]='elements | paginate: {
                     id: backPaginatorId, itemsPerPage: ITEMS_PER_PAGE, currentPage: backPaginationSort.currentPage, totalItems: total
                }'
@@ -20,15 +21,18 @@
       matSortDirection="desc"
       (matSortChange)="sortTable($event)"
       >
+      <caption class="visually-hidden">{{ total }} {{ 'personalSpace.myRequests.myNewDatasetRequests.countMessage' | translate }}</caption>
 
       <ng-container matColumnDef="updatedDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myRequests.dateTableHeader' | translate)}"
         scope="col">{{'personalSpace.myRequests.dateTableHeader' | translate}}</th>
         <td mat-cell *matCellDef="let element"> {{element.updatedDate | date: 'dd/MM/yyyy'}} </td>
       </ng-container>
 
       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myRequests.datasetTableHeader' | translate)}"
           scope="col">
           <div class="icon-container">
             <mat-icon class="icon-style" [svgIcon]="'nouvelles_donnees_definition_key'"></mat-icon>
@@ -44,12 +48,14 @@
 
       <ng-container matColumnDef="initiator">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myRequests.initiatorTableHeader' | translate)}"
         scope="col">{{'personalSpace.myRequests.initiatorTableHeader' | translate}}</th>
         <td mat-cell *matCellDef="let element"> {{element.initiator}} </td>
       </ng-container>
 
       <ng-container matColumnDef="functionalStatus">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myRequests.statusTableHeader' | translate)}"
           scope="col" class="status-header">
           {{'personalSpace.myRequests.statusTableHeader' | translate}}
         </th>

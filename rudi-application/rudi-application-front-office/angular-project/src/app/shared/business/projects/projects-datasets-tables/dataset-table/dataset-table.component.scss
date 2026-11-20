@@ -1,6 +1,14 @@
 @use "app/styles/common-style";
 @use "app/styles/add-link-to-project";
 
+// Reset .mat-typography h2 so the heading keeps the former span rendering (22px line box)
+h2.table-title-style {
+    font-family: inherit;
+    letter-spacing: inherit;
+    line-height: 22px;
+    margin: 0;
+}
+
 .comment-action {
     border-radius: 50%;
     border: 1px solid var(--blocks-and-menus-outline);

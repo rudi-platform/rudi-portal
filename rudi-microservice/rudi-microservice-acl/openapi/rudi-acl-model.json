@@ -98,9 +98,9 @@
 						"format": "date-time",
 						"description": "Date/heure de dernière connexion"
 					},
-					"accountLocked": {
-						"type": "boolean",
-						"description": "Compte bloqué"
+					"accountState": {
+						"$ref": "#/components/schemas/AccountState",
+						"required": "true"
 					},
 					"type": {
 						"$ref": "#/components/schemas/UserType",
@@ -141,6 +141,90 @@
 					"MICROSERVICE",
 					"ROBOT",
 					"CAS"
+				]
+			},
+			"AccountState": {
+				"description": "État du compte utilisateur",
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"LOCKED",
+					"INACTIVE",
+					"DELETED"
+				]
+			},
+			"AssetDescription": {
+				"type": "object",
+				"properties": {
+					"object_type": {
+						"type": "string"
+					}
+				},
+				"discriminator": {
+					"propertyName": "object_type",
+					"mapping": {
+						"ExternalAccountRequest": "#/components/schemas/ExternalAccountRequest"
+					}
+				}
+			},
+			"ExternalAccountRequestStatus": {
+				"description": "Statut métier de la demande de création de compte dans le système d'authentification externe",
+				"type": "string",
+				"enum": [
+					"PENDING",
+					"VALIDATED",
+					"REFUSED"
+				]
+			},
+			"ExternalAccountRequest": {
+				"description": "Demande de création de compte dans le système d'authentification externe (LDAP), soumise à validation d'un animateur",
+				"type": "object",
+				"required": [
+					"lastname",
+					"firstname",
+					"email"
+				],
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/AssetDescription"
+					},
+					{
+						"properties": {
+							"lastname": {
+								"type": "string",
+								"maxLength": 30,
+								"description": "Nom du demandeur"
+							},
+							"firstname": {
+								"type": "string",
+								"maxLength": 30,
+								"description": "Prénom du demandeur"
+							},
+							"email": {
+								"type": "string",
+								"format": "email",
+								"description": "Adresse e-mail du demandeur. Utilisée en tant qu'identifiant Rudi ainsi que support de contact"
+							},
+							"organizationUuid": {
+								"type": "string",
+								"format": "uuid",
+								"description": "UUID de l'organisation déjà connue du portail à laquelle rattacher le compte, si le demandeur en a renseigné une"
+							},
+							"message": {
+								"type": "string",
+								"maxLength": 1000,
+								"description": "Message libre du demandeur à destination des équipes administratives du portail"
+							},
+							"identityProvider": {
+								"type": "string",
+								"maxLength": 100,
+								"description": "Nom du fournisseur d'identité"
+							},
+							"externalAccountRequestStatus": {
+								"$ref": "#/components/schemas/ExternalAccountRequestStatus"
+							}
+						}
+					}
 				]
 			},
 			"AddressType": {
@@ -650,7 +734,10 @@
 						"type": "string"
 					},
 					"logoutUri": {
-					    "type": "string"
+						"type": "string"
+					},
+					"pwdReinitialisationUri": {
+						"type": "string"
 					},
 					"attributeMappings": {
 						"type": "array",
@@ -665,11 +752,11 @@
 						"type": "string"
 					},
 					"additionalParameters": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
+						"type": "object",
+						"additionalProperties": {
+							"type": "string"
+						}
+					}
 				}
 			},
 			"Link": {
@@ -691,6 +778,10 @@
 					"isolated": {
 						"type": "boolean",
 						"description": "Indique si le serveur d'identité doit être affiché dans un bloc séparé dans la documentation et les interfaces utilisateur"
+					},
+					"disabled": {
+						"type": "boolean",
+						"description": "Indique si le serveur d'identité doit être désactivé à l'affichage"
 					},
 					"cssClass": {
 						"type": "string",
@@ -771,7 +862,11 @@
 					"viewSettings": {
 						"description": "Paramètres d'affichage du serveur d'identité dans la documentation et les interfaces utilisateur",
 						"$ref": "#/components/schemas/ViewSettings"
-					}
+					},
+					"supportAccountCreation": {
+                        "type": "boolean",
+                        "description": "Indique si la création de compte est supportée par le serveur d'identité"
+                    }
 				}
 			}
 		}

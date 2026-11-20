@@ -71,8 +71,8 @@ test.describe("RGAA 4.1.2 - Thématique 5: Tableaux", () => {
 
         // Groupes d'en-têtes via colspan/rowspan
         for (const th of ths) {
-          const colspan = parseInt(th.getAttribute("colspan") || "0", 10);
-          const rowspan = parseInt(th.getAttribute("rowspan") || "0", 10);
+          const colspan = Number.parseInt(th.getAttribute("colspan") || "0", 10);
+          const rowspan = Number.parseInt(th.getAttribute("rowspan") || "0", 10);
           const scope = th.getAttribute("scope");
           if (
             colspan > 1 ||
@@ -772,7 +772,7 @@ test.describe("RGAA 4.1.2 - Thématique 5: Tableaux", () => {
         );
         for (const el of Array.from(focusables)) {
           const ti = el.getAttribute("tabindex");
-          if (ti && parseInt(ti, 10) > 0) return true;
+          if (ti && Number.parseInt(ti, 10) > 0) return true;
         }
         return false;
       });
@@ -781,8 +781,8 @@ test.describe("RGAA 4.1.2 - Thématique 5: Tableaux", () => {
       const hasComplexSpans = await table.evaluate((t) => {
         const cells = t.querySelectorAll("td");
         for (const c of Array.from(cells)) {
-          const cs = parseInt(c.getAttribute("colspan") || "0", 10);
-          const rs = parseInt(c.getAttribute("rowspan") || "0", 10);
+          const cs = Number.parseInt(c.getAttribute("colspan") || "0", 10);
+          const rs = Number.parseInt(c.getAttribute("rowspan") || "0", 10);
           if (cs > 1 || rs > 1) return true;
         }
         return false;

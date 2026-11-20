@@ -387,6 +387,7 @@ export class MapComponent implements AfterViewInit, OnInit {
                 new Attribution()
             ]
         });
+        this.labelMapRendering();
 
         // Si on a donné une feature à afficher alors on l'affiche
         if (this.centeredGeometry != null) {
@@ -465,6 +466,21 @@ export class MapComponent implements AfterViewInit, OnInit {
                 return false;
             });
         });
+    }
+
+    /**
+     * Exposes the layers canvases as a named image (RGAA 1.1, 4.13); controls and popup stay outside .ol-layers
+     */
+    private labelMapRendering(): void {
+        const layersElement = this.map.getViewport().querySelector('.ol-layers');
+        if (layersElement == null) {
+            return;
+        }
+        const label = this.metadata != null
+            ? this.translateService.instant('metaData.mapDataTab.dataMapLabel', {title: this.metadata.resource_title})
+            : this.translateService.instant('metaData.mapDataTab.locationMapLabel');
+        layersElement.setAttribute('role', 'img');
+        layersElement.setAttribute('aria-label', label);
     }
 
     /**

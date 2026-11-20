@@ -1,0 +1,61 @@
+@use "app/styles/common-style";
+
+:host {
+    position: relative;
+    display: inline-block;
+}
+
+// Panneau natif (remplace l'ancien panneau mat-menu / overlay CDK) : chrome visuel repris
+// des réglages par défaut d'un panneau Material (fond, ombre, arrondi) puisqu'on ne passe
+// plus par <mat-menu>.
+.rudi-disclosure-panel {
+    position: absolute;
+    left: 0;
+    z-index: 10;
+    min-width: 190px;
+    width: max-content;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--blocks-and-menus-outline);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    &.y-below {
+        top: calc(100% + 4px);
+    }
+
+    &.y-above {
+        bottom: calc(100% + 4px);
+    }
+}
+
+::ng-deep .rudi-select-button {
+    box-shadow: none !important;
+    color: #000000;
+    border-radius: 6px;
+    border: 1px solid var(--blocks-and-menus-outline);
+    padding-right: 15px;
+    margin-right: 12px;
+    min-width: 190px;
+
+    &.active {
+        border-color: var(--focus);
+        color: var(--focus);
+    }
+
+    span {
+        display: inline-block;
+        width: 100%;
+        text-align: left;
+    }
+
+    .rudi-select-arrow {
+        float: right;
+    }
+
+    .mat-badge-content {
+        text-align: center !important;
+        color: white !important;
+        background-color: var(--primary-color) !important;
+        top: 0 !important;
+    }
+}

@@ -84,4 +84,15 @@ public interface AccountService {
 	 */
 	void deleteAllExpiredToken();
 
+	/**
+	 * Envoyer un avertissement aux utilisateurs concernant la suppression imminente de leur compte
+	 * en raison d'inactivité
+	 */
+	void sendAccountDeletionWarnings();
+
+	/**
+	 * Supprimer les comptes utilisateurs inactifs
+	 */
+	void deleteInactiveUsersAccount();
+
 }

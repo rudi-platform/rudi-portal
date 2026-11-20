@@ -2,7 +2,7 @@
     <div class="popover-content-child">
         <div class="popover_logo-container">
             <mat-icon class="popover_logo-style rudi_picto_reutilisations" [svgIcon]="buttonLogo"
-                      aria-hidden="false" aria-label="icon de la popine"></mat-icon>
+                      aria-hidden="true"></mat-icon>
         </div>
         <div class="popover-text-style">
             <p class="firstParagraph">{{ buttonMessageBody }}</p>
@@ -10,7 +10,9 @@
         </div>
     </div>
 </ng-template>
-<button mat-raised-button [ngbPopover]="myPopover" triggers="mouseenter:mouseleave"
+<!-- RGAA 10.13: also opens on focus; closeDelay keeps it open while hovered -->
+<button mat-raised-button [ngbPopover]="myPopover" triggers="mouseenter:mouseleave focusin:focusout"
+        [closeDelay]="popoverCloseDelayMs"
         [autoClose]="true" popoverClass="popover-content" [placement]="'bottom-right'"
         class="button project-btn-reutilisation">
     <span>{{ buttonMessageTitle }}</span>

@@ -11,6 +11,7 @@ public final class QuotedRoleCodes {
 	public static final String ANONYMOUS = "'" + RoleCodes.ANONYMOUS + "'";
 	public static final String MODERATOR = "'" + RoleCodes.MODERATOR + "'";
 	public static final String MODULE = "'" + RoleCodes.MODULE + "'";
+	public static final String MODULE_ACL = "'" + RoleCodes.MODULE_ACL + "'";
 	public static final String MODULE_ACL_ADMINISTRATOR = "'" + RoleCodes.MODULE_ACL_ADMINISTRATOR + "'";
 	public static final String MODULE_KALIM = "'" + RoleCodes.MODULE_KALIM + "'";
 	public static final String MODULE_KALIM_ADMINISTRATOR = "'" + RoleCodes.MODULE_KALIM_ADMINISTRATOR + "'";

@@ -11,6 +11,27 @@
     overflow-x: auto;
 }
 
+// The title link covers the whole row so that the row stays clickable with the mouse
+tr.mat-mdc-row {
+    position: relative;
+}
+
+.row-link {
+    color: inherit;
+    text-decoration: none;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+    }
+
+    tr.mat-mdc-row:hover &,
+    &:focus-visible {
+        text-decoration: underline;
+    }
+}
+
 .table-loader {
     background: rgba(0, 0, 0, 0.2);
     position: absolute;

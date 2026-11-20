@@ -13,10 +13,11 @@ describe('SelfdataDatasetsComponent', () => {
             .compileComponents();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         fixture = TestBed.createComponent(SelfdataDatasetsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        await fixture.whenStable();
     });
 
     it('should create', () => {

@@ -3,25 +3,42 @@
     <div>
       @if (title && icon && subTitle) {
         <div class="d-flex">
-          <mat-icon class="mat-icon-card" aria-hidden="false" [svgIcon]="icon"></mat-icon>
+          <mat-icon class="mat-icon-card" aria-hidden="true" [svgIcon]="icon"></mat-icon>
           <div>
-            <div class="card-title">{{title | translate}}</div>
+            <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
             <div class="card-sub-title">{{subTitle | translate}}</div>
           </div>
         </div>
       }
       @if (title && icon && !subTitle) {
         <div class="d-flex">
-          <mat-icon class="mat-icon-card" aria-hidden="false" [svgIcon]="icon"></mat-icon>
+          <mat-icon class="mat-icon-card" aria-hidden="true" [svgIcon]="icon"></mat-icon>
           <div>
-            <div class="card-title">{{title | translate}}</div>
+            <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
           </div>
         </div>
       }
       @if (title && !icon && !subTitle) {
-        <div class="card-title">{{title | translate}}</div>
+        <ng-container [ngTemplateOutlet]="cardTitle"></ng-container>
       }
     </div>
   }
   <ng-content></ng-content>
 </mat-card>
+
+<ng-template #cardTitle>
+  @switch (titleLevel) {
+    @case (2) {
+      <h2 class="card-title card-heading">{{title | translate}}</h2>
+    }
+    @case (3) {
+      <h3 class="card-title card-heading">{{title | translate}}</h3>
+    }
+    @case (4) {
+      <h4 class="card-title card-heading">{{title | translate}}</h4>
+    }
+    @default {
+      <div class="card-title">{{title | translate}}</div>
+    }
+  }
+</ng-template>

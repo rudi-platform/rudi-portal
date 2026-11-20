@@ -2,10 +2,6 @@ package org.rudi.microservice.strukture.storage.entity.provider;
 
 import java.util.Objects;
 
-import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
-import org.rudi.microservice.strukture.core.common.SchemaConstants;
-import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.strukture.core.common.SchemaConstants;
+import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 

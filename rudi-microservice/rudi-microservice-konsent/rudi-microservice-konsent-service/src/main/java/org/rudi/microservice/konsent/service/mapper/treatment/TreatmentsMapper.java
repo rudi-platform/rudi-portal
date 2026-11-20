@@ -43,7 +43,6 @@ public interface TreatmentsMapper extends AbstractMapper<TreatmentEntity, Treatm
 	@Mapping(target = "ownerUuid", ignore = true)
 	@Mapping(target = "targetType", ignore = true)
 	@Mapping(target = "targetUuid", ignore = true)
-	// TODO compléter et appeler quand DRAFT ou pas de versions
 	void dtoToEntityLight(Treatment dto, @MappingTarget TreatmentEntity entity);
 
 	/**

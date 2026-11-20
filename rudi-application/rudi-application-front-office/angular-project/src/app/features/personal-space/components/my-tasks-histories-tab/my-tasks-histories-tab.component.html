@@ -8,11 +8,11 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.organization'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
 
@@ -24,11 +24,11 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.linkedProducer'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
 
@@ -40,11 +40,11 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.linkedDataset'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
 
@@ -56,11 +56,11 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.project'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
 
@@ -72,11 +72,11 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.selfdata'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
 
@@ -88,18 +88,34 @@
         [tableTitleKey]="'personalSpace.myTasksHistories.newDatasetRequest'">
       </app-my-tasks-histories-table>
     } @else {
-      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
         <app-loader
           [allPage]="false"
           [isLight]="true"
-          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
       }
     }
-  } @else if (isStruktureLoading || isProjektLoading || isSelfdataLoading) {
+
+    @if (externalAccountRequestTasksHistories?.length > 0 && !isAclLoading) {
+      <app-my-tasks-histories-table
+        [entries]="externalAccountRequestTasksHistories"
+        [icon]="externalAccountRequestTasksIcon"
+        [backPaginatorId]="'externalAccountRequestTasksHistories'"
+        [tableTitleKey]="'personalSpace.myTasksHistories.externalAccountRequest'">
+      </app-my-tasks-histories-table>
+    } @else {
+      @if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
+        <app-loader
+          [allPage]="false"
+          [isLight]="true"
+          [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
+      }
+    }
+  } @else if (isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading) {
     <app-loader
       [allPage]="true"
       [isLight]="false"
-      [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading"></app-loader>
+      [active]="isStruktureLoading || isProjektLoading || isSelfdataLoading || isAclLoading"></app-loader>
   } @else {
     <div class="noData">{{ 'personalSpace.myTasksHistories.noTasksHistories' | translate }}</div>
   }

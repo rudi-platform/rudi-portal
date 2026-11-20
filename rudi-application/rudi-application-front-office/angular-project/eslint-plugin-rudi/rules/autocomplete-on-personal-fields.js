@@ -15,7 +15,7 @@
 'use strict';
 
 /** Valeurs autocomplete valides (HTML 5.2 / WCAG 1.3.5) */
-const VALID_AUTOCOMPLETE_VALUES = [
+const VALID_AUTOCOMPLETE_VALUES = new Set([
     'name', 'honorific-prefix', 'given-name', 'additional-name', 'family-name', 'honorific-suffix',
     'nickname', 'email', 'username', 'new-password', 'current-password',
     'organization-title', 'organization',
@@ -27,13 +27,13 @@ const VALID_AUTOCOMPLETE_VALUES = [
     'cc-number', 'cc-exp', 'cc-exp-month', 'cc-exp-year', 'cc-csc', 'cc-type',
     'bday', 'bday-day', 'bday-month', 'bday-year', 'sex', 'url', 'photo',
     'language', 'impp',
-];
+]);
 
 /**
  * Patterns pour détecter les champs d'information personnelle.
  * On vérifie le type et le name/id de l'input.
  */
-const PERSONAL_INPUT_TYPES = ['email', 'tel'];
+const PERSONAL_INPUT_TYPES = new Set(['email', 'tel']);
 
 /**
  * Tokens (mots entiers) indiquant un champ d'information personnelle.
@@ -117,7 +117,7 @@ function checkAutocomplete(context, node) {
     // Vérifier que la valeur est valide
     const value = autocompleteAttr.value;
     if (value === 'off' || value === 'on') return;
-    if (!VALID_AUTOCOMPLETE_VALUES.includes(value)) {
+    if (!VALID_AUTOCOMPLETE_VALUES.has(value)) {
         context.report({
             node,
             messageId: 'invalidAutocomplete',
@@ -129,7 +129,7 @@ function checkAutocomplete(context, node) {
 function isPersonalField(attrs) {
     // Vérifier le type
     const typeAttr = attrs.find(a => a.name === 'type');
-    if (typeAttr && PERSONAL_INPUT_TYPES.includes(typeAttr.value)) {
+    if (typeAttr && PERSONAL_INPUT_TYPES.has(typeAttr.value)) {
         return true;
     }
 
@@ -137,8 +137,8 @@ function isPersonalField(attrs) {
     const nameAttr = attrs.find(a => a.name === 'name');
     const idAttr = attrs.find(a => a.name === 'id');
     const tokens = [
-        ...tokenize(nameAttr && nameAttr.value),
-        ...tokenize(idAttr && idAttr.value),
+        ...tokenize(nameAttr?.value),
+        ...tokenize(idAttr?.value),
     ];
     return tokens.some(t => PERSONAL_NAME_TOKENS.has(t));
 }

@@ -28,9 +28,9 @@ import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
 import org.rudi.microservice.projekt.core.bean.RelationStatus;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.mapper.LinkedDatasetMapper;
@@ -39,6 +39,7 @@ import org.rudi.microservice.projekt.service.project.impl.fields.linkeddataset.C
 import org.rudi.microservice.projekt.service.project.impl.fields.linkeddataset.DeleteLinkedDatasetFieldProcessor;
 import org.rudi.microservice.projekt.service.project.impl.fields.linkeddataset.UpdateLinkedDatasetFieldProcessor;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetCustomDao;
+import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
@@ -50,8 +51,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Service
 @Transactional(readOnly = true)
@@ -65,6 +66,7 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 
 	private final ProjectDao projectDao;
 	private final LinkedDatasetMapper linkedDatasetMapper;
+	private final LinkedDatasetDao linkedDatasetDao;
 	private final LinkedDatasetCustomDao linkedDatasetCustomDao;
 	private final DatasetService datasetService;
 	private final MetadataDetailsHelper metadataDetailsHelper;
@@ -342,10 +344,10 @@ public class LinkedDatasetServiceImpl implements LinkedDatasetService {
 			return false;
 		}
 
-		var linkedDatasetSearchCriteria = new LinkedDatasetSearchCriteria().datasetUuid(datasetUuid)
+		var linkedDatasetSearchCriteria = LinkedDatasetSearchCriteria.builder().datasetUuid(datasetUuid)
 				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsNotOver(true)
 				.projectRelatedUuids(userAndItsOrganizations)
-				.organizationProjectRelationStatuses(List.of(RelationStatus.ACCEPTED));
+				.organizationProjectRelationStatuses(List.of(RelationStatus.ACCEPTED)).build();
 		final var linkedDatasetEntities = linkedDatasetCustomDao.searchRelatedDatasetAccess(linkedDatasetSearchCriteria,
 				Pageable.unpaged());
 		return linkedDatasetEntities.getTotalElements() > 0;

@@ -12,6 +12,12 @@ mat-icon {
 }
 
 .fake-input {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    // Same rendering as the former input
+    padding: 1px 2px;
+    color: #000;
     max-width: calc(100% - 3em);
     text-overflow: ellipsis;
     text-align: left;
@@ -30,8 +36,19 @@ mat-icon {
 .floating-icon-visibility {
     cursor: pointer;
     color: var(--primary-text-light);
-    right: 2em;
+    // Former 2em computed on the 24px icon
+    right: 48px;
     z-index: 99;
+    position: absolute;
+    top: 6px;
+    padding: 0;
+    border: none;
+    background: none;
+    line-height: 0;
+
+    mat-icon {
+        position: static;
+    }
 }
 
 .btn-action {
@@ -44,10 +61,7 @@ mat-icon {
 
     &:hover {
         background-color: var(--input-hover-background);
-        outline: none;
-    }
-
-    &:focus {
+      //supprime seulement l'outline natif au survol souris.
         outline: none;
     }
 }

@@ -32,6 +32,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     loadingRightPicto: boolean;
     title1: string;
     title2: string;
+    subtitle: string;
     searchbarPlaceholder: string;
 
     constructor(
@@ -101,6 +102,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
         this.searchbarPlaceholder = this.translateService.instant('home.heroSection.searchbarPlaceholder');
         this.title1 = this.heroDescription?.title1 ?? this.translateService.instant('home.heroSection.title1');
         this.title2 = this.heroDescription?.title2 ?? this.translateService.instant('home.heroSection.title2');
+        this.subtitle = this.translateService.instant('home.heroSection.subtitle');
         this.defaultPicto = DEFAULT_PICTO;
         this.leftPictoSrc$ = of(this.defaultPicto);
         this.rightPictoSrc$ = of(this.defaultPicto);

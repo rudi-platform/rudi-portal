@@ -3,9 +3,6 @@
  */
 package org.rudi.microservice.projekt.service.helper.project;
 
-import static org.rudi.common.core.security.RoleCodes.MODERATOR;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.DRAFT_FORM_SECTION_NAME;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -66,7 +63,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_FIELD_NAME;
+import static org.rudi.common.core.security.RoleCodes.MODERATOR;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
+import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_DRAFT_FORM_SECTION_NAME;
 import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_PICTURE_SECTION_NAME;
 
 /**
@@ -413,16 +412,16 @@ public class ProjectWorkflowContext
 					// on remplit le formulaire avec les data pour pouvoir le parcourir lors de l'update.
 					getFormHelper().fillForm(draftForm, data);
 					draftForm.getSections().stream()
-							.filter(section -> section.getName().equals(DRAFT_FORM_SECTION_NAME)).findFirst()
+							.filter(section -> section.getName().equals(PROJECT_DRAFT_FORM_SECTION_NAME)).findFirst()
 							.ifPresentOrElse(s -> updateProject(s.getFields(), assetDescriptionEntity), () -> {
 								throw new NoSuchElementException(String.format(
-										"Update project : No section found draft form: %s", DRAFT_FORM_SECTION_NAME));
+										"Update project : No section found draft form: %s", PROJECT_DRAFT_FORM_SECTION_NAME));
 							});
 
 
 					// On modifie l'image si la donnée est présente
-					if (data.containsKey(PROJECT_PICTURE_FIELD_NAME)) {
-						UUID mediaUuid = UUID.fromString((String) data.get(PROJECT_PICTURE_FIELD_NAME));
+					if (data.containsKey(ASSET_PICTURE_FIELD_NAME)) {
+						UUID mediaUuid = UUID.fromString((String) data.get(ASSET_PICTURE_FIELD_NAME));
 						attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescriptionEntity.getUuid());
 					}
 
@@ -552,7 +551,14 @@ public class ProjectWorkflowContext
 
 	@SuppressWarnings("unused") // Utilisé par project-process.bpmn20.xml
 	public void resetDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
-		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, DRAFT_FORM_SECTION_NAME);
+		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, PROJECT_DRAFT_FORM_SECTION_NAME);
+
+		/*
+		* La section n'existe plus. Son contenu est maintenant dans la section "DRAFT_FORM_SECTION_NAME"
+		* 	et le champ "PROJECT_PICTURE_FIELD_NAME" est géré par le service AttachmentsHelper.
+		* Le nettoyage de la section PROJECT_PICTURE_SECTION_NAME est donc inutile pour les nouveaux workflow
+		* 	mais est gardé pour les anciens possédant encore cette section dans leur formulaire.
+		* */
 		resetFormData(context, executionEntity, FormHelper.DRAFT_USER_TASK_ID, null, PROJECT_PICTURE_SECTION_NAME);
 	}
 

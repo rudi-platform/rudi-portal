@@ -1,10 +1,11 @@
 {
 	"name": "update-message-to-moderator",
 	"readonly": false,
+	"label": "Information supplémentaire",
 	"fieldDefinitions": [
 		{
 			"name": "updateMessageToModerator",
-			"label": "Message à l'attention des équipes ${projectName}",
+			"label": "Message à l'attention de l'équipe ${projectName}",
 			"type": "TEXT",
 			"readonly": false,
 			"required": true,

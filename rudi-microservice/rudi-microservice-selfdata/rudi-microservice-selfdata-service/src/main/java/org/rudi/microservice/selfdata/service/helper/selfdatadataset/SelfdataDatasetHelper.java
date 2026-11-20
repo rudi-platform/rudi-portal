@@ -21,7 +21,7 @@ import org.rudi.facet.kaccess.bean.MetadataListFacets;
 import org.rudi.facet.kaccess.constant.RudiMetadataField;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.microservice.selfdata.core.bean.SelfdataDataset;
-import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetCustomDao;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetCustomSearchCriteria;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetDao;

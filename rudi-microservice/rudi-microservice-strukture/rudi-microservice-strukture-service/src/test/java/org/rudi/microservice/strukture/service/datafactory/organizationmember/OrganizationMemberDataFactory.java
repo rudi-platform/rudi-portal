@@ -55,7 +55,7 @@ public class OrganizationMemberDataFactory extends AbstractDataFactory {
 		return createOrganizationMember(organization, user.getUuid(), OrganizationRole.EDITOR);
 	}
 
-	private OrganizationEntity createOrganizationMember(OrganizationEntity organization, UUID userUuid, OrganizationRole role) {
+	public OrganizationEntity createOrganizationMember(OrganizationEntity organization, UUID userUuid, OrganizationRole role) {
 		OrganizationMemberEntity ome = new OrganizationMemberEntity();
 		ome.setUserUuid(userUuid);
 		ome.setAddedDate(organization.getCreationDate().plusDays(1));

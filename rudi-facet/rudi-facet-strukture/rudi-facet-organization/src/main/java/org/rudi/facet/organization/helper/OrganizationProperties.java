@@ -22,4 +22,8 @@ public class OrganizationProperties {
 
 	private String membersPath = "/organizations/{organizationUuid}/members";
 
+	private String searchTasksPath = "/tasks";
+
+	private String handleUserDeactivationPath = "/notify/user-deactivation";
+
 }

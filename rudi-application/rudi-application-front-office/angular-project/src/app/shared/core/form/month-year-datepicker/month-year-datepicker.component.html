@@ -3,8 +3,13 @@
     <input matInput [placeholder]="placeholder" [min]="startDate" [matDatepicker]="datepicker" [value]="startDate"
       [formControlName]="controlName" [readonly]="isDisable"
       [id]="'datepicker-' + controlName"
-      [attr.aria-label]="placeholder">
-      <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+      [attr.aria-label]="placeholder"
+      [attr.aria-labelledby]="ariaLabelledby || null"
+      [aria-describedby]="describedBy">
+      @if (!hideToggle) {
+        <mat-datepicker-toggle matSuffix [for]="datepicker"
+          [aria-label]="placeholder ? ('datepicker.openCalendarFor' | translate: {field: placeholder}) : undefined"></mat-datepicker-toggle>
+      }
       <mat-datepicker #datepicker
         startView="multi-year"
         (monthSelected)="chosenMonthHandler($event)"
@@ -14,8 +19,8 @@
       </mat-datepicker>
     </mat-form-field>
     @if (hasErrors()) {
-      <div class="error-label">
-        <em class="fa fa-info-circle fa-2x me-2"></em> {{errorMessage}}
+      <div class="error-label" [id]="errorId">
+        <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em> {{errorMessage}}
       </div>
     }
   </div>

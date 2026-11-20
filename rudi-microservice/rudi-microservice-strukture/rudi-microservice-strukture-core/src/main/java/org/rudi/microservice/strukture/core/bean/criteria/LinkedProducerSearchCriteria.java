@@ -25,6 +25,8 @@ public class LinkedProducerSearchCriteria extends SearchCriteria {
 
 	private UUID providerUuid;
 
+	private String initiator;
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

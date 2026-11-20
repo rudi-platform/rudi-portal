@@ -26,3 +26,16 @@
     color: #0000008A;
     margin: 20px 0 15px 18px;
 }
+
+// Same rendering as the former div titles
+.heading {
+    margin-top: 0;
+    font-family: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+
+    &.bottom {
+        margin-top: 30px;
+    }
+}

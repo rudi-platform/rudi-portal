@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.DocumentContent;
 import org.rudi.microservice.acl.core.bean.OAuth2AuthenticatorDescription;
@@ -22,6 +23,7 @@ import org.rudi.microservice.acl.core.bean.OAuth2AuthenticatorDescription.Author
 import org.rudi.microservice.acl.core.bean.OAuth2Provider;
 import org.rudi.microservice.acl.core.bean.TokenManagement;
 import org.rudi.microservice.acl.core.bean.ViewSettings;
+import org.rudi.microservice.acl.service.helper.externalaccountrequest.PasswordReinitialisationUriProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
@@ -46,12 +48,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
+ *
  */
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OAuth2AuthenticatorHelper {
+public class OAuth2AuthenticatorHelper implements PasswordReinitialisationUriProvider {
+
+	private static final String HTTP_PROTOCOL = "http";
+
+	private static final String UNABLE_TO_RESOLVE_CONFIGURATION_WITH_THE_PROVIDED_ISSUER_OF = "Unable to resolve Configuration with the provided Issuer of ";
 
 	public static final String SERVER_URL_PARAMETER = "serverUrl";
 
@@ -94,6 +100,15 @@ public class OAuth2AuthenticatorHelper {
 	public OAuth2AuthenticatorDescription getOAuth2AuthenticatorDescriptionByIssuer(String issuer, boolean full) {
 		return filterValues(oAuth2AuthenticatorDescriptions, full).stream()
 				.filter(authenticator -> authenticator.getServerUrl().startsWith(issuer)).findFirst().orElse(null);
+	}
+
+	@Override
+	public String getPasswordReinitialisationUri(String authenticatorName) {
+		OAuth2AuthenticatorDescription authenticator = getOAuth2AuthenticatorDescription(authenticatorName, true);
+		if (authenticator == null || authenticator.getProvider() == null) {
+			return null;
+		}
+		return convertUrl(authenticator.getProvider().getPwdReinitialisationUri(), authenticator.getServerUrl());
 	}
 
 	protected List<OAuth2AuthenticatorDescription> getOAuth2AuthenticatorDescriptions() {
@@ -165,6 +180,9 @@ public class OAuth2AuthenticatorHelper {
 		if (authenticator.getProvider().getLogoutUri() == null) {
 			authenticator.getProvider().setLogoutUri("${serverUrl}/logout");
 		}
+		if (authenticator.getProvider().getPwdReinitialisationUri() == null) {
+			authenticator.getProvider().setPwdReinitialisationUri("${serverUrl}");
+		}
 		if (authenticator.getProvider().getUserNameAttribute() == null) {
 			authenticator.getProvider().setUserNameAttribute("sub");
 		}
@@ -180,6 +198,9 @@ public class OAuth2AuthenticatorHelper {
 		if (authenticator.getRedirectUrl() == null) {
 			authenticator.setRedirectUrl("${serverUrl}/login/oauth2/code/");
 		}
+		if (authenticator.getSupportAccountCreation() == null) {
+			authenticator.setSupportAccountCreation(false);
+		}
 	}
 
 	protected List<OAuth2AuthenticatorDescription> filterValues(
@@ -190,8 +211,9 @@ public class OAuth2AuthenticatorHelper {
 		return authenticatorDescriptions.stream().map(authenticator -> {
 			OAuth2AuthenticatorDescription item = new OAuth2AuthenticatorDescription().name(authenticator.getName())
 					.label(authenticator.getLabel()).description(authenticator.getDescription())
-					.viewSettings(new ViewSettings());
+					.supportAccountCreation(authenticator.getSupportAccountCreation()).viewSettings(new ViewSettings());
 			if (authenticator.getViewSettings() != null) {
+				item.getViewSettings().setDisabled(BooleanUtils.isTrue(authenticator.getViewSettings().getDisabled()));
 				item.getViewSettings().setIsolated(authenticator.getViewSettings().getIsolated());
 				item.getViewSettings().setCssClass(authenticator.getViewSettings().getCssClass());
 				if (StringUtils.isNotEmpty(authenticator.getViewSettings().getIconUrl())) {
@@ -276,8 +298,7 @@ public class OAuth2AuthenticatorHelper {
 				auth2AuthenticatorDescriptions.size());
 		// on reparcourt la liste des descriptions des authentificateurs pour prendre en compte les éventuelles exigences de PKCE et construire les
 		// ClientRegistration en conséquence.
-		Map<String, ClientRegistration> registrationMaps = new OAuth2ClientPropertiesMapper(properties)
-				.asClientRegistrations();
+		Map<String, ClientRegistration> registrationMaps = loadClientRegistrations(properties);
 		List<ClientRegistration> registrations = new ArrayList<>();
 		for (Map.Entry<String, ClientRegistration> registration : registrationMaps.entrySet()) {
 			OAuth2AuthenticatorDescription oAuth2AuthenticatorDescription = getOAuth2AuthenticatorDescription(
@@ -294,6 +315,44 @@ public class OAuth2AuthenticatorHelper {
 		}
 		log.info("OAuth2 Client Registration Repository created with {} registrations", registrations.size());
 		return new InMemoryClientRegistrationRepository(registrations);
+	}
+
+	private Map<String, ClientRegistration> loadClientRegistrations(OAuth2ClientProperties properties) {
+		Map<String, ClientRegistration> registrationMaps = null;
+		try {
+			registrationMaps = new OAuth2ClientPropertiesMapper(properties).asClientRegistrations();
+		} catch (Exception e) {
+			String message = e.getMessage();
+			if (e instanceof IllegalArgumentException e1
+					&& message.contains(UNABLE_TO_RESOLVE_CONFIGURATION_WITH_THE_PROVIDED_ISSUER_OF)) {
+				log.warn("Try disable the faulting registration and provider in the properties file");
+				int i1 = message.indexOf(HTTP_PROTOCOL);
+				int i2 = message.indexOf("\"", i1 + HTTP_PROTOCOL.length());
+				if (i1 == -1 || i2 == -1) {
+					log.warn("Unable to extract issuer from exception message: {}", message);
+					throw e;
+				}
+				String issuer = e1.getMessage().substring(i1, i2);
+				if (StringUtils.isEmpty(issuer)) {
+					log.warn("Unable to extract issuer from exception message: {}", message);
+					throw e;
+				}
+				String key = properties.getProvider().entrySet().stream()
+						.filter(entry -> issuer.equals(entry.getValue().getIssuerUri())).map(Map.Entry::getKey)
+						.findFirst().orElse(null);
+				if (StringUtils.isEmpty(key)) {
+					log.warn("Unable to find provider key for issuer: {}", issuer);
+					throw e;
+				}
+				properties.getProvider().get(key).setIssuerUri(null);
+				registrationMaps = loadClientRegistrations(properties);
+			} else {
+				log.warn("Error creating ClientRegistration from properties", e);
+				throw e;
+			}
+
+		}
+		return registrationMaps;
 	}
 
 	@Bean
@@ -363,7 +422,7 @@ public class OAuth2AuthenticatorHelper {
 			result = replaceValue(result, STATE_PARAMETER, state, UUID.randomUUID().toString());
 			result = replaceValue(result, TOKEN_PARAMETER, idtoken, "");
 
-			if (result != null && !(result.startsWith("http") || result.startsWith("https"))) {
+			if (result != null && !(result.startsWith(HTTP_PROTOCOL) || result.startsWith("https"))) {
 				result = serverUrl + result;
 			}
 		}

@@ -3,18 +3,6 @@ package org.rudi.microservice.projekt.storage.dao.newdatasetrequest.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.projekt.core.bean.NewDatasetRequestSearchCriteria;
-import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestCustomDao;
-import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
-import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus;
-import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -23,6 +11,18 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.projekt.core.bean.criteria.NewDatasetRequestSearchCriteria;
+import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestCustomDao;
+import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
+import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus;
+import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class NewDatasetRequestCustomDaoImpl
@@ -66,6 +66,9 @@ public class NewDatasetRequestCustomDaoImpl
 					.map(status -> getEntityStatus(status.name())).collect(Collectors.toList());
 			predicates.add(root.get(NewDatasetRequestEntity.FIELD_NEW_DATASET_REQUEST_STATUS).in(statusList));
 		}
+
+		predicateStringCriteria(searchCriteria.getInitiator(), AbstractAssetDescriptionEntity.FIELD_INITIATOR, false,
+				false, predicates, builder, root);
 	}
 
 	private static org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus getEntityStatus(

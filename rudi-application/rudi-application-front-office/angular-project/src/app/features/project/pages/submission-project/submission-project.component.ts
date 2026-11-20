@@ -6,6 +6,7 @@ import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatStep, MatStepper, MatStepperIcon, MatStepperNext, MatStepperPrevious} from '@angular/material/stepper';
 import {Router} from '@angular/router';
+import {TRANSLATED_MAT_STEPPER_INTL_PROVIDER} from '@core/i18n/translated-mat-stepper-intl';
 import {FormProjectDependencies, ProjectSubmissionService} from '@core/services/asset/project/project-submission.service';
 import {ProjektMetierService} from '@core/services/asset/project/projekt-metier.service';
 import {AuthenticationService} from '@core/services/authentication.service';
@@ -21,6 +22,7 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {RadioListItem} from '@shared/core/form/radio-list/radio-list-item';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {RequestDetails} from '@shared/models/request-details';
+import {SequentialStepperDirective} from '@shared/utils/directives/sequential-stepper-directive/sequential-stepper.directive';
 import {User} from 'micro_service_modules/acl/acl-api';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {ReutilisationStatus} from 'micro_service_modules/projekt/projekt-api';
@@ -42,14 +44,18 @@ import {UpdateAction} from '../../model/upate-action';
     styleUrls: ['./submission-project.component.scss'],
     providers: [{
         provide: STEPPER_GLOBAL_OPTIONS, useValue: {displayDefaultIndicatorType: false}
-    }],
+    }, TRANSLATED_MAT_STEPPER_INTL_PROVIDER],
     imports: [LoaderComponent, MatStepper, MatStepperIcon, MatIcon, MatStep, Step1ProjectComponent,
-        MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, TranslatePipe]
+        MatButton, Step2ProjectComponent, MatStepperPrevious, MatStepperNext, Step3ProjectComponent, TranslatePipe,
+        SequentialStepperDirective]
 })
 export class SubmissionProjectComponent extends ReuseProjectCommonComponent implements OnInit, OnDestroy {
 
     @ViewChild('submissionStepper')
     public stepper: MatStepper;
+
+    @ViewChild(Step1ProjectComponent)
+    private step1Component: Step1ProjectComponent;
 
     public publicCible: TargetAudience[];
     public territorialScales: TerritorialScale[];
@@ -210,7 +216,7 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
         this.projectSubmissionService.openDialogEditRequest(request)
             .subscribe({
                 next: (modified: DialogClosedData<RequestDetails>) => {
-                    if (modified && modified.closeEvent === CloseEvent.VALIDATION) {
+                    if (modified?.closeEvent === CloseEvent.VALIDATION) {
                         request.comment = modified.data.comment;
                         request.endDate = modified.data.endDate;
                     }
@@ -401,6 +407,9 @@ export class SubmissionProjectComponent extends ReuseProjectCommonComponent impl
             this.isConfidentialityValid = false;
         }
         this.stepper.next();
+        if (this.step1FormGroup.invalid) {
+            this.step1Component.focusFirstInvalidField();
+        }
     }
 
     /**

@@ -31,16 +31,17 @@ public interface SkosSchemeTranslationMapper extends AbstractMapper<SkosSchemeTr
     void dtoToEntity(DictionaryEntry dto, @MappingTarget SkosSchemeTranslationEntity entity);
 
     @AfterMapping
+    @SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
     default void updateSkosSchemeTranslationEntity(DictionaryEntry dto, @MappingTarget SkosSchemeTranslationEntity entity) {
-        if ( dto.getLang() != null ) {
-            entity.setLang( dto.getLang().getValue() );
+        if (dto.getLang() != null) {
+            entity.setLang(dto.getLang().getValue());
         }
         entity.setUuid(UUID.randomUUID());
     }
 
     @AfterMapping
-    default void updateDictionaryEntry(SkosSchemeTranslationEntity entity, @MappingTarget  DictionaryEntry dto) {
-        if ( entity.getLang() != null ) {
+    default void updateDictionaryEntry(SkosSchemeTranslationEntity entity, @MappingTarget DictionaryEntry dto) {
+        if (entity.getLang() != null) {
             dto.setLang(Language.fromValue(entity.getLang()));
         }
     }

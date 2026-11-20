@@ -16,7 +16,6 @@ import {catchError, switchMap} from 'rxjs/operators';
 const TYPE_FIELD = 'type';
 const UUID_FIELD = 'uuid';
 const TEMPLATE_FIELD = 'template';
-const NEWS_TITLE = 'titre';
 
 @Component({
     selector: 'app-detail',

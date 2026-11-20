@@ -126,6 +126,7 @@ abstract class PrimitiveFieldsMapper<T> {
 	@Nullable
 	public abstract T defaultMetadata();
 
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	protected void createDatesFields(@Nullable ReferenceDates dates, Map<String, Object> fields, FieldSpec createdField,
 			FieldSpec validatedField, FieldSpec publishedField, FieldSpec updatedField, FieldSpec expiresField,
 			FieldSpec deletedField) throws DataverseMappingException {
@@ -149,6 +150,7 @@ abstract class PrimitiveFieldsMapper<T> {
 				.deleted(fields.get(deletedField).getValueAsOffsetDateTime(dateTimeMapper));
 	}
 
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	protected void createContactFields(@Nullable Contact contact, Map<String, Object> fields, FieldSpec contactIdField,
 			FieldSpec contactNameField, FieldSpec emailField, FieldSpec organizationNameField, FieldSpec roleField,
 			FieldSpec contactSummaryField) throws DataverseMappingException {
@@ -172,6 +174,7 @@ abstract class PrimitiveFieldsMapper<T> {
 				.contactSummary(fields.get(contactSummaryField).getValueAsString());
 	}
 
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	protected void createOrganizationFields(@Nullable Organization organization, Map<String, Object> fields,
 			FieldSpec organizationNameField, FieldSpec organizationAddressField, FieldSpec organizationIdField,
 			FieldSpec latitudeField, FieldSpec longitudeField, FieldSpec organizationCaptionField,
@@ -195,6 +198,7 @@ abstract class PrimitiveFieldsMapper<T> {
 		}
 	}
 
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	protected Organization buildOrganization(MapOfFields fields, FieldSpec organizationNameField,
 			FieldSpec organizationAddressField, FieldSpec organizationIdField, FieldSpec latitudeField,
 			FieldSpec longitudeField, FieldSpec organizationCaptionField, FieldSpec organizationSummaryField) {

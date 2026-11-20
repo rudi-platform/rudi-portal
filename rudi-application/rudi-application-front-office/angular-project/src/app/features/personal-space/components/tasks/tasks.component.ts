@@ -25,13 +25,14 @@ import {PaginatorComponent, PaginatorComponent as PaginatorComponent_1} from '@s
 import {SearchCountComponent} from '@shared/core/search/search-count/search-count.component';
 import {PROCESS_DEFINITION_KEY_TYPES} from '@shared/models/title-icon-type';
 import {compareDates, compareIgnoringCase} from '@shared/utils/comparators-utils';
+import {SortAnnouncerDirective} from '@shared/utils/directives/sort-announcer-directive/sort-announcer.directive';
 import {ProcessDefinitionKeyTranslatePipe} from '@shared/utils/pipes/process-definition-key-translate.pipe';
 
 @Component({
     selector: 'app-tasks',
     templateUrl: './tasks.component.html',
     styleUrls: ['./tasks.component.scss'],
-    imports: [LoaderComponent, SearchCountComponent, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, RouterLink, PaginatorComponent_1, DatePipe, TranslatePipe, ProcessDefinitionKeyTranslatePipe]
+    imports: [LoaderComponent, SearchCountComponent, MatTable, MatSort, SortAnnouncerDirective, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, RouterLink, PaginatorComponent_1, DatePipe, TranslatePipe, ProcessDefinitionKeyTranslatePipe]
 })
 export class TasksComponent implements OnInit {
 
@@ -49,6 +50,7 @@ export class TasksComponent implements OnInit {
     newDatasetRequestIcon = 'nouvelles_donnees_definition_key';
     projectIcon = 'project_definition_key';
     organizationIcon = 'organization_definition_key';
+    externalAccountRequestIcon = 'external_account_request_icon';
 
     @Input() loading = false;
 
@@ -146,6 +148,8 @@ export class TasksComponent implements OnInit {
             icon = this.organizationIcon;
         } else if (value.processDefinitionKey === ProcessDefinitionEnum.LINKED_PRODUCER_PROCESS) {
             icon = this.organizationIcon;
+        } else if (value.processDefinitionKey === ProcessDefinitionEnum.EXTERNAL_ACCOUNT_REQUEST_PROCESS) {
+            icon = this.externalAccountRequestIcon;
         }
 
         return icon;

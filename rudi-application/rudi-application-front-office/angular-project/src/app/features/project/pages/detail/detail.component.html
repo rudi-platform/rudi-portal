@@ -18,31 +18,29 @@
                     <mat-toolbar
                         [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
                         class="bandeau-card">
-                        <button class="button button-info" disabled mat-raised-button>
-                            <mat-icon aria-hidden="true"
-                                      [class]="(mediaSize.isXs || mediaSize.isSm) ? 'icon-information-sm' : 'icon-information'"
-                                      svgIcon="icon-info">
-                            </mat-icon>
-                            <span
-                                [class]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs}">{{ 'project.detail.informations'|translate }}</span>
-                        </button>
+                        <div class="tab-list" role="tablist">
+                            <app-tab [icon]="'icon_tab_infos'" [label]="'project.detail.informations'|translate"
+                                     [active]="true" [tabId]="infoTabId" [controls]="infoPanelId"></app-tab>
+                        </div>
                         <span class="spacer"></span>
                         @if (project.access_url) {
-                            <button (click)="onClickAccessUrl()" class="button bandeau-btn-access"
-                                    mat-raised-button>
+                            <a [href]="project.access_url" target="_blank" rel="noopener noreferrer"
+                               class="button bandeau-btn-access" mat-raised-button>
                                 <mat-icon aria-hidden="true" class="icon-style"
                                           [class.icon-style-mobile]="mediaSize.isSm || mediaSize.isXs">
                                     launch
                                 </mat-icon>
                                 <span
-                                    [ngClass]="{'bandeau-icon-libelle': mediaSize.isSm || mediaSize.isXs }">{{ 'project.detail.access'|translate }}</span>
-                            </button>
+                                    [ngClass]="{'visually-hidden': mediaSize.isSm || mediaSize.isXs }">{{ 'project.detail.access'|translate }}</span>
+                                <span class="visually-hidden">{{ 'footer.newWindow'|translate }}</span>
+                            </a>
                         }
                     </mat-toolbar>
                 </div>
                 <!-- Fin Bandeau -->
                 <!-- Card Description et Colonne de droite -->
                 <div [ngClass]="{'px-small': mediaSize.isDeviceMobile,'px-large': mediaSize.isDeviceDesktop}"
+                     [id]="infoPanelId" role="tabpanel" [attr.aria-labelledby]="infoTabId"
                      class="row mt-3 card-description-keyword-row">
                     <!--  Card Description -->
                     <div class="col-sm-12 col-lg-8">
@@ -56,7 +54,7 @@
                         <!-- Informations générales -->
                         <mat-card class="card-main-information project-card pb-4">
                             <div class="card-project-type-title">
-                                <span class="card-label">{{ 'project.detail.type'|translate }}</span>
+                                <h2 class="card-label">{{ 'project.detail.type'|translate }}</h2>
                                 <span class="project-type">{{ projectType }}</span>
                             </div>
                             @if (userIdentity) {
@@ -98,8 +96,7 @@
                                                    [organizationId]="element?.dataset.producer.organization_id"
                                                    [isRestricted]="element?.dataset.access_condition?.confidentiality?.restricted_access"
                                                    [resourceTitle]="element?.dataset.resource_title"
-                                                   [divider]="true"
-                                                   [goToDetails]="true"
+                                                   [divider]="!$last"
                                                    [currentJddId]="element?.dataset.global_id"></app-dataset-infos>
                             }
                         </mat-card>

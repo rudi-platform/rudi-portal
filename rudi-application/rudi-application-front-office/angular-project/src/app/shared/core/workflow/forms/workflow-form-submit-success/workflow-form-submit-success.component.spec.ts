@@ -18,6 +18,10 @@ describe('WorkflowFormSubmitSuccessComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(WorkflowFormSubmitSuccessComponent);
         component = fixture.componentInstance;
+        for (const key of ['title1Key', 'title2Key', 'subTitleKey', 'descriptionBeforeLinkKey', 'descriptionLinkTextKey',
+            'descriptionAfterLinkKey', 'buttonMessageKey']) {
+            fixture.componentRef.setInput(key, key);
+        }
         fixture.detectChanges();
     });
 

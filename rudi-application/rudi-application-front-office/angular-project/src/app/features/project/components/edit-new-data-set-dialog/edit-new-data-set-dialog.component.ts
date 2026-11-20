@@ -1,7 +1,7 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatError, MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatInput} from '@angular/material/input';
@@ -10,6 +10,7 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {ProjectDatasetPictoType} from '@features/project/model/project-dataset-picto-type';
 
 import {TranslatePipe} from '@ngx-translate/core';
+import {DialogUtils} from '@shared/utils/dialog-utils';
 import {DataRequestItem} from '../../model/data-request-item';
 
 /**
@@ -26,7 +27,23 @@ export interface NewDataSetDialogData {
     selector: 'app-edit-new-data-set-dialog',
     templateUrl: './edit-new-data-set-dialog.component.html',
     styleUrls: ['./edit-new-data-set-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatDialogClose, MatIcon, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MatDialogActions, MatButton, TranslatePipe]
+    imports: [
+        MatDialogContent,
+        MatDialogTitle,
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        FormsModule,
+        ReactiveFormsModule,
+        MatLabel,
+        MatHint,
+        MatFormField,
+        MatInput,
+        MatError,
+        MatDialogActions,
+        MatButton,
+        TranslatePipe,
+    ],
 })
 export class EditNewDataSetDialogComponent implements OnInit {
 
@@ -72,6 +89,8 @@ export class EditNewDataSetDialogComponent implements OnInit {
             'icon-close',
             this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-close.svg')
         );
+
+        DialogUtils.closeOnEscape(this.dialogRef);
     }
 
     ngOnInit(): void {

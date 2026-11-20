@@ -22,13 +22,13 @@
 'use strict';
 
 /** Éléments Angular qui ne génèrent pas de nœud DOM */
-const ANGULAR_STRUCTURAL = ['ng-container', 'ng-template', 'ng-content'];
+const ANGULAR_STRUCTURAL = new Set(['ng-container', 'ng-template', 'ng-content']);
 
 /** Enfants valides pour <ul> et <ol> */
-const VALID_LIST_CHILDREN = ['li'];
+const VALID_LIST_CHILDREN = new Set(['li']);
 
 /** Enfants valides pour <dl> */
-const VALID_DL_CHILDREN = ['dt', 'dd', 'div']; // <div> est autorisé dans <dl> en HTML5
+const VALID_DL_CHILDREN = new Set(['dt', 'dd', 'div']); // <div> est autorisé dans <dl> en HTML5
 
 /** @type {import('@angular-eslint/utils').TemplateRuleModule} */
 module.exports = {
@@ -68,10 +68,10 @@ function checkListChildren(context, node, validChildren) {
         if (!child.name) continue;
 
         // Ignorer les éléments structurels Angular
-        if (ANGULAR_STRUCTURAL.includes(child.name)) continue;
+        if (ANGULAR_STRUCTURAL.has(child.name)) continue;
 
         // Vérifier que l'enfant est dans la liste des enfants valides
-        if (!validChildren.includes(child.name)) {
+        if (!validChildren.has(child.name)) {
             // Vérifier si l'enfant a un role="listitem" (pour les listes ARIA)
             const attrs = child.attributes || [];
             const hasListitemRole = attrs.some(a => a.name === 'role' && a.value === 'listitem');

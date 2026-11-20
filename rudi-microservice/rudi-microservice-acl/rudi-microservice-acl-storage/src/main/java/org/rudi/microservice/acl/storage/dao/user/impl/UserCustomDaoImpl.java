@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.SetJoin;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
@@ -20,19 +28,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.SetJoin;
 import lombok.val;
 
 /**
  * Repository custom pour les users
- * 
  *
  */
 @Repository
@@ -48,6 +47,9 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 	private static final String FIELD_UUID = "uuid";
 	private static final String FIELD_ADDRESSES = "addresses";
 	private static final String FIELD_EMAIL = "email";
+	private static final String FIELD_LAST_CONNEXION = "lastConnexion";
+	private static final String FIELD_ACCOUNT_STATE = "accountState";
+	private static final String FIELD_LAST_FAILED_ATTEMPT = "lastFailedAttempt";
 
 	public UserCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, UserEntity.class);
@@ -67,7 +69,6 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 		Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
 
 		// si aucun resultat
-
 		if (totalCount == 0) {
 			return new PageImpl<>(new ArrayList<>(), pageable, 0);
 		}
@@ -81,11 +82,16 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 		searchQuery.orderBy(QueryUtils.toOrders(pageable.getSort(), searchRoot, builder));
 
 		TypedQuery<UserEntity> typedQuery = entityManager.createQuery(searchQuery);
-		List<UserEntity> userEntities = typedQuery.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+
+		if(pageable.isPaged()){
+			typedQuery.setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize());
+		}
+
+		List<UserEntity> userEntities = typedQuery.getResultList();
 		return new PageImpl<>(userEntities, pageable, totalCount.intValue());
 	}
 
+	@SuppressWarnings("java:S3776") // La complexité cognitive de cette méthode ne peut pas être réduite, car c'est la façon la plus propre de créer une requête de DAO en mettant tout au même endroit
 	private void buildQuery(UserSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery,
 			Root<UserEntity> root) {
 
@@ -109,7 +115,7 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 				predicates.add(builder.equal(root.get(FIELD_TYPE), UserType.valueOf(searchCriteria.getType().name())));
 			}
 
-			// roles
+			// rôles
 			if (CollectionUtils.isNotEmpty(searchCriteria.getRoleUuids())) {
 				Join<UserEntity, RoleEntity> joinRoles = root.join(FIELD_ROLES);
 				predicates.add((joinRoles.get(FIELD_UUID).in(searchCriteria.getRoleUuids())));
@@ -131,7 +137,7 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 				predicates.add(predicateOR);
 			}
 
-			// Email address
+			// adresse email
 			if (searchCriteria.getUserEmail() != null) {
 				SetJoin<Object, EmailAddressEntity> joinAdresses = root.joinSet(FIELD_ADDRESSES);
 				SetJoin<Object, EmailAddressEntity> joinEmailAddresses = builder.treat(joinAdresses, EmailAddressEntity.class);
@@ -139,7 +145,22 @@ public class UserCustomDaoImpl extends AbstractCustomDaoImpl<UserEntity, UserSea
 						joinEmailAddresses);
 			}
 
-			// Définition de la clause Where
+			// seuil de date de dernière connexion
+			if (searchCriteria.getLastConnexionBefore() != null) {
+				predicates.add(builder.lessThan(root.get(FIELD_LAST_CONNEXION), searchCriteria.getLastConnexionBefore()));
+			}
+
+			// état du compte
+			if (CollectionUtils.isNotEmpty(searchCriteria.getAccountStates())) {
+				predicates.add(root.get(FIELD_ACCOUNT_STATE).in(searchCriteria.getAccountStates()));
+			}
+
+			// seuil de date de dernière tentative échouée
+			if (searchCriteria.getLastFailedAttemptBefore() != null) {
+				predicates.add(builder.lessThan(root.get(FIELD_LAST_FAILED_ATTEMPT), searchCriteria.getLastFailedAttemptBefore()));
+			}
+
+			// définition de la clause Where
 			if (CollectionUtils.isNotEmpty(predicates)) {
 				criteriaQuery.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 			}

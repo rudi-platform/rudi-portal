@@ -8,10 +8,8 @@
   }
 }
 @if (!count) {
-  {{noResultMessage}} @if (hasLink) {
-  <span
-    [routerLink]="routerLink"
-  class="link"> {{hyperLink}} </span>
+  {{noResultMessage}} @if (linkUrl) {
+  <a [routerLink]="linkUrl" class="link">{{hyperLink}}</a>
 }
 }
 }

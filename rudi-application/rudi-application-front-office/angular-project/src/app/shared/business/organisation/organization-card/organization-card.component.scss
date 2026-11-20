@@ -21,6 +21,22 @@
         outline: none;
     }
 
+    mat-card-content {
+        position: relative;
+    }
+
+    .organization-card-actions {
+        position: relative;
+        z-index: 2;
+
+        // Former mat-flat-button look, now plain list items
+        .rudi-btn-sm {
+            background-color: var(--white);
+            line-height: 20px;
+            letter-spacing: normal;
+        }
+    }
+
     &:hover {
         box-shadow: var(--shadow-box);
     }
@@ -35,35 +51,40 @@
 
     &:focus-visible,
     &:has(.stretched-link:focus-visible) {
-        outline: 3px solid var(--primary-color);
+        outline: 2px solid var(--focus);
         outline-offset: 2px;
     }
 
     .organization-card-content {
         min-height: var(--card-height-sm);
         max-height: var(--card-height-sm);
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .d-flex > div:first-child {
+        flex-shrink: 0;
     }
 
     .resource-title {
+        // h2: cancel the .mat-typography / Bootstrap heading font and margins
+        font-family: inherit;
+        letter-spacing: inherit;
+        line-height: inherit;
+        margin-bottom: 0;
         font-size: 16px;
         color: var(--primary-color);
         font-weight: 600;
         margin-top: 5px;
         margin-left: 1em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        @include common-style.max-2-lignes;
     }
 
     .ressource-description {
         margin-top: 5px;
         margin-left: 1em;
         font-size: 15px;
-        overflow: hidden;
 
         .description {
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
             hyphens: auto;
             padding-bottom: 0;
         }

@@ -2,16 +2,18 @@
   <div>
     <app-loader [isTransparent]="true" [allPage]="false" [active]="isLoading != 0"></app-loader>
     @if (isLoading == 0) {
-      <div class="d-flex gap-3">
+      <nav aria-label="{{'footer.socialMedia' | translate}}">
+        <ul class="d-flex gap-3 list-unstyled mb-0">
         @for (socialNetwork of socialsNetworks; track socialNetwork) {
-          <div class="footer-icon-container">
-            <a class="footer-link" href="{{socialNetwork.url}}">
-              <div class="icon-container" [innerHTML]="socialNetwork.icon"></div>
+          <li class="footer-icon-container">
+            <a class="footer-link" [href]="socialNetwork.url" target="_blank" rel="noopener noreferrer">
+              <div class="icon-container" [innerHTML]="socialNetwork.icon" aria-hidden="true"></div>
               {{socialNetwork.label}}
             </a>
-          </div>
+          </li>
         }
-      </div>
+        </ul>
+      </nav>
     }
   </div>
 }

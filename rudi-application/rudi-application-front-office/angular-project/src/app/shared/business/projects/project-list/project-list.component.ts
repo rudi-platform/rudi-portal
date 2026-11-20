@@ -32,17 +32,23 @@ export class ProjectListComponent implements OnInit {
     @Input() disableScrollOnPageChange = false;
     @Input() linkedDatasetsGlobalIds: string[];
     @Input() isMember = false;
+    /** Heading level of the card titles, depending on the page outline */
+    @Input() cardTitleLevel: 2 | 3 = 2;
     @Output() clickProject = new EventEmitter<ProjectCatalogItem>();
     @Output() runningSearch = new EventEmitter<boolean>();
     @Output() projectListChange = new EventEmitter<ProjectCatalogItemPage>();
 
     @Output() reuseListTotal = new EventEmitter<number>();
+    /** Emitted once the page requested through the pagination is displayed */
+    @Output() pageLoaded = new EventEmitter<void>();
     readonly maxPageDesktop = 9;
     orderValue: Order;
+    freeTextValue: string;
     /** minimum = 5 */
     readonly maxPageMobile = 5;
     private currentPage = FIRST_PAGE;
     private offset = 0;
+    private pageChangePending = false;
     // Indique si on affiche le loader pendant l'édition du courrier
     public isLoading = false;
 
@@ -76,6 +82,16 @@ export class ProjectListComponent implements OnInit {
         this.searchProjects(order);
     }
 
+    @Input() set freeText(freeText: string) {
+        this.freeTextValue = freeText;
+        if (!this.projectList) {
+            // component is not init
+            return;
+        }
+        // Reset à la première page puis relance la recherche avec le nouveau texte
+        this.page = FIRST_PAGE;
+    }
+
     get paginationControlsNgClass(): NgClassObject {
         return this.breakpointObserver.getNgClassFromMediaSize('pagination-spacing');
     }
@@ -96,6 +112,7 @@ export class ProjectListComponent implements OnInit {
      * Fonction permettant la gestion la pagination
      */
     handlePageChange(page: number): void {
+        this.pageChangePending = true;
         this.page = page;
         if (!this.disableScrollOnPageChange) {
             window.scroll(0, 0);
@@ -108,17 +125,28 @@ export class ProjectListComponent implements OnInit {
     searchProjects(order: Order = DEFAULT_PROJECT_ORDER): void {
         this.isLoading = true;
         setTimeout(() => this.runningSearch.emit(true)); // setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid, this.isMember)
+        this.projectListService.searchProjectsCatalog(this.linkedDatasetsGlobalIds, this.offset, this.maxResultsPerPage, order, this.producerUuid, this.isMember, this.freeTextValue)
             .subscribe({
                 next: (data: ProjectCatalogItemPage) => {
                     this.isLoading = false;
                     this.projectList = data;
                     this.projectListChange.emit(data);
                     this.reuseListTotal.emit(data.total);
+                    if (this.pageChangePending) {
+                        this.pageChangePending = false;
+                        this.pageLoaded.emit();
+                    }
                 },
                 error: error => {
                     console.error('searchProjects failed', error);
                     this.isLoading = false;
+                    this.pageChangePending = false;
+                    // En cas d'erreur, on réinitialise la liste pour afficher « Aucun résultat »
+                    // et on arrête l'indicateur de recherche (sinon le libellé reste bloqué sur « recherche en cours »).
+                    this.projectList = {items: [], total: 0};
+                    this.projectListChange.emit(this.projectList);
+                    this.reuseListTotal.emit(0);
+                    this.runningSearch.emit(false);
                 },
                 complete: () => {
                     this.runningSearch.emit(false);

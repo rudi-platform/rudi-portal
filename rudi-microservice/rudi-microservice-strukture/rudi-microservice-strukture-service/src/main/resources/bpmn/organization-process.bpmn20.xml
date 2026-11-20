@@ -189,8 +189,11 @@ organizationWorkflowContext.resetFormData(context, execution, &quot;UserTask_2&q
       <bpmn:outgoing>SequenceFlow_20</bpmn:outgoing>
       <bpmn:script>organizationWorkflowContext.info(&quot;Refus Modification de l'organisation&quot;);
 organizationWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, &quot;Acceptée&quot;);
+organizationWorkflowContext.sendUpdateOrganizationReportToLinkedProducers(context, execution, false);
 var initiatorEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/initiator-refused-update-subject.txt&quot;, &quot;file:templates/emails/organization/initiator-refused-update-body.html&quot;);
-organizationWorkflowContext.sendEMailToInitiatorUserOrProvider(context, execution, initiatorEmailData);</bpmn:script>
+organizationWorkflowContext.sendEMailToInitiatorUser(context, execution, initiatorEmailData);
+var providerEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/provider-refused-update-subject.txt&quot;, &quot;file:templates/emails/organization/provider-refused-update-body.html&quot;);
+organizationWorkflowContext.sendEMailToLinkedNodeProviders(context, execution, providerEmailData);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:exclusiveGateway id="ExclusiveGateway_4" name="Validated or Refused" gatewayDirection="Diverging">
       <bpmn:incoming>SequenceFlow_22</bpmn:incoming>
@@ -237,8 +240,12 @@ organizationWorkflowContext.sendEMailToRole(context, execution, emailData, &quot
       <bpmn:incoming>SequenceFlow_21</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_25</bpmn:outgoing>
       <bpmn:script>organizationWorkflowContext.info(&quot;Modification de l'organisation&quot;);
+organizationWorkflowContext.updateStatus(context, execution, &quot;COMPLETED&quot;, &quot;VALIDATED&quot;, &quot;Acceptée&quot;);
+organizationWorkflowContext.sendUpdateOrganizationReportToLinkedProducers(context, execution, true);
 var membersEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/member-confirm-update-subject.txt&quot;, &quot;file:templates/emails/organization/member-confirm-update-body.html&quot;);
 organizationWorkflowContext.sendEMailToAllOrganizationMembers(context, execution, membersEmailData);
+var providerEmailData = new org.rudi.facet.bpmn.bean.workflow.EMailData(&quot;file:templates/emails/organization/provider-confirm-update-subject.txt&quot;, &quot;file:templates/emails/organization/provider-confirm-update-body.html&quot;);
+organizationWorkflowContext.sendEMailToLinkedNodeProviders(context, execution, providerEmailData);
 organizationWorkflowContext.publishOrganizationModification(context, execution);</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_19" name="refused" sourceRef="ExclusiveGateway_4" targetRef="ScriptTask_8">

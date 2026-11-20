@@ -1,23 +1,23 @@
 import {AsyncPipe, NgClass} from '@angular/common';
-import {Component, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {MatBadge} from '@angular/material/badge';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {FiltersService} from '@core/services/filters.service';
 import {OrderValue} from '@core/services/filters/order-filter';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
+import {PageTitleService} from '@core/services/page-title.service';
 import {ProvidersMetierService} from '@core/services/providers-metier.service';
 import {SidenavOpeningsService} from '@core/services/sidenav-openings.service';
-import {TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {
     AccessStatusFilterFormComponent,
     AccessStatusFilterItem
 } from '@shared/business/dataset/filters/filter-forms/access-status-filter-form/access-status-filter-form.component';
-import {DatesFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/dates-filter-form/dates-filter-form.component';
 import {Item} from '@shared/business/dataset/filters/filter-forms/item';
 import {OrderFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/order-filter-form/order-filter-form.component';
 import {
@@ -30,17 +30,18 @@ import {
 import {ListContainerComponent} from '@shared/business/dataset/filters/list-container/list-container.component';
 import {PageTitleComponent} from '@shared/core/layout/page-title/page-title.component';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
-import {of, Subject} from 'rxjs';
-import {switchMap, takeUntil} from 'rxjs/operators';
+import {combineLatest, of, Subject} from 'rxjs';
+import {distinctUntilChanged, filter, startWith, switchMap, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, DatesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, FilterSidenavContainerComponent, MatIcon, MatBadge, MatButton, OrderFilterFormComponent, ThemesFilterFormComponent, ProducerNamesFilterFormComponent, AccessStatusFilterFormComponent, MatSidenavContent, NgClass, PageTitleComponent, ListContainerComponent, AsyncPipe, TranslatePipe]
 })
 export class ListComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;
+    @ViewChild('restrictedAccessButton') restrictedAccessButton?: ElementRef<HTMLButtonElement>;
     accessStatusfilterForcedValue; // positionné à undefined en attendant le mode mobile de ../../components/list-container
 
     mediaSize: MediaSize;
@@ -55,7 +56,6 @@ export class ListComponent implements OnInit, OnDestroy {
     ];
 
     producerNames: string[];
-    selectedDatesItems: Item[] = [];
     selectedThemeItems: Item[] = [];
     selectedProducerItems: Item[] = [];
 
@@ -70,13 +70,17 @@ export class ListComponent implements OnInit, OnDestroy {
         private readonly breakpointObserver: BreakpointObserverService,
         private readonly providersMetierService: ProvidersMetierService,
         private readonly sidenavOpeningsService: SidenavOpeningsService,
-        private readonly renderer: Renderer2
+        private readonly renderer: Renderer2,
+        private readonly router: Router,
+        private readonly pageTitleService: PageTitleService,
+        private readonly translateService: TranslateService,
     ) {
     }
 
     ngOnInit(): void {
         this.mediaSize = this.breakpointObserver.getMediaSize();
         this.initFiltersFromQueryParams();
+        this.initPageTitle();
         this.sidenavOpeningsService.sideNavOpening$.pipe(takeUntil(this.isDestroyed$)).subscribe(() => {
             this.sidenav.open();
         });
@@ -103,6 +107,24 @@ export class ListComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * RGAA 8.6 : le titre de page reprend le terme recherché.
+     * Réappliqué après chaque NavigationEnd, car AppComponent y remet le titre de la route.
+     */
+    private initPageTitle(): void {
+        combineLatest([
+            this.filtersService.searchFilter.value$.pipe(distinctUntilChanged()),
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd), startWith(null)),
+        ]).pipe(takeUntil(this.isDestroyed$)).subscribe(([search]) => {
+            const searchTerm = search?.trim();
+            if (searchTerm) {
+                this.pageTitleService.setPageTitle(this.translateService.instant('pageTitle.catalogueSearch', {search: searchTerm}));
+            } else {
+                this.pageTitleService.setPageTitleFromUrl(this.router.url);
+            }
+        });
+    }
+
     ngOnDestroy(): void {
         this.isDestroyed$.next();
         // eslint-disable-next-line no-undef
@@ -112,5 +134,11 @@ export class ListComponent implements OnInit, OnDestroy {
     submitFilters(): void {
         this.filtersService.deleteAllFilters();
         this.sidenav.close();
+    }
+
+    /** Retour au panneau principal des filtres, focus rendu au bouton qui avait ouvert le sous-panneau. */
+    backToFilters(subSidenav: MatSidenav, opener?: HTMLElement): void {
+        subSidenav.close();
+        this.sidenav.open().then(() => opener?.focus());
     }
 }

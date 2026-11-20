@@ -1,3 +1,4 @@
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Injectable} from '@angular/core';
 import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
@@ -9,8 +10,6 @@ import {switchMap} from 'rxjs/operators';
     providedIn: 'root'
 })
 export class SnackBarService {
-    duration = 3000;
-    setAutoDuratione = true;
     verticalPosition: MatSnackBarVerticalPosition = 'top';
     horizontalPosition: MatSnackBarHorizontalPosition = 'center';
 
@@ -22,17 +21,22 @@ export class SnackBarService {
     constructor(
         private readonly snackBar: MatSnackBar,
         private readonly translateService: TranslateService,
+        private readonly liveAnnouncer: LiveAnnouncer,
     ) {
+    }
+
+    private static toPlainText(data: string | Data): string {
+        const message = typeof data === 'string' ? data : data.message;
+        // DOMParser builds an inert document: no script runs and no resource loads
+        return new DOMParser().parseFromString(message ?? '', 'text/html').body.textContent.trim();
     }
 
     private static getPanelClass(data: string | Data): string | undefined {
         const level = (data as Data).level;
         if (level === Level.ERROR) {
             return 'red-snackbar';
-        } else if (level === Level.SUCCESS) {
-            return 'blue-snackbar';
         }
-        return undefined;
+        return 'blue-snackbar';
     }
 
     add(message: string): void {
@@ -40,47 +44,51 @@ export class SnackBarService {
             message,
             level: Level.ERROR
         };
-        this.openSnackBar(data, this.setAutoDuratione ? this.duration : 0);
+        this.openSnackBar(data);
     }
 
     /**
      * Permet d'afficher le message quand l'inscription se passe bien
      */
-    openSnackBar(data: string | Data, duration?: number): void {
+    openSnackBar(data: string | Data): void {
+        // No duration (RGAA 13.1): the message stays until the user closes it or navigates
         this.snackBar.openFromComponent(NotificationTemplateComponent, {
             data,
-            duration,
+            // The snack bar live region is created with it; the CDK one already exists in the page
+            politeness: 'off',
             verticalPosition: this.verticalPosition,
             horizontalPosition: this.horizontalPosition,
             panelClass: SnackBarService.getPanelClass(data)
         });
+        const isError = typeof data !== 'string' && data.level === Level.ERROR;
+        this.liveAnnouncer.announce(SnackBarService.toPlainText(data), isError ? 'assertive' : 'polite');
     }
 
-    showInfo(i18nMessageKey: string, duration?: number): void {
+    showInfo(i18nMessageKey: string): void {
         this.translate(i18nMessageKey).subscribe(translatedMessage => {
             const data: Data = {
                 level: Level.INFO,
                 message: translatedMessage,
             };
-            this.openSnackBar(data, duration);
+            this.openSnackBar(data);
         });
     }
 
-    showSuccess(i18nMessageKey: string, duration?: number): void {
+    showSuccess(i18nMessageKey: string): void {
         const data: Data = {
             level: Level.SUCCESS,
             message: i18nMessageKey,
         };
-        this.openSnackBar(data, duration);
+        this.openSnackBar(data);
     }
 
-    showError(i18nMessageKey: string, duration?: number): void {
+    showError(i18nMessageKey: string): void {
         this.translate(i18nMessageKey).subscribe(translatedMessage => {
             const data: Data = {
                 level: Level.ERROR,
                 message: translatedMessage,
             };
-            this.openSnackBar(data, duration);
+            this.openSnackBar(data);
         });
     }
 

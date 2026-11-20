@@ -41,4 +41,10 @@ public class RoleDataFactory extends AbstractDataFactory {
 
 		return role;
 	}
+
+	public Role createRole(String code) {
+		Role role = new Role();
+		role.setCode(code);
+		return role;
+	}
 }

@@ -1,6 +1,6 @@
 package org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest;
 
-import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequestSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 
 import lombok.Getter;
 import lombok.Setter;

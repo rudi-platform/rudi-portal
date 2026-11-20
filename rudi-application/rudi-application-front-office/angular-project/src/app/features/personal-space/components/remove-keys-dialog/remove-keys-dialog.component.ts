@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatDialogRef, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
+import {MatDialogRef, MatDialogContent, MatDialogActions, MatDialogTitle} from '@angular/material/dialog';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {MatIconButton, MatButton} from '@angular/material/button';
@@ -11,7 +11,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-remove-keys-dialog',
     templateUrl: './remove-keys-dialog.component.html',
     styleUrl: './remove-keys-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatDialogActions, MatButton, TranslatePipe]
+    imports: [CdkScrollable, MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, MatDialogActions, MatButton, TranslatePipe]
 })
 export class RemoveKeysDialogComponent {
 

@@ -11,8 +11,8 @@
  *   RUDI_PASSWORD — mot de passe (défaut : 'rudi@123')
  */
 import { test as setup } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export const AUTH_TOKENS_PATH = path.join(__dirname, '../../test-results/.auth/tokens.json');
 

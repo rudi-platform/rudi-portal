@@ -42,8 +42,7 @@
 
     &:hover {
         cursor: pointer;
-        color: var(--accent-color-svg);
-        text-decoration: none !important;
+        text-decoration: underline !important;
     }
 }
 
@@ -146,6 +145,7 @@
     &-tablet {
         @extend .second-section-container-mobile;
         margin-top: 2rem;
+        row-gap: 1rem;
     }
 
     &-desktop {
@@ -153,6 +153,7 @@
         margin-left: 80px;
         margin-right: 80px;
         margin-top: 1rem;
+        row-gap: 1rem;
     }
 }
 
@@ -232,5 +233,6 @@
 }
 
 .footer-logo-link {
+    display: block;
     cursor: pointer;
 }

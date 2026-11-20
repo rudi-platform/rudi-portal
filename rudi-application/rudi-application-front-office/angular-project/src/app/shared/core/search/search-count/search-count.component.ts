@@ -9,7 +9,11 @@ const DEFAULT_TEXT_RESULT = 'searchbox.results';
     selector: 'app-search-count',
     templateUrl: './search-count.component.html',
     styleUrls: ['./search-count.component.scss'],
-    imports: [RouterLink, CustomRouterlinkDirective, TranslatePipe]
+    imports: [RouterLink, CustomRouterlinkDirective, TranslatePipe],
+    host: {
+        '[attr.role]': 'headingLevel ? "heading" : null',
+        '[attr.aria-level]': 'headingLevel ?? null'
+    }
 })
 export class SearchCountComponent implements OnInit {
 
@@ -22,17 +26,19 @@ export class SearchCountComponent implements OnInit {
     @Input()
     noResultMessage: string;
 
+    // Not named routerLink: the RouterLink directive of the parent would make the whole host clickable
     @Input()
-    hasLink = false;
-
-    @Input()
-    routerLink: string;
+    linkUrl: string;
 
     @Input()
     hyperLink: string;
 
     @Input()
     resultMessage = DEFAULT_TEXT_RESULT;
+
+    // Exposes the count as a section heading without changing its look
+    @Input()
+    headingLevel: number;
 
     constructor(
         private readonly translateService: TranslateService,

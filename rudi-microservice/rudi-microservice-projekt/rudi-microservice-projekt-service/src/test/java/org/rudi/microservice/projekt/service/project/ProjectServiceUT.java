@@ -30,36 +30,49 @@ import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.common.service.exception.MissingParameterException;
 import org.rudi.common.service.helper.ResourceHelper;
 import org.rudi.common.service.helper.UtilContextHelper;
-import org.rudi.facet.acl.bean.ProjectKey;
 import org.rudi.facet.acl.bean.ProjectKeystore;
+import org.rudi.facet.acl.bean.Role;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
 import org.rudi.facet.acl.helper.RolesHelper;
 import org.rudi.facet.dataverse.api.exceptions.DataverseAPIException;
 import org.rudi.facet.kaccess.bean.Metadata;
-import org.rudi.facet.kaccess.bean.MetadataAccessCondition;
-import org.rudi.facet.kaccess.bean.MetadataAccessConditionConfidentiality;
 import org.rudi.facet.kaccess.service.dataset.DatasetService;
 import org.rudi.facet.kmedia.bean.KindOfData;
 import org.rudi.facet.kmedia.service.MediaService;
 import org.rudi.facet.organization.helper.OrganizationHelper;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
+import org.rudi.facet.kmedia.bean.MediaOrigin;
 import org.rudi.microservice.projekt.core.bean.DatasetConfidentiality;
+import org.rudi.microservice.projekt.core.bean.Indicators;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequestStatus;
 import org.rudi.microservice.projekt.core.bean.OwnerType;
 import org.rudi.microservice.projekt.core.bean.Project;
+import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectKeyCredential;
 import org.rudi.microservice.projekt.core.bean.ProjectKeySearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
+import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
 import org.rudi.microservice.projekt.core.bean.ReutilisationStatus;
 import org.rudi.microservice.projekt.core.bean.TargetAudience;
 import org.rudi.microservice.projekt.core.bean.criteria.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.service.confidentiality.impl.ConfidentialityHelper;
+import org.rudi.microservice.projekt.service.datafactory.AuthenticatedUserDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.ComputeIndicatorsSearchCriteriaDataFactory;
 import org.rudi.microservice.projekt.service.datafactory.ProjectDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.ProjectKeyCredentialDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.ProjectKeySearchCriteriaDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.ProjectKeystoreDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.ProjectSearchCriteriaDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.RoleDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.UserDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.dto.LinkedDatasetDtoDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.dto.NewDatasetRequestDtoDataFactory;
+import org.rudi.microservice.projekt.service.datafactory.kaccess.MetadataDataFactory;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.service.mapper.ReutilisationStatusMapper;
@@ -131,6 +144,17 @@ class ProjectServiceUT {
 	private final LinkedDatasetService linkedDatasetService;
 	private final ProjectDataFactory projectDataFactory;
 	private final ProjectMapper projectMapper;
+	private final ProjectSearchCriteriaDataFactory projectSearchCriteriaDataFactory;
+	private final ComputeIndicatorsSearchCriteriaDataFactory computeIndicatorsSearchCriteriaDataFactory;
+	private final ProjectKeySearchCriteriaDataFactory projectKeySearchCriteriaDataFactory;
+	private final ProjectKeystoreDataFactory projectKeystoreDataFactory;
+	private final ProjectKeyCredentialDataFactory projectKeyCredentialDataFactory;
+	private final NewDatasetRequestDtoDataFactory newDatasetRequestDtoDataFactory;
+	private final LinkedDatasetDtoDataFactory linkedDatasetDtoDataFactory;
+	private final MetadataDataFactory metadataDataFactory;
+	private final UserDataFactory userDataFactory;
+	private final RoleDataFactory roleDataFactory;
+	private final AuthenticatedUserDataFactory authenticatedUserDataFactory;
 
 	private final JsonResourceReader jsonResourceReader;
 	private final List<TransientDtoReplacerTest> transientDtoReplacers;
@@ -248,8 +272,8 @@ class ProjectServiceUT {
 	}
 
 	private void mockAuthenticatedWrongPwd() throws AppServiceUnauthorizedException {
-		final User user = new User().login("mpokora").uuid(UUID.randomUUID())
-				.roles(Collections.singletonList(new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER)));
+		final User user = userDataFactory.createUser("mpokora", UUID.randomUUID(),
+				Collections.singletonList(roleDataFactory.createRole(RoleCodes.USER)));
 		when(aclHelper.getUserByLogin(any())).thenReturn(user);
 		when(aclHelper.getUserByUUID(any())).thenReturn(user);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
@@ -259,8 +283,8 @@ class ProjectServiceUT {
 
 	private void mockAuthenticatedUserFromManager(UUID managerUserUuid, boolean isOrganization)
 			throws AppServiceUnauthorizedException, GetOrganizationException, GetOrganizationMembersException {
-		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER);
-		final User user = new User().login("mpokora").uuid(managerUserUuid).roles(Collections.singletonList(roleUser));
+		Role roleUser = roleDataFactory.createRole(RoleCodes.USER);
+		final User user = userDataFactory.createUser("mpokora", managerUserUuid, Collections.singletonList(roleUser));
 		// Si le projet est créé par un user et non au nom d'une organization.
 		if (!isOrganization) {
 			user.setUuid(managerUserUuid);
@@ -277,33 +301,30 @@ class ProjectServiceUT {
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 		when(aclHelper.getUserByLoginAndPassword(eq(user.getLogin()), any())).thenReturn(user);
 
-		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin(user.getLogin());
+		final AuthenticatedUser authenticatedUser = authenticatedUserDataFactory.createAuthenticatedUser(user.getLogin());
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 
 	private void mockAuthenticatedUserFromModerator(UUID moderatorUuid) throws AppServiceUnauthorizedException {
-		org.rudi.facet.acl.bean.Role roleModerator = new org.rudi.facet.acl.bean.Role().code(RoleCodes.MODERATOR);
-		final User user = new User().login("PresentMic").uuid(moderatorUuid).roles(List.of(roleModerator));
+		Role roleModerator = roleDataFactory.createRole(RoleCodes.MODERATOR);
+		final User user = userDataFactory.createUser("PresentMic", moderatorUuid, List.of(roleModerator));
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 //		when(rolesHelper.hasAnyRole(user, Role.MODERATOR)).thenReturn(true);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 
-		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin(user.getLogin());
+		final AuthenticatedUser authenticatedUser = authenticatedUserDataFactory.createAuthenticatedUser(user.getLogin());
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 
 	private void mockAuthenticatedUserNotOwner(UUID managerUserUuid) throws AppServiceUnauthorizedException {
-		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.USER);
-		final User user = new User().login("shakira").uuid(managerUserUuid).roles(Collections.singletonList(roleUser));
+		Role roleUser = roleDataFactory.createRole(RoleCodes.USER);
+		final User user = userDataFactory.createUser("shakira", managerUserUuid, Collections.singletonList(roleUser));
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 
-		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin(user.getLogin());
+		final AuthenticatedUser authenticatedUser = authenticatedUserDataFactory.createAuthenticatedUser(user.getLogin());
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 
@@ -312,15 +333,14 @@ class ProjectServiceUT {
 	}
 
 	private void mockAuthenticatedUserFromAnonymous() throws AppServiceUnauthorizedException {
-		org.rudi.facet.acl.bean.Role roleUser = new org.rudi.facet.acl.bean.Role().code(RoleCodes.ANONYMOUS);
-		final User user = new User().login("anonymous").uuid(UUID.randomUUID())
-				.roles(Collections.singletonList(roleUser));
+		Role roleUser = roleDataFactory.createRole(RoleCodes.ANONYMOUS);
+		final User user = userDataFactory.createUser("anonymous", UUID.randomUUID(),
+				Collections.singletonList(roleUser));
 		when(aclHelper.getUserByLogin(user.getLogin())).thenReturn(user);
 		when(aclHelper.getUserByUUID(user.getUuid())).thenReturn(user);
 		when(aclHelper.getAuthenticatedUser()).thenReturn(user);
 
-		final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-		authenticatedUser.setLogin(user.getLogin());
+		final AuthenticatedUser authenticatedUser = authenticatedUserDataFactory.createAuthenticatedUser(user.getLogin());
 		when(utilContextHelper.getAuthenticatedUser()).thenReturn(authenticatedUser);
 	}
 
@@ -474,7 +494,7 @@ class ProjectServiceUT {
 	@DisplayName("Je crée le projet pour quelqu'un d'autre")
 	void createSomeoneElseSProject() throws IOException, AppServiceException {
 		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
-		val projectManager = new User().login("thebigboss").uuid(project.getOwnerUuid());
+		val projectManager = userDataFactory.createSimpleUser(project.getOwnerUuid(), "thebigboss");
 		when(aclHelper.getUserByUUID(projectManager.getUuid())).thenReturn(projectManager);
 		createEntities(project);
 
@@ -566,7 +586,7 @@ class ProjectServiceUT {
 
 		val pageable = PageRequest.of(0, 2);
 		final Page<Project> projects = projectService.searchProjects(
-				ProjectSearchCriteria.builder().themes(Arrays.asList("comptage", "lampadaires")).build(), pageable);
+				projectSearchCriteriaDataFactory.createWithThemes(Arrays.asList("comptage", "lampadaires")), pageable);
 
 		assertThat(projects).as("On retrouve uniquement le project attendu").extracting("title")
 				.containsExactly(PROJET_LAMPADAIRES.getTitle());
@@ -583,7 +603,7 @@ class ProjectServiceUT {
 		mockAuthenticatedUserFromModerator(UUID.randomUUID());
 
 		final Page<Project> projects = projectService.searchProjects(
-				ProjectSearchCriteria.builder().keywords(Arrays.asList("comptage", "lampadaires")).build(), pageable);
+				projectSearchCriteriaDataFactory.createWithKeywords(Arrays.asList("comptage", "lampadaires")), pageable);
 
 		assertThat(projects).as("On retrouve uniquement le project attendu").extracting("title")
 				.containsExactly(PROJET_LAMPADAIRES.getTitle());
@@ -739,7 +759,7 @@ class ProjectServiceUT {
 		// on fait en sorte que le helper renvoit un autre utilisateur que celui connecté
 		when(myInformationsHelper.getMeAndMyOrganizationsUuids()).thenReturn(List.of(UUID.randomUUID()));
 
-		// Test random UUID (ne renvoit aucun projet)
+		// Test random UUID (ne renvoi aucun projet)
 		assertThrows(AppServiceNotFoundException.class,
 				() -> projectService.isAuthenticatedUserProjectOwner(projectUuid));
 		// Test UUID du projet est null
@@ -844,13 +864,10 @@ class ProjectServiceUT {
 				.isEqualTo(requestToCreate.getDescription());
 
 		// Création d'un nouvel objet pour l'update avec les champs obligatoires
-		val requestToUpdate = new NewDatasetRequest();
-		requestToUpdate.setUuid(requestCreated.getUuid());
-		requestToUpdate.setDescription("A new description for a newDatasetRequest");
-		requestToUpdate.setTitle(requestCreated.getTitle());
-		requestToUpdate.setUpdator(createdProject.getInitiator());
-		requestToUpdate.setProcessDefinitionKey(requestCreated.getProcessDefinitionKey());
-		requestToUpdate.setNewDatasetRequestStatus(requestCreated.getNewDatasetRequestStatus());
+		val requestToUpdate = newDatasetRequestDtoDataFactory.createNewDatasetRequestForUpdate(
+				requestCreated.getUuid(), "A new description for a newDatasetRequest", requestCreated.getTitle(),
+				createdProject.getInitiator(), requestCreated.getProcessDefinitionKey(),
+				requestCreated.getNewDatasetRequestStatus());
 
 		val requestUpdated = projectService.updateNewDatasetRequest(projectUuid, requestToUpdate);
 
@@ -889,13 +906,10 @@ class ProjectServiceUT {
 				.isEqualTo(requestToCreate.getDescription());
 
 		// Création d'un nouvel objet pour l'update avec les champs obligatoires
-		val requestToUpdate = new NewDatasetRequest();
-		requestToUpdate.setUuid(requestCreated.getUuid());
-		requestToUpdate.setDescription("A new description for a newDatasetRequest");
-		requestToUpdate.setTitle(requestCreated.getTitle());
-		requestToUpdate.setUpdator(createdProject.getInitiator());
-		requestToUpdate.setProcessDefinitionKey(requestCreated.getProcessDefinitionKey());
-		requestToUpdate.setNewDatasetRequestStatus(requestCreated.getNewDatasetRequestStatus());
+		val requestToUpdate = newDatasetRequestDtoDataFactory.createNewDatasetRequestForUpdate(
+				requestCreated.getUuid(), "A new description for a newDatasetRequest", requestCreated.getTitle(),
+				createdProject.getInitiator(), requestCreated.getProcessDefinitionKey(),
+				requestCreated.getNewDatasetRequestStatus());
 
 		// Changement de personne connectée
 		final UUID otherManager = UUID.randomUUID();
@@ -1088,7 +1102,7 @@ class ProjectServiceUT {
 	@DisplayName("Recherche de projet en anonymous")
 	void searchProjectAuthenticatedAsAnonymous() throws AppServiceException, IOException {
 		mockAuthenticatedUserFromAnonymous();
-		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+		Long baseValue = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged())
 				.getTotalElements();
 
 		for (KnownProject knownProject : knownProjects) {
@@ -1097,7 +1111,7 @@ class ProjectServiceUT {
 
 		// On se connecte en tant qu'Anonymous
 		mockAuthenticatedUserFromAnonymous();
-		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+		Page<Project> projects = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged());
 
 		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
 		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
@@ -1110,7 +1124,7 @@ class ProjectServiceUT {
 	@DisplayName("Recherche de projet en animateur")
 	void searchProjectAuthenticatedAsModerator() throws AppServiceException, IOException {
 		mockAuthenticatedUserFromModerator(UUID.randomUUID());
-		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+		Long baseValue = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged())
 				.getTotalElements();
 
 		for (KnownProject knownProject : knownProjects) {
@@ -1119,7 +1133,7 @@ class ProjectServiceUT {
 
 		// On se connecte en tant qu'Anonymous
 		mockAuthenticatedUserFromModerator(UUID.randomUUID());
-		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+		Page<Project> projects = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged());
 
 		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
 		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
@@ -1136,7 +1150,7 @@ class ProjectServiceUT {
 	void searchProjectAuthenticatedAsOrganizationMember()
 			throws AppServiceException, IOException, DataverseAPIException {
 		mockAuthenticatedUserFromModerator(UUID.randomUUID());
-		Long baseValue = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged())
+		Long baseValue = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged())
 				.getTotalElements();
 
 		List<Project> createdPtojects = new ArrayList<>();
@@ -1166,7 +1180,7 @@ class ProjectServiceUT {
 		// On se connecte en tant qu'Anonymous
 		mockAuthenticatedUserFromManager(organizationUuid.get(), true);
 //		mockAuthenticatedUserFromModerator(UUID.randomUUID());
-		Page<Project> projects = projectService.searchProjects(new ProjectSearchCriteria(), Pageable.unpaged());
+		Page<Project> projects = projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged());
 
 		assertThat(projects).as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull();
 		assertThat(projects.getTotalElements()).as("La recherche doit renvoyer un nombre de résultat supérieur à 0")
@@ -1184,12 +1198,8 @@ class ProjectServiceUT {
 	}
 
 	private NewDatasetRequest getNewDatasetRequest() {
-		NewDatasetRequest request = new NewDatasetRequest();
-
-		request.setTitle("Demande de données pour un test");
-		request.setDescription("Besoin de nouvelles données pour un teste");
-
-		return request;
+		return newDatasetRequestDtoDataFactory.createNewDatasetRequest("Demande de données pour un test",
+				"Besoin de nouvelles données pour un teste");
 	}
 
 	private long countProjects() throws AppServiceException {
@@ -1197,7 +1207,7 @@ class ProjectServiceUT {
 
 		mockAuthenticatedUserFromModerator(UUID.randomUUID());
 
-		return projectService.searchProjects(new ProjectSearchCriteria(), pageable).getTotalElements();
+		return projectService.searchProjects(projectSearchCriteriaDataFactory.createEmpty(), pageable).getTotalElements();
 	}
 
 	private DocumentContent getLogoFromPath(String path) throws IOException {
@@ -1206,27 +1216,11 @@ class ProjectServiceUT {
 	}
 
 	private LinkedDataset createLinkedDataset(UUID uuid, String comment, DatasetConfidentiality dc) {
-		LinkedDataset linkedDataset = new LinkedDataset();
-		linkedDataset.setComment(comment);
-		linkedDataset.setUuid(uuid);
-		linkedDataset.setDatasetConfidentiality(dc);
-		linkedDataset.setDatasetUuid(UUID.randomUUID());
-		return linkedDataset;
+		return linkedDatasetDtoDataFactory.createLinkedDataset(uuid, comment, dc);
 	}
 
 	private Metadata createMetadataAssociated(LinkedDataset linkedDataset) {
-		Metadata returned = new Metadata();
-		returned.setResourceTitle("On s'en moque");
-		MetadataAccessCondition accessCondition = new MetadataAccessCondition();
-		MetadataAccessConditionConfidentiality confidentiality = new MetadataAccessConditionConfidentiality();
-		confidentiality.setGdprSensitive(linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.SELFDATA);
-
-		confidentiality
-				.setRestrictedAccess(linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.RESTRICTED
-						|| linkedDataset.getDatasetConfidentiality() == DatasetConfidentiality.SELFDATA);
-		accessCondition.setConfidentiality(confidentiality);
-		returned.setAccessCondition(accessCondition);
-		return returned;
+		return metadataDataFactory.createMetadataForDatasetConfidentiality(linkedDataset.getDatasetConfidentiality());
 	}
 
 	@Test
@@ -1239,7 +1233,7 @@ class ProjectServiceUT {
 		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
 		projectService.updateProject(createdProject);
 
-		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+		final ProjectKeystore pks = projectKeystoreDataFactory.createProjectKeystore(createdProject.getUuid(), UUID.randomUUID());
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of()));
 		when(aclHelper.createProjectKeyStore(any())).thenReturn(pks);
 		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
@@ -1262,7 +1256,7 @@ class ProjectServiceUT {
 		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
 		projectService.updateProject(createdProject);
 
-		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+		final ProjectKeystore pks = projectKeystoreDataFactory.createProjectKeystore(createdProject.getUuid(), UUID.randomUUID());
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));
 		final ProjectKeyCredential pkToCreate = createKeyCredential("teste1");
 		when(aclHelper.createProjectKey(any(), any())).thenReturn(pkToCreate.getProjectKey());
@@ -1327,7 +1321,7 @@ class ProjectServiceUT {
 		final Project createdProject = projectService.createProject(project);
 		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
 		projectService.updateProject(createdProject);
-		final ProjectKeystore pks = new ProjectKeystore().projectUuid(createdProject.getUuid()).uuid(UUID.randomUUID());
+		final ProjectKeystore pks = projectKeystoreDataFactory.createProjectKeystore(createdProject.getUuid(), UUID.randomUUID());
 
 		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of(pks)));
 		when(aclHelper.createProjectKeyStore(any())).thenReturn(pks);
@@ -1405,8 +1399,8 @@ class ProjectServiceUT {
 		createKeyCredential("teste1");
 
 		mockAuthenticatedUserFromAnonymous();
-		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
-				.projectUuid(createdProject.getUuid());
+		ProjectKeySearchCriteria projectKeySearchCriteria = projectKeySearchCriteriaDataFactory
+				.createWithProjectUuid(createdProject.getUuid());
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
 	}
@@ -1422,8 +1416,8 @@ class ProjectServiceUT {
 		createKeyCredential("teste1");
 
 		mockUnauthenticated();
-		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
-				.projectUuid(createdProject.getUuid());
+		ProjectKeySearchCriteria projectKeySearchCriteria = projectKeySearchCriteriaDataFactory
+				.createWithProjectUuid(createdProject.getUuid());
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
 	}
@@ -1439,8 +1433,8 @@ class ProjectServiceUT {
 		createKeyCredential("teste1");
 
 		mockAuthenticatedUserNotOwner(UUID.randomUUID());
-		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria()
-				.projectUuid(createdProject.getUuid());
+		ProjectKeySearchCriteria projectKeySearchCriteria = projectKeySearchCriteriaDataFactory
+				.createWithProjectUuid(createdProject.getUuid());
 		assertThrows(AppServiceUnauthorizedException.class,
 				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
 	}
@@ -1451,7 +1445,7 @@ class ProjectServiceUT {
 		final Project project = jsonResourceReader.read(PROJET_LAMPADAIRES.getJsonPath(), Project.class);
 		createEntities(project);
 		mockAuthenticatedUserToCreateProject(project);
-		ProjectKeySearchCriteria projectKeySearchCriteria = new ProjectKeySearchCriteria();
+		ProjectKeySearchCriteria projectKeySearchCriteria = projectKeySearchCriteriaDataFactory.createEmpty();
 		assertThrows(AppServiceBadRequestException.class,
 				() -> projectService.searchProjectKeys(projectKeySearchCriteria));
 	}
@@ -1513,13 +1507,279 @@ class ProjectServiceUT {
 				.hasMessage("RelatedOrganization cannot be the owner of the project");
 	}
 
+	@Test
+	@DisplayName("Recherche un projet par titre uniquement")
+	void test_searchProjectByTitleOnly() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Cartographie des routes", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse des données", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				projectSearchCriteriaDataFactory.createWithTitleOrDescription("*Cartographie*"), pageable);
+
+		// Assert
+		assertThat(projects)
+				.as("La recherche doit renvoyer au moins un élément, et donc ne pas être null").isNotNull()
+				.as("On retrouve uniquement le projet avec le titre contenant 'Cartographie'")
+				.extracting("title").containsExactly("Cartographie des routes");
+	}
+
+	@Test
+	@DisplayName("Recherche un projet par description uniquement")
+	void test_searchProjectByDescriptionOnly() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByDescription("Projet de suivi des carpes en rivière", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Projet de suivi des lampadaires", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				projectSearchCriteriaDataFactory.createWithTitleOrDescription("*carpes*"), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve uniquement le projet avec la description contenant 'carpes'")
+				.extracting("description").containsExactly("Projet de suivi des carpes en rivière");
+	}
+
+	@Test
+	@DisplayName("Recherche un projet avec titre et description matchant - deux resultats")
+	void test_searchProjectTitleAndDescriptionBothMatching() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		// Projet 1 : match sur le titre
+		projectDataFactory.getOrCreateProjectWithTitleAndDescription("Cartographie des routes",
+				"Projet de suivi des axes routiers", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		// Projet 2 : match sur la description
+		projectDataFactory.getOrCreateProjectWithTitleAndDescription("Suivi des infrastructures",
+				"Analyse cartographique des zones urbaines", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				projectSearchCriteriaDataFactory.createWithTitleOrDescription("*Cartographi*"), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve deux projets : un match sur titre, un sur description").hasSize(2)
+				.extracting("title").containsExactlyInAnyOrder("Cartographie des routes",
+						"Suivi des infrastructures");
+	}
+
+	@Test
+	@DisplayName("Recherche avec wildcard - 'car' remonte 'cartes', 'carpes', 'carrière'")
+	void test_searchProjectWithWildcardPartialMatch() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Cartes interactives", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Élevage de carpes", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Projet de carrière professionnelle", ownerUuid,
+				org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse des bâtiments", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act
+		final Page<Project> projects = projectService.searchProjects(
+				projectSearchCriteriaDataFactory.createWithTitleOrDescription("*car*"), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve tous les projets commençant par 'car'").hasSize(3);
+
+		List<Project> projectsWithTitleContainingCar = projects.stream()
+				.filter(p -> p.getTitle().toLowerCase().contains("car")).toList();
+		List<Project> projectsWithDescriptionContainingCar = projects.stream()
+				.filter(p -> p.getDescription().toLowerCase().contains("car")).toList();
+
+		assertThat(projectsWithTitleContainingCar).as("On retrouve tous les projets dont le titre contient car, soit 2").hasSize(2)
+				.extracting("title").containsExactlyInAnyOrder("Cartes interactives", "Élevage de carpes");
+		assertThat(projectsWithDescriptionContainingCar).as("On retrouve tous les projets contenant 'car' dans la description, soit 1").hasSize(1)
+				.extracting("description").containsExactlyInAnyOrder("Projet de carrière professionnelle");
+	}
+
+	@Test
+	@DisplayName("Recherche insensible aux accents et majuscules")
+	void test_searchProjectCaseAndAccentInsensitive() throws AppServiceException, IOException {
+		// Arrange
+		UUID ownerUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateProjectByTitle("Réseau de circulation routière", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByDescription("Étude sur la mobilité urbaine", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+		projectDataFactory.getOrCreateProjectByTitle("Analyse de données", ownerUuid, org.rudi.microservice.projekt.storage.entity.OwnerType.USER);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		val pageable = PageRequest.of(0, 10);
+
+		// Act - Recherche avec accents et majuscules différents
+		final Page<Project> projects = projectService.searchProjects(
+				projectSearchCriteriaDataFactory.createWithTitleOrDescription("*RESEAU*"), pageable);
+
+		// Assert
+		assertThat(projects).as("On retrouve le projet 'Réseau de circulation routière' malgré la casse et les accents")
+				.extracting("title").containsExactly("Réseau de circulation routière");
+	}
+
+	@Test
+	@DisplayName("Récupère un projet public par son uuid")
+	void test_getProject_publicProject() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRE_PUBLIC);
+
+		final Project foundProject = projectService.getProject(createdProject.getUuid());
+
+		assertThat(foundProject).as("Le projet retrouvé doit correspondre au projet créé").usingRecursiveComparison()
+				.ignoringCollectionOrder()
+				.ignoringFields("creationDate", "updatedDate", "datasetRequests", "linkedDatasets",
+						"relatedOrganizations")
+				.isEqualTo(createdProject);
+	}
+
+	@Test
+	@DisplayName("Récupère le logo d'un projet existant")
+	void test_getMediaContent_logoFound() throws IOException, AppServiceException, DataverseAPIException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+		final DocumentContent expectedLogo = getLogoFromPath(DEFAULT_LOGO_FILE_NAME);
+		when(mediaService.getMediaFor(MediaOrigin.PROJECT, createdProject.getUuid(), KindOfData.LOGO))
+				.thenReturn(expectedLogo);
+
+		final DocumentContent logo = projectService.getMediaContent(createdProject.getUuid(), KindOfData.LOGO);
+
+		assertThat(logo).as("Le logo retourné doit être celui renvoyé par le service de média").isSameAs(expectedLogo);
+	}
+
+	@Test
+	@DisplayName("Recherche d'une newDatasetRequest par son uuid")
+	void test_getNewDatasetRequestByUuid_foundAndNotFound() throws AppServiceException, IOException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+		final UUID projectUuid = createdProject.getUuid();
+		final NewDatasetRequest requestCreated = projectService.createNewDatasetRequest(projectUuid,
+				getNewDatasetRequest());
+
+		final NewDatasetRequest found = projectService.getNewDatasetRequestByUuid(projectUuid,
+				requestCreated.getUuid());
+		assertThat(found).as("La newDatasetRequest trouvée doit correspondre à celle créée").isNotNull();
+		assertThat(found.getUuid()).isEqualTo(requestCreated.getUuid());
+
+		final NewDatasetRequest notFound = projectService.getNewDatasetRequestByUuid(projectUuid, UUID.randomUUID());
+		assertThat(notFound).as("Aucune newDatasetRequest ne doit être retrouvée pour un uuid inconnu").isNull();
+	}
+
+	@Test
+	@DisplayName("Calcule les indicateurs d'un projet sans demande liée")
+	void test_computeIndicators_projectWithoutLinkedDataset() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+
+		final Indicators indicators = projectService
+				.computeIndicators(computeIndicatorsSearchCriteriaDataFactory.createWithProjectUuid(createdProject.getUuid()));
+
+		assertThat(indicators.getNumberOfRequest()).as("Aucune demande restreinte n'est liée au projet").isZero();
+		assertThat(indicators.getNumberOfProducer()).as("Aucun producteur n'est associé au projet").isZero();
+	}
+
+	@Test
+	@DisplayName("Compte le nombre de demandes liées à un projet")
+	void test_getNumberOfRequests_withOneNewDatasetRequest() throws AppServiceException, IOException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+		final UUID projectUuid = createdProject.getUuid();
+		projectService.createNewDatasetRequest(projectUuid, getNewDatasetRequest());
+
+		final Integer numberOfRequests = projectService.getNumberOfRequests(projectUuid);
+
+		assertThat(numberOfRequests).as("Le projet doit comporter une seule demande (aucun linkedDataset)")
+				.isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("Récupère mes projets en tant qu'utilisateur authentifié membre d'organisations")
+	void test_getMyProjects_authenticatedUserWithOrganizations() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+		when(organizationHelper.getMyOrganizationsUuids(createdProject.getOwnerUuid())).thenReturn(List.of());
+
+		final Page<Project> myProjects = projectService.getMyProjects(projectSearchCriteriaDataFactory.createEmpty(), Pageable.unpaged());
+
+		assertThat(myProjects.getContent()).as("Mes projets doivent contenir le projet dont je suis le owner")
+				.extracting(Project::getUuid).contains(createdProject.getUuid());
+	}
+
+	@Test
+	@DisplayName("Compte le nombre de projets validés par propriétaire en tant qu'animateur")
+	void test_getNumberOfProjectsPerOwners_asModerator() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRE_PUBLIC);
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		final Project validatedProject = projectService.updateProject(createdProject);
+
+		mockAuthenticatedUserFromModerator(UUID.randomUUID());
+
+		final List<ProjectByOrganization> result = projectService
+				.getNumberOfProjectsPerOwners(projectSearchCriteriaDataFactory.createEmpty());
+
+		assertThat(result).as("Le propriétaire du projet validé doit apparaître avec un projet comptabilisé")
+				.filteredOn(p -> p.getOrganizationUuid().equals(validatedProject.getOwnerUuid()))
+				.extracting(ProjectByOrganization::getProjectCount).containsExactly(1L);
+	}
+
+	@Test
+	@DisplayName("Compte le nombre de projets par organisation partenaire")
+	void test_getNumberOfProjectsPerRelatedOrganizations_withRelatedOrganization() {
+		final UUID organizationUuid = UUID.randomUUID();
+		projectDataFactory.getOrCreateParkBikeWithLinkedAndOrganizations(UUID.randomUUID(),
+				org.rudi.microservice.projekt.storage.entity.OwnerType.ORGANIZATION, Set.of(organizationUuid));
+
+		final List<ProjectByOrganization> result = projectService
+				.getNumberOfProjectsPerRelatedOrganizations(projectSearchCriteriaDataFactory.createEmpty());
+
+		assertThat(result).as("L'organisation partenaire doit apparaître avec un projet comptabilisé")
+				.filteredOn(p -> p.getOrganizationUuid().equals(organizationUuid))
+				.extracting(ProjectByOrganization::getProjectCount).containsExactly(1L);
+	}
+
+	@Test
+	@DisplayName("Archive les projets validés d'un propriétaire")
+	void test_archiveOwnerProjects_validatedProject() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+		createdProject.setProjectStatus(ProjectStatus.VALIDATED);
+		final Project validatedProject = projectService.updateProject(createdProject);
+
+		when(aclHelper.searchProjectKeystores(any(), any())).thenReturn(new PageImpl<>(List.of()));
+
+		final ProjectSearchCriteria criteria = projectSearchCriteriaDataFactory
+				.createWithOwnerUuids(List.of(validatedProject.getOwnerUuid()));
+
+		projectService.archiveOwnerProjects(criteria, ProjektArchiveMode.ARCHIVED);
+
+		final Project archivedProject = projectService.getProject(validatedProject.getUuid());
+		assertThat(archivedProject.getProjectStatus()).as("Le projet doit être archivé")
+				.isEqualTo(ProjectStatus.ARCHIVED);
+	}
+
+	@Test
+	@DisplayName("Vérifie qu'un propriétaire sans projet en tâche active n'a pas de tâche bloquante")
+	void test_hasProjectOwnerRunningTask_noRunningTask() throws IOException, AppServiceException {
+		final Project createdProject = createProject(PROJET_LAMPADAIRES);
+
+		final boolean hasRunningTask = projectService.hasProjectOwnerRunningTask(createdProject.getOwnerUuid());
+
+		assertThat(hasRunningTask)
+				.as("Le projet du propriétaire ne doit comporter aucune tâche active (aucun processor enregistré)")
+				.isFalse();
+	}
+
 	private ProjectKeyCredential createKeyCredential(String name) {
-		ProjectKey projectKey = new ProjectKey();
-		projectKey.setName(name);
-		projectKey.setExpirationDate(LocalDateTime.now());
-		ProjectKeyCredential projectKeyCredential = new ProjectKeyCredential().projectKey(projectKey)
-				.password("pwd" + name);
-		return projectKeyCredential;
+		return projectKeyCredentialDataFactory.createProjectKeyCredential(name);
 	}
 
 	@Data

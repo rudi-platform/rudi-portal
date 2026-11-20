@@ -13,6 +13,14 @@
     font-stretch: normal;
 }
 
+// Reset .mat-typography h2 so the heading keeps the former span rendering
+h2.card-label {
+    font-family: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    margin: 0;
+}
+
 .contact {
     padding: 20px 0;
     border-top: 1px solid var(--blocks-and-menus-outline);

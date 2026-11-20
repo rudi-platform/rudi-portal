@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+  <Properties>
+    <Property name="retentionPeriod">240d</Property>
+  </Properties>
   <Appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d %-5p %-50.50c: %encode{%m}{CRLF}%n"/>
@@ -47,14 +50,21 @@ Number of occurrences: %o%n
 -->
     <RollingFile name="sync-log-debug"
                  fileName="${magnolia.logs.dir}/magnolia-debug.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-debug-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-debug-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%-5p %c %d{dd.MM.yyyy HH:mm:ss} -- %encode{%m}{CRLF}%n"/>
       <ThresholdFilter level="DEBUG"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-debug-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-debug">
       <AppenderRef ref="sync-log-debug"/>
@@ -64,28 +74,42 @@ Number of occurrences: %o%n
 
     <RollingFile name="sync-log-error"
                  fileName="${magnolia.logs.dir}/magnolia-error.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-error-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-error-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%-5p %c %d{dd.MM.yyyy HH:mm:ss} -- %encode{%m}{CRLF}%n"/>
       <ThresholdFilter level="ERROR"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-error-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-error">
       <AppenderRef ref="sync-log-error"/>
     </Async>
     <RollingFile name="sync-log-publishing"
                  fileName="${magnolia.logs.dir}/magnolia-publishing.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-publishing-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-publishing-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%-5p %c %d{dd.MM.yyyy HH:mm:ss} -- %encode{%m}{CRLF}%n"/>
       <ThresholdFilter level="ERROR"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-publishing-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-publishing">
       <AppenderRef ref="sync-log-publishing"/>
@@ -95,40 +119,61 @@ Number of occurrences: %o%n
     </File>
     <RollingFile name="sync-log-access"
                  fileName="${magnolia.logs.dir}/magnolia-access.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-access-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-access-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss}%encode{%m}{CRLF}%n"/>
       <ThresholdFilter level="ERROR"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-access-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-access">
       <AppenderRef ref="sync-log-access"/>
     </Async>
     <RollingFile name="sync-log-audit"
                  fileName="${magnolia.logs.dir}/magnolia-audit.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-audit-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-audit-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss}%encode{%m}{CRLF}%n"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-audit-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-audit">
       <AppenderRef ref="sync-log-audit"/>
     </Async>
     <RollingFile name="sync-log-form"
                  fileName="${magnolia.logs.dir}/magnolia-form.log"
-                 filePattern="${magnolia.logs.dir}/magnolia-form-%i.log"
+                 filePattern="${magnolia.logs.dir}/magnolia-form-%d{yyyy-MM-dd}.log"
                  append="true">
       <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss}%encode{%m}{CRLF}%n"/>
       <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
         <SizeBasedTriggeringPolicy size="1MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="5"/>
+      <DefaultRolloverStrategy max="1000">
+        <!-- purge par âge réel du fichier -->
+        <Delete basePath="${magnolia.logs.dir}" maxDepth="1">
+          <IfFileName glob="magnolia-form-*.log*" />
+          <IfLastModified age="${retentionPeriod}" />
+        </Delete>
+      </DefaultRolloverStrategy>
     </RollingFile>
     <Async name="log-form">
       <AppenderRef ref="sync-log-form"/>

@@ -146,9 +146,8 @@ public interface UserService {
 	 *
 	 * @param userUuid uuid de l'utilisateur ciblé
 	 * @param success  true si l'autenthification est réussie
-	 * @return true if account is locked
 	 */
-	boolean recordAuthentication(UUID userUuid, boolean success);
+	void recordAuthentication(UUID userUuid, boolean success);
 
 	/**
 	 * Déverouille les comptes après un certains délais

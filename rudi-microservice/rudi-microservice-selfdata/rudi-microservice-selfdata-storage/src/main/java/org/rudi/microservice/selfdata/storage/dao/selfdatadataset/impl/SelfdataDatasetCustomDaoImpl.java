@@ -6,7 +6,7 @@ import java.util.UUID;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
-import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetCustomDao;
 import org.rudi.microservice.selfdata.storage.dao.selfdatadataset.SelfdataDatasetCustomSearchCriteria;
 import org.rudi.microservice.selfdata.storage.entity.selfdatadataset.SelfdataDatasetEntity;

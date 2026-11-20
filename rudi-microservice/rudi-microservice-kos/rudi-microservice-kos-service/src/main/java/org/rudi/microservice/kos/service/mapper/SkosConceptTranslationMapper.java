@@ -31,6 +31,7 @@ public interface SkosConceptTranslationMapper extends AbstractMapper<SkosConcept
 	void dtoToEntity(DictionaryEntry dto, @MappingTarget SkosConceptTranslationEntity entity);
 
 	@AfterMapping
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	default void updateSkosConceptTranslationEntityUuid(DictionaryEntry dto,
 			@MappingTarget SkosConceptTranslationEntity entity) {
 		if (dto.getLang() != null) {

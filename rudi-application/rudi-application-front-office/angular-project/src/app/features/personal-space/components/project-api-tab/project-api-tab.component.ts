@@ -19,6 +19,7 @@ import {
 } from '@angular/material/table';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectDependenciesService} from '@core/services/asset/project/project-dependencies.service';
+import {LogService} from '@core/services/log.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {GenerateKeysDialogComponent} from '@features/personal-space/components/generate-keys-dialog/generate-keys-dialog.component';
@@ -59,7 +60,7 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
     public isKeysLoading = false;
 
     projectKeys: ProjectKeyTableData[] = [];
-    projectKeysTotal: number = 0;
+    projectKeysTotal = 0;
     displayedColumns: string[] = ['creationDate', 'name', 'expirationDate', 'action'];
     dataSource: MatTableDataSource<ProjectKeyTableData> = new MatTableDataSource(this.projectKeys);
 
@@ -67,7 +68,8 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
                 private readonly projectDependenciesService: ProjectDependenciesService,
                 private readonly propertiesMetierService: PropertiesMetierService,
                 private readonly projektService: ProjektService,
-                private readonly dialog: MatDialog
+                private readonly dialog: MatDialog,
+                private readonly logService: LogService
     ) {
     }
 
@@ -86,21 +88,18 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.dataSource.sort = this.sort;
-        console.log(this.dataSource);
     }
 
     set projectUuid(uuid: string) {
         this.projectDependenciesService.getProject(uuid).pipe(
-            map(({project, dependencies}) => {
-                return project;
-            }),
+            map(({project}) => project),
         ).subscribe({
             next: (project: Project) => {
                 this.project = project;
                 this.isOwnerTypeUser = this.project.owner_type === OwnerType.User;
             },
             error: (error) => {
-                console.error(error);
+                this.logService.error(error);
             }
         });
     }
@@ -148,7 +147,7 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
                 this.isKeysLoading = false;
             },
             error: (error) => {
-                console.error(error);
+                this.logService.error(error);
                 this.isKeysLoading = false;
             }
         });
@@ -167,7 +166,7 @@ export class ProjectApiTabComponent implements OnInit, AfterViewInit {
                 this.isKeysLoading = false;
             },
             error: (error) => {
-                console.error(error);
+                this.logService.error(error);
                 this.isKeysLoading = false;
             }
         });

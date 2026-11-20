@@ -19,6 +19,11 @@ import saveAs from 'file-saver';
 })
 export class UploaderComponent<T> implements AfterViewInit {
 
+    private static nextId = 0;
+
+    /** The accessible name must contain the visible text of the dropzone (WCAG 2.5.3) */
+    readonly dropzoneTextId = `app-uploader-text-${UploaderComponent.nextId++}`;
+
     @ViewChild(FilePickerComponent, {static: false}) filePickerComponent: FilePickerComponent;
     @ViewChild('blockUpload', {static: false}) blockUploadRef: ElementRef;
 

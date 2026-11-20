@@ -29,6 +29,7 @@ import {
     RequestDetailsDialogData
 } from '@features/project/components/request-details-dialog/request-details-dialog.component';
 import {
+    SUCCESS_PROJECT_CREATION_DIALOG_TITLE_ID,
     SuccessProjectCreationDialogComponent
 } from '@features/project/components/success-project-creation-dialog/success-project-creation-dialog.component';
 import {DataRequestItem} from '@features/project/model/data-request-item';
@@ -140,9 +141,9 @@ export class ProjectSubmissionService {
     private static getNewDatasetRequestsDeleted(dataRequests: DataRequestItem[], newDatasetRequests: NewDatasetRequest[])
         : NewDatasetRequest[] {
         // Ceux qui existent côté back mais pas côté front doivent être supprimés du back
-        const uuidsFront: string[] = dataRequests.map((dataRequest: DataRequestItem) => dataRequest.uuid);
+        const uuidsFront = new Set<string>(dataRequests.map((dataRequest: DataRequestItem) => dataRequest.uuid));
         return newDatasetRequests.filter((newDatasetRequest: NewDatasetRequest) => {
-            return !uuidsFront.includes(newDatasetRequest.uuid);
+            return !uuidsFront.has(newDatasetRequest.uuid);
         });
     }
 
@@ -153,8 +154,8 @@ export class ProjectSubmissionService {
      * @private
      */
     private static getMetadatasAdded(metadatasLinked: Metadata[], linkedDatasets: LinkedDataset[]): Metadata[] {
-        const datasetUuidsFromback: string[] = linkedDatasets.map((item: LinkedDataset) => item.dataset_uuid);
-        return metadatasLinked.filter((metadataLinked: Metadata) => !datasetUuidsFromback.includes(metadataLinked.global_id));
+        const datasetUuidsFromback = new Set<string>(linkedDatasets.map((item: LinkedDataset) => item.dataset_uuid));
+        return metadatasLinked.filter((metadataLinked: Metadata) => !datasetUuidsFromback.has(metadataLinked.global_id));
     }
 
     /**
@@ -164,9 +165,9 @@ export class ProjectSubmissionService {
      * @private
      */
     private static getLinkedDatasetDeleted(metadatasLinked: Metadata[], linkedDatasets: LinkedDataset[]): LinkedDataset[] {
-        const datasetsUuidsFront: string[] = metadatasLinked.map((metadata: Metadata) => metadata.global_id);
+        const datasetsUuidsFront = new Set<string>(metadatasLinked.map((metadata: Metadata) => metadata.global_id));
         return linkedDatasets.filter((linkedDataset: LinkedDataset) => {
-            return !datasetsUuidsFront.includes(linkedDataset.dataset_uuid);
+            return !datasetsUuidsFront.has(linkedDataset.dataset_uuid);
         });
     }
 
@@ -472,6 +473,7 @@ export class ProjectSubmissionService {
         dialogConfig.panelClass = 'my-custom-dialog-class';
         dialogConfig.data = {};
         dialogConfig.width = '768px';
+        dialogConfig.ariaLabelledBy = SUCCESS_PROJECT_CREATION_DIALOG_TITLE_ID;
 
         this.dialog.open(SuccessProjectCreationDialogComponent, dialogConfig);
     }

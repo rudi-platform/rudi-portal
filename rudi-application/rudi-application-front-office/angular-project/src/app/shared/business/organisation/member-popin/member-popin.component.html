@@ -1,12 +1,13 @@
 <div id="dialog-container">
   <mat-dialog-content>
     <div class="dialog-cross-button">
-      <button mat-icon-button (click)="handleClose()">
-        <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+      <button mat-icon-button type="button" (click)="handleClose()"
+        [attr.aria-label]="'popup.close' | translate">
+        <mat-icon svgIcon="icon-close" class="cross-button" aria-hidden="true"></mat-icon>
       </button>
     </div>
     <div class="dialog-content">
-      <div class="dialog-title">{{organizationMemberDialogData.title}}</div>
+      <div class="dialog-title" mat-dialog-title>{{organizationMemberDialogData.title}}</div>
       <div class="dialog-description"> {{organizationMemberDialogData.subTitle}}</div>
       <div class="dialog-description">
         <span
@@ -15,7 +16,7 @@
 
       <div class="content-dialog">
         <label for="member-login" class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.mail' |translate}}
-          <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label>
+          <span class="required-symbol" aria-hidden="true">*</span></label>
           <div
           class="dialog-description">{{organizationMemberDialogData.fieldLoginDescription}} </div>
 
@@ -25,13 +26,13 @@
             required
             [(ngModel)]="loginValue">
 
-            <label for="member-role" class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
-              <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span></label>
+            <label for="member-role" id="member-role-label" class="dialog-subtitle">{{'metaData.administrationTab.membersTable.updatePopin.role' |translate}}
+              <span class="required-symbol" aria-hidden="true">*</span></label>
               <div
               class="dialog-description">{{organizationMemberDialogData.fieldRoleDescription}}</div>
 
               <mat-form-field appearance="outline">
-                <mat-select id="member-role" [(value)]="role" required>
+                <mat-select id="member-role" aria-labelledby="member-role-label" [(value)]="role" required>
                   @for (role of roles; track role) {
                     <mat-option [value]="role">
                       {{computeRoleLabel(role)}}

@@ -1,11 +1,12 @@
 import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
+import {HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
 import {enableProdMode, importProvidersFrom, inject, Injector, LOCALE_ID, provideAppInitializer, provideZoneChangeDetection} from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {CoreModule} from '@core/core.module';
+import {TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER} from '@core/i18n/translated-mat-datepicker-intl';
 import {TranslatedMatPaginatorIntl} from '@core/i18n/translated-mat-paginator-intl';
 import {HttpTokenInterceptor} from '@core/interceptors/http.token.interceptor';
 import {ResponseTokenInterceptor} from '@core/interceptors/response.token.interceptor';
@@ -30,17 +31,26 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
     providers: [
-        provideZoneChangeDetection(),importProvidersFrom(BrowserModule, CoreModule, SharedModule, HomeModule, AppRoutingModule, TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient]
-            },
-            compiler: {
-                provide: TranslateCompiler,
-                useClass: TranslateMessageFormatCompiler
-            }
-        }), NgbModule),
+        provideZoneChangeDetection(),
+        importProvidersFrom(
+            BrowserModule,
+            CoreModule,
+            SharedModule,
+            HomeModule,
+            AppRoutingModule,
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useFactory: HttpLoaderFactory,
+                    deps: [HttpClient],
+                },
+                compiler: {
+                    provide: TranslateCompiler,
+                    useClass: TranslateMessageFormatCompiler,
+                },
+            }),
+            NgbModule,
+        ),
         LogService,
         {provide: LOCALE_ID, useValue: 'fr-FR'},
         {provide: LocationStrategy, useClass: PathLocationStrategy},
@@ -60,6 +70,7 @@ bootstrapApplication(AppComponent, {
             deps: [CustomTranslateService, Injector],
             useFactory: (translateService: CustomTranslateService) => new TranslatedMatPaginatorIntl(translateService)
         },
+        TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER,
         provideAnimations()
     ]
 })

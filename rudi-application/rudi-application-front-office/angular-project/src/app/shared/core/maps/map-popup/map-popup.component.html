@@ -1,6 +1,8 @@
 <div>
   <div class="close-container">
-    <mat-icon (click)="handleClose()">close</mat-icon>
+    <button type="button" class="close-button" (click)="handleClose()" [attr.aria-label]="'popup.close' | translate">
+      <mat-icon aria-hidden="true" fontIcon="close"></mat-icon>
+    </button>
   </div>
   @if (properties) {
     <ul>

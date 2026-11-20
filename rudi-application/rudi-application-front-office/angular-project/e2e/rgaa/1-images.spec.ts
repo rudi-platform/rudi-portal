@@ -2,7 +2,7 @@ import { test, expect, Locator } from "@playwright/test";
 import {
   checkImageAlternative,
   getLocatorHint,
-  getElementAuditDetails,
+  getAllImagesAuditDetails,
   isRGAAException,
   RGAA_SELECTORS,
   RGAATestResult,
@@ -11,8 +11,8 @@ import {
   AuditCriterion,
   AuditReport,
 } from "../utils/rgaa-helpers";
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 test.describe("RGAA 4.1.2 - Thématique 1: Images", () => {
   let testResults: RGAATestResult[] = [];
@@ -350,8 +350,8 @@ test.describe("RGAA 4.1.2 - Thématique 1: Images", () => {
   // Génération du rapport d'audit détaillé (HTML + JSON)
   // ============================================================
   test("Génération du rapport d'audit", async ({ page, browserName }) => {
-    const allImages = page.locator(RGAA_SELECTORS.images);
-    const totalCount = await allImages.count();
+    test.setTimeout(120_000);
+    const auditEntries = await getAllImagesAuditDetails(page.locator(RGAA_SELECTORS.images));
 
     // --- 1.1.1 : Images porteuses d'information ---
     const criterion111: AuditCriterion = {
@@ -359,11 +359,9 @@ test.describe("RGAA 4.1.2 - Thématique 1: Images", () => {
       description: "Chaque image porteuse d'information a-t-elle une alternative textuelle ?",
       status: "non-applicable", conformeCount: 0, nonConformeCount: 0, totalCount: 0, elements: [],
     };
-    for (let i = 0; i < totalCount; i++) {
-      const img = allImages.nth(i);
-      if (await isRGAAException(img, "1.2")) continue;
+    for (const { decorative, details } of auditEntries) {
+      if (decorative) continue;
       criterion111.totalCount++;
-      const details = await getElementAuditDetails(img, i);
       if (details.alternativeMethod !== "none" && details.alternativeValue.trim().length > 0) {
         criterion111.conformeCount++;
         criterion111.elements.push({ ...details, status: "conforme" });
@@ -387,11 +385,9 @@ test.describe("RGAA 4.1.2 - Thématique 1: Images", () => {
       description: "Chaque image de décoration est-elle correctement ignorée par les technologies d'assistance ?",
       status: "non-applicable", conformeCount: 0, nonConformeCount: 0, totalCount: 0, elements: [],
     };
-    for (let i = 0; i < totalCount; i++) {
-      const img = allImages.nth(i);
-      if (!(await isRGAAException(img, "1.2"))) continue;
+    for (const { decorative, details } of auditEntries) {
+      if (!decorative) continue;
       criterion12.totalCount++;
-      const details = await getElementAuditDetails(img, i);
       const hasUnwantedAlt = (details.alt && details.alt.trim().length > 0)
         || (details.ariaLabel && details.ariaLabel.trim().length > 0)
         || (details.svgTitle && details.svgTitle.trim().length > 0);
@@ -416,10 +412,8 @@ test.describe("RGAA 4.1.2 - Thématique 1: Images", () => {
       description: "Pour chaque image porteuse d'information, l'alternative textuelle est-elle pertinente ?",
       status: "non-applicable", conformeCount: 0, nonConformeCount: 0, totalCount: 0, elements: [],
     };
-    for (let i = 0; i < totalCount; i++) {
-      const img = allImages.nth(i);
-      if (await isRGAAException(img, "1.2")) continue;
-      const details = await getElementAuditDetails(img, i);
+    for (const { decorative, details } of auditEntries) {
+      if (decorative) continue;
       if (details.alternativeMethod === "none" || details.alternativeValue.trim().length === 0) continue;
       criterion13.totalCount++;
       const altText = details.alternativeValue.toLowerCase();

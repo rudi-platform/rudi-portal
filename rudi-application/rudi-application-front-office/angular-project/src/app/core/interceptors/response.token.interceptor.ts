@@ -15,11 +15,6 @@ import {RouteProtectionService} from '../services/route-protection.service';
 const HTTP_CODE_BUSINESS_ERROR = 409;
 
 /**
- * Temps d'affichage de la snackbar d'une business error
- */
-const BUSINESS_ERROR_SNACKBAR_DURATION = 5000;
-
-/**
  * Code de retour HTTP : token expiré
  */
 const HTTP_CODE_TOKEN_EXPIRED = 498;
@@ -157,8 +152,6 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
      * 3. Erreur 498 : Token JWT expiré (deux sous-cas selon l'état du refresh)
      */
     function handleHttpError(request: HttpRequestAny, error: HttpErrorResponse): Observable<HttpEventAny> {
-        const isAuthenticatedAsUser = authenticationService.isAuthenticatedAsUser();
-
         /**
          * CAS 1 : Erreur 401 - Session utilisateur expirée côté serveur
          *
@@ -203,7 +196,7 @@ export const ResponseTokenInterceptor: HttpInterceptorFn = (request, next) => {
             snackBarService.openSnackBar({
                 message: errorMessage,
                 level: Level.ERROR,
-            }, BUSINESS_ERROR_SNACKBAR_DURATION);
+            });
             return of();
         }
 

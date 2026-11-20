@@ -1,19 +1,23 @@
 <div class="owner-card-info">
     @if (title) {
-        <div class="section-title">
+        <h2 class="section-title">
             {{ title }}
-        </div>
+        </h2>
     }
     <app-owner-contact-information class="owner-contact" [name]="name" [email]="email" [showEmailDirectly]="showOwnerEmailDirectly"></app-owner-contact-information>
 
     @if (relatedOrganizations.length) {
         <hr class="related-organizations-divider">
         @if (relatedTitle) {
-            <div class="section-title related-organizations-title">
+            <h2 class="section-title related-organizations-title">
                 {{ relatedTitle }}
-            </div>
+            </h2>
         }
-        <div class="related-organizations-list">
+        <div class="related-organizations-list"
+            [class.scrollable]="relatedOrganizations.length > 2"
+            [attr.tabindex]="relatedOrganizations.length > 2 ? 0 : null"
+            [attr.role]="relatedOrganizations.length > 2 ? 'group' : null"
+            [attr.aria-label]="relatedOrganizations.length > 2 ? relatedTitle : null">
             @for (relatedOrganization of relatedOrganizations; track relatedOrganization.name) {
                 <app-owner-contact-information class="related-organization-contact" [name]="relatedOrganization.name" [email]="relatedOrganization.adminEmail" [showEmailDirectly]="showRelatedEmailDirectly"></app-owner-contact-information>
             }

@@ -1,0 +1,111 @@
+<div id="dialog-container">
+  <mat-dialog-content>
+    <div class="dialog-cross-button">
+      <!-- mat-dialog-close overrides [attr.aria-label] with its own aria-label input -->
+      <button mat-icon-button type="button" [mat-dialog-close]="false"
+        [aria-label]="'externalAccountRequest.close'|translate">
+        <mat-icon svgIcon="icon-close" class="cross-button" aria-hidden="true"></mat-icon>
+      </button>
+    </div>
+
+    <div class="dialog-content">
+      <h2 class="dialog-title" mat-dialog-title>{{ 'externalAccountRequest.title'|translate }}</h2>
+      <p class="dialog-description">{{ 'externalAccountRequest.description'|translate }}</p>
+      <p class="dialog-description">
+        <span class="required-symbol">*</span>
+        {{ 'common.requiredInformation'|translate }}
+      </p>
+
+      @if (draftFormLoading) {
+        <mat-progress-spinner class="mx-auto my-3" diameter="30" mode="indeterminate"></mat-progress-spinner>
+      } @else if (draftFormError) {
+        <app-error-box [text]="'externalAccountRequest.errorDraftForm'|translate"></app-error-box>
+      }
+
+      <form [formGroup]="externalSignupForm" (ngSubmit)="submit()">
+        @if (!draftFormLoading && !draftFormError) {
+          <app-workflow-form [workflowForm]="extractSection('external-account-request-identity')" [properties]="workflowProperties"></app-workflow-form>
+        }
+
+        <div class="organization-field">
+          <span class="field-label">{{ 'externalAccountRequest.organization'|translate }}</span>
+          <mat-hint class="title-hint">{{ 'externalAccountRequest.organizationHint'|translate }}</mat-hint>
+          <app-multi-select-autocomplete
+            [autocompleteItems]="filteredOrganizations"
+            [loading]="organizationsLoading"
+            [maxSelection]="1"
+            [maxSelectionMessageKey]="'externalAccountRequest.organizationMaxSelectionReached'"
+            (searchTriggered)="onSearchOrganizations($event)"
+            (selectionChanged)="onSelectOrganization($event)"
+          ></app-multi-select-autocomplete>
+        </div>
+
+        @if (!draftFormLoading && !draftFormError) {
+          <app-workflow-form [workflowForm]="extractSection('external-account-request-message')" [properties]="workflowProperties"></app-workflow-form>
+        }
+
+        @if (authenticators.length > 0) {
+          <div class="identity-provider-field">
+            <span class="field-label" id="identity-provider-label">
+              {{ 'externalAccountRequest.identityProvider'|translate }}
+              <span class="required-symbol" aria-hidden="true">*</span>
+            </span>
+            @if (authenticators.length > 1) {
+              <mat-hint class="title-hint">{{ 'externalAccountRequest.identityProviderHint'|translate }}</mat-hint>
+            }
+            @if (authenticators.length > 1) {
+              <app-multi-select-autocomplete
+                [autocompleteItems]="filteredIdentityProviders"
+                [maxSelection]="1"
+                [maxSelectionMessageKey]="'externalAccountRequest.identityProviderMaxSelectionReached'"
+                (searchTriggered)="onSearchIdentityProviders($event)"
+                (selectionChanged)="onSelectIdentityProvider($event)"
+              ></app-multi-select-autocomplete>
+            } @else {
+              <mat-form-field appearance="outline">
+                  <input matInput type="text" id="input-identityProvider" autocomplete="off" readonly required aria-required="true" aria-labelledby="identity-provider-label" [value]="authenticators[0].label">
+              </mat-form-field>
+            }
+          </div>
+        }
+
+        <div class="form-group form-check checkbox-container">
+          <mat-checkbox id="external-account-cgu-checkbox" formControlName="cgu" required></mat-checkbox>
+          <label for="external-account-cgu-checkbox-input" class="d-flex mt-2">
+            <span class="me-1">{{ 'signup.lu'|translate }}</span>
+            <div [innerHTML]="cguTermsValue"></div>
+            <span class="required-symbol mat-error" aria-hidden="true">*</span>
+          </label>
+        </div>
+
+        <div class="form-group form-check checkbox-container">
+          <mat-checkbox id="external-account-notifications-checkbox" formControlName="subscribeToNotifications"></mat-checkbox>
+          <label for="external-account-notifications-checkbox-input">{{ 'signup.subscribeToNotifications'|translate }}</label>
+        </div>
+
+        @if (enableCaptcha) {
+          <app-rudi-captcha [nomCaptcha]="'captchaFR'"></app-rudi-captcha>
+        }
+
+        @if (errorCaptchaInput) {
+          <app-error-box class="pt-3" [text]="'authentification.error-captcha'|translate"></app-error-box>
+        }
+        @if (errorMessage) {
+          <app-error-box class="pt-3" [text]="errorMessage"></app-error-box>
+        }
+
+        <mat-dialog-actions class="dialog-buttons">
+          <button class="secondary-raised-button" mat-raised-button type="button" [mat-dialog-close]="false">
+            <span>{{ 'externalAccountRequest.cancel'|translate }}</span>
+          </button>
+          <button class="primary-raised-button" mat-raised-button type="submit" [disabled]="!isValid || loading">
+            <span>{{ 'externalAccountRequest.submit'|translate }}</span>
+          </button>
+          @if (loading) {
+            <mat-progress-spinner class="ms-2" diameter="30" mode="indeterminate"></mat-progress-spinner>
+          }
+        </mat-dialog-actions>
+      </form>
+    </div>
+  </mat-dialog-content>
+</div>

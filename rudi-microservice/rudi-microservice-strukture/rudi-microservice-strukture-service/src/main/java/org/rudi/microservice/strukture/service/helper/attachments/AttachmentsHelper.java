@@ -34,8 +34,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.SECTION_NAME_IMAGE_ORGANIZATION;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
 
 
 @Component
@@ -81,17 +80,18 @@ public class AttachmentsHelper {
 	 * @throws FormDefinitionException si le formulaire n'est pas cornforme à l'attendu
 	 */
 	private OrganizationLogoInformations extractExtendedType(Form form) throws FormDefinitionException, InvalidDataException {
-		Optional<Section> section = form.getSections().stream().filter(s -> SECTION_NAME_IMAGE_ORGANIZATION.equals(s.getName())).findFirst();
-		if (section.isPresent()) {
-			Optional<Field> field = section.get().getFields().stream().filter(f -> f.getDefinition() != null && FIELD_NAME_IMAGE_ORGANIZATION.equals(f.getDefinition().getName())).findFirst();
-			if (field.isPresent()) {
-				String extendedType = field.get().getDefinition().getExtendedType();
-				return hydrateExtendedType(extendedType);
-			} else {
-				throw new FormDefinitionException("Draft form must contain an image field");
-			}
+		 Optional<Field> field = form.getSections()
+				.stream()
+				.map(Section::getFields)
+				.flatMap(List::stream)
+				.filter(f -> f.getDefinition() != null && ASSET_PICTURE_FIELD_NAME.equals(f.getDefinition().getName()))
+				.findFirst();
+
+		if (field.isPresent()) {
+			String extendedType = field.get().getDefinition().getExtendedType();
+			return hydrateExtendedType(extendedType);
 		} else {
-			throw new FormDefinitionException("Draft form must have an image section");
+			throw new FormDefinitionException("Draft form must contain an image field");
 		}
 	}
 

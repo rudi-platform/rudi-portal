@@ -1,0 +1,19 @@
+<span
+  #textRef
+  #tooltip="matTooltip"
+  class="truncated-text"
+  [style.max-height.px]="maxHeightPx"
+  [matTooltip]="text"
+  [matTooltipDisabled]="!isOverflowing"
+  [matTooltipPosition]="tooltipPosition"
+  [attr.tabindex]="isOverflowing && focusable ? 0 : null"
+  [attr.aria-hidden]="isOverflowing && !focusable ? 'true' : null"
+  (mouseenter)="isOverflowing && tooltip.show()"
+  (mouseleave)="tooltip.hide()"
+  >{{ displayedText }}</span>
+@if (isOverflowing && !focusable) {
+  <span class="visually-hidden">{{ text }}</span>
+}
+
+
+

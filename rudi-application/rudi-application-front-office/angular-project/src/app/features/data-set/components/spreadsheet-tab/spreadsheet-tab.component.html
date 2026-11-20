@@ -17,21 +17,17 @@
             (searchTermsEmitter)="onSearchChanged($event)">
           </app-spreadsheet-search>
         </div>
-        <button mat-raised-button class="button btn-outline" (click)="switchHeader()">
-          <mat-checkbox
-            (click)="$event.preventDefault()"
-            [checked]="usesHeader">
-          </mat-checkbox>
-          {{'metaData.tabulatedDataTab.tableHeadingBtn'|translate}}
-        </button>
       </div>
     }
-    @if (displayResults) {
-      <div class="tabulatedData">
-        {{displayTableData.rowData.length}}
-        <span> {{'searchbox.results'|translate}}{{displayTableData.rowData.length > 1 ? 's' : ''}}</span>
-      </div>
-    }
+    <!-- Live region kept in the DOM so the results count is announced after each search (RGAA 7.5) -->
+    <output class="d-block" aria-live="polite">
+      @if (displayResults) {
+        <div class="tabulatedData">
+          {{displayTableData.rowData.length}}
+          <span> {{'searchbox.results'|translate}}{{displayTableData.rowData.length > 1 ? 's' : ''}}</span>
+        </div>
+      }
+    </output>
     @if (errorAccess) {
       <app-error-box
         [text]="'metaData.tabulatedDataTab.errorAccess' | translate"

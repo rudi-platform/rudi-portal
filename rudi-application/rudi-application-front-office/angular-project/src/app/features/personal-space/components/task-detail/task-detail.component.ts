@@ -1,10 +1,7 @@
 import { DatePipe } from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
-import {MatIconRegistry} from '@angular/material/icon';
-import {DomSanitizer} from '@angular/platform-browser';
-import {ActivatedRoute, Router} from '@angular/router';
-import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
+import {ActivatedRoute} from '@angular/router';
 import {SnackBarService} from '@core/services/snack-bar.service';
 import {
     LinkedDatasetTaskDependenciesService,
@@ -31,10 +28,6 @@ export class TaskDetailComponent implements OnInit {
     isNewRequest: boolean;
 
     constructor(private readonly route: ActivatedRoute,
-                private readonly router: Router,
-                private readonly breakpointObserverService: BreakpointObserverService,
-                private readonly iconRegistry: MatIconRegistry,
-                private readonly sanitizer: DomSanitizer,
                 private readonly snackBarService: SnackBarService,
                 private readonly translateService: TranslateService,
                 private readonly linkedDatasetTaskDependenciesService: LinkedDatasetTaskDependenciesService,
@@ -129,6 +122,6 @@ export class TaskDetailComponent implements OnInit {
     // format date into MM/YYYy
     public formatEndDate(dateToFormat: Date): string {
         const datePipe = new DatePipe('en-US');
-        return datePipe.transform(dateToFormat, 'MM/YYYY');
+        return datePipe.transform(dateToFormat, 'MM/yyyy');
     }
 }

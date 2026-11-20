@@ -43,6 +43,10 @@ public class ReferenceDatesDataFactory {
 				null);
 	}
 
+	public ReferenceDates createReferenceDatesWithCreated(OffsetDateTime created) {
+		return createReferenceDates(created, null, null, null, null);
+	}
+
 	private ReferenceDates createReferenceDates(OffsetDateTime created, OffsetDateTime validated,
 			OffsetDateTime published, OffsetDateTime updated, OffsetDateTime deleted) {
 		ReferenceDates dates = new ReferenceDates();

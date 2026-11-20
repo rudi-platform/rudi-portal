@@ -25,6 +25,15 @@
                 padding-right: 10px;
             }
 
+            &-clear-button {
+                display: flex;
+                padding: 0;
+                border: 0;
+                background: none;
+                color: inherit;
+                font: inherit;
+            }
+
             &-icon {
                 color: var(--primary-color);
                 position: absolute;
@@ -37,6 +46,12 @@
             border-radius: 6px;
             height: 48px;
             color: black;
+
+            // Bootstrap's .form-control:focus removes the outline (halo at 1.4:1)
+            &:focus-visible {
+                outline: var(--focus) solid 2px;
+                outline-offset: 2px;
+            }
         }
     }
 

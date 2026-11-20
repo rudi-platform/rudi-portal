@@ -29,7 +29,7 @@
   <div class="row attachment"
     [ngClass]="attachmentNotFound ? 'error-fake-input' : 'fake-input'">
     <div class="col-1">
-      <mat-icon class="attachment-icon" svgIcon="attachment"></mat-icon>
+      <mat-icon class="attachment-icon" svgIcon="attachment" aria-hidden="true"></mat-icon>
     </div>
     @if (!attachmentNotFound) {
       <div class="col-10">
@@ -43,8 +43,10 @@
     }
     @if (!attachmentNotFound) {
       <div class="col-1">
-        <mat-icon class="download-attachment-icon" svgIcon="bouton_telecharger"
-        (click)="handleClickAttachment()"></mat-icon>
+        <button type="button" class="download-attachment-button" (click)="handleClickAttachment()"
+          [attr.aria-label]="'common.telechargerFichierNomme' | translate: {name: attachment.name}">
+          <mat-icon class="download-attachment-icon" svgIcon="bouton_telecharger" aria-hidden="true"></mat-icon>
+        </button>
       </div>
     }
   </div>

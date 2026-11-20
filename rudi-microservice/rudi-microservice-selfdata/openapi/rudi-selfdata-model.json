@@ -127,38 +127,6 @@
 					}
 				}
 			},
-			"SelfdataInformationRequestSearchCriteria": {
-				"description": "Critère de recherche de demandes d'informations sur des données personnelles dans un JDD",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					},
-					{
-						"properties": {
-							"datasetUuid": {
-								"type": "string",
-								"format": "uuid"
-							},
-							"status": {
-								"type": "array",
-								"items": {
-									"$ref": "#/components/schemas/SelfdataInformationRequestStatus"
-								}
-							}
-						}
-					}
-				]
-			},
-			"SelfdataDatasetSearchCriteria": {
-				"description": "Critère de recherche de JDDs contenant des données personnelles avec les dernières demandes de l'utilisateur connecté",
-				"type": "object",
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/SearchCriteria"
-					}
-				]
-			},
 			"SelfdataTokenTupleCriteria": {
 				"description": "Critère de recherche d'un token dans la liste des token",
 				"type": "object",

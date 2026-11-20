@@ -23,7 +23,7 @@
 const FORM_FIELD_ELEMENTS = ['input', 'select', 'textarea'];
 
 /** Types d'input exclus (pas besoin de label visible) */
-const EXCLUDED_INPUT_TYPES = ['hidden', 'submit', 'reset', 'button', 'image'];
+const EXCLUDED_INPUT_TYPES = new Set(['hidden', 'submit', 'reset', 'button', 'image']);
 
 /** @type {import('@angular-eslint/utils').TemplateRuleModule} */
 module.exports = {
@@ -66,7 +66,7 @@ module.exports = {
 function collectLabelFor(node, labelFors) {
     const attrs = node.attributes || [];
     const forAttr = attrs.find(a => a.name === 'for');
-    if (forAttr && forAttr.value) {
+    if (forAttr?.value) {
         labelFors.add(forAttr.value);
     }
 }
@@ -78,7 +78,7 @@ function checkFormField(context, node, labelFors) {
     // Exclure les types qui n'ont pas besoin de label
     if (node.name === 'input') {
         const typeAttr = attrs.find(a => a.name === 'type');
-        if (typeAttr && EXCLUDED_INPUT_TYPES.includes(typeAttr.value)) {
+        if (typeAttr && EXCLUDED_INPUT_TYPES.has(typeAttr.value)) {
             return;
         }
     }
@@ -100,7 +100,7 @@ function checkFormField(context, node, labelFors) {
 
     // 4. id explicitement associé à un <label for="id"> présent dans le template
     const idAttr = attrs.find(a => a.name === 'id');
-    if (idAttr && idAttr.value && labelFors.has(idAttr.value)) {
+    if (idAttr?.value && labelFors.has(idAttr.value)) {
         return;
     }
 

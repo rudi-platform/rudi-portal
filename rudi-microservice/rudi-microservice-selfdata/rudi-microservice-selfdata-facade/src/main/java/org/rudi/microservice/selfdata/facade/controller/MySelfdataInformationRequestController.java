@@ -1,8 +1,12 @@
 package org.rudi.microservice.selfdata.facade.controller;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataInformationRequestList;
-import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequestSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequestStatus;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 import org.rudi.microservice.selfdata.facade.controller.api.MySelfdataInformationRequestsApi;
 import org.rudi.microservice.selfdata.service.selfdata.SelfdataService;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +26,17 @@ public class MySelfdataInformationRequestController implements MySelfdataInforma
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + USER + ")")
-	public ResponseEntity<PagedSelfdataInformationRequestList> searchMySelfdataInformationRequests(SelfdataInformationRequestSearchCriteria criteria) throws Exception {
-		Pageable pageable = utilPageable.getPageable(criteria.getOffset(), criteria.getLimit(), criteria.getOrder());
+	public ResponseEntity<PagedSelfdataInformationRequestList> searchMySelfdataInformationRequests(UUID datasetUuid, List<SelfdataInformationRequestStatus> status, Integer offset, Integer limit, String order) throws Exception {
+		// Construction du criteria depuis les paramètres individuels
+		SelfdataInformationRequestSearchCriteria criteria = SelfdataInformationRequestSearchCriteria
+				.builder()
+				.datasetUuid(datasetUuid)
+				.status(status)
+				.build();
+
+
+		Pageable pageable = utilPageable.getPageable(offset, limit, order);
+
 		return ResponseEntity.ok(selfdataService.searchMySelfdataInformationRequests(criteria, pageable));
 	}
 }

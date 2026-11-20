@@ -24,6 +24,7 @@ public interface UserFullMapper extends AbstractMapper<UserEntity, User> {
 
 	@Override
 	@InheritInverseConfiguration
+	@Mapping(target = "accountState", source = "accountState", ignore = true)
 	UserEntity dtoToEntity(User dto);
 
 	/**
@@ -38,6 +39,7 @@ public interface UserFullMapper extends AbstractMapper<UserEntity, User> {
 
 	@Override
 	@Mapping(target = "password", source = "password", ignore = true)
+	@Mapping(target = "accountState", source = "accountState", ignore = true)
 	void dtoToEntity(User dto, @MappingTarget UserEntity entity);
 
 }

@@ -26,6 +26,15 @@ mat-card {
     margin-bottom: 5px;
 }
 
+// Same rendering as the former div title
+.card-heading {
+    margin-top: 0;
+    font-family: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+}
+
 .card-sub-title {
     font-size: 12px;
     line-height: 1.56;

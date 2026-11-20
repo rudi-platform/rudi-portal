@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {OrganizationFormComponent} from '@features/personal-space/components/organization-form/organization-form.component';
@@ -22,7 +22,7 @@ export interface OrganizationFormDialogData {
     selector: 'app-organization-form-dialog',
     templateUrl: './organization-form-dialog.component.html',
     styleUrls: ['./organization-form-dialog.component.scss'],
-    imports: [MatDialogContent,
+    imports: [MatDialogContent, MatDialogTitle,
         MatIconButton, MatIcon, OrganizationFormComponent_1, MatDialogActions, MatButton, TranslatePipe]
 })
 export class OrganizationFormDialogComponent implements OnInit {
@@ -37,7 +37,9 @@ export class OrganizationFormDialogComponent implements OnInit {
 
     constructor(
         public dialogRef: MatDialogRef<OrganizationFormDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: OrganizationFormDialogData
+        @Inject(MAT_DIALOG_DATA) public data: OrganizationFormDialogData,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly elementRef: ElementRef<HTMLElement>,
     ) {
     }
 
@@ -55,6 +57,7 @@ export class OrganizationFormDialogComponent implements OnInit {
 
     onClickConfirm(): void {
         if (!this.organizationFormComponent.submitWorkflowForm()) {
+            this.focusFirstInvalidField();
             return;
         }
 
@@ -72,6 +75,14 @@ export class OrganizationFormDialogComponent implements OnInit {
                     // Keep dialog open when organization payload cannot be built.
                 }
             });
+    }
+
+    // Moves focus to the first invalid field so its error is announced
+    private focusFirstInvalidField(): void {
+        this.changeDetectorRef.detectChanges();
+        this.elementRef.nativeElement
+            .querySelector<HTMLElement>('input.ng-invalid, textarea.ng-invalid, select.ng-invalid')
+            ?.focus();
     }
 
     private closeDialog(closeEvent: CloseEvent): void {

@@ -1,7 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButton} from '@angular/material/button';
-import {MatCheckbox} from '@angular/material/checkbox';
 import {DataSetAccessService} from '@core/services/data-set/data-set-access.service';
 import {DisplayTableDataInterface} from '@core/services/data-set/display-table-data.interface';
 import {DisplayTableService} from '@core/services/data-set/display-table.service';
@@ -13,7 +11,7 @@ import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.compone
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {ErrorWithCause} from '@shared/models/error-with-cause';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
-import {Media, Metadata} from 'micro_service_modules/api-kaccess';
+import {Media, MediaFile, Metadata} from 'micro_service_modules/api-kaccess';
 import {catchError, switchMap} from 'rxjs/operators';
 import {WorkBook} from 'xlsx';
 import {SpreadsheetComponent} from '../spreadsheet/spreadsheet.component';
@@ -25,7 +23,7 @@ const EMPTY_SEARCH = '';
     templateUrl: './spreadsheet-tab.component.html',
     styleUrls: ['./spreadsheet-tab.component.scss'],
     imports: [
-        LoaderComponent, FormsModule, MatButton, MatCheckbox,
+        LoaderComponent, FormsModule,
         ErrorBoxComponent, SpreadsheetComponent, TranslatePipe, SpreadsheetSearchComponent
     ]
 })
@@ -57,12 +55,6 @@ export class SpreadsheetTabComponent implements OnInit {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
     }
 
-    switchHeader(): void {
-        this.usesHeader = !this.usesHeader;
-        this.displayTableData = this.displayTableService.convertToDisplayableData(this.workbook, this.usesHeader);
-        this.unFilteredRowData = this.displayTableData.rowData;
-        this.onReset();
-    }
 
     ngOnInit(): void {
         if (this.metadata && this.mediaToDisplay) {
@@ -71,7 +63,8 @@ export class SpreadsheetTabComponent implements OnInit {
                 switchMap((hasAccess: boolean) => {
                     if (hasAccess) {
                         this.errorAccess = false;
-                        return this.displayTableService.downloadTableFile(this.mediaToDisplay.connector.url).pipe(
+                        const fileEncoding = this.extractFileEncoding(this.mediaToDisplay);
+                        return this.displayTableService.downloadTableFile(this.mediaToDisplay.connector.url, fileEncoding).pipe(
                             catchError((error) => {
                                 // Cas erreur avec un message à afficher côté front
                                 if (error instanceof ErrorWithCause && error.code != null) {
@@ -105,6 +98,20 @@ export class SpreadsheetTabComponent implements OnInit {
                 }
             });
         }
+    }
+
+    /**
+     * Extrait l'encodage source déclaré sur le média lorsqu'il s'agit d'un fichier (MediaFile).
+     * Cet encodage, déterminé automatiquement lors de la publication, est utilisé pour décoder
+     * correctement les fichiers texte (CSV) et éviter les problèmes de caractères accentués.
+     * @param media média à afficher
+     * @returns l'encodage source, ou undefined si le média n'est pas un fichier ou n'en déclare pas
+     */
+    private extractFileEncoding(media: Media): string | undefined {
+        if (media?.media_type === Media.MediaTypeEnum.File) {
+            return (media as MediaFile).file_encoding;
+        }
+        return undefined;
     }
 
     /**

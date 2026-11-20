@@ -13,10 +13,11 @@ describe('NewRequestDetailComponent', () => {
             .compileComponents();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         fixture = TestBed.createComponent(NewRequestTaskDetailComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        await fixture.whenStable();
     });
 
     it('should create', () => {

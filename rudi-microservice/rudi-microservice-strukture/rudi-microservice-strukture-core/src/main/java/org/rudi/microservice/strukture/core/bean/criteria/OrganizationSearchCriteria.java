@@ -21,10 +21,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString
 public class OrganizationSearchCriteria implements SearchCriteria {
+	private String nameOrDescription;
 	private List<UUID> uuids;
 	private String name;
 	private Boolean active;
 	private UUID userUuid;
+	private String initiator;
 	private List<OrganizationStatus> organizationStatus;
 	private Status status;
 	private Boolean loadAllInformations;

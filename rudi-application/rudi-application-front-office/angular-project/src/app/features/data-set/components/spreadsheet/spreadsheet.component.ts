@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, Renderer2, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, Renderer2, ViewChild} from '@angular/core';
 import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions} from 'ag-grid-community';
@@ -8,7 +8,8 @@ export const SPREADSHEET_COLDEF_INDEX: ColDef = {
     field: '',
     width: 75,
     valueGetter: 'node.rowIndex + 1',
-    cellClass: 'ag-first-cell-column'
+    cellClass: 'ag-first-cell-column',
+    headerClass: 'ag-index-header'
 };
 
 @Component({
@@ -39,8 +40,12 @@ export class SpreadsheetComponent {
 
     @ViewChild(AgGridAngular) grid?: AgGridAngular;
 
+    // RGAA 12.8: the grid is a single tab stop, arrow keys move inside it (ARIA grid pattern)
     gridOptions: GridOptions = {
-        localeText: SPREADSHEET_LOCALE_FR
+        localeText: SPREADSHEET_LOCALE_FR,
+        tabToNextHeader: () => false,
+        tabToNextCell: () => false,
+        ensureDomOrder: true,
     };
 
     @Input()
@@ -70,6 +75,28 @@ export class SpreadsheetComponent {
             this.grid?.api.sizeColumnsToFit();
         }
         this.labelGridForAccessibility();
+        this.removeScrollViewportsFromTabOrder();
+    }
+
+    /**
+     * Shift+Tab from a cell lands on the cells scroll container, which browsers make keyboard-focusable
+     * (it cannot get tabindex="-1": it sits between the grid and its rows). Focus goes to the header instead.
+     */
+    @HostListener('focusin', ['$event'])
+    handleFocusIn(event: FocusEvent): void {
+        const target = event.target as HTMLElement;
+        const previous = event.relatedTarget as HTMLElement | null;
+        if (!target.matches('.ag-body-viewport, .ag-center-cols-viewport') || !previous?.closest('[role="gridcell"]')) {
+            return;
+        }
+        this.elementRef.nativeElement.querySelector<HTMLElement>('[role="columnheader"]')?.focus();
+    }
+
+    // Browsers make scrollable containers keyboard-focusable; arrow keys already scroll the grid
+    private removeScrollViewportsFromTabOrder(): void {
+        this.elementRef.nativeElement
+            .querySelectorAll('.ag-body-horizontal-scroll-viewport, .ag-body-vertical-scroll-viewport')
+            .forEach((viewport) => this.renderer.setAttribute(viewport, 'tabindex', '-1'));
     }
 
     /**

@@ -12,6 +12,7 @@ class FullThrottlingValidator implements ThrottlingValidator {
 		validateCommon(throttling);
 	}
 
+	@SuppressWarnings("java:S2583") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	private void validateCommon(Throttling throttling) {
 		if (throttling.getCode() == null) {
 			throw new IllegalArgumentException("Code required");

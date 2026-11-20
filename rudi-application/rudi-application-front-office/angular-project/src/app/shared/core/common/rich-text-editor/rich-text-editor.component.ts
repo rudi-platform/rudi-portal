@@ -1,6 +1,7 @@
-import {Component, forwardRef, ViewEncapsulation} from '@angular/core';
+import {Component, forwardRef, Input, ViewEncapsulation} from '@angular/core';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ChangeEvent, CKEditorModule} from '@ckeditor/ckeditor5-angular';
+import {TranslatePipe} from '@ngx-translate/core';
 import {
     Alignment,
     Autoformat,
@@ -32,7 +33,7 @@ import fr from 'ckeditor5/translations/fr.js';
 @Component({
     selector: 'app-rich-text-editor',
     standalone: true,
-    imports: [CKEditorModule, FormsModule],
+    imports: [CKEditorModule, FormsModule, TranslatePipe],
     templateUrl: './rich-text-editor.component.html',
     styleUrls: ['./rich-text-editor.component.scss'],
     encapsulation: ViewEncapsulation.None,
@@ -45,6 +46,17 @@ import fr from 'ckeditor5/translations/fr.js';
     ],
 })
 export class RichTextEditorComponent implements ControlValueAccessor {
+    private static nextId = 0;
+
+    // Not named "required": with formControlName it would also add Angular's RequiredValidator.
+    @Input() ariaRequired = false;
+    // Without it, CKEditor names the editable with its generic "Rich Text Editor. Editing area: main" label.
+    @Input() ariaLabelledby: string;
+    @Input() ariaDescribedby: string;
+
+    // The toolbar is out of the tab order (Alt+F10): screen reader users must be told how to reach it.
+    public readonly shortcutsHintId = `app-rich-text-editor-shortcuts-${RichTextEditorComponent.nextId++}`;
+
     public editor = ClassicEditor;
     public data = '';
     public isDisabled = false;
@@ -136,5 +148,20 @@ export class RichTextEditorComponent implements ControlValueAccessor {
 
     public onEditorBlur(): void {
         this.onTouched();
+    }
+
+    public onEditorReady(editor: ClassicEditor): void {
+        // Set through the editing view: direct DOM changes on the editable are overwritten by CKEditor.
+        const view = editor.editing.view;
+        view.change(writer => {
+            const root = view.document.getRoot();
+            if (this.ariaRequired) {
+                writer.setAttribute('aria-required', 'true', root);
+            }
+            if (this.ariaLabelledby) {
+                writer.setAttribute('aria-labelledby', this.ariaLabelledby, root);
+            }
+            writer.setAttribute('aria-describedby', [this.ariaDescribedby, this.shortcutsHintId].filter(Boolean).join(' '), root);
+        });
     }
 }

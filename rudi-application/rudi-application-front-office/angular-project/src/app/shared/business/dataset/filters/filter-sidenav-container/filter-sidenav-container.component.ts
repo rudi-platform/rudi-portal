@@ -14,6 +14,10 @@ import {TranslatePipe} from '@ngx-translate/core';
     ],
 })
 export class FilterSidenavContainerComponent {
+    private static nextId = 0;
+
     @Input() titleKey: string;
     @Output() closeSidenav = new EventEmitter<void>();
+
+    readonly titleId = `filter-sidenav-title-${FilterSidenavContainerComponent.nextId++}`;
 }

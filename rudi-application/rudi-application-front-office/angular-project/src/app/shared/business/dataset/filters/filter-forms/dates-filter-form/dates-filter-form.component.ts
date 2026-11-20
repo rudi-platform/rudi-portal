@@ -11,6 +11,7 @@ import {MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatDatepickerInput, MatDatepickerToggle, MatDatepicker} from '@angular/material/datepicker';
 import {MatButton} from '@angular/material/button';
+import {TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER} from '@core/i18n/translated-mat-datepicker-intl';
 import {TranslatePipe} from '@ngx-translate/core';
 
 export const DEBUT_NAME_PREFIX = 'Début';
@@ -20,18 +21,23 @@ export const FIN_NAME_PREFIX = 'Fin';
     selector: 'app-dates-filter-form',
     templateUrl: './dates-filter-form.component.html',
     styleUrls: ['./dates-filter-form.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker, MatButton, TranslatePipe]
+    providers: [TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER],
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatSuffix,
+        MatDatepicker,
+        MatButton,
+        TranslatePipe,
+    ],
 })
 export class DatesFilterFormComponent extends FilterFormComponent<Dates, DatesFilter, Item> {
 
-    constructor(
-        protected readonly filtersService: FiltersService
-    ) {
-        super(filtersService);
-        this.dates$ = this.filter.value$;
-        this.initFormGroup();
-    }
-
+    
     protected get selectedItems(): Item[] {
         const dates: Dates = this.getValueFromFormGroup();
         const selectedItems = [];
@@ -46,8 +52,16 @@ export class DatesFilterFormComponent extends FilterFormComponent<Dates, DatesFi
 
     @Input() debutDivClass?: string;
     @Input() finDivClass?: string;
-
+    
     dates$: Observable<Dates>;
+   
+    constructor(
+        protected readonly filtersService: FiltersService
+    ) {
+        super(filtersService);
+        this.dates$ = this.filter.value$;
+        this.initFormGroup();
+    }
 
     private static valueToItem(value: string, label: string): Item {
         return {

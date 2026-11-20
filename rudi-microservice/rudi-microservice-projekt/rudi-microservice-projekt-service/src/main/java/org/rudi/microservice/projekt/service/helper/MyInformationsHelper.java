@@ -26,6 +26,7 @@ public class MyInformationsHelper {
 		return ListUtils.union(ListUtils.emptyIfNull(getMyOrganizationsUuids()), List.of(user.getUuid()));
 	}
 
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait un @Nonnull, on ne peut pas garantir qu'il soit toujours respecté dans ce contexte
 	public List<UUID> getMyOrganizationsUuids() throws AppServiceUnauthorizedException, GetOrganizationException {
 		User user = aclHelper.getAuthenticatedUser();
 		if (user == null || user.getLogin() == null) {

@@ -9,6 +9,7 @@ import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
 import {ListContainerComponent} from '@shared/business/dataset/filters/list-container/list-container.component';
 import {MaterialModules} from '@shared/shared.constant';
+import {DialogUtils} from '@shared/utils/dialog-utils';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
 import {of} from 'rxjs';
@@ -64,6 +65,8 @@ export class AddDataSetDialogComponent implements OnInit {
         );
         this.accessStatusForcedValue = data.accessStatusForcedValue;
         this.accessStatusHiddenValues = data.accessStatusHiddenValues;
+
+        DialogUtils.closeOnEscape(this.dialogRef);
     }
 
     ngOnInit(): void {

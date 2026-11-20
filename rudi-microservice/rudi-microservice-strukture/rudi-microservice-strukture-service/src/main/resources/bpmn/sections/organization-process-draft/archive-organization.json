@@ -15,7 +15,7 @@
 		},
 		{
 			"name": "messageToModerator",
-			"label": "Message à l'attention des équipes ${projectName}",
+			"label": "Message à l'attention de l'équipe ${projectName}",
 			"type": "TEXT",
 			"readonly": false,
 			"required": true

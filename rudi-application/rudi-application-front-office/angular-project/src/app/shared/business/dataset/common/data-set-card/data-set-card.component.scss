@@ -18,9 +18,17 @@
         outline: none;
     }
 
+    button.stretched-link {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+
     // card sélectionnée ou focus souris
     &:focus,
-    &:focus-within {
+    &:focus-within,
+    &.selected {
         box-shadow: 0 0 10px 0 var(--focus-background);
         border-color: var(--primary-color);
         background-color: var(--focus-background);
@@ -30,14 +38,23 @@
     // focus clavier uniquement (navigation Tab)
     &:focus-visible,
     &:has(.stretched-link:focus-visible) {
-        outline: 3px solid var(--primary-color);
+        outline: 2px solid var(--focus);
         outline-offset: 2px;
     }
 
     mat-card-content {
         padding: 0;
         height: 80%;
+        position: relative;
     }
+
+    // Les boutons de mots-clés doivent rester cliquables/survolables au-dessus du
+    // `.stretched-link` qui recouvre toute la card.
+    .keywords-row {
+        position: relative;
+        z-index: 2;
+    }
+
 
     .mat-icon {
         margin: 0;
@@ -59,14 +76,29 @@
     }
 
     .data-set-card-title {
+        // h2: cancel the .mat-typography / Bootstrap heading font and margins
+        font-family: inherit;
+        letter-spacing: inherit;
+        margin-top: 0;
         font-size: 20px;
         font-weight: 400;
         color: var(--primary-color);
-        display: -webkit-box;
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
         margin-bottom: 5px;
-        hyphens: auto;
         min-height: 1.2em;
         line-height: 1.3em;
+
+        .mat-icon {
+            flex: 0 0 auto;
+        }
+    }
+
+    .data-set-card-title-text {
+        flex: 1 1 auto;
+        min-width: 0;
+        hyphens: auto;
     }
 
     .data-set-card-content {
@@ -78,8 +110,6 @@
 
     .data-set-card-summary {
         font-size: 15px;
-        display: -webkit-box;
-        -webkit-line-clamp: 4;
         hyphens: auto;
         padding-bottom: 0;
     }
@@ -117,7 +147,7 @@
         &:hover {
             background-color: var(--banner-solid-color);
 
-            .keywords-row button {
+            .keywords-row .rudi-btn-sm {
                 background-color: var(--banner-solid-color);
                 color: var(--secondary-text);
                 border: 1px solid var(--blocks-and-menus-outline);
@@ -176,6 +206,9 @@
     .key-icon {
         width: 16px;
         vertical-align: text-top;
+        // Au-dessus du `.stretched-link` pour que le `title` s'affiche au survol
+        position: relative;
+        z-index: 2;
     }
 
     .triangle-restricted {
@@ -183,31 +216,37 @@
         fill: var(--accent-color-svg);
     }
 
-    .keywords-row button {
+    .keywords-row .rudi-btn-sm {
         background: var(--primary-color);
         color: var(--secondary-color);
     }
 
-    &:focus {
+    // Thème plus clair : actif uniquement au focus (y compris focus d'un enfant comme le stretched-link) ou au survol
+    &:focus,
+    &:focus-within,
+    &.selected {
 
         .data-set-card {
 
             &-producer {
-                color: #323643;
+                color: var(--primary-text);
             }
 
             &-title-margin {
-                color: #004680;
+                color: var(--secondary-text);
             }
 
             &-summary {
-                color: #323643;
+                color: var(--primary-text);
             }
 
         }
+        .data-set-card-title {
+        color: var(--secondary-text);
+    }
 
-        .keywords-row button {
-            background: #e5f0fc;
+        .keywords-row .rudi-btn-sm {
+            background: var(--secondary-color);
             color: #323643;
         }
 
@@ -222,6 +261,9 @@
     .self-data-icon {
         width: 16px;
         vertical-align: text-top;
+        // Au-dessus du `.stretched-link` pour que le `title` s'affiche au survol
+        position: relative;
+        z-index: 2;
     }
 
     .triangle-selfdata {
@@ -229,7 +271,9 @@
         fill: var(--accent-color-svg-self-data);
     }
 
-    &:focus {
+    &:focus,
+    &:has(button.stretched-link:focus),
+    &.selected {
 
         .data-set-card {
 
@@ -247,7 +291,7 @@
 
         }
 
-        .keywords-row button {
+        .keywords-row .rudi-btn-sm {
             background: #e5f0fc;
             color: #323643;
         }

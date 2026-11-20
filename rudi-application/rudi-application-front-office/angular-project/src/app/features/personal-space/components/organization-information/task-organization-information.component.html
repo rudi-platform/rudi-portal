@@ -48,7 +48,7 @@
         @if (imageBase64) {
           <div class="vertical-space">
             <span class="workflow-label-title">{{ 'personalSpace.organizationDetails.image'|translate }}</span>
-            <img class="organization-detail-image" [src]="imageBase64" [attr.alt]="'personalSpace.organizationDetails.imageAlt' | translate : { name: organization.name }">
+            <img class="organization-detail-image" [src]="imageBase64" [attr.alt]="'personalSpace.organizationDetails.logoAlt' | translate : { name: organization.name }">
           </div>
         }
       </mat-card-content>

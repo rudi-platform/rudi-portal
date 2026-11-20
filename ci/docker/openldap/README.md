@@ -32,6 +32,60 @@ openldap/
 | `LDAP_CONFIG_ADMIN_USERNAME` | `admin` | Nom de l'admin de config |
 | `LDAP_CONFIG_ADMIN_PASSWORD` | `configpassword` | Mot de passe admin de config |
 | `LDAP_ULIMIT_NOFILES` | `1024` | Limite de fichiers ouverts |
+| `LDAP_ENABLE_TLS` | `no` | Activer LDAPS (`yes`/`no`) |
+| `LDAP_LDAPS_PORT_NUMBER` | `1636` | Port d'écoute LDAPS |
+| `LDAP_TLS_CERT_FILE` | `/certs/tls.crt` | Certificat serveur (PEM) |
+| `LDAP_TLS_KEY_FILE` | `/certs/tls.key` | Clé privée du certificat (PEM) |
+| `LDAP_TLS_CA_FILE` | `/certs/ca.crt` | Certificat de l'autorité (PEM). Si absent, le certificat serveur est utilisé |
+| `LDAP_TLS_VERIFY_CLIENT` | `never` | Vérification des certificats clients (`never`, `allow`, `try`, `demand`) |
+
+## LDAPS (SSL/TLS)
+
+Lorsque `LDAP_ENABLE_TLS=yes`, l'entrypoint :
+
+1. vérifie la présence du certificat et de la clé (arrêt en erreur sinon) ;
+2. copie les fichiers dans `/etc/ldap/certs` avec les droits de l'utilisateur `openldap` (clé en `0600`), ce qui permet de monter des secrets appartenant à `root` ;
+3. applique la configuration TLS dans `cn=config` (`olcTLS*`, TLS 1.2 minimum) à chaque démarrage ;
+4. démarre slapd sur `ldap://:1389`, `ldaps://:1636` et `ldapi:///`.
+
+> Le CN / SAN du certificat doit correspondre au nom DNS utilisé par les clients.
+
+### Générer un certificat auto-signé (tests)
+
+```bash
+mkdir certs
+openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+  -keyout certs/tls.key -out certs/tls.crt \
+  -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,DNS:openldap"
+cp certs/tls.crt certs/ca.crt
+```
+
+### Lancement avec LDAPS
+
+```bash
+sudo docker run -d --name openldap \
+  -p 1389:1389 -p 1636:1636 \
+  -e LDAP_ENABLE_TLS=yes \
+  -v $(pwd)/certs:/certs:ro \
+  rudi/openldap
+```
+
+### Kubernetes
+
+Monter un Secret de type `kubernetes.io/tls` (clés `tls.crt`, `tls.key`, éventuellement `ca.crt`) sur `/certs` et exposer le port `1636`.
+
+### Test LDAPS
+
+```bash
+LDAPTLS_CACERT=certs/ca.crt ldapsearch -x \
+  -H ldaps://localhost:1636 \
+  -D "cn=admin,dc=rudi,dc=fr" -w "le_password" \
+  -b "dc=rudi,dc=fr"
+
+# Vérifier le certificat présenté
+openssl s_client -connect localhost:1636 -showcerts </dev/null
+```
+
 
 ## Construction et démarrage
 
@@ -142,6 +196,7 @@ ldapadd -f le_fichier.ldif \
 - Le fichier `/var/lib/ldap/.initialized` marque que l'initialisation a déjà été effectuée
 - Pour forcer une réinitialisation : supprimer ce fichier et redémarrer le conteneur
 - slapd s'exécute en tant que l'utilisateur système `openldap`
+- La configuration TLS est réappliquée à chaque démarrage : un renouvellement de certificat nécessite seulement un redémarrage du conteneur
 
 ## commandes utiles
 ### Ajout de schéma dans l'image

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.projekt.core.bean.LinkedDataset;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.service.project.LinkedDatasetService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -5,7 +5,7 @@
      role="button"
      (keydown)="handleKeyboardActivation($event)"
      (click)="onDropzoneClick()"
-     [attr.aria-labelledby]="ariaLabelledby"
+     [attr.aria-labelledby]="ariaLabelledby ? ariaLabelledby + ' ' + dropzoneTextId + ' ' + dropzoneTextId + '-format' : null"
      [attr.aria-describedby]="ariaDescribedby"
      [attr.aria-label]="!ariaLabelledby ? (imageText | translate) : null">
   <ngx-awesome-uploader
@@ -27,10 +27,11 @@
         <mat-icon class="upload-icon" svgIcon="rudi_picto_image.svg" aria-hidden="true"></mat-icon>
       </div>
       <div class="item">
-        <span class="ajouter-une-image d-block">{{imageText | translate}}</span>
+        <!-- Trailing space keeps the two texts apart in the computed visible text (WCAG 2.5.3) -->
+        <span class="ajouter-une-image d-block" [id]="dropzoneTextId">{{imageText | translate}} </span>
       </div>
       <div class="item mt-0">
-        <span class="au-format-png-pdf-o">{{imageFormat | translate: {fileMaxSize: fileMaxSize} }}</span>
+        <span class="au-format-png-pdf-o" [id]="dropzoneTextId + '-format'">{{imageFormat | translate: {fileMaxSize: fileMaxSize} }}</span>
       </div>
     </div>
 

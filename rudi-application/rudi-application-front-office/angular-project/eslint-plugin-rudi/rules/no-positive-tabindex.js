@@ -44,8 +44,8 @@ function checkTabindex(context, node) {
     const tabindexAttr = attrs.find(a => a.name === 'tabindex');
     if (!tabindexAttr) return;
 
-    const value = parseInt(tabindexAttr.value, 10);
-    if (isNaN(value) || value <= 0) return;
+    const value = Number.parseInt(tabindexAttr.value, 10);
+    if (Number.isNaN(value) || value <= 0) return;
 
     context.report({
         node,

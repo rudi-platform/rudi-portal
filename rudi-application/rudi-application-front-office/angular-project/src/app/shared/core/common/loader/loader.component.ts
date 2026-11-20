@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {LoadingAnnouncerService} from '@core/services/loading-announcer.service';
 import {TranslateService} from '@ngx-translate/core';
 import { NgClass } from '@angular/common';
 
@@ -12,7 +13,7 @@ import { NgClass } from '@angular/common';
     styleUrls: ['./loader.component.scss'],
     imports: [NgClass]
 })
-export class LoaderComponent implements OnInit {
+export class LoaderComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Active désactive le loader en fonction de la valeur
      */
@@ -48,8 +49,12 @@ export class LoaderComponent implements OnInit {
      */
     description: string;
 
+    private isRegisteredAsLoading = false;
 
-    constructor(private readonly translate: TranslateService) {
+    constructor(
+        private readonly translate: TranslateService,
+        private readonly loadingAnnouncerService: LoadingAnnouncerService,
+    ) {
     }
 
     ngOnInit(): void {
@@ -59,6 +64,31 @@ export class LoaderComponent implements OnInit {
             }
         );
 
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['active']) {
+            this.updateLoadingRegistration(this.active);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.updateLoadingRegistration(false);
+    }
+
+    /**
+     * Signale au service d'annonce (RGAA 7.5) le début ou la fin de ce chargement, une seule fois par transition
+     */
+    private updateLoadingRegistration(isLoading: boolean): void {
+        if (isLoading === this.isRegisteredAsLoading) {
+            return;
+        }
+        this.isRegisteredAsLoading = isLoading;
+        if (isLoading) {
+            this.loadingAnnouncerService.startLoading();
+        } else {
+            this.loadingAnnouncerService.stopLoading();
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose, MatDialogTitle} from '@angular/material/dialog';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
@@ -22,7 +22,7 @@ import {MatOption} from '@angular/material/core';
     selector: 'app-member-popin',
     templateUrl: './member-popin.component.html',
     styleUrls: ['./member-popin.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, MatInput, FormsModule, MatFormField, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
+    imports: [CdkScrollable, MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, MatInput, FormsModule, MatFormField, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
 })
 export class MemberPopinComponent {
 

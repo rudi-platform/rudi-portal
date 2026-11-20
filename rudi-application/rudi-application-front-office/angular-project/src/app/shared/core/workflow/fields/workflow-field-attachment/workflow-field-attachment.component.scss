@@ -20,6 +20,23 @@
     padding-top: 13px;
 }
 
+// RGAA 7.3: native button around the former clickable icon, rendered like the bare icon
+.download-attachment-button {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    color: inherit;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: var(--focus) solid 2px;
+        outline-offset: 2px;
+    }
+}
+
 .download-attachment-icon {
     width: 36px;
     height: 50px;

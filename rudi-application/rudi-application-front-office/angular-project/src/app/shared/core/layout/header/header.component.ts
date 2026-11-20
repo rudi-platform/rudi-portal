@@ -97,6 +97,10 @@ export class HeaderComponent implements OnInit {
         return this.breakpointObserver.getNgClassFromMediaSize('nav-link');
     }
 
+    get navigationSkipLinkTargetId(): string {
+        return this.mediaSize?.isDeviceMobile && this.isCollapsed ? 'header-navigation-toggle' : 'header-navigation';
+    }
+
     /**
      * Evenet : sur clic du burger
      */
@@ -117,7 +121,7 @@ export class HeaderComponent implements OnInit {
         this.authenticationService.logout().subscribe({
             next: (logoutUri: string) => {
                 AuthenticationService.clearTokens();
-                if (logoutUri && logoutUri.startsWith('http')) {
+                if (logoutUri?.startsWith('http')) {
                     window.location.href = logoutUri;
                 } else {
                     this.snackBarService.openSnackBar({

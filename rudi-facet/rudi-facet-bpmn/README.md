@@ -239,3 +239,33 @@ Exemple de définition après la RUDI-2605 :
         - [matching-data.json](src/test/resources/bpmn/sections/matching-data.json)
         - [consent.json](src/test/resources/bpmn/sections/consent.json)
         - [data-access.json](src/test/resources/bpmn/sections/data-access.json)
+
+### Champs particuliers
+#### Champ image de l'asset
+Le champ qui représente **l’image principale de l’asset** doit respecter deux conditions :
+
+1. `type` doit être `ATTACHMENT`
+2. `name` doit être strictement `elementImage`
+
+Si l’une de ces conditions n’est pas respectée, le champ est traité comme une pièce jointe classique, et **pas** comme l’image de l’asset.
+
+Les autres champs image peuvent aussi utiliser `type: ATTACHMENT`, mais ils ne bénéficieront pas du traitement spécifique réservé à l’image principale.
+
+Dans `extendedType`, vous pouvez définir les contraintes de validation de l’image :
+- taille maximale (`maxSize`)
+- types MIME autorisés
+- extensions associées
+
+Exemple :
+
+```json
+{
+	"name": "elementImage",
+	"label": "label de l'image",
+	"type": "ATTACHMENT",
+	"required": false,
+	"extendedType": "{\"maxSize\":\"10\",\"types\":[{\"mediaType\":\"image/jpeg\",\"associatedExtensions\":[\"jpeg\",\"jpg\"]},{\"mediaType\":\"image/png\",\"associatedExtensions\":[\"png\"]}]}"
+}
+```
+
+

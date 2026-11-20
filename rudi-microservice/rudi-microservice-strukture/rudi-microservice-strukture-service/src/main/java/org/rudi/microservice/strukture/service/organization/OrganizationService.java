@@ -3,6 +3,7 @@ package org.rudi.microservice.strukture.service.organization;
 import java.util.List;
 import java.util.UUID;
 
+import org.rudi.bpmn.core.bean.Form;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceForbiddenException;
@@ -69,4 +70,10 @@ public interface OrganizationService {
 
 
 	NodeOrganization getNodeOrganization(UUID uuid) throws AppServiceException;
+
+	void checkOrganizationAndLinkWithProvider(UUID organizationUuid) throws AppServiceException;
+
+	Organization getOrganizationIfStatusValid(UUID organizationUuid) throws AppServiceException;
+
+	void fillNodeOrganizationUpdateForm(Form updateForm, NodeOrganization nodeOrganization) throws AppServiceException;
 }

@@ -2,7 +2,7 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Base64EncodedLogo, ImageLogoService} from '@core/services/image-logo.service';
 import {LogService} from '@core/services/log.service';
-
+import {TranslatePipe} from '@ngx-translate/core';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {KonsultService} from 'micro_service_modules/konsult/konsult-api';
 import {FooterDescription} from 'micro_service_modules/konsult/konsult-model';
@@ -13,7 +13,7 @@ import {Observable, of, switchMap} from 'rxjs';
     templateUrl: './social-media-section.component.html',
     styleUrl: './social-media-section.component.scss',
     encapsulation: ViewEncapsulation.None,
-    imports: [LoaderComponent]
+    imports: [LoaderComponent, TranslatePipe]
 })
 export class SocialMediaSectionComponent implements OnInit {
 

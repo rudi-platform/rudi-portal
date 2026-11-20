@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import jakarta.annotation.Nullable;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -23,6 +21,4 @@ public interface UserDao extends JpaRepository<UserEntity, Long> {
 
 	@Nullable
 	UserEntity findByLogin(String login);
-
-	List<UserEntity> findByAccountLockedAndLastFailedAttemptLessThan(boolean locked, LocalDateTime lastFailedAttempt);
 }

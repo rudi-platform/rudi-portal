@@ -1,4 +1,4 @@
-import {AsyncPipe, NgClass} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -19,15 +19,12 @@ import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {SearchBoxComponent} from '@shared/core/search/search-box/search-box.component';
 import {Metadata, MetadataList} from 'micro_service_modules/api-kaccess';
 import {SimpleSkosConcept} from 'micro_service_modules/kos/kos-model';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {DatasetListBannerComponent} from '../../common/dataset-list-banner/dataset-list-banner.component';
 import {DatasetListComponent} from '../../common/dataset-list/dataset-list.component';
 import {FiltersItemsListComponent} from '../filters-items-list/filters-items-list.component';
 import {OrderComponent} from '../order/order.component';
-
-
-const FIRST_PAGE = 1;
 const EMPTY_METADATA_LIST: MetadataList = {
     total: 0,
     items: []
@@ -47,7 +44,6 @@ const EMPTY_METADATA_LIST: MetadataList = {
         MatButton,
         MatIcon,
         DatasetListComponent,
-        AsyncPipe,
         TranslatePipe
     ],
 })
@@ -59,6 +55,7 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     @Input() limit = MAX_RESULTS_PER_PAGE;
     @Input() themes: SimpleSkosConcept[];
     @Input() showMobileFilters = true;
+    @Input() hideDatasetPublishButton = false;
     /**
      * Set fixed number of cards to be displayed in a row.
      * maximum = 12 (current limit in SCSS rule : .data-set-container-*-cards).
@@ -75,12 +72,12 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     public isLoading = false;
     metadataList = EMPTY_METADATA_LIST;
     searchIsRunning = false;
-    searche$: Observable<string>;
+    /** Terme de recherche correspondant au nombre de résultats affiché (RGAA 7.5) */
+    resultsSearchTerm: string;
     metadataListTotal: number;
     private filtersServiceSubscription?: Subscription;
     producerNames: string[];
     private readonly isDestroyed$: Subject<void> = new Subject<void>();
-    selectedDatesItems: Item[] = [];
     selectedThemeItems: Item[] = [];
     selectedProducerItems: Item[] = [];
     selectedAccessStatusItems: AccessStatusFilterItem[] = [];
@@ -95,12 +92,10 @@ export class ListContainerComponent implements OnInit, OnDestroy {
         private readonly sidenavOpeningsService: SidenavOpeningsService,
         private readonly themeCacheService: ThemeCacheService,
     ) {
-        this.searche$ = this.filtersService.searchFilter.value$;
     }
 
     get hasSelectedItems(): boolean {
         return (
-            this.selectedDatesItems?.length > 0 ||
             this.selectedAccessStatusItems?.length > 0 ||
             this.selectedProducerItems?.length > 0 ||
             this.selectedThemeItems?.length > 0
@@ -140,6 +135,8 @@ export class ListContainerComponent implements OnInit, OnDestroy {
     }
 
     getMetadataListTotal($event: number): void {
+        // Captured with the total so the live region never pairs a new search term with the previous count
+        this.resultsSearchTerm = this.filtersService.searchFilter.value;
         this.metadataListTotal = $event;
     }
 

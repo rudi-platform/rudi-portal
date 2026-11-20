@@ -1,10 +1,11 @@
 <mat-toolbar
              class="rudi-filters-toolbar" [ngClass]="{'filters-hidden': mediaSize.isXs || mediaSize.isSm || mediaSize.isMd}">
 
-    <app-filter-menu
+    <app-button-disclosure
         #themesMenu
         (closed)="themesForm.revert()"
         [counter$]="themesForm.counter$"
+        triggerClass="button rudi-select-button"
         buttonTextKey="filterBox.thematique">
         <app-themes-filter-form
             #themesForm
@@ -13,12 +14,13 @@
             [values]="themes"
             ulClass="ps-0">
         </app-themes-filter-form>
-    </app-filter-menu>
+    </app-button-disclosure>
 
-    <app-filter-menu
+    <app-button-disclosure
         #producerNamesMenu
         (closed)="producerNamesForm.revert()"
         [counter$]="producerNamesForm.counter$"
+        triggerClass="button rudi-select-button"
         buttonTextKey="filterBox.producteur">
         <app-producer-names-filter-form
             #producerNamesForm
@@ -27,27 +29,15 @@
             [values]="producerNames"
             ulClass="ps-0">
         </app-producer-names-filter-form>
-    </app-filter-menu>
+    </app-button-disclosure>
 
-    <app-filter-menu
-        #datesMenu
-        (closed)="datesForm.revert()"
-        [counter$]="datesForm.counter$"
-        buttonTextKey="filterBox.couvertureTemporelle">
-        <app-dates-filter-form
-            #datesForm
-            (selectedItemsChange)="selectedDatesItemsChange.emit($event)"
-            (submitFormEvent)="datesMenu.close()"
-            debutDivClass="d-flex me-3"
-            finDivClass="d-flex mt-2 me-3">
-        </app-dates-filter-form>
-    </app-filter-menu>
 
-    <app-filter-menu
+    <app-button-disclosure
         #accessStatusMenu
         (closed)="AccessStatusForm.revert()"
         [counter$]="AccessStatusForm.counter$"
         [isHidden]="accessStatusForcedValue !== undefined"
+        triggerClass="button rudi-select-button"
         buttonTextKey="filterBox.restrictedAccess.statut">
         <app-access-status-filter-form
             #AccessStatusForm
@@ -57,5 +47,15 @@
             [hiddenValues]="accessStatusHiddenValues"
             ulClass="ps-0">
         </app-access-status-filter-form>
-    </app-filter-menu>
+    </app-button-disclosure>
+
+    <span class="spacer"></span>
+
+    @if (datasetPublishButtonHtml) {
+        <div class="dataset-publish-button-desktop" [innerHTML]="datasetPublishButtonHtml"></div>
+    }
 </mat-toolbar>
+
+@if ((mediaSize.isXs || mediaSize.isSm || mediaSize.isMd) && datasetPublishButtonHtml) {
+    <div class="dataset-publish-button-mobile" [innerHTML]="datasetPublishButtonHtml"></div>
+}

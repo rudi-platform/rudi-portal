@@ -1,6 +1,7 @@
 package org.rudi.microservice.acl.service.account.impl;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
@@ -10,13 +11,19 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import bean.workflow.SelfdataTaskSearchCriteria;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.rudi.common.core.security.AccountState;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.MissingParameterException;
+import org.rudi.facet.organization.bean.StruktureTaskSearchCriteria;
+import org.rudi.facet.organization.helper.OrganizationHelper;
+import org.rudi.facet.projekt.helper.ProjektHelper;
+import org.rudi.facet.selfdata.helper.SelfdataHelper;
 import org.rudi.microservice.acl.core.bean.Account;
 import org.rudi.microservice.acl.core.bean.PasswordChange;
 import org.rudi.microservice.acl.core.bean.RoleSearchCriteria;
@@ -30,6 +37,7 @@ import org.rudi.microservice.acl.service.account.LoginNotMailException;
 import org.rudi.microservice.acl.service.account.MissingFieldException;
 import org.rudi.microservice.acl.service.account.SendEmailRegistrationException;
 import org.rudi.microservice.acl.service.account.TokenExpiredException;
+import org.rudi.microservice.acl.service.config.UserAccountDeletionConfiguration;
 import org.rudi.microservice.acl.service.helper.EmailHelper;
 import org.rudi.microservice.acl.service.helper.PasswordHelper;
 import org.rudi.microservice.acl.service.mapper.accountregistration.AccountRegistrationMapper;
@@ -39,12 +47,15 @@ import org.rudi.microservice.acl.service.user.UserService;
 import org.rudi.microservice.acl.storage.dao.accountregistration.AccountRegistrationDao;
 import org.rudi.microservice.acl.storage.dao.accountupdate.ResetPasswordRequestDao;
 import org.rudi.microservice.acl.storage.dao.role.RoleCustomDao;
+import org.rudi.microservice.acl.storage.dao.user.UserCustomDao;
 import org.rudi.microservice.acl.storage.dao.user.UserDao;
 import org.rudi.microservice.acl.storage.entity.accountregistration.AccountRegistrationEntity;
 import org.rudi.microservice.acl.storage.entity.accountupdate.ResetPasswordRequestEntity;
 import org.rudi.microservice.acl.storage.entity.role.RoleEntity;
 import org.rudi.microservice.acl.storage.entity.user.UserEntity;
+import org.rudi.microservice.projekt.core.bean.ProjektTaskSearchCriteria;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,10 +75,14 @@ public class AccountServiceImpl implements AccountService {
 	@Value("${rudi.acl.accountregistration.validity:90}")
 	private int accountRegistrationValidity;
 
+	private static final String ANONYMIZED_LAST_NAME = "Utilisateur Inconnu";
+
 	@Value("${application.role.user.code:USER}")
 	private String userRoleCode;
 
 	private final UserDao userDao;
+
+	private final UserCustomDao userCustomDao;
 
 	private final AccountRegistrationDao accountRegistrationDao;
 
@@ -86,6 +101,15 @@ public class AccountServiceImpl implements AccountService {
 	private final ResetPasswordRequestDao resetPasswordRequestDao;
 
 	private final UpdatePasswordTokenHelper updatePasswordTokenHelper;
+
+	private final UserAccountDeletionConfiguration accountDeletionConfiguration;
+
+	private final ProjektHelper projektHelper;
+
+	private final OrganizationHelper organizationHelper;
+
+	private final SelfdataHelper selfdataHelper;
+
 
 	@Override
 	public void checkAccountCreation(Account account)
@@ -304,5 +328,146 @@ public class AccountServiceImpl implements AccountService {
 				resetPasswordRequestDao.delete(element);
 			}
 		});
+	}
+
+	/**
+	 * Envoyer un avertissement aux utilisateurs concernant la suppression imminente de leur compte
+	 * en raison d'inactivité
+	 */
+	@Transactional
+	@Override
+	public void sendAccountDeletionWarnings() {
+		log.info("Sending account deletion warnings...");
+
+		// Calculer la date seuil : maintenant - (inactivityMonthsBeforeDeletion - deletionWarningMonthsBefore) mois
+		final int warningThresholdMonths = accountDeletionConfiguration.getInactivityMonthsBeforeDeletion()
+				- accountDeletionConfiguration.getDeletionWarningMonthsBefore();
+		final LocalDateTime thresholdDate = LocalDate.now().atStartOfDay().minusMonths(warningThresholdMonths);
+
+		List<UserEntity> inactiveUsers = searchInactivePersonUsers(thresholdDate, List.of(AccountState.ACTIVE));
+
+		if (CollectionUtils.isEmpty(inactiveUsers)) {
+			log.info("No inactive users found for deletion warning");
+			return;
+		}
+
+		// Vérifier si le user a des tâches en cours.
+		for (UserEntity user : inactiveUsers) {
+			emailHelper.sendAccountDeletionWarning(user, Locale.FRENCH, hasPendingTasks(user), warningThresholdMonths);
+			user.setAccountState(AccountState.INACTIVE);
+			userDao.save(user);
+		}
+
+
+		log.info("Found {} inactive users to warn", inactiveUsers.size());
+	}
+
+	private List<UUID> collectUserRoleUuids() {
+		// Récupérer le rôle USER pour son UUID
+		RoleSearchCriteria roleSearchCriteria = new RoleSearchCriteria();
+		roleSearchCriteria.setCode(userRoleCode);
+		List<RoleEntity> userRoles = roleCustomDao.searchRoles(roleSearchCriteria);
+
+		if (CollectionUtils.isEmpty(userRoles)) {
+			log.warn("{} role not found in database", userRoleCode);
+		}
+
+		// Extraire l'UUID du rôle USER
+		return userRoles.stream()
+				.map(RoleEntity::getUuid)
+				.toList();
+	}
+
+	private List<UserEntity> searchInactivePersonUsers(LocalDateTime thresholdDate, List<AccountState> accountStates) {
+		List<UUID> userRoleUuids = collectUserRoleUuids();
+		if(CollectionUtils.isEmpty(userRoleUuids)) {
+			log.warn("No user role UUIDs found, cannot search for inactive users");
+			return List.of();
+		}
+
+		// Créer le critère de recherche pour les utilisateurs inactifs
+		UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
+		userSearchCriteria.setLastConnexionBefore(thresholdDate);
+		userSearchCriteria.setType(
+				org.rudi.microservice.acl.core.bean.UserType.PERSON);
+		userSearchCriteria.setRoleUuids(userRoleUuids);
+		userSearchCriteria.setAccountStates(accountStates);
+
+		// Rechercher les utilisateurs correspondant aux critères
+		return userCustomDao.searchUsers(userSearchCriteria, Pageable.unpaged())
+				.getContent();
+	}
+
+	private boolean hasPendingTasks(UserEntity user) {
+		ProjektTaskSearchCriteria projektTaskSearchCriteria = new ProjektTaskSearchCriteria();
+		projektTaskSearchCriteria.setUserLogin(user.getLogin());
+		projektTaskSearchCriteria.setAsAdmin(true);
+
+		StruktureTaskSearchCriteria struktureTaskSearchCriteria = new StruktureTaskSearchCriteria();
+		struktureTaskSearchCriteria.setUserLogin(user.getLogin());
+		struktureTaskSearchCriteria.setAsAdmin(true);
+
+		SelfdataTaskSearchCriteria selfdataTaskSearchCriteria = new SelfdataTaskSearchCriteria();
+		selfdataTaskSearchCriteria.setUserLogin(user.getLogin());
+		selfdataTaskSearchCriteria.setAsAdmin(true);
+
+		return !projektHelper.searchTasks(projektTaskSearchCriteria).isEmpty()
+				|| !organizationHelper.searchTasks(struktureTaskSearchCriteria).isEmpty()
+				|| !selfdataHelper.searchTasks(selfdataTaskSearchCriteria).isEmpty();
+	}
+
+	@Transactional
+	@Override
+	public void deleteInactiveUsersAccount() {
+		// Calculer la date seuil : maintenant - inactivityMonthsBeforeDeletion mois
+		final LocalDateTime thresholdDate = LocalDate.now().atStartOfDay()
+				.minusMonths(accountDeletionConfiguration.getInactivityMonthsBeforeDeletion());
+
+		List<UserEntity> inactiveUsers = searchInactivePersonUsers(thresholdDate, List.of(AccountState.INACTIVE));
+
+		for (UserEntity user : inactiveUsers) {
+			String loginAvantAnonymisation = user.getLogin();
+			UUID userUuid = user.getUuid();
+			boolean hasActiveElements = hasPendingTasks(user);
+
+			anonymizeUser(user);
+			notifyMicroservicesOfUserDeactivation(loginAvantAnonymisation, userUuid);
+
+			emailHelper.sendAccountDeletedToUser(loginAvantAnonymisation, Locale.FRENCH);
+			if (hasActiveElements) {
+				emailHelper.sendAccountDeletedToAnimators(emailHelper.lookupModeratorEmails(), userUuid, Locale.FRENCH);
+			}
+		}
+	}
+
+	private void notifyMicroservicesOfUserDeactivation(String login, UUID userUuid) {
+
+		try {
+			organizationHelper.notifyUserDeactivation(login, userUuid);
+		} catch (Exception e) {
+			log.error("Failed to notify organization service about user deactivation for user: {}", login, e);
+		}
+
+		try {
+			projektHelper.notifyUserDeactivation(login, userUuid);
+		} catch (Exception e) {
+			log.error("Failed to notify projekt service about user deactivation for user: {}", login, e);
+		}
+
+		try {
+			selfdataHelper.notifyUserDeactivation(login, userUuid);
+		} catch (Exception e) {
+			log.error("Failed to notify selfdata service about user deactivation for user: {}", login, e);
+		}
+	}
+
+	public void anonymizeUser(UserEntity userEntity) {
+		userEntity.setLastname(ANONYMIZED_LAST_NAME);
+		userEntity.setFirstname(StringUtils.EMPTY);
+		userEntity.setLogin(userEntity.getUuid().toString());
+		userEntity.setPassword(StringUtils.EMPTY);
+		userEntity.setAccountState(AccountState.DELETED);
+		userEntity.getAddresses().clear();
+		userDao.save(userEntity);
 	}
 }

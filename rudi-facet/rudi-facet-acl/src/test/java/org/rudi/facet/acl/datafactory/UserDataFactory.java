@@ -64,6 +64,19 @@ public class UserDataFactory extends AbstractDataFactory {
 		return getOrCreateUser(login, UserType.PERSON, List.of(roleDataFactory.getOrCreate("USER", null), roleDataFactory.getOrCreate("MODERATOR", null)), true);
 	}
 
+	public User createSimpleUser(UUID uuid, String login) {
+		return new User().uuid(uuid).login(login);
+	}
+
+	public User createUserWithRole(String login, UserType type, String roleCode) {
+		User user = new User();
+		user.setUuid(UUID.randomUUID());
+		user.setLogin(login);
+		user.setType(type);
+		user.setRoles(List.of(roleDataFactory.getOrCreate(roleCode, null)));
+		return user;
+	}
+
 	public User getOrCreateJean() {
 		User user = null;
 		String login = "jean@user-rudi.bzh";

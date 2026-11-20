@@ -1,0 +1,34 @@
+@if (!isHidden) {
+  @let count = counter$ | async;
+  <button
+    mat-raised-button
+    type="button"
+    [ngClass]="[triggerClass, isOpened ? 'active' : '']"
+    [attr.aria-expanded]="isOpened"
+    [attr.aria-controls]="panelId"
+    (click)="toggle()"
+    [matBadge]="count"
+    [matBadgeDescription]="count ? ('filterBox.filtresSelectionnes' | translate: {count: count}) : null"
+    >
+    @if (buttonTextKey) {
+      <span>{{buttonTextKey | translate}}</span>
+    } @else {
+      <ng-content select="[disclosureTrigger]"></ng-content>
+    }
+    @if (showStateIcon) {
+      <mat-icon aria-hidden="true" iconPositionEnd class="rudi-select-arrow"
+        [fontIcon]="isOpened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"></mat-icon>
+    }
+  </button>
+  @if (isOpened) {
+    <div
+      [id]="panelId"
+      class="rudi-select-panel rudi-disclosure-panel d-flex flex-column"
+      [ngClass]="'y-' + yPosition"
+      [attr.role]="buttonTextKey ? 'group' : null"
+      [attr.aria-label]="buttonTextKey ? (buttonTextKey | translate) : null"
+    >
+      <ng-content></ng-content>
+    </div>
+  }
+}

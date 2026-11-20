@@ -207,7 +207,6 @@ public class GdprSensitiveMetadataExtMetadataValidatorUT {
 		return metadata;
 	}
 
-	// TODO prendre en pramètre InterfaceContract et pas un String
 	private Media createMediaService(String name, String connectorName, String url) {
 		return new Media().mediaName(name).mediaType(Media.MediaTypeEnum.SERVICE)
 				.connector(new Connector().interfaceContract(connectorName).url(url));

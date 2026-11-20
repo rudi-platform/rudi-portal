@@ -18,6 +18,7 @@ import org.rudi.common.storage.dao.RepositoryConstants;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.ProviderCustomDao;
 import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerEntity;
+import org.rudi.microservice.strukture.storage.entity.provider.LinkedProducerStatus;
 import org.rudi.microservice.strukture.storage.entity.provider.NodeProviderEntity;
 import org.rudi.microservice.strukture.storage.entity.provider.ProviderEntity;
 import org.springframework.data.domain.Page;
@@ -142,10 +143,18 @@ public class ProviderCustomDaoImpl extends AbstractCustomDaoImpl<ProviderEntity,
 				}
 
 			// Ajout du filtre sur l'organisation
-			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getOrganisationUuid())) {
+			if (CollectionUtils.isNotEmpty(searchProviderCriteria.getOrganisationUuid())
+					|| CollectionUtils.isNotEmpty(searchProviderCriteria.getLinkedProducerStatus())) {
 				Join<ProviderEntity, LinkedProducerEntity> linkedProducerJoin = root.join(FIELD_LINKED_PRODUCER, JoinType.LEFT);
-				predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_ORGANIZATION)
-						.get(RepositoryConstants.FIELD_UUID).in(searchProviderCriteria.getOrganisationUuid()));
+				if (CollectionUtils.isNotEmpty(searchProviderCriteria.getOrganisationUuid())) {
+					predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_ORGANIZATION)
+							.get(RepositoryConstants.FIELD_UUID).in(searchProviderCriteria.getOrganisationUuid()));
+				}
+				if (CollectionUtils.isNotEmpty(searchProviderCriteria.getLinkedProducerStatus())) {
+					predicates.add(linkedProducerJoin.get(LinkedProducerEntity.FIELD_LINKED_PRODUCER_STATUS)
+							.in(searchProviderCriteria.getLinkedProducerStatus().stream()
+									.map(status -> LinkedProducerStatus.valueOf(status.getValue())).toList()));
+				}
 			}
 
 

@@ -37,13 +37,6 @@
     margin-top: 10px;
 }
 
-::ng-deep {
-    .mat-select-value,
-    input[matinput] {
-        outline: none !important;
-    }
-}
-
 .card-sub-title {
     font-size: 12px;
     line-height: 1.56;

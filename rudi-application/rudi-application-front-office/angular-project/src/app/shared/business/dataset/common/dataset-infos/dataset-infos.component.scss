@@ -1,6 +1,11 @@
 @use "app/styles/common-style";
 @use "app/styles/responsive";
 
+.jdd-card-link {
+    color: inherit;
+    text-decoration: none;
+}
+
 .container-global {
     display: flex;
     flex-wrap: wrap;

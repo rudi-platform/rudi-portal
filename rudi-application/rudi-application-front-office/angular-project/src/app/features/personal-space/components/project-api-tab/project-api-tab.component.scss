@@ -1,10 +1,5 @@
 @use "common-style";
 
-*:focus-visible {
-    // on ne veut pas les rectangles bleu sur focus du champ input
-    outline: none;
-}
-
 .card-api {
     padding: 2em;
 }
@@ -50,9 +45,24 @@
 }
 
 .identification-title {
+    font-family: inherit;
     font-size: 19px;
     font-weight: 600;
+    letter-spacing: inherit;
     line-height: 1.72;
+    margin: 0;
+}
+
+.explanation-text a {
+    color: var(--focus);
+}
+
+.new-tab-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-bottom;
+    margin-left: 4px;
 }
 
 ::ng-deep {

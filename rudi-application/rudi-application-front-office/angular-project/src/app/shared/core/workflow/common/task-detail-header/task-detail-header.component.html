@@ -3,17 +3,19 @@
     <app-loader [active]="headingLoading" [allPage]="false" [noText]="true" [isLight]="true" [isTransparent]="true"></app-loader>
     @if (!headingLoading) {
       <div>
-        <div class="d-flex justify-content-center">
-          <span
-          class="card-text">{{ pageTitle }}</span>
-        </div>
-        <div class="title-container">
-          <span class="icon-header-title">
-            <mat-icon class="large-icon-size" aria-hidden="false" aria-label=""
-            [svgIcon]="icon"></mat-icon>
+        <h1 class="task-detail-heading">
+          <span class="d-flex justify-content-center">
+            <span
+            class="card-text">{{ pageTitle }}</span>
           </span>
-          <span class="header-title">{{ pageSubTitle }}</span>
-        </div>
+          <span class="title-container">
+            <span class="icon-header-title">
+              <mat-icon class="large-icon-size" aria-hidden="true"
+              [svgIcon]="icon"></mat-icon>
+            </span>
+            <span class="header-title">{{ pageSubTitle }}</span>
+          </span>
+        </h1>
         @if (status) {
           <div class="status-container">
             <span class="status-chip">{{ status }}</span>

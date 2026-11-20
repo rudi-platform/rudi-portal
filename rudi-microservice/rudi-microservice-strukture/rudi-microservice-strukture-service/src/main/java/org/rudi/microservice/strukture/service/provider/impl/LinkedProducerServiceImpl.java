@@ -154,5 +154,4 @@ public class LinkedProducerServiceImpl implements LinkedProducerService {
 
 		return linkedProducerMapper.entityToDto(linkedProducerDao.save(linkedProducerEntity));
 	}
-
 }

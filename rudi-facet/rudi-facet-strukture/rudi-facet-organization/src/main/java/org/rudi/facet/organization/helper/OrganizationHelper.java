@@ -1,6 +1,7 @@
 package org.rudi.facet.organization.helper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -10,12 +11,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.rudi.bpmn.core.bean.Status;
 import org.rudi.facet.organization.bean.Organization;
 import org.rudi.facet.organization.bean.OrganizationMember;
 import org.rudi.facet.organization.bean.OrganizationRole;
 import org.rudi.facet.organization.bean.OrganizationStatus;
 import org.rudi.facet.organization.bean.PagedOrganizationList;
+import org.rudi.facet.organization.bean.Status;
+import org.rudi.facet.organization.bean.StruktureTaskSearchCriteria;
+import org.rudi.facet.organization.bean.Task;
 import org.rudi.facet.organization.helper.exceptions.AddUserToOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
@@ -126,6 +129,7 @@ public class OrganizationHelper {
 	}
 
 	@Nonnull
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	public PagedOrganizationList searchOrganizations(List<UUID> uuids, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws GetOrganizationException {
 		final var mono = organizationWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getOrganizationsPath())
@@ -217,5 +221,34 @@ public class OrganizationHelper {
 		} catch (GetOrganizationException e) {
 			throw new IllegalArgumentException("Invalid organization uuid " + ownerUuid, e);
 		}
+	}
+
+	public List<Task> searchTasks(StruktureTaskSearchCriteria criteria) {
+		return organizationWebClient.get()
+				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getSearchTasksPath())
+						.queryParamIfPresent("name", Optional.ofNullable(criteria.getName()))
+						.queryParamIfPresent("description", Optional.ofNullable(criteria.getDescription()))
+						.queryParamIfPresent("processDefinitionKeys", Optional.ofNullable(criteria.getProcessDefinitionKeys()))
+						.queryParamIfPresent("status", Optional.ofNullable(criteria.getStatus()))
+						.queryParamIfPresent("functionalStatus", Optional.ofNullable(criteria.getFunctionalStatus()))
+						.queryParamIfPresent("asAdmin", Optional.ofNullable(criteria.getAsAdmin()))
+						.queryParamIfPresent("minCreationDate", Optional.ofNullable(criteria.getMinCreationDate()))
+						.queryParamIfPresent("maxCreationDate", Optional.ofNullable(criteria.getMaxCreationDate()))
+						.queryParamIfPresent("userLogin", Optional.ofNullable(criteria.getUserLogin()))
+						.build())
+				.retrieve()
+				.bodyToMono(Task[].class)
+				.blockOptional()
+				.map(Arrays::asList)
+				.orElse(List.of());
+	}
+
+	public void notifyUserDeactivation(String login, UUID userUuid) {
+		organizationWebClient.put()
+				.uri(uriBuilder -> uriBuilder.path(organizationProperties.getHandleUserDeactivationPath())
+						.queryParamIfPresent("login", Optional.ofNullable(login))
+						.queryParamIfPresent("userUuid", Optional.ofNullable(userUuid))
+						.build())
+				.retrieve().bodyToMono(Void.class).block();
 	}
 }

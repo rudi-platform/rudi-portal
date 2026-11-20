@@ -66,7 +66,7 @@ export class DatasetTaskDetailComponent
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/key_icon_circle.svg'));
         iconRegistry.addSvgIcon(
             'project',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/projet.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/project.svg'));
         iconRegistry.addSvgIcon(
             'historical',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/historique.svg'));

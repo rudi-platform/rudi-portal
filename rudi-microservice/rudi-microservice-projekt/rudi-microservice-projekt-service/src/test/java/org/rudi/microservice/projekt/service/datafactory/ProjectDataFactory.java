@@ -5,12 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.facet.bpmn.datafactory.AbstractAssetDescriptionDataFactory;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.OwnerType;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetStatus;
+import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestStatus;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectStatus;
@@ -64,7 +66,7 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 		project.setDescription(description);
 		project.setOwnerUuid(ownerUuid);
 		project.setOwnerType(ownerType);
-		project.setContactEmail(randomString(10) + "@test.fr");
+		project.setContactEmail(RandomStringUtils.randomAlphanumeric(10) + "@test.fr");
 		project.setStatus(Status.COMPLETED);
 		project.setProjectStatus(ProjectStatus.DRAFT);
 		project.setFunctionalStatus("Créé");
@@ -117,6 +119,22 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 	private UUID resolveProjectUuid(UUID projectUuid) {
 		return projectUuid != null ? projectUuid : UUID.randomUUID();
 	}
+
+	/**
+	 * Crée et persiste un projet avec un ownerUuid donné auquel sont rattachées des demandes de nouveaux jeux de données
+	 * déjà construites (title/description/status maîtrisés par l'appelant). La cascade ALL de la relation
+	 * datasetRequests persiste les demandes en même temps que le projet.
+	 */
+	public ProjectEntity createProjectWithRequests(UUID ownerUuid, OwnerType ownerType,
+			NewDatasetRequestEntity... requests) {
+		ProjectEntity project = createBaseProject(UUID.randomUUID(), "Projet " + randomString(10),
+				"Projet avec demandes " + randomString(10), ownerUuid, ownerType);
+		for (NewDatasetRequestEntity request : requests) {
+			project.getDatasetRequests().add(request);
+		}
+		return repository.save(project);
+	}
+
 
 	/**
 	 * Crée ou récupère un projet "Lampadaires" avec LinkedDatasets et NewDatasetRequest
@@ -353,5 +371,51 @@ public class ProjectDataFactory extends AbstractAssetDescriptionDataFactory<Proj
 		relatedOrganization.setOrganizationUuid(organizationUuid != null ? organizationUuid : UUID.randomUUID());
 		relatedOrganization.setRelationStatus(relationStatus != null ? relationStatus : RelationStatus.PENDING);
 		return relatedOrganization;
+	}
+
+	/**
+	 * Crée ou récupère un projet avec un titre spécifique pour test de recherche
+	 */
+	public ProjectEntity getOrCreateProjectByTitle(String title, UUID ownerUuid, OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(title + "-title-search", ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, title, "Projet pour test de recherche sur titre", ownerUuid,
+				ownerType);
+		project.setProjectStatus(ProjectStatus.VALIDATED);
+		return repository.save(project);
+	}
+
+	/**
+	 * Crée ou récupère un projet avec une description spécifique pour test de recherche
+	 */
+	public ProjectEntity getOrCreateProjectByDescription(String description, UUID ownerUuid, OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(description + "-description-search", ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, "Projet pour test de recherche sur description",
+				description, ownerUuid, ownerType);
+		return repository.save(project);
+	}
+
+	/**
+	 * Crée ou récupère un projet avec titre et description pour test de recherche multi-champs
+	 */
+	public ProjectEntity getOrCreateProjectWithTitleAndDescription(String title, String description, UUID ownerUuid,
+			OwnerType ownerType) {
+		UUID projectUuid = generateDeterministicUuid(title + "-" + description, ownerType);
+		ProjectEntity existingProject = repository.findByUuid(projectUuid);
+		if (existingProject != null) {
+			return existingProject;
+		}
+
+		ProjectEntity project = createBaseProject(projectUuid, title, description, ownerUuid, ownerType);
+		return repository.save(project);
 	}
 }

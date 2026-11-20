@@ -90,7 +90,7 @@ export class OrganizationFormComponent implements OnInit {
 
     ngOnInit(): void {
         this.organizationAddresses = this.organizationAddressesMapper
-            .mapAbstractAddressesToOrganizationAddresses(this.organization?.addresses ?? []);
+            .mapAbstractAddressesToOrganizationAddresses(this.organization?.addresses ?? [], this.organization?.address);
         this.prefillDraftFormIfEmpty();
     }
 

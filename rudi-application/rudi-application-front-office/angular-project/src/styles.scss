@@ -6,14 +6,54 @@
 @use "font-montserrat";
 @use "mat-theming.scss";
 @use "responsive";
+@use "@angular/cdk" as cdk;
 
 @import "ag-grid-community/styles/ag-grid.css";
 @import "ag-grid-community/styles/ag-theme-alpine.css";
 
+// LiveAnnouncer adds .cdk-visually-hidden but does not load its styles itself
+@include cdk.a11y-visually-hidden();
 
+// Bootstrap keeps a hidden caption in the flow (1px, margin -1px): cancel the 1px it takes off the table
+caption.visually-hidden {
+    margin-top: 0 !important;
+}
 
-html, body {
+html,
+body {
     height: 100%;
+}
+
+// Focus global de l'appli :
+// des endroits redéclarent la même valeur en dur,
+// à garder synchro si on change:
+// - data-set-card / project-card / organization-card : le stretched-link n'a pas
+//   d'outline (coupé par l'overflow:hidden de la carte), donc le focus est redessiné
+//   sur la carte via :has(.stretched-link:focus-visible)
+// - project-task-historic .sort-button : fait un all: unset qui vire aussi l'outline
+//   global, du coup il faut le remettre localement
+// - uploader.component.scss (éviter double cadre de focus)
+html :focus-visible {
+    outline: var(--focus) solid 2px;
+    outline-offset: 2px;
+}
+
+// RGAA 10.7: Material sets `.mat-mdc-fab-base:focus { outline: none }`, which beats the rule above
+html .mat-mdc-fab-base:focus-visible {
+    outline: var(--focus) solid 2px;
+    outline-offset: 2px;
+}
+
+html .btn:focus-visible {
+    outline: var(--focus) solid 2px;
+    outline-offset: 2px;
+}
+
+// RGAA 10.7: Material sets `.mat-expansion-panel-header:focus { outline: none }` and the panel
+// clips overflow, so the outline is drawn inside the header
+html .mat-expansion-panel-header:focus-visible {
+    outline: var(--focus) solid 2px;
+    outline-offset: -2px;
 }
 
 body {
@@ -26,9 +66,9 @@ body {
 }
 
 .red-snackbar {
-    --mat-snackbar-container-color: var(--error-color) !important;
+    --mat-snack-bar-container-color: var(--error-color) !important;
+    --mat-snack-bar-supporting-text-color: var(--white) !important;
     max-width: unset !important;
-
 
     a {
         color: var(--error-color-text) !important;
@@ -37,11 +77,12 @@ body {
 }
 
 .blue-snackbar {
-    --mat-snackbar-container-color: var(--primary-color) !important;
+    --mat-snack-bar-container-color: var(--primary-color) !important;
+    --mat-snack-bar-supporting-text-color: var(--white) !important;
     max-width: unset !important;
 
-
-    a, a:hover {
+    a,
+    a:hover {
         color: var(--error-color-text) !important;
         text-decoration: underline;
     }
@@ -71,10 +112,15 @@ body {
     color: var(--primary-color);
     font-weight: bold;
     text-decoration: underline;
+
+    &:hover {
+        color: var(--primary-color);
+    }
 }
 
 ::ng-deep .account-error-style {
     background-color: #d04838 !important;
+    color: var(--white) !important;
     opacity: 1;
     z-index: 100;
     box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
@@ -95,11 +141,6 @@ body {
     padding-right: 15px;
     margin-right: 12px;
 
-    &:focus {
-        outline: none;
-        background: none;
-    }
-
     .rudi-select-arrow {
         margin-left: 20px;
     }
@@ -107,7 +148,6 @@ body {
 
 /** !important pour surcharger l'attribut fill tout en le conservant dans le fichier SVG original (aperçu plus propre) */
 .svg {
-
     &-primary {
         fill: var(--primary-color) !important;
     }
@@ -127,11 +167,9 @@ body {
     &-no-fill {
         fill: none !important;
     }
-
 }
 
 .restricted .rudi-btn-theme {
-
     .svg-primary {
         fill: var(--secondary-color) !important;
     }
@@ -141,14 +179,15 @@ body {
     }
 }
 
-.restricted:focus {
-
-    .key-icon {
-        .svg-primary {
-            fill: var(--secondary-color) !important;
-        }
+// Le fond du key-icon ne change jamais avec le thème clair (focus/hover)
+.restricted .key-icon {
+    .svg-primary {
+        fill: var(--secondary-color) !important;
     }
+}
 
+.restricted:focus,
+.restricted:focus-within {
     .rudi-btn-theme {
         .svg-primary {
             fill: var(--primary-color) !important;
@@ -158,10 +197,10 @@ body {
             fill: var(--secondary-color) !important;
         }
     }
-
 }
 
-.rudi-menu, .rudi-sidenav-container {
+.rudi-menu,
+.rudi-sidenav-container {
     ul {
         list-style-type: none;
     }
@@ -180,7 +219,8 @@ body {
 }
 
 //overide the mat table margin css
-.th.mat-header-cell:first-of-type, td.mat-cell:first-of-type {
+.th.mat-header-cell:first-of-type,
+td.mat-cell:first-of-type {
     padding: 0 !important;
 }
 
@@ -201,12 +241,11 @@ body {
 }
 
 a {
-    color: #007bff;
+    color: var(--ally-accent-color);
     text-decoration: none;
     background-color: initial;
 
     &:hover {
-        color: #0056b3;
         text-decoration: underline;
     }
 }
@@ -215,7 +254,6 @@ a {
     right: 0;
     top: 0;
 }
-
 
 .button-redirect {
     all: unset;
@@ -229,6 +267,17 @@ a {
 
     &:hover {
         filter: brightness(125%);
+    }
+}
+
+a.button-redirect {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--error-color-text);
+        text-decoration: none;
     }
 }
 
@@ -290,15 +339,9 @@ a {
     }
 }
 
-
 // Style poppins
 #dialog-container {
     max-width: 768px;
-
-    *:focus-visible {
-        // on ne veut pas les rectangles bleu sur focus du champ input
-        outline: none;
-    }
 
     .dialog-cross-button {
         width: 100%;
@@ -329,6 +372,15 @@ a {
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
+// Cancel the layout added by mat-dialog-title (used only to name the dialog)
+            position: static;
+            padding: 0;
+            font-family: inherit;
+            letter-spacing: inherit;
+
+            &::before {
+                content: none;
+            }
         }
 
         .dialog-subtitle {
@@ -435,8 +487,6 @@ a {
     &:hover {
         background-color: var(--focus) !important;
     }
-
-
 }
 
 .secondary-flat-button {

@@ -29,10 +29,9 @@ export class TaskOrganizationInformationComponent implements OnInit {
         this.organization = {
             ...this.organization as Organization,
         };
-        console.log('Organization', this.organization);
-        console.log('Organization.addresses', this.organization.addresses);
-        this.organizationAddresses = this.organizationAddressesMapper.mapAbstractAddressesToOrganizationAddresses(this.organization.addresses);
-        console.log('OrganizationAddresses', this.organizationAddresses);
+        this.organizationAddresses = this.organizationAddressesMapper.mapAbstractAddressesToOrganizationAddresses(
+            this.organization.addresses, this.organization.address
+        );
     }
 
 

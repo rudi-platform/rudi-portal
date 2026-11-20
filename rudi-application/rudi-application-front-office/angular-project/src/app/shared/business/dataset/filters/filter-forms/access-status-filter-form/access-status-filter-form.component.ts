@@ -42,6 +42,7 @@ export class AccessStatusFilterFormComponent extends FilterFormComponent<AccessS
         super.ngOnInit();
 
         this.translateService.get([OPENED_KEY, RESTRICTED_KEY, GDPR_SENSITIVE_KEY, ALL_KEY]).subscribe(translations => {
+            const filterItemsWithoutHiddenValues = this.filterItemsWithoutHiddenValuesPredicate;
             this.items = [
                 {
                     name: (translations[OPENED_KEY] as string),
@@ -63,7 +64,7 @@ export class AccessStatusFilterFormComponent extends FilterFormComponent<AccessS
                     value: null,
                     checked: false
                 }
-            ].filter(this.filterItemsWithoutHiddenValuesPredicate);
+            ].filter((item, index, array) => filterItemsWithoutHiddenValues(item, index, array));
             this.initFormGroup();
         });
     }

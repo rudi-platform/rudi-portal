@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -158,22 +159,27 @@ public class JwtAuthenticationProvider extends AbstractDetailServiceImpl impleme
 			log.info("Impossible de trouver l'utilisateur: {}", login);
 			userService.addFailedAttempt(login);
 			throw new UsernameNotFoundException("Impossible de trouver l'utilisateur : " + login + ".");
-		} else if (Boolean.TRUE.equals(user.getAccountLocked())) {
-			log.warn("Le compte est vérouillé l'utilisateur: {}", login);
-			throw new LockedException("Le compte est vérouillé");
+		}
+		switch (user.getAccountState()) {
+			case LOCKED -> {
+				log.warn("Le compte est verrouillé pour l'utilisateur: {}", login);
+				throw new LockedException("Le compte est verrouillé");
+			}
+			case DELETED -> {
+				log.warn("Le compte est supprimé pour l'utilisateur: {}", login);
+				throw new DisabledException("Le compte est supprimé");
+			}
+			case null, default -> { // le compte est autorisé, on ne fait rien
+			}
 		}
 	}
 
 	private void checkPassword(Authentication authentication, User user) {
 		if (!isAnonymous(user)
 				&& !passwordEncoder.matches(authentication.getCredentials().toString(), user.getPassword())) {
-			if (!userService.recordAuthentication(user.getUuid(), false)) {
-				log.info("Mot de passe erroné pour l'utilisateur: {}", user.getLogin());
-				throw new BadCredentialsException("Mot de passe erroné.");
-			} else {
-				log.info("Compte verouillé: {}", user.getLogin());
-				throw new LockedException("Account is locked");
-			}
+			userService.recordAuthentication(user.getUuid(), false);
+			log.info("Mot de passe erroné pour l'utilisateur: {}", user.getLogin());
+			throw new BadCredentialsException("Mot de passe erroné.");
 		} else {
 			userService.recordAuthentication(user.getUuid(), true);
 		}

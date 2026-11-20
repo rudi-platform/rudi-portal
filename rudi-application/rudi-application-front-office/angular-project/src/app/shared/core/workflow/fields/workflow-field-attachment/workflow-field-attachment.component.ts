@@ -9,7 +9,7 @@ import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {TaskDependencyFetchers} from '@core/services/tasks/task-with-dependencies-service';
 import {SELFDATA_PROCESS_KEY_DEFINITION, TaskDependencyFetcherFactory} from '@core/services/tasks/TaskDependencyFetcherFactory';
-import {TranslateDirective} from '@ngx-translate/core';
+import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 import {UploaderAdapter} from '@shared/core/form/uploader/uploader.adapter';
 import {AttachmentPopinData} from '@shared/core/workflow/fields/workflow-field-attachment-popin/attachment-popin-data';
 import {
@@ -29,7 +29,7 @@ import {UploaderComponent} from '../../../form/uploader/uploader.component';
     templateUrl: './workflow-field-attachment.component.html',
     styleUrls: ['./workflow-field-attachment.component.scss'],
     imports: [FormsModule, ReactiveFormsModule, MatLabel, MatHint, UploaderComponent, LoaderComponent,
-        NgClass, MatIcon, TranslateDirective, FileSizePipe]
+        NgClass, MatIcon, TranslateDirective, TranslatePipe, FileSizePipe]
 })
 export class WorkflowFieldAttachmentComponent extends WorkflowFieldComponent implements OnInit {
     attachmentLoading = false;

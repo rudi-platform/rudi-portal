@@ -1,11 +1,13 @@
 <div [formGroup]="formGroup">
-  <mat-radio-group [formControlName]="controlName" class="radio-container" [ngClass]="{'confidentiality': !isConfidentialityValid && formGroup.get('confidentiality').errors?.required}">
-    @for (suggestion of suggestions; track suggestion) {
+  <mat-radio-group [formControlName]="controlName" [required]="isRequired" class="radio-container" [ngClass]="{'confidentiality': !isConfidentialityValid && formGroup.get('confidentiality').errors?.required}"
+    [attr.aria-labelledby]="ariaLabelledby" [attr.aria-describedby]="ariaDescribedby">
+    @for (suggestion of suggestions; track suggestion; let i = $index) {
       <div class="radio-body">
-        <mat-radio-button [value]="suggestion" [checked]="formGroup.get(controlName).value.code === suggestion.code">
+        <mat-radio-button [value]="suggestion" [checked]="formGroup.get(controlName).value.code === suggestion.code"
+          [aria-describedby]="suggestion.description ? idPrefix + '-detail-' + i : null">
           <div class="option-title">{{suggestion.label}}</div>
         </mat-radio-button>
-        <div class="option-detail">{{suggestion.description}}</div>
+        <div class="option-detail" [id]="idPrefix + '-detail-' + i">{{suggestion.description}}</div>
       </div>
     }
   </mat-radio-group>

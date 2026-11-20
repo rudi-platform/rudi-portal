@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>${projectName} - Reconnexion nécessaire pour conserver votre compte</title>
+    <style type="text/css">
+        body {
+            font-family: Montserrat;
+            font-size: 12px;
+            color: #004680;
+        }
+
+        a {
+            font-weight: bold;
+            color: #004680;
+        }
+
+        a:hover {
+            color: #004680;
+        }
+    </style>
+</head>
+<body style="font-family:Montserrat;font-size:12px;	color:#004680;">
+<p>
+    Bonjour<#if userDenomination??> ${userDenomination}</#if>,
+</p>
+<p>
+    Vous n'avez pas utilisé votre compte depuis ${warningThresholdMonths} mois.
+</p>
+<#if hasPendingTasks>
+    <p>
+        Vous avez des tâches à traiter depuis votre espace "Mes notifications", sans une connexion de votre part
+        celles-ci seront supprimées.
+    </p>
+</#if>
+<p>
+    Conformément à notre politique de conservation des données personnelles, votre compte sera supprimé automatiquement
+    sans connexion de votre part. Vous souhaitez conserver votre compte ?
+    <a href="${urlServer}/login">
+        Alors connectez-vous ici.
+    </a>
+</p>
+<p>
+    Vous pouvez contacter l'équipe ${projectName} pour toute information supplémentaire en cliquant
+    <a href="${urlContact}">
+        ici</a>.
+</p>
+<p>
+    À très bientôt, <br>
+    L'équipe ${teamName} <br>
+    <a href="${urlServer}">${urlServer}</a>
+</p>
+
+</body>

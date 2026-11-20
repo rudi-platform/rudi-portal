@@ -1,7 +1,10 @@
 package org.rudi.microservice.acl.core.bean;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import org.rudi.common.core.security.AccountState;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,4 +53,20 @@ public class UserSearchCriteria {
 	private String userEmail;
 
 	private String loginAndDenomination;
+
+	/**
+	 * Seuil de date de dernière connexion. Les utilisateurs dont lastConnexion est antérieure à cette date seront retournés.
+	 */
+	private LocalDateTime lastConnexionBefore;
+
+	/**
+	 * États du compte. Permet de filtrer les utilisateurs par leurs états (ACTIVE, LOCKED, INACTIVE).
+	 */
+	private List<AccountState> accountStates;
+
+	/**
+	 * Seuil de date de dernière tentative échouée. Les utilisateurs dont lastFailedAttempt est antérieure à cette date seront
+	 * retournés.
+	 */
+	private LocalDateTime lastFailedAttemptBefore;
 }

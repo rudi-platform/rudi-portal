@@ -4,8 +4,11 @@
         {{title1}} <span class="ms-2"> {{title2}}</span>
     </h1>
     <div class="subtitle-3 d-flex align-items-center justify-content-center w-100"> {{title3}}</div>
-    <a class="nav-link subtitle-4" [routerLinkActive]="'active'" [href]="urlToDoc"
-       target="_blank">
-        <span>{{title4}}</span>
-    </a>
+    @if (title4 && urlToDoc) {
+        <a class="nav-link subtitle-4" [href]="urlToDoc"
+            target="_blank" rel="noopener noreferrer">
+                <span>{{title4}}</span>
+                <span class="visually-hidden"> - {{'pageTitle.urlToDoc' | translate}}</span>
+            </a>
+    }
 </div>

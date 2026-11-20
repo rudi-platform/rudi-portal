@@ -1,13 +1,12 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatError, MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatInput} from '@angular/material/input';
 import {DomSanitizer} from '@angular/platform-browser';
-import {BreakpointObserverService} from '@core/services/breakpoint-observer.service';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {TranslatePipe} from '@ngx-translate/core';
 import {CopiedButtonComponent} from '@shared/core/common/copied-button/copied-button.component';
@@ -29,16 +28,37 @@ export interface GenerateKeysDialogData {
     selector: 'app-generate-keys-dialog',
     templateUrl: './generate-keys-dialog.component.html',
     styleUrl: './generate-keys-dialog.component.scss',
-    imports: [MatDialogContent, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MatFormField, MatInput, MatError, MonthYearDatepickerComponent, MatIconButton, MatSuffix, MatIcon, LoaderComponent, CopiedButtonComponent, MatCheckbox, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
+    imports: [
+        MatDialogContent,
+        MatDialogTitle,
+        FormsModule,
+        ReactiveFormsModule,
+        MatLabel,
+        MatHint,
+        MatFormField,
+        MatInput,
+        MatError,
+        MonthYearDatepickerComponent,
+        MatIconButton,
+        MatSuffix,
+        MatIcon,
+        LoaderComponent,
+        CopiedButtonComponent,
+        MatCheckbox,
+        MatDialogActions,
+        MatButton,
+        MatDialogClose,
+        TranslatePipe,
+    ],
 })
 export class GenerateKeysDialogComponent implements OnInit {
 
     generateKeyForm1: FormGroup;
     generateKeyForm2: FormGroup;
 
-    isFirstStepActive: boolean = true;
-    isSecondStepActive: boolean = false;
-    isLoading: boolean = false;
+    isFirstStepActive = true;
+    isSecondStepActive = false;
+    isLoading = false;
     public rudiDocLink: string;
     project: Project;
 
@@ -53,7 +73,8 @@ export class GenerateKeysDialogComponent implements OnInit {
         private readonly domSanitizer: DomSanitizer,
         private readonly formBuilder: FormBuilder,
         private readonly projektService: ProjektService,
-        private readonly breakpointObserver: BreakpointObserverService) {
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly elementRef: ElementRef<HTMLElement>) {
         if (this.dialogData) {
             this.project = this.dialogData.data;
         }
@@ -116,13 +137,21 @@ export class GenerateKeysDialogComponent implements OnInit {
                 this.generateKeyForm2.controls['consumerSecret'].setValue(projectKey.client_secret);
                 this.isLoading = false;
                 this.isSecondStepActive = true;
+                this.focusElement('#generate-key-result');
             },
-            error: (error) => {
+            error: () => {
                 this.isLoading = false;
                 this.passwordError = true;
                 this.isFirstStepActive = true;
+                this.focusElement('#generate-key-password');
             }
         });
+    }
+
+    // Restore focus after the active step has been replaced
+    private focusElement(selector: string): void {
+        this.changeDetectorRef.detectChanges();
+        this.elementRef.nativeElement.querySelector<HTMLElement>(selector)?.focus();
     }
 
 }

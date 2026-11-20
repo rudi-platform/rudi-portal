@@ -1,5 +1,10 @@
 @use "common-style";
 
+// espace réservé en permanence pour le panneau de filtre.
+mat-sidenav-content {
+    padding-bottom: 250px;
+}
+
 ::ng-deep {
     .rudi-blue-large-button {
         width: 100%;
@@ -199,6 +204,11 @@
 }
 
 .rudi-sidenav-container-filter {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    font: inherit;
+    text-align: left;
     font-size: 15px;
     padding: 20px 0 20px 0;
     display: flex;

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {BreakpointObserverService, NgClassObject} from '@core/services/breakpoint-observer.service';
+import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {OrganizationBean} from 'micro_service_modules/strukture/strukture-model';
 import { NgClass } from '@angular/common';
 import {OrganizationCardComponent} from '../organization-card/organization-card.component';
@@ -19,8 +19,14 @@ export class ListOrganizationCardComponent {
     @Input() currentPage: number;
     @Input() datasetCountLoading: boolean;
     @Input() projectCountLoading: boolean;
+    @Input() cardTitleLevel: 2 | 3 = 2;
 
     @Output() pageChangeEvent: EventEmitter<number>;
+
+    readonly mediaSize: MediaSize;
+    readonly maxPageDesktop = 9;
+    /** minimum = 5 */
+    readonly maxPageMobile = 5;
 
     constructor(
         private readonly breakpointObserver: BreakpointObserverService
@@ -29,6 +35,7 @@ export class ListOrganizationCardComponent {
         this.totalItems = 0;
         this.itemsPerPage = 10;
         this.currentPage = 1;
+        this.mediaSize = breakpointObserver.getMediaSize();
 
         this.pageChangeEvent = new EventEmitter();
     }
@@ -40,5 +47,6 @@ export class ListOrganizationCardComponent {
     onPageChange($event: number): void {
         this.currentPage = $event;
         this.pageChangeEvent.emit($event);
+        globalThis.scroll(0, 0);
     }
 }

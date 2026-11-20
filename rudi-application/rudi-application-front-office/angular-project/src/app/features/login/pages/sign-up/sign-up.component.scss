@@ -12,6 +12,7 @@ input::-ms-clear {
 
 .signup-header-title {
     @include common-style.card-header-title;
+    letter-spacing: inherit;
 }
 
 .signup-text-title {
@@ -22,11 +23,6 @@ input::-ms-clear {
 
 .signup-form-container {
     @include common-style.card-form-container;
-}
-
-*:focus-visible {
-    // on ne veut pas les rectangles bleu sur focus du champ input
-    outline: none;
 }
 
 div.p-mb {
@@ -117,7 +113,7 @@ mat-progress-spinner {
     background: var(--secondary-color);
     color: var(--primary-text-light);
 
-    h3 {
+    h2 {
         font-weight: bold;
         font-size: 14px;
         margin-bottom: 0.5em;
@@ -142,11 +138,13 @@ mat-progress-spinner {
 
 .cgu-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 0;
     margin-top: -20px;
 }
 
 .contact-container {
     padding: 0;
+    display: flex;
+    align-items: baseline;
 }

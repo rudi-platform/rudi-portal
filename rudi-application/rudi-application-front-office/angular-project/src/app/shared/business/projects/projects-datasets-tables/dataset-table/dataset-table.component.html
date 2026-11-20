@@ -2,7 +2,7 @@
   @if (showHorizontalSeparator) {
     <hr>
     }
-    <span [translate]="title" class="table-title-style"></span>
+    <h2 class="table-title-style">{{ title | translate }}</h2>
     <app-loader [active]="tableLoading" [allPage]="false" [isLight]="true" [noText]="true"></app-loader>
     @if (!tableLoading) {
       <table
@@ -60,11 +60,13 @@
         <!-- Delete-img Column -->
         <ng-container matColumnDef="delete-action">
           <th *matHeaderCellDef class="table-header" mat-header-cell>
+            <span class="visually-hidden">{{ 'personalSpace.project.tabs.actionsHeader' | translate }}</span>
           </th>
           <td *matCellDef="let element" class="text-end" mat-cell>
             @if (hasDeleteButton) {
-              <button (click)="deleteAction(element)" class="action-btn-icon" mat-mini-fab>
-                <mat-icon>delete</mat-icon>
+              <button type="button" (click)="deleteAction(element)" class="action-btn-icon" mat-mini-fab
+                [attr.aria-label]="'personalSpace.project.tabs.datasets.removeItem' | translate: {title: element?.datasetTitle}">
+                <mat-icon aria-hidden="true" fontIcon="delete"></mat-icon>
               </button>
             }
           </td>
@@ -72,11 +74,13 @@
         <!-- Comment Column -->
         <ng-container matColumnDef="comment-action">
           <th *matHeaderCellDef class="table-header" mat-header-cell>
+            <span class="visually-hidden">{{ 'personalSpace.project.tabs.datasets.commentHeader' | translate }}</span>
           </th>
           <td *matCellDef="let element" class="text-end" mat-cell>
             @if (hasCommentButton) {
-              <button (click)="commentAction(element)" class="action-btn-icon" mat-mini-fab>
-                <mat-icon>comment</mat-icon>
+              <button type="button" (click)="commentAction(element)" class="action-btn-icon" mat-mini-fab
+                [attr.aria-label]="'personalSpace.project.tabs.datasets.showComment' | translate: {title: element?.datasetTitle}">
+                <mat-icon aria-hidden="true" fontIcon="comment"></mat-icon>
               </button>
             }
           </td>
@@ -96,7 +100,7 @@
           class="button mat-stroked-button add-link-button"
           mat-raised-button
           >
-          <mat-icon [svgIcon]="addButtonIcon"></mat-icon>
+          <mat-icon [svgIcon]="addButtonIcon" aria-hidden="true"></mat-icon>
           <span>{{ 'personalSpace.project.tabs.datasets.addButton' | translate }}</span>
         </button>
       </div>

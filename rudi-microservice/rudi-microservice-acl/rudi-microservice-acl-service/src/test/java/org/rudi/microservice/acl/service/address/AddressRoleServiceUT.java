@@ -33,7 +33,7 @@ public class AddressRoleServiceUT {
 	private AddressRole roleMailHotline;
 
 	private long nbAddressRoleAvantInitData;
-	// TODO on ajoute ce paramètre pour ce test car pour une raison inconnue Flyway est lancé sur les postes de dev mais pas sur la PIC (cf address_role de type "address_role" ajoutés par le fichier src/main/resources/bdd/V1__initialisation.sql)
+	// on ajoute ce paramètre pour ce test car pour une raison inconnue Flyway est lancé sur les postes de dev mais pas sur la PIC (cf address_role de type "address_role" ajoutés par le fichier src/main/resources/bdd/V1__initialisation.sql)
 	private long nbAddressRoleDeTypeEmailApresMigrationFlyway;
 	private AddressRole addressRoleCree;
 

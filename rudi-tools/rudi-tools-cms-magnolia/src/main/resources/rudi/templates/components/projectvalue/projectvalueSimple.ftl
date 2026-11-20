@@ -31,9 +31,9 @@
             <div class="img-container">
                 <img src="${url}" alt="logo">
             </div>
-            <div class="projectvalue-shorttitle">
+            <h3 class="projectvalue-shorttitle">
                 ${(localized(projectvalueContent,"shorttitle",lang))}
-            </div>
+            </h3>
             <div class="projectvalue-title">
                 ${(localized(projectvalueContent,"title",lang))}
             </div>

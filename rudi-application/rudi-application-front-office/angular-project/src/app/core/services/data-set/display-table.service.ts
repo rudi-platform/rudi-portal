@@ -37,10 +37,11 @@ export class DisplayTableService {
 
     /**
      * Téléchargement d'un fichier tabulaire et récupération du contenu en mémoire au format Workbook XLS
-     * @param globalId ID du JDD contenant le média
-     * @param mediaId ID du média XLS a télécharger
+     * @param mediaUrl URL du média tabulaire (CSV/XLS) à télécharger
+     * @param fileEncoding encodage source déclaré sur le média publié (MediaFile.file_encoding), s'il est connu.
+     *        Permet de décoder correctement les fichiers texte (CSV) et d'éviter les caractères accentués cassés.
      */
-    downloadTableFile(mediaUrl): Observable<WorkBook> {
+    downloadTableFile(mediaUrl: string, fileEncoding?: string): Observable<WorkBook> {
 
         return this.konsultMetierService.downloadMetadataMedia(mediaUrl).pipe(
             switchMap((responseBlob: HttpResponse<Blob>) => {
@@ -57,13 +58,55 @@ export class DisplayTableService {
                     })
                 );
             }),
-            // parse du blob en XLSX ou CSV
+            // parse du blob en XLSX ou CSV en s'appuyant en priorité sur l'encodage déclaré du média
             map((arrayBuffer: ArrayBuffer) => {
-                return read(arrayBuffer, {
-                    type: 'array'
-                });
+                return this.readWorkbook(arrayBuffer, fileEncoding);
             })
         );
+    }
+
+    /**
+     * Parse un flux binaire en Workbook SheetJS en privilégiant l'encodage source déclaré du média.
+     *
+     * Stratégie :
+     * 1. Si un encodage est déclaré sur le média et supporté par le navigateur, on décode le flux avec cet
+     *    encodage puis on laisse SheetJS parser le texte résultant : c'est la source de vérité.
+     * 2. Sinon, on applique une heuristique : on tente un décodage UTF-8 strict (mode fatal) ; en cas d'échec
+     *    on retombe sur le comportement SheetJS par défaut (décodage binaire, assimilé à du Latin-1).
+     *
+     * @param arrayBuffer contenu binaire du fichier
+     * @param fileEncoding encodage source déclaré sur le média (MediaFile.file_encoding), optionnel
+     * @private
+     */
+    private readWorkbook(arrayBuffer: ArrayBuffer, fileEncoding?: string): WorkBook {
+        const declaredEncoding = this.normalizeEncoding(fileEncoding);
+        if (declaredEncoding) {
+            try {
+                const text = new TextDecoder(declaredEncoding, {fatal: true}).decode(arrayBuffer);
+                return read(text, {type: 'string'});
+            } catch {
+                // Encodage déclaré non supporté par le navigateur ou flux incohérent : on bascule sur l'heuristique
+            }
+        }
+
+        // Heuristique de repli : UTF-8 strict d'abord, sinon comportement SheetJS par défaut (Latin-1)
+        try {
+            const text = new TextDecoder('utf-8', {fatal: true}).decode(arrayBuffer);
+            return read(text, {type: 'string'});
+        } catch {
+            return read(arrayBuffer, {type: 'array'});
+        }
+    }
+
+    /**
+     * Normalise un libellé d'encodage issu des métadonnées du média vers un label accepté par TextDecoder.
+     * Retourne undefined si l'encodage est absent ou vide.
+     * @param fileEncoding encodage déclaré sur le média
+     * @private
+     */
+    private normalizeEncoding(fileEncoding?: string): string | undefined {
+        const trimmed = fileEncoding?.trim();
+        return trimmed ? trimmed : undefined;
     }
 
     /**
@@ -96,7 +139,10 @@ export class DisplayTableService {
         // Les noms de colonnes du tableau sont les noms des 'clés' des entrées d'une ligne
         const columnNames: string[] = Object.keys(sheet[0]);
         const columnDefs: ColDef[] = [];
-        columnDefs.push(SPREADSHEET_COLDEF_INDEX);
+        columnDefs.push({
+            ...SPREADSHEET_COLDEF_INDEX,
+            headerName: this.translateService.instant('metaData.tabulatedDataTab.rowNumberHeader')
+        });
         columnNames.forEach((columnName: string) => {
             columnDefs.push({field: columnName});
         });
@@ -116,7 +162,7 @@ export class DisplayTableService {
     private getTableDisplayMaxFileSize(): Observable<number> {
         return this.getBackendPropertyPipe.transform('front.tableDisplayMaxFileSize').pipe(
             map((tableDisplayMaxFileSize: string) => {
-                return parseInt(tableDisplayMaxFileSize, 10);
+                return Number.parseInt(tableDisplayMaxFileSize, 10);
             })
         );
     }

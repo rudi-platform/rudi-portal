@@ -1,7 +1,5 @@
 package org.rudi.microservice.projekt.service.project;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +9,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.service.ProjectSpringBootTest;
 import org.rudi.microservice.projekt.service.datafactory.LinkedDatasetDataFactory;
 import org.rudi.microservice.projekt.service.datafactory.ProjectDataFactory;
@@ -27,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import lombok.RequiredArgsConstructor;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ProjectSpringBootTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -96,11 +95,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation propriétaire d'un projet avec un dataset validé peut le retrouver")
 	void searchOwnerDatasetAccess_usersOrganizationOwningDatasetWithProject() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid1));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid1))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -111,11 +111,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation propriétaire d'un dataset validé mais sans projet ne peut pas le retrouver")
 	void searchOwnerDatasetAccess_usersOrganizationOwningDatasetWithoutProject() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid1));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid1))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -126,11 +127,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation reliée à un projet validé avec un dataset validé peut le retrouver")
 	void searchOwnerDatasetAccess_usersOrganizationRelatedToProjectWithDataset() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid2));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid2))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -141,11 +143,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation reliée à un projet validé mais non lié à un dataset ne peut pas le retrouver")
 	void searchOwnerDatasetAccess_usersOrganizationRelatedToProjectWithoutDataset() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid2));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid2))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -156,11 +159,12 @@ class LinkedDatasetCustomDaoUT {
 	// U3 n'a pas accès à ds1
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation reliée à un projet validé mais non lié au dataset ne peut pas le retrouver")
 	void searchOwnerDatasetAccess_usersOrganizationRelatedToProjectWithoutDataset2() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid3));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset1relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid3))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -171,11 +175,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation reliée à un projet validé mais non lié au dataset ne peut pas le retrouver (2)")
 	void searchOwnerDatasetAccess_usersOrganizationRelatedToProjectWithoutDataset3() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid3));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid3))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -186,11 +191,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur owner d'un projet validé et lié au dataset peut le retrouver")
 	void searchOwnerDatasetAccess_userOwningProjectWithDataset() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid4));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset2relationValidatedUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid4))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 
@@ -200,11 +206,12 @@ class LinkedDatasetCustomDaoUT {
 	@Test
 	@DisplayName("Vérifie que l'utilisateur membre d'une organisation propriétaire d'un projet avec un dataset lié par une relation PENDING n'a pas accès au dataset")
 	void searchOwnerDatasetAccess_usersOrganizationRelatedToProjectWithDatasetPendingRelation() {
-		final var searchCriteria = new LinkedDatasetSearchCriteria().status(List.of(LinkedDatasetStatus.VALIDATED))
-				.endDateIsNotOver(true).datasetUuid(dataset1relationPendingUuid);
-		searchCriteria.setProjectRelatedUuids(userToOrganizationsMap.get(userUuid2));
-		searchCriteria.organizationProjectRelationStatuses(
-				List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED));
+		final var searchCriteria = LinkedDatasetSearchCriteria.builder().status(List.of(LinkedDatasetStatus.VALIDATED))
+				.endDateIsNotOver(true).datasetUuid(dataset1relationPendingUuid)
+				.projectRelatedUuids(userToOrganizationsMap.get(userUuid2))
+				.organizationProjectRelationStatuses(
+						List.of(org.rudi.microservice.projekt.core.bean.RelationStatus.ACCEPTED))
+				.build();
 
 		final var result = linkedDatasetCustomDao.searchRelatedDatasetAccess(searchCriteria, Pageable.unpaged());
 

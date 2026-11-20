@@ -1,0 +1,74 @@
+<main id="main-content" tabindex="-1">
+<app-page>
+  <app-task-detail-header
+    [headingLoading]="isLoading"
+    [icon]="'external_account_request_icon'"
+    [pageSubTitle]="pageSubTitle"
+    [pageTitle]="'personalSpace.externalAccountRequestTaskDetail.pageTitle' | translate"
+    [status]="task?.functionalStatus"
+  ></app-task-detail-header>
+  @if (!isLoading) {
+    <app-tabs>
+      <app-tab [icon]="'icon-demands'" [label]="'personalSpace.externalAccountRequestTaskDetail.tabLabel' | translate">
+        <ng-template>
+          <div class="request-details-container">
+            <div class="request-information-container">
+              @for (section of displayableSections; track section) {
+                <app-workflow-expansion [section]="section"></app-workflow-expansion>
+              }
+              <mat-accordion>
+                <mat-expansion-panel [expanded]="true" class="request-expansion"
+                  (opened)="panelInitialTaskOpenState.set(true)" (closed)="panelInitialTaskOpenState.set(false)">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="expansion-title">
+                      {{ 'personalSpace.externalAccountRequestTaskDetail.cardTitle'|translate }}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <hr>
+                  <div class="vertical-space">
+                    <span class="workflow-label-title">{{ 'personalSpace.externalAccountRequestTaskDetail.lastname'|translate }}</span>
+                    <span class="data-value">{{ asset?.lastname }}</span>
+                  </div>
+                  <div class="vertical-space">
+                    <span class="workflow-label-title">{{ 'personalSpace.externalAccountRequestTaskDetail.firstname'|translate }}</span>
+                    <span class="data-value">{{ asset?.firstname }}</span>
+                  </div>
+                  @if (asset?.organizationUuid) {
+                    <div class="vertical-space">
+                      <span class="workflow-label-title">{{ 'personalSpace.externalAccountRequestTaskDetail.organization'|translate }}</span>
+                      <span class="data-value">{{ dependencies?.organization?.name }} ({{ asset?.organizationUuid }})</span>
+                    </div>
+                  }
+                  @if (asset?.identityProvider) {
+                    <div class="vertical-space">
+                      <span class="workflow-label-title">{{ 'personalSpace.externalAccountRequestTaskDetail.identityProvider'|translate }}</span>
+                      <span class="data-value">{{ asset?.identityProvider }}</span>
+                    </div>
+                  }
+                  @if (asset?.message) {
+                    <div class="vertical-space">
+                      <span class="workflow-label-title">{{ 'personalSpace.externalAccountRequestTaskDetail.message'|translate }}</span>
+                      <span class="data-value">{{ asset?.message }}</span>
+                    </div>
+                  }
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+            <div class="requester-information-container">
+              <app-card class="card-contact" [header]="true" [title]="'personalSpace.externalAccountRequestTaskDetail.requesterCardTitle'">
+                <div class="requester-name">{{ asset?.firstname }} {{ asset?.lastname }}</div>
+                <app-contact-card [copiedButton]="true" [masked]="false" [toCopy]="asset?.email"></app-contact-card>
+              </app-card>
+            </div>
+          </div>
+        </ng-template>
+      </app-tab>
+      @for (action of actions; track action) {
+        <app-banner-button (click)="openPopinForAction(action, false)">
+          {{ action.label }}
+        </app-banner-button>
+      }
+    </app-tabs>
+  }
+</app-page>
+</main>

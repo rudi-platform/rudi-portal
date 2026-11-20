@@ -1,13 +1,14 @@
 <div id="dialog-container">
     <mat-dialog-content>
         <div class="dialog-cross-button">
-            <button mat-icon-button (click)="onClickClose()">
-                <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+            <button mat-icon-button type="button" (click)="onClickClose()"
+                [attr.aria-label]="'popup.close' | translate">
+                <mat-icon svgIcon="icon-close" class="cross-button" aria-hidden="true"></mat-icon>
             </button>
         </div>
 
         <div class="dialog-content">
-            <div class="dialog-title">{{ title || ('personalSpace.organization.dialog.title'|translate) }}</div>
+            <div class="dialog-title" mat-dialog-title>{{ title || ('personalSpace.organization.dialog.title'|translate) }}</div>
             <div class="dialog-description">{{ description || ('personalSpace.organization.dialog.description'|translate) }}</div>
             <div class="dialog-description">
                 <span class="required-symbol">*</span>
@@ -21,12 +22,12 @@
             </app-organization-form>
 
             <mat-dialog-actions class="dialog-buttons">
-                <button class="secondary-raised-button" mat-raised-button
+                <button class="secondary-raised-button" mat-raised-button type="button"
                         (click)="onClickClose()">
                     <span>{{ 'popup.cancel'|translate }}</span>
                 </button>
-                <button class="primary-raised-button" mat-raised-button
-                        [disabled]="!isValidForm()" (click)="onClickConfirm()">
+                <button class="primary-raised-button" mat-raised-button type="button"
+                        (click)="onClickConfirm()">
                     <span>{{ 'popup.confirm'|translate }}</span>
                 </button>
             </mat-dialog-actions>

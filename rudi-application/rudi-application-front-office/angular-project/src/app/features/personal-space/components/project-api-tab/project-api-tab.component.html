@@ -1,8 +1,11 @@
 <div>
   <mat-card class="card-api">
-    <span class="identification-title">{{ 'personalSpace.projectApi.identificationKey' | translate }}</span>
+    <h2 id="project-api-keys-title" class="identification-title">{{ 'personalSpace.projectApi.identificationKey' | translate }}</h2>
     <p class="explanation-text">{{ 'personalSpace.projectApi.explainationText' | translate }}
-      <a [href]="rudiDocLink"> {{ 'personalSpace.projectApi.explainationTextLink' | translate }} </a></p>
+      <a [href]="rudiDocLink" target="_blank" rel="noopener noreferrer"
+        [title]="('personalSpace.projectApi.explainationTextLink' | translate) + ' ' + ('footer.newWindow' | translate)"> {{ 'personalSpace.projectApi.explainationTextLink' | translate }}
+        <span class="visually-hidden">{{ 'footer.newWindow' | translate }}</span>
+        <mat-icon aria-hidden="true" class="new-tab-icon" fontIcon="open_in_new"></mat-icon></a></p>
       <app-loader [active]="isKeysLoading" [allPage]="false" [isLight]="true" [isTransparent]="false"
       [noText]="true"></app-loader>
       @if (projectKeysTotal) {
@@ -10,7 +13,7 @@
           <b>{{ projectKeysTotal }} {{ 'personalSpace.project.tabs.api.projectKeys.results'|translate }}</b></div>
           <table
             [dataSource]="dataSource"
-            aria-describedby="table-description"
+            aria-labelledby="project-api-keys-title"
             class="mat-table-project-keys"
             mat-table
             >
@@ -38,10 +41,12 @@
             <!-- Action Column -->
             <ng-container matColumnDef="action">
               <th *matHeaderCellDef class="table-header fourth-row" mat-header-cell>
+                <span class="visually-hidden">{{ 'personalSpace.project.tabs.actionsHeader' | translate }}</span>
               </th>
               <td *matCellDef="let element" mat-cell>
-                <button (click)="openDialogDeleteKey(element.uuid)" class="action-btn-icon" mat-mini-fab>
-                  <mat-icon>delete</mat-icon>
+                <button type="button" (click)="openDialogDeleteKey(element.uuid)" class="action-btn-icon" mat-mini-fab
+                  [attr.aria-label]="'personalSpace.project.tabs.api.projectKeys.table.deleteKey' | translate: {name: element.name}">
+                  <mat-icon aria-hidden="true">delete</mat-icon>
                 </button>
               </td>
             </ng-container>

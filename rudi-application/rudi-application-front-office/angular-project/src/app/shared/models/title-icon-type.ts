@@ -5,7 +5,7 @@ export type TitleIconType =
     'key_icon_circle' |
     'api_icon' |
     'jdd_icon' |
-    'projet' |
+    'project' |
     'croix-rouge' |
     'coche-verte' |
     'self-data-icon' |
@@ -44,7 +44,8 @@ export type TitleIconType =
     'icon-delete' |
     'icon-close' |
     'icon-comment' |
-    'icon-new-dataset-request';
+    'icon-new-dataset-request' |
+    'external_account_request_icon';
 
 
 export const ALL_TYPES: TitleIconType[] = [
@@ -53,7 +54,7 @@ export const ALL_TYPES: TitleIconType[] = [
     'key_icon_circle',
     'api_icon',
     'jdd_icon',
-    'projet',
+    'project',
     'icon_tab_infos',
     'croix-rouge',
     'coche-verte',
@@ -96,5 +97,6 @@ export const PROCESS_DEFINITION_KEY_TYPES: TitleIconType[] = [
     'self_data_icon_definition_key',
     'nouvelles_donnees_definition_key',
     'project_definition_key',
-    'organization_definition_key'
+    'organization_definition_key',
+    'external_account_request_icon'
 ];

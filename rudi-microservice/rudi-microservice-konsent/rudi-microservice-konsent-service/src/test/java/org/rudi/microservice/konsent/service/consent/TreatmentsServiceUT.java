@@ -248,7 +248,6 @@ public class TreatmentsServiceUT {
 				.isEqualTo(TargetType.DATASET);
 	}
 
-	// TODO: La version n'est pas renvoyée à cause du mapper
 	@DisplayName("Refus de la tentative de MAJ des champs d'un traitement car déjà publié")
 	@Test
 	void updateTreatmentDecline() throws Exception {
@@ -262,7 +261,6 @@ public class TreatmentsServiceUT {
 				.isEqualTo(TargetType.PROJECT);
 	}
 
-	// TODO: La version n'est pas renvoyée à cause du mapper
 	@DisplayName("Retourne les versions d'un traitement")
 	@Test
 	void getTreatmentVersions() throws Exception {

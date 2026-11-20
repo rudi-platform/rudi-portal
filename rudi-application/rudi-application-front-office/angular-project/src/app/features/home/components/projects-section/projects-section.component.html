@@ -6,7 +6,7 @@
   <div class="d-flex flex-column align-items-center">
 
     <div class="description-container">
-      <p class="description">{{ projectsDescription.description }} <button type="button" class="submit-project-link" (click)="submitProject()">{{ 'home.projectsSection.viaOurForm' | translate }}</button></p>
+      <p class="description">{{ projectsDescription.description }} <a class="submit-project-link" routerLink="/projets/soumettre-un-projet">{{ 'home.projectsSection.viaOurForm' | translate }}</a></p>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
   <div class="desktop-list-container row-cols-3">
     @for (project of projects; track project) {
       <div class="card-container col">
-        <app-project-card [projectCatalogItem]="project"></app-project-card>
+        <app-project-card [projectCatalogItem]="project" [titleLevel]="3"></app-project-card>
       </div>
     }
   </div>
@@ -24,18 +24,19 @@
       containerName="rudi-projects"
       [autoplay]="false"
       [loop]="true"
+      [ariaLabel]="projectsDescription.title1 + ' ' + projectsDescription.title2"
       >
-      @for (project of projects; track project) {
-        <div>
-          <app-project-card [projectCatalogItem]="project"></app-project-card>
+      @for (project of projects; track project; let i = $index) {
+        <div role="group" aria-roledescription="diapositive" [attr.aria-label]="'common.slidePosition' | translate: { label: project.project.title, index: i + 1, total: projects.length }">
+          <app-project-card [projectCatalogItem]="project" [titleLevel]="3"></app-project-card>
         </div>
       }
     </app-rudi-swiper>
   </div>
 
   <div class="text-center">
-    <button class="button-redirect" (click)="redirectToProject()">
+    <a class="button-redirect" routerLink="/projets">
       <span>{{ 'home.projectsSection.seeMoreProjects' | translate }}</span>
-    </button>
+    </a>
   </div>
 </div>

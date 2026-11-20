@@ -1,11 +1,10 @@
 import {CommonModule, NgClass} from '@angular/common';
 import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, DOCUMENT, inject, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
-import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {ActivatedRoute, Params, Router, RouterOutlet} from '@angular/router';
@@ -16,6 +15,7 @@ import {AuthenticationService} from '@core/services/authentication.service';
 import {AuthenticationState} from '@core/services/authentication/authentication-method';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
+import {MapTextAlternativeService} from '@core/services/data-set/map-text-alternative.service';
 import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {IconRegistryService} from '@core/services/icon-registry.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
@@ -36,6 +36,7 @@ import {DetailFunctions} from '@features/data-set/pages/detail/detail-functions'
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {ProjectListComponent} from '@shared/business/projects/project-list/project-list.component';
 import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-button.component';
+import {ButtonDisclosureComponent} from '@shared/core/common/button-disclosure/button-disclosure.component';
 import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {TabComponent} from '@shared/core/common/tab/tab.component';
@@ -66,11 +67,16 @@ const actionOnStartCreateLinkedDataset = 'ON_START_CREATE_LINKED_DATASET';
     selector: 'app-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.scss'],
-    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, MatMenuTrigger, MatIcon, MatMenu, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
+    imports: [CommonModule, MatSidenavContainer, MatSidenavContent, LoaderComponent, NgClass, PageHeadingComponent, TabsComponent, TabComponent, DatasetInformationsComponent, SpreadsheetTabComponent, MapTabComponent, ErrorBoxComponent, BannerButtonComponent, ButtonDisclosureComponent, MatIcon, FormsModule, ReactiveFormsModule, MatRadioGroup, MatRadioButton, MatButton, PopoverComponent, ProjectListComponent, RouterOutlet, TranslatePipe]
 })
 export class DetailComponent implements OnInit {
     MAX_DATASETS_DISPLAYED = 3;
-    @ViewChild('clickMenuFormatTrigger') clickMenuFormatTrigger: MatMenuTrigger;
+    @ViewChild('formatDisclosure') formatDisclosure?: ButtonDisclosureComponent;
+    @ViewChild(TabsComponent) detailTabs: TabsComponent;
+    @ViewChild('informationsTab') informationsTab: TabComponent;
+    @ViewChild('spreadsheetTab') spreadsheetTab: TabComponent;
+    private readonly document = inject(DOCUMENT);
+    private readonly mapTextAlternativeService = inject(MapTextAlternativeService);
     form: FormGroup;
     public selection: string;
     mediaType = mediaType.Media.MediaTypeEnum;
@@ -93,9 +99,9 @@ export class DetailComponent implements OnInit {
     restrictedDatasetIcon = 'key_icon_88_secondary-color';
     selfDataIcon = 'self-data-icon';
 
-    mapHasError: boolean = false;
+    mapHasError = false;
 
-    nbLinkedProjects: number = 1;
+    nbLinkedProjects = 1;
 
     /**
      * Permet de suivre la valeur du JDD récupéré. Nous devons passer par un Observable car le chargement
@@ -217,6 +223,24 @@ export class DetailComponent implements OnInit {
         return false;
     }
 
+    /**
+     * Alternative to the map (RGAA 4.8): selects the Tableau tab and moves the focus to it,
+     * since the button that triggered it is removed with the map tab content.
+     */
+    showSpreadsheetTab(): void {
+        this.detailTabs.selectTab(this.spreadsheetTab);
+        this.document.getElementById(this.detailTabs.getSelectedTabId())?.focus();
+    }
+
+    /**
+     * Alternative to the map when there is no Tableau tab (RGAA 4.8): the Informations tab
+     * reveals and focuses the bounding box coordinates once rendered.
+     */
+    showMapTextAlternative(): void {
+        this.mapTextAlternativeService.requestFocus();
+        this.detailTabs.selectTab(this.informationsTab);
+    }
+
     get themePicto(): string {
         return this.metadata.theme;
     }
@@ -261,7 +285,7 @@ export class DetailComponent implements OnInit {
                     this.handleMetadataProperties(this.metadata);
 
                     // L'item sélectionné est le premier type FILE de la liste des formats disponibles
-                    this.selectedItem = this.metadata.available_formats.filter(f => f.media_type === 'FILE')[0];
+                    this.selectedItem = this.metadata.available_formats.find(f => f.media_type === 'FILE');
                     this.conceptUri = this.getConceptUri();
                     this.licenceLabel = this.getLicenceLabel();
                 } else {
@@ -415,7 +439,7 @@ export class DetailComponent implements OnInit {
                         });
                     }
                 });
-            this.clickMenuFormatTrigger.closeMenu();
+            this.formatDisclosure?.close();
         }
     }
 
@@ -524,6 +548,19 @@ export class DetailComponent implements OnInit {
             return this.restrictedDatasetIcon;
         } else if (this.isSelfdata) {
             return this.selfDataIcon;
+        }
+
+        return null;
+    }
+
+    /**
+     * Text alternative of the dataset title icon (RGAA 1.1)
+     */
+    getDatasetTitleIconAlt(): string {
+        if (this.isRestricted) {
+            return this.translateService.instant('conditionsUtilisationBox.donneesAccesRestreint');
+        } else if (this.isSelfdata) {
+            return this.translateService.instant('donneesPersonnellesBox.donneesPersonnelles');
         }
 
         return null;

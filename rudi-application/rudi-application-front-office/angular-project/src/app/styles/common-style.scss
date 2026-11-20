@@ -10,6 +10,30 @@
     }
 }
 
+// Lien d'évitement (RGAA) : masqué visuellement tant qu'il n'a pas le focus clavier, permet de sauter
+// directement au bouton "Appliquer" sans tabuler à travers toute la liste de cases à cocher.
+.rudi-filter-skip-link {
+    display: block;
+    height: 0;
+    overflow: hidden;
+    padding: 0 12px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: 0 solid var(--primary-color);
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:focus {
+        height: auto;
+        padding: 6px 12px;
+        margin-bottom: 8px;
+        border-width: 1px;
+        overflow: visible;
+    }
+}
+
 .pagination-container {
     margin-top: 40px;
     width: 100%;
@@ -17,10 +41,6 @@
 
 .block-icon-close {
     margin: 16px 0 0 -20px;
-}
-
-*:focus-visible {
-    outline: var(--focus) solid 1px;
 }
 
 .rudi-card-border {

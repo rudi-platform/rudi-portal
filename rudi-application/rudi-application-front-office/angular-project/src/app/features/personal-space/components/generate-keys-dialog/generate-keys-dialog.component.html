@@ -1,7 +1,7 @@
 <div id="dialog-container">
   <mat-dialog-content>
     <div class="dialog-content mt-3">
-      <div class="dialog-title">{{'personalSpace.projectApi.generateKeyDialog.title' | translate}}</div>
+      <div class="dialog-title" mat-dialog-title>{{'personalSpace.projectApi.generateKeyDialog.title' | translate}}</div>
 
       <div
         class="dialog-description mb-4">{{'personalSpace.projectApi.generateKeyDialog.description1' | translate}}
@@ -22,21 +22,22 @@
           <!-- Nom de paire de clés -->
           <ng-container>
             <div class="d-flex">
-              <mat-label
+              <mat-label id="generate-key-name-label"
                 class="dialog-subtitle">{{'personalSpace.projectApi.generateKeyDialog.form.nameLabel' | translate}}
                 <span class="required-symbol">*</span>
               </mat-label>
             </div>
-            <mat-hint
+            <mat-hint id="generate-key-name-hint"
               class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.nameDescription' | translate}}
             </mat-hint>
             <mat-form-field appearance="outline" hideRequiredMarker>
               <input type="text" formControlName="name" matInput
+                aria-labelledby="generate-key-name-label" aria-describedby="generate-key-name-hint"
                 autocomplete="off" maxlength="150">
                 @if (generateKeyForm1.get('name').errors) {
                   <mat-error class="stepper-mat-error"
                     >
-                    <em class="fa fa-info-circle fa-2x me-2"></em>{{'personalSpace.projectApi.generateKeyDialog.form.nameError' | translate}}
+                    <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'personalSpace.projectApi.generateKeyDialog.form.nameError' | translate}}
                   </mat-error>
                 }
               </mat-form-field>
@@ -54,7 +55,9 @@
               </mat-hint>
               <div class="flex w-100">
                 <app-month-year-datepicker [formGroup]="generateKeyForm1" controlName="expirationDate"
+                  [placeholder]="'personalSpace.projectApi.generateKeyDialog.form.expirationDateLabel' | translate"
                   [isDisable]="true"
+                  [hideToggle]="true"
                   >
                 </app-month-year-datepicker>
               </div>
@@ -62,31 +65,38 @@
             <!-- Mot de passe -->
             <ng-container>
               <div class="d-flex">
-                <mat-label class="dialog-subtitle">
+                <mat-label id="generate-key-password-label" class="dialog-subtitle">
                   {{'personalSpace.projectApi.generateKeyDialog.form.passwordLabel' | translate}}
                   <span class="required-symbol">*</span>
                 </mat-label>
               </div>
-              <mat-hint
+              <mat-hint id="generate-key-password-hint"
                 class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.passwordDescription' | translate}}
               </mat-hint>
               <mat-form-field appearance="outline" hideRequiredMarker>
                 <input [type]="hidePassword ? 'password' : 'text'"  formControlName="password" matInput
+                  id="generate-key-password" aria-labelledby="generate-key-password-label"
+                  [aria-describedby]="passwordError ? 'generate-key-password-hint generate-key-password-error' : 'generate-key-password-hint'"
                   autocomplete="off" maxlength="150"/>
                   <button
+                    type="button"
                     mat-icon-button
                     matSuffix
                     (click)="showPassword($event)"
-                    [attr.aria-label]="'Hide password'"
-                    [attr.aria-pressed]="hidePassword"
+                    [attr.aria-label]="(hidePassword ? 'common.showPassword' : 'common.hidePassword') | translate"
                     >
-                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    <mat-icon aria-hidden="true" [fontIcon]="hidePassword ? 'visibility_off' : 'visibility'"></mat-icon>
                   </button>
+                  @if (generateKeyForm1.get('password').hasError('required')) {
+                    <mat-error class="stepper-mat-error">
+                      <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'personalSpace.projectApi.generateKeyDialog.form.passwordRequiredError' | translate}}
+                    </mat-error>
+                  }
                 </mat-form-field>
                 @if (passwordError) {
-                  <mat-error class="stepper-mat-error"
+                  <mat-error id="generate-key-password-error" class="stepper-mat-error"
                     >
-                    <em class="fa fa-info-circle fa-2x me-2"></em>{{'personalSpace.projectApi.generateKeyDialog.form.passwordError' | translate}}
+                    <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'personalSpace.projectApi.generateKeyDialog.form.passwordError' | translate}}
                   </mat-error>
                 }
               </ng-container>
@@ -100,25 +110,26 @@
 
           <!-- Identification key -->
           @if (isSecondStepActive) {
-            <form class="form-container" [formGroup]="generateKeyForm2" >
+            <form id="generate-key-result" tabindex="-1" class="form-container" [formGroup]="generateKeyForm2" >
               <!-- Nom de paire de clés -->
               <ng-container>
                 <div class="d-flex">
-                  <mat-label
+                  <mat-label id="generate-key-result-name-label"
                     class="dialog-subtitle">{{'personalSpace.projectApi.generateKeyDialog.form.nameLabel' | translate}}
                     <span class="required-symbol">*</span>
                   </mat-label>
                 </div>
-                <mat-hint
+                <mat-hint id="generate-key-result-name-hint"
                   class="dialog-description">{{'personalSpace.projectApi.generateKeyDialog.form.nameDescription' | translate}}
                 </mat-hint>
                 <mat-form-field appearance="outline" hideRequiredMarker>
                   <input type="text" formControlName="name" matInput
+                    aria-labelledby="generate-key-result-name-label" aria-describedby="generate-key-result-name-hint"
                     autocomplete="off" maxlength="150" required>
                     @if (generateKeyForm2.get('name').errors?.required) {
                       <mat-error class="stepper-mat-error"
                         >
-                        <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                        <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
                       </mat-error>
                     }
                   </mat-form-field>
@@ -126,7 +137,10 @@
                 <!-- Consumer Key-->
                 <div class="consumer-field-wrapper">
                   <span class="title-keys">{{'personalSpace.projectApi.consumerKey' | translate}}</span>
-                  <p class="mt-2">{{'personalSpace.projectApi.textConsumerKey' | translate}}<a [href]="rudiDocLink"> {{'personalSpace.projectApi.clickHere' | translate}} </a></p>
+                  <p class="mt-2">{{'personalSpace.projectApi.textConsumerKey' | translate}}<a [href]="rudiDocLink" target="_blank" rel="noopener noreferrer"
+                    [title]="('personalSpace.projectApi.clickHere' | translate) + ' ' + ('footer.newWindow' | translate)"> {{'personalSpace.projectApi.clickHere' | translate}}
+                    <span class="visually-hidden">{{'footer.newWindow' | translate}}</span>
+                    <mat-icon aria-hidden="true" class="new-tab-icon" fontIcon="open_in_new"></mat-icon></a></p>
                   <div class="app-copied-style">
                     <app-copied-button [toCopy]="generateKeyForm2.get('consumerKey').value" [masked]="false"></app-copied-button>
                   </div>
@@ -134,7 +148,10 @@
                 <!-- Consumer Secret-->
                 <div class="consumer-field-wrapper">
                   <span class="title-keys">{{'personalSpace.projectApi.consumerSecret' | translate}}</span>
-                  <p class="mt-2">{{'personalSpace.projectApi.textConsumerSecret' | translate}} <a [href]="rudiDocLink"> {{'personalSpace.projectApi.clickHere' | translate}} </a></p>
+                  <p class="mt-2">{{'personalSpace.projectApi.textConsumerSecret' | translate}} <a [href]="rudiDocLink" target="_blank" rel="noopener noreferrer"
+                    [title]="('personalSpace.projectApi.clickHere' | translate) + ' ' + ('footer.newWindow' | translate)"> {{'personalSpace.projectApi.clickHere' | translate}}
+                    <span class="visually-hidden">{{'footer.newWindow' | translate}}</span>
+                    <mat-icon aria-hidden="true" class="new-tab-icon" fontIcon="open_in_new"></mat-icon></a></p>
                   <div class="app-copied-style">
                     <app-copied-button [toCopy]="generateKeyForm2.get('consumerSecret').value" [masked]="true"></app-copied-button>
                   </div>

@@ -4,6 +4,7 @@
     <mat-radio-group
       formControlName="sortFormControl"
       class="pl-47 d-flex flex-column rudi-radio-group"
+      [attr.aria-label]="'sortBox.sort' | translate"
       >
       @for (item of items; track item) {
         <mat-radio-button

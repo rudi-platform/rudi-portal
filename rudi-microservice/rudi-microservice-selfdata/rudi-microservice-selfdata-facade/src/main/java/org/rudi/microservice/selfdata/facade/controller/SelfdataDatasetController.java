@@ -1,9 +1,5 @@
 package org.rudi.microservice.selfdata.facade.controller;
 
-import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
-import static org.rudi.common.core.security.QuotedRoleCodes.USER;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -12,7 +8,7 @@ import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.microservice.selfdata.core.bean.BarChartData;
 import org.rudi.microservice.selfdata.core.bean.GenericDataObject;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataDatasetList;
-import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.facade.controller.api.SelfdataDatasetsApi;
 import org.rudi.microservice.selfdata.service.selfdata.SelfdataService;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +17,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import static org.rudi.common.core.security.QuotedRoleCodes.ADMINISTRATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.MODERATOR;
+import static org.rudi.common.core.security.QuotedRoleCodes.USER;
 
 @RestController
 @RequiredArgsConstructor

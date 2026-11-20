@@ -1,0 +1,17 @@
+{
+	"fieldDefinitions": [
+		{
+			"name": "message",
+			"label": "Message à destination des équipes administratives du portail",
+			"help": "Vous pouvez adresser un message aux équipes administratives du portail afin d'appuyer votre demande (ex. : Réutilisation associée, Jeu de données à accès restreint à mobiliser...)",
+			"type": "TEXT",
+			"required": false,
+			"validators": [
+				{
+					"type": "MAXLENGTH",
+					"attribute": "1000"
+				}
+			]
+		}
+	]
+}

@@ -16,7 +16,9 @@ import org.rudi.microservice.projekt.core.bean.ProjectByOrganization;
 import org.rudi.microservice.projekt.core.bean.ProjectSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.ProjectStatus;
 import org.rudi.microservice.projekt.core.bean.ProjektArchiveMode;
+import org.rudi.microservice.projekt.core.bean.ProjektTaskSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.RelationStatus;
+import org.rudi.microservice.projekt.core.bean.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -25,10 +27,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -86,7 +88,7 @@ public class ProjektHelper {
 	 */
 	public UUID getLinkedDatasetOwner(UUID linkedDatasetUuid) {
 		return projektWebClient.get().uri(
-				uriBuilder -> uriBuilder.path(projektProperties.getLinkedDatasetOwnerPath()).build(linkedDatasetUuid))
+						uriBuilder -> uriBuilder.path(projektProperties.getLinkedDatasetOwnerPath()).build(linkedDatasetUuid))
 				.retrieve().bodyToMono(UUID.class).block();
 	}
 
@@ -150,14 +152,14 @@ public class ProjektHelper {
 	 */
 	public Mono<Page<Project>> searchMonoProjects(ProjectSearchCriteria searchCriteria, Pageable page) {
 		return projektWebClient.get().uri(uriBuilder -> uriBuilder.path(projektProperties.getSearchProjectsPath())
-				.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
-				.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
-				.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
-				.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
-				.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
-				.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
-				.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
-				.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build()).retrieve()
+						.queryParamIfPresent("datasetUuids", Optional.ofNullable(searchCriteria.getDatasetUuids()))
+						.queryParamIfPresent("linkedDatasetUuids", Optional.ofNullable(searchCriteria.getLinkedDatasetUuids()))
+						.queryParamIfPresent("ownerUuids", Optional.ofNullable(searchCriteria.getOwnerUuids()))
+						.queryParamIfPresent("projectUuids", Optional.ofNullable(searchCriteria.getProjectUuids()))
+						.queryParamIfPresent("status", Optional.ofNullable(searchCriteria.getStatus()))
+						.queryParamIfPresent("offset", Optional.ofNullable(page.getOffset()))
+						.queryParamIfPresent("limit", Optional.ofNullable(page.getPageSize()))
+						.queryParamIfPresent("order", Optional.ofNullable(convertSort(page.getSort()))).build()).retrieve()
 				.bodyToMono(PagedProjectList.class).map(projects -> {
 					if (projects != null) {
 						return new PageImpl<>(projects.getElements(), page, projects.getTotal());
@@ -200,6 +202,27 @@ public class ProjektHelper {
 				.retrieve().bodyToMono(Boolean.class).block());
 	}
 
+	public List<Task> searchTasks(ProjektTaskSearchCriteria taskSearchCriteria) {
+		return projektWebClient.get().uri(uriBuilder -> uriBuilder.path(projektProperties.getSearchTasksPath())
+						.queryParamIfPresent("title", Optional.ofNullable(taskSearchCriteria.getTitle()))
+						.queryParamIfPresent("projectStatus", Optional.ofNullable(taskSearchCriteria.getProjectStatus()))
+						.queryParamIfPresent("datasetProducerUuid", Optional.ofNullable(taskSearchCriteria.getDatasetProducerUuid()))
+						.queryParamIfPresent("projectUuid", Optional.ofNullable(taskSearchCriteria.getProjectUuid()))
+						.queryParamIfPresent("description", Optional.ofNullable(taskSearchCriteria.getDescription()))
+						.queryParamIfPresent("processDefinitionKeys", Optional.ofNullable(taskSearchCriteria.getProcessDefinitionKeys()))
+						.queryParamIfPresent("status", Optional.ofNullable(taskSearchCriteria.getStatus()))
+						.queryParamIfPresent("functionalStatus", Optional.ofNullable(taskSearchCriteria.getFunctionalStatus()))
+						.queryParamIfPresent("asAdmin", Optional.ofNullable(taskSearchCriteria.getAsAdmin()))
+						.queryParamIfPresent("minCreationDate", Optional.ofNullable(taskSearchCriteria.getMinCreationDate()))
+						.queryParamIfPresent("maxCreationDate", Optional.ofNullable(taskSearchCriteria.getMaxCreationDate()))
+						.queryParamIfPresent("userLogin", Optional.ofNullable(taskSearchCriteria.getUserLogin()))
+						.build()).retrieve()
+				.bodyToMono(Task[].class)
+				.blockOptional()
+				.map(Arrays::asList)
+				.orElse(List.of());
+	}
+
 	protected String convertSort(Sort sort) {
 		if (sort == null || sort.isUnsorted()) {
 			return null;
@@ -215,5 +238,14 @@ public class ProjektHelper {
 			sortBuilder.append(order.getProperty());
 		});
 		return sortBuilder.toString();
+	}
+
+	public void notifyUserDeactivation(String login, UUID userUuid) {
+		projektWebClient.put()
+				.uri(uriBuilder -> uriBuilder.path(projektProperties.getHandleUserDeactivationPath())
+						.queryParamIfPresent("login", Optional.ofNullable(login))
+						.queryParamIfPresent("userUuid", Optional.ofNullable(userUuid))
+						.build())
+				.retrieve().bodyToMono(Void.class).block();
 	}
 }

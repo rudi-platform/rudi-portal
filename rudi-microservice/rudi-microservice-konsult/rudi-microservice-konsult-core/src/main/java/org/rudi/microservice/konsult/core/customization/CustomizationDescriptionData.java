@@ -34,4 +34,6 @@ public class CustomizationDescriptionData {
 
 	private NewsPageDescriptionData newsPageDescription;
 
+	private CmsDatasetsButtonDescriptionData cmsDatasetsButtonDescription;
+
 }

@@ -19,6 +19,7 @@ import {BackPaginationSort} from '@shared/core/common/back-pagination/back-pagin
 import {SortTableInterface} from '@shared/core/common/back-pagination/sort-table-interface';
 import {MaterialModules} from '@shared/shared.constant';
 import {SharedModule} from '@shared/shared.module';
+import {SortAnnouncerDirective} from '@shared/utils/directives/sort-announcer-directive/sort-announcer.directive';
 import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
 
 @Component({
@@ -29,6 +30,7 @@ import {ProcessHistoricInformation} from 'micro_service_modules/api-bpmn';
     imports: [
         MatTable,
         MatSort,
+        SortAnnouncerDirective,
         DatePipe,
         ...MaterialModules,
         SharedModule,

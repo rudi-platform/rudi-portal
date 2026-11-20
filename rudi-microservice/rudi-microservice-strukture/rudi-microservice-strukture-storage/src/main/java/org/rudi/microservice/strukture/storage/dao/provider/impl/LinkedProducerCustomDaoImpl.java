@@ -14,6 +14,7 @@ import jakarta.persistence.criteria.Subquery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.RepositoryConstants;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
 import org.rudi.microservice.strukture.core.bean.criteria.LinkedProducerSearchCriteria;
 import org.rudi.microservice.strukture.storage.dao.provider.LinkedProducerCustomDao;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
@@ -64,6 +65,13 @@ public class LinkedProducerCustomDaoImpl extends AbstractCustomDaoImpl<LinkedPro
 		}
 		List<LinkedProducerEntity> providerEntities = typedQuery.getResultList();
 		return new PageImpl<>(providerEntities, pageable, totalCount.intValue());
+	}
+
+	@Override
+	protected void addPredicates(LinkedProducerSearchCriteria searchCriteria, CriteriaBuilder builder,
+			CriteriaQuery<?> criteriaQuery, Root<LinkedProducerEntity> root, List<Predicate> predicates) {
+
+		predicateStringCriteria(searchCriteria.getInitiator(), AbstractAssetDescriptionEntity.FIELD_INITIATOR, false, false, predicates, builder, root);
 	}
 
 	private void buildQuery(LinkedProducerSearchCriteria criteria, CriteriaBuilder builder,

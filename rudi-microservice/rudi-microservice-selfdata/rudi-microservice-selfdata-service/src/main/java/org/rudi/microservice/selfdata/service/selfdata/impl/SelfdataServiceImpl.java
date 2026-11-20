@@ -31,9 +31,9 @@ import org.rudi.microservice.selfdata.core.bean.MatchingData;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataDatasetList;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataInformationRequestList;
 import org.rudi.microservice.selfdata.core.bean.SelfdataDataset;
-import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequest;
-import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequestSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataDatasetSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 import org.rudi.microservice.selfdata.service.exception.UserNotFoundException;
 import org.rudi.microservice.selfdata.service.helper.selfdatadataset.SelfdataApiParameters;
 import org.rudi.microservice.selfdata.service.helper.selfdatadataset.SelfdataDatasetApisHelper;
@@ -57,8 +57,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 /**
  * @author FNI18300
@@ -136,6 +136,8 @@ public class SelfdataServiceImpl implements SelfdataService {
 		}
 	}
 
+
+
 	@Override
 	public PagedSelfdataInformationRequestList searchMySelfdataInformationRequests(
 			SelfdataInformationRequestSearchCriteria criteria, Pageable pageable) throws AppServiceException {
@@ -146,14 +148,8 @@ public class SelfdataServiceImpl implements SelfdataService {
 					"Impossible de récupérer les demandes de l'utilisateur connecté sans être authentifié");
 		}
 
-		SelfdataInformationRequestCustomSearchCriteria customCriteria = new SelfdataInformationRequestCustomSearchCriteria();
-		customCriteria.setDatasetUuid(criteria.getDatasetUuid());
-		customCriteria.setLogin(user.getLogin());
-		if (CollectionUtils.isNotEmpty(criteria.getStatus())) {
-			customCriteria.setStatus(criteria.getStatus());
-		}
 		Page<SelfdataInformationRequestEntity> page = selfdataInformationRequestCustomDao
-				.searchSelfdataInformationRequests(customCriteria, pageable);
+				.searchSelfdataInformationRequests(criteria, pageable);
 
 		List<SelfdataInformationRequest> requests = selfdataInformationRequestMapper.entitiesToDto(page.getContent());
 		return new PagedSelfdataInformationRequestList().total(page.getTotalElements()).elements(requests);

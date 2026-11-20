@@ -138,6 +138,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 	@Autowired
 	private HistoricHelper historicHelper;
 
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	protected AbstractTaskServiceImpl(ProcessEngine processEngine, FormHelper formHelper, BpmnHelper bpmnHelper,
 			UtilContextHelper utilContextHelper, InitializationService initializationService, R assetDescriptionDao,
 			A assetDescriptionHelper, H assignmentHelper, W workflowContext,
@@ -439,15 +440,7 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		if (CollectionUtils.isNotEmpty(fieldValidators) && assetDescription.getForm() != null
 				&& CollectionUtils.isNotEmpty(assetDescription.getForm().getSections())) {
 			for (Section section : assetDescription.getForm().getSections()) {
-				if (CollectionUtils.isNotEmpty(section.getFields())) {
-					for (Field field : section.getFields()) {
-						for (FieldValidator validator : fieldValidators) {
-							if (validator.accept(field)) {
-								validator.check(field);
-							}
-						}
-					}
-				}
+				validateDraftAssetsSection(section);
 			}
 		}
 
@@ -923,5 +916,22 @@ public abstract class AbstractTaskServiceImpl<E extends AssetDescriptionEntity, 
 		String taskId = getAssociatedTaskId(assetUuid);
 		bpmnHelper.stopTaskByTaskId(taskId);
 	}
+
+	private void validateDraftAssetsSection(Section section){
+		if (CollectionUtils.isNotEmpty(section.getFields())) {
+			for (Field field : section.getFields()) {
+				validateDraftAssetField(field);
+			}
+		}
+	}
+
+	private void validateDraftAssetField(Field field){
+		for (FieldValidator validator : fieldValidators) {
+			if (validator.accept(field)) {
+				validator.check(field);
+			}
+		}
+	}
+
 
 }

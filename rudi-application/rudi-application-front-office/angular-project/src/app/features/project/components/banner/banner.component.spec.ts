@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MediaSize} from '@core/services/breakpoint-observer.service';
 
 import {BannerComponent} from './banner.component';
 
@@ -16,6 +17,7 @@ describe('BannerComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BannerComponent);
         component = fixture.componentInstance;
+        fixture.componentRef.setInput('mediaSize', {isLg: true} as MediaSize);
         fixture.detectChanges();
     });
 

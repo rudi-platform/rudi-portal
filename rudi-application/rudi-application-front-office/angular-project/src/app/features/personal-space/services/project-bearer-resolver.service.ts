@@ -98,6 +98,7 @@ export class ProjectBearerResolverService {
 
     private resolveFromLinkedDatasetUuid(linkedDatasetUuid: string): Observable<ProjectBearer | null> {
         return this.projektService.searchProjects(
+            '',
             undefined,
             [linkedDatasetUuid],
             undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 1

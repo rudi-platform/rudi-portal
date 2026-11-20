@@ -1,11 +1,12 @@
-import {NgClass} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {MatDivider} from '@angular/material/divider';
 import {MatIcon} from '@angular/material/icon';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {IconRegistryService} from '@core/services/icon-registry.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {ALL_TYPES} from '@shared/models/title-icon-type';
 import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
 
@@ -13,7 +14,7 @@ import {OrganizationLogoComponent} from '../../../organisation/organization-logo
     selector: 'app-dataset-infos',
     templateUrl: './dataset-infos.component.html',
     styleUrls: ['./dataset-infos.component.scss'],
-    imports: [NgClass, OrganizationLogoComponent, MatIcon, MatDivider]
+    imports: [NgClass, OrganizationLogoComponent, MatIcon, MatDivider, RouterLink, NgTemplateOutlet, TranslatePipe]
 })
 export class DatasetsInfosComponent {
     /**
@@ -41,10 +42,6 @@ export class DatasetsInfosComponent {
      */
     @Input() divider = false;
     /**
-     * le lien vers le détail du jdd courrant? Par défaut : false.
-     */
-    @Input() goToDetails = false;
-    /**
      * Id du jdd courrant
      */
     @Input() currentJddId: string;
@@ -59,22 +56,20 @@ export class DatasetsInfosComponent {
     constructor(
         private readonly breakpointObserverService: BreakpointObserverService,
         private readonly uriComponentCodec: URIComponentCodec,
-        private readonly router: Router,
         iconRegistryService: IconRegistryService,
     ) {
         iconRegistryService.addAllSvgIcons(ALL_TYPES);
         this.mediaSize = this.breakpointObserverService.getMediaSize();
     }
 
-
     /**
-     * Méthode appelée au clic sur un jdd et qui redirige l'utilisateur vers la page de details de ce jdd
-     * @param currentJddId
-     * @param title
+     * Lien vers le détail du jdd, uniquement si un id et un titre sont fournis
+     * (ex. non fourni quand ce composant sert juste d'étiquette dans une popover).
      */
-    handleClickOnDatasetCard(currentJddId: string, title: string): void {
-        if (currentJddId && title) {
-            this.router.navigate(['/catalogue/detail/' + currentJddId + '/' + this.uriComponentCodec.normalizeString(title)]);
+    get detailsRouterLink(): string[] | null {
+        if (!this.currentJddId || !this.resourceTitle) {
+            return null;
         }
+        return ['/catalogue/detail/' + this.currentJddId + '/' + this.uriComponentCodec.normalizeString(this.resourceTitle)];
     }
 }

@@ -1,3 +1,4 @@
+import {NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
@@ -5,43 +6,23 @@ import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-ob
 import {Theme} from '@features/home/types';
 import {TranslatePipe} from '@ngx-translate/core';
 import {RudiSwiperComponent} from '@shared/business/home/rudi-swiper/rudi-swiper.component';
-import {SwiperBreakpoint} from '@shared/business/home/rudi-swiper/types';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 
 @Component({
     selector: 'app-themes-section',
     templateUrl: './themes-section.component.html',
     styleUrls: ['./themes-section.component.scss'],
-    imports: [LoaderComponent, RudiSwiperComponent, MatIcon, TranslatePipe, RouterLink]
+    imports: [LoaderComponent, RudiSwiperComponent, MatIcon, TranslatePipe, RouterLink, NgTemplateOutlet]
 })
 export class ThemesSectionComponent implements OnInit {
+    /** Nombre de cartes visibles avant le bouton "voir plus de thèmes" */
+    private static readonly DISCLOSURE_VISIBLE_COUNT = 6;
+
     @Input() themes: Theme[];
     @Input() isLoading: boolean;
     mediaSize: MediaSize;
     selectedThemeCode: string | null = null;
-    cardSwiperBreakpoints: SwiperBreakpoint = {
-        380: {
-            slidesPerView: 3,
-        },
-        600: {
-            slidesPerView: 3,
-        },
-        768: {
-            slidesPerView: 4,
-        },
-        1024: {
-            slidesPerView: 5,
-        },
-        1280: {
-            slidesPerView: 6,
-        },
-        1480: {
-            slidesPerView: 7,
-        },
-        1680: {
-            slidesPerView: 8,
-        },
-    };
+    isThemesExpanded = false;
 
     constructor(
         private readonly breakpointObserver: BreakpointObserverService
@@ -51,9 +32,8 @@ export class ThemesSectionComponent implements OnInit {
     }
 
     /**
-     * Commandes de route vers le catalogue filtré sur une thématique, utilisées par [routerLink]
-     * (balise <a>) afin de bénéficier du comportement natif du navigateur (clic simple : navigation
-     * dans le même onglet ; clic droit / ctrl+clic / clic molette : ouverture dans un nouvel onglet).
+     * Commandes de route pour [routerLink], pour garder le comportement natif du lien
+     * (ctrl+clic, clic molette, etc.).
      */
     get catalogueUrl(): string[] {
         return ['/catalogue'];
@@ -67,18 +47,24 @@ export class ThemesSectionComponent implements OnInit {
         this.selectedThemeCode = themeCode;
     }
 
-    ngOnInit(): void {
-        this.mediaSize = this.breakpointObserver.getMediaSize();
+    toggleThemesExpanded(): void {
+        this.isThemesExpanded = !this.isThemesExpanded;
     }
 
-    get canDisplaySwiper(): boolean {
+    get visibleThemes(): Theme[] {
+        return this.themes.slice(0, ThemesSectionComponent.DISCLOSURE_VISIBLE_COUNT);
+    }
 
-        return (this.mediaSize.isXs && this.themes.length >= 2)
-            || (this.mediaSize.isSm && this.themes.length >= 4)
-            || (this.mediaSize.isMd && this.themes.length >= 6)
-            || (this.mediaSize.isLg && this.themes.length >= 7)
-            || (this.mediaSize.isXl && this.themes.length >= 8)
-            || (this.mediaSize.isXxl && this.themes.length >= 10);
+    get hiddenThemes(): Theme[] {
+        return this.themes.slice(ThemesSectionComponent.DISCLOSURE_VISIBLE_COUNT);
+    }
+
+    get hasMoreThemes(): boolean {
+        return this.themes.length > ThemesSectionComponent.DISCLOSURE_VISIBLE_COUNT;
+    }
+
+    ngOnInit(): void {
+        this.mediaSize = this.breakpointObserver.getMediaSize();
     }
 
 }

@@ -40,11 +40,14 @@ public class OrganizationBeanController implements OrganizationBeansApi, PublicO
 
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ")")
-	public ResponseEntity<PagedOrganizationBeanList> searchOrganizationsBeans(UUID userUuid,
-			OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws Exception {
-
+	public ResponseEntity<PagedOrganizationBeanList> searchOrganizationsBeans(String nameOrDescription, UUID userUuid, OrganizationStatus organizationStatus, Integer offset, Integer limit, String order) throws Exception {
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().userUuid(userUuid).organizationStatus(List.of(organizationStatus)).build();
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.nameOrDescription(nameOrDescription)
+				.userUuid(userUuid)
+				.organizationStatus(List.of(organizationStatus))
+				.build();
 
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchOrganizationBeans(criteria, pageable);
 
@@ -55,11 +58,12 @@ public class OrganizationBeanController implements OrganizationBeansApi, PublicO
 		return ResponseEntity.ok(pagedOrganizationBeans);
 	}
 
-
 	@Override
-	public ResponseEntity<PagedOrganizationBeanList> searchPublicOrganizationsBeans(String name, List<UUID> uuids, List<UUID> excludedOrganizationUuids ,Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationBeanList> searchPublicOrganizationsBeans(String nameOrDescription, String name, List<UUID> uuids, List<UUID> excludedOrganizationUuids, Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder()
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.nameOrDescription(nameOrDescription)
 				.name(name)
 				.active(active)
 				.uuids(uuids)
@@ -71,9 +75,18 @@ public class OrganizationBeanController implements OrganizationBeansApi, PublicO
 	}
 
 	@Override
-	public ResponseEntity<PagedOrganizationBeanList> searchMyOrganizationBeans(List<UUID> uuids, String name, Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationBeanList> searchMyOrganizationBeans(String nameOrDescription, List<UUID> uuids, String name, Boolean full, Boolean active, Integer offset, Integer limit, String order) throws Exception {
 		Pageable pageable = utilPageable.getPageable(offset, limit, order);
-		OrganizationSearchCriteria criteria = OrganizationSearchCriteria.builder().uuids(uuids).name(name).loadAllInformations(Boolean.TRUE.equals(full)).active(active).build();
+
+		OrganizationSearchCriteria criteria = OrganizationSearchCriteria
+				.builder()
+				.nameOrDescription(nameOrDescription)
+				.uuids(uuids)
+				.name(name)
+				.loadAllInformations(Boolean.TRUE.equals(full))
+				.active(active)
+				.build();
+
 		Page<OrganizationBean> organizationBeans = organizationBeanService.searchMyOrganizationBeans(criteria, pageable);
 		return ResponseEntity.ok(new PagedOrganizationBeanList().elements(organizationBeans.getContent()).total(organizationBeans.getTotalElements()));
 	}

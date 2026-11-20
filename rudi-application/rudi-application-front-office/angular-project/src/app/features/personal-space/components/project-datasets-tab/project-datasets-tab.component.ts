@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
 import {KonsultApiAccessService} from '@core/services/api-access/konsult/konsult-api-access.service';
@@ -43,7 +43,7 @@ import {switchMap, tap} from 'rxjs/operators';
     styleUrls: ['./project-datasets-tab.component.scss'],
     imports: [MatCard, OpenDatasetTableComponent, RestrictedDatasetTableComponent, NewDatasetRequestTableComponent, LoaderComponent]
 })
-export class ProjectDatasetsTabComponent implements OnInit {
+export class ProjectDatasetsTabComponent implements OnInit, OnChanges {
 
     /**
      * Toutes les demandes d'un projet avec le JDD
@@ -84,7 +84,7 @@ export class ProjectDatasetsTabComponent implements OnInit {
     addActionAuthorized = false;
     deleteActionAuthorized = false;
     linkError: string;
-
+    private isOwner = false;
 
     /**
      * Projet de l'onglet
@@ -96,6 +96,14 @@ export class ProjectDatasetsTabComponent implements OnInit {
     linkedDatasetsOpened: LinkedDatasetMetadatas[];
     projectWithDependencies: ProjectWithDependencies;
     addFromConsultation = true;
+
+    /**
+     * Indique si l'organisation propriétaire de la réutilisation est indisponible
+     * (en cours d'archivage ou déjà archivée). Dans ce cas, les boutons d'ajout de
+     * jeux de données ne doivent pas être visibles.
+     */
+    @Input()
+    isOwnerOrganizationUnavailable = false;
 
     private startAllLoader(): void {
         this.loading = true;
@@ -160,10 +168,30 @@ export class ProjectDatasetsTabComponent implements OnInit {
                 }
             });
             this.projektService.isAuthenticatedUserProjectOwner(this._project.uuid).subscribe(isOwner => {
-                this.addActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromDetail(this._project);
+                this.isOwner = isOwner;
+                this.updateAddActionAuthorized();
                 this.deleteActionAuthorized = isOwner && this.dataSetActionsAuthorizationService.canDeleteDatasetFromProjectFromDetail(this._project);
             });
         }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.isOwnerOrganizationUnavailable) {
+            this.updateAddActionAuthorized();
+        }
+    }
+
+    /**
+     * Recalcule la visibilité des boutons d'ajout de jeu de données en tenant compte
+     * du statut de l'organisation propriétaire de la réutilisation.
+     */
+    private updateAddActionAuthorized(): void {
+        if (!this._project) {
+            return;
+        }
+        this.addActionAuthorized = this.isOwner
+            && this.dataSetActionsAuthorizationService.canAddDatasetFromProjectFromDetail(this._project)
+            && !this.isOwnerOrganizationUnavailable;
     }
 
     constructor(

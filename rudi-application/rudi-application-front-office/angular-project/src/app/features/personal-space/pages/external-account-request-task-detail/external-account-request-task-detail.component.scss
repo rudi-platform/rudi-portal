@@ -1,0 +1,64 @@
+@use "common-style";
+
+.request-details-container {
+    display: flex;
+    flex-wrap: wrap;
+
+    .request-information-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding-bottom: 24px;
+        flex: 0 0 100%;
+        max-width: 100%;
+
+        app-workflow-expansion {
+            display: block;
+        }
+    }
+
+    .requester-information-container {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.card-contact ::ng-deep .mat-mdc-card {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.requester-name {
+    font-size: 14px;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    line-height: 1.72;
+    text-align: left;
+}
+
+.data-value {
+    @include common-style.data-value;
+}
+
+.vertical-space {
+    margin-bottom: 20px;
+}
+
+:host ::ng-deep .mat-expansion-panel-body {
+    margin-top: -20px;
+}
+
+@media (min-width: 992px) {
+    .request-details-container {
+        .request-information-container {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+            padding-right: 1.5rem;
+        }
+
+        .requester-information-container {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+        }
+    }
+}

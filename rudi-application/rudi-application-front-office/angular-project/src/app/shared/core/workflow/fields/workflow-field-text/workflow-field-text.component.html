@@ -1,8 +1,12 @@
 <ng-container [formGroup]="formGroup">
   <label [for]="'input-' + formControlName" class="d-flex">
     <span class="field-label">{{fullLabel}}@if (required) {
-      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+      <span class="required-symbol" aria-hidden="true">*</span>
     }</span>
+    <!-- Fallback accessible name when the backend label is empty -->
+    @if (!label) {
+      <span class="visually-hidden">{{'common.comment'|translate}}</span>
+    }
   </label>
   @if (help) {
     <mat-hint [id]="'hint-' + formControlName" class="title-hint">{{help}}</mat-hint>
@@ -19,7 +23,7 @@
       (keydown.control.enter)="submitForm.emit()"
     ></textarea>
     <mat-error>
-      <em class="fa fa-info-circle fa-2x me-2"></em>
+      <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>
       @if (formControl?.hasError('required')) {
         {{'common.validatorsErrors.required'|translate}}
       } @else if (formControl?.hasError('pattern')) {

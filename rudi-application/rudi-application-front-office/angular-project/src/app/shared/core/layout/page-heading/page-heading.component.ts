@@ -21,6 +21,10 @@ export class PageHeadingComponent {
     @Input()
     icon: string;
 
+    /** Text alternative of the title icon when it conveys information */
+    @Input()
+    iconAlt: string;
+
     @Input()
     resourceTitle: string;
 

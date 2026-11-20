@@ -14,16 +14,23 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Classe de configuration globale de l'application.
  */
-@SpringBootApplication(scanBasePackages = { 
-		"org.rudi.common.core", 
+@SpringBootApplication(scanBasePackages = {
+		"org.rudi.common.core",
 		"org.rudi.common.service",
-		"org.rudi.common.storage", 
-		"org.rudi.common.facade", 
+		"org.rudi.common.storage",
+		"org.rudi.common.facade",
 		"org.rudi.microservice.acl.facade",
-		"org.rudi.microservice.acl.service", 
-		"org.rudi.microservice.acl.storage", 
+		"org.rudi.microservice.acl.service",
+		"org.rudi.microservice.acl.storage",
+		"org.rudi.microservice.acl.core",
+		"org.rudi.facet.projekt",
+		"org.rudi.facet.selfdata",
+		"org.rudi.facet.strukture",
+		"org.rudi.facet.organization",
 		"org.rudi.facet.email",
-		"org.rudi.facet.generator"
+		"org.rudi.facet.generator",
+		"org.rudi.facet.bpmn",
+		"org.rudi.facet.acl"
 		})
 @EnableScheduling
 @EnableDiscoveryClient(autoRegister = true)

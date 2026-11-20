@@ -2,6 +2,7 @@ package org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest;
 
 import java.util.UUID;
 
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataInformationRequestEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ public interface SelfdataInformationRequestCustomDao {
 	 * @return une page de demandes
 	 */
 	Page<SelfdataInformationRequestEntity> searchSelfdataInformationRequests(
-			SelfdataInformationRequestCustomSearchCriteria criteria, Pageable pageable);
+			SelfdataInformationRequestSearchCriteria criteria, Pageable pageable);
 
 	/**
 	 * @param userLogin   login de l'utilisateur

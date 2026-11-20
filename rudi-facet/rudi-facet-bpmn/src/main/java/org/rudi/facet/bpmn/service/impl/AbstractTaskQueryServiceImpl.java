@@ -192,7 +192,8 @@ public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria,
 	}
 
 	private void applyACLCriteria(TaskQuery taskQuery, S taskSearchCriteria) {
-		bpmnHelper.applyACLCriteria(taskQuery, taskSearchCriteria != null && taskSearchCriteria.isAsAdmin());
+		bpmnHelper.applyACLCriteria(taskQuery, taskSearchCriteria != null && taskSearchCriteria.isAsAdmin(),
+				taskSearchCriteria != null ? taskSearchCriteria.getUserLogin() : null);
 	}
 
 	/**
@@ -319,5 +320,4 @@ public abstract class AbstractTaskQueryServiceImpl<S extends TaskSearchCriteria,
 		historicSearchCriteria.setFinished(true);
 		return searchHistoricInformations(historicSearchCriteria);
 	}
-
 }

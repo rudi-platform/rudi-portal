@@ -12,6 +12,8 @@ import {switchMap} from 'rxjs/operators';
     ,
 })
 export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item> implements OnInit, OnDestroy {
+    private static nextApplyButtonId = 0;
+
     @Input() ulClass?: string;
     @Input() formClass?: string;
 
@@ -30,6 +32,13 @@ export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item
     @Output() submitFormEvent = new EventEmitter<void>();
     @Output() selectedItemsChange = new EventEmitter<I[]>();
     private valueSubscription?: Subscription;
+
+    /**
+     * Id unique du bouton "Appliquer", utilisé comme cible du lien d'évitement en tête de panneau
+     * (RGAA : permettre de contourner la liste de cases à cocher/boutons radio pour atteindre directement
+     * l'action de validation, sans avoir à tabuler à travers tous les items).
+     */
+    readonly applyButtonId = `filter-apply-button-${FilterFormComponent.nextApplyButtonId++}`;
 
     protected constructor(
         protected readonly filtersService: FiltersService
@@ -71,6 +80,15 @@ export abstract class FilterFormComponent<T, F extends Filter<T>, I extends Item
     submitForm(): void {
         this.filter.value = this.getValueFromFormGroup();
         this.submitFormEvent.emit();
+    }
+
+    /**
+     * Lien d'évitement : place le focus directement sur le bouton "Appliquer" sans activer la navigation
+     * native de l'ancre (même principe que {@link HeaderComponent#handleSkipLinkClick}).
+     */
+    handleSkipToApplyClick(event: Event): void {
+        event.preventDefault();
+        document.getElementById(this.applyButtonId)?.focus();
     }
 
     protected abstract get selectedItems(): I[];

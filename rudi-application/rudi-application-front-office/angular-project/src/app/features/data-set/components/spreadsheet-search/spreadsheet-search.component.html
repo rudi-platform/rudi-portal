@@ -6,6 +6,7 @@
         <mat-icon class="me-2" aria-hidden="true" svgIcon="search"></mat-icon>
       </span>
       <input
+        #searchInput
         class="form-control text-indent"
         type="search"
         name="search"
@@ -17,11 +18,11 @@
         [attr.aria-label]="libelle | translate">
       @if (searchTerms) {
         <span class="search-box-clear search-box" [ngClass]="searchTerms ? 'active' : ''">
-          <mat-icon
-            class="pointer me-2"
-            aria-hidden="false"
+          <button type="button" class="search-box-clear-button pointer me-2"
             [attr.aria-label]="'common.clearSearch' | translate"
-            (click)="onReset()">close</mat-icon>
+            (click)="onReset(); searchInput.focus()">
+            <mat-icon aria-hidden="true" fontIcon="close"></mat-icon>
+          </button>
         </span>
       }
     </div>

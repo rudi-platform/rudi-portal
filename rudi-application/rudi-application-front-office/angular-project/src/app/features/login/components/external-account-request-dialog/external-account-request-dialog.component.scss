@@ -1,0 +1,49 @@
+@use "common-style";
+
+form {
+    text-align: left;
+}
+
+mat-form-field {
+    width: 100%;
+    margin: 8px 0;
+}
+
+.dialog-title {
+    margin-bottom: 0.5em;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    padding-left: 0;
+    margin: 8px 0;
+}
+
+.field-label {
+    color: var(--secondary-text);
+    font-size: 16px;
+    line-height: 2;
+}
+
+.title-hint {
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--primary-text-light);
+    line-height: 1.43;
+}
+
+.dialog-buttons {
+    align-items: center;
+}
+
+mat-form-field:has(input[readonly]) {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.identity-provider-field:has(input[readonly]) {
+    cursor: not-allowed;
+    user-select: none;
+}

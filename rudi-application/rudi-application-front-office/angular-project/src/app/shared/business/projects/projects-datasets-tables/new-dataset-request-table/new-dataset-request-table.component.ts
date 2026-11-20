@@ -82,6 +82,10 @@ export class NewDatasetRequestTableComponent {
     openNewDatasetRequestPopin(): void {
         this.projectSubmissionService.openDialogAskNewDatasetRequest(this.newDatasetsRequest.length).subscribe({
             next: (newRequest: DataRequestItem) => {
+                // Closed with Cancel, the cross or Escape
+                if (!newRequest) {
+                    return;
+                }
                 const newDatasetRequestToAdd: NewDatasetRequest = {
                     title: newRequest.title,
                     description: newRequest.description,

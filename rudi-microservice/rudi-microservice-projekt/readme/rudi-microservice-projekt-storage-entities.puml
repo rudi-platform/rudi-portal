@@ -133,6 +133,7 @@ class org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity <<Entity>>  <<Tabl
 
 
 abstract class org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity <<MappedSuperclass>>  {
+	{field} {static} +FIELD_INITIATOR : String
 	{field} +@Column("assignee") assignee : String
 	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
 	{field} +@Column("data") data : String
@@ -386,10 +387,12 @@ class org.rudi.microservice.projekt.storage.entity.project.ProjectEntity <<Entit
  {TableSchema=projekt_data}
 --
 	{field} {static} +FIELD_DATASET_REQUESTS : String
+	{field} {static} +FIELD_DESCRIPTION : String
 	{field} {static} +FIELD_ID : String
 	{field} {static} +FIELD_LINKED_DATASET : String
 	{field} {static} +FIELD_OWNER_UUID : String
 	{field} {static} +FIELD_RELATED_ORGANIZATION : String
+	{field} {static} +FIELD_TITLE : String
 	{field} +accessUrl : String
 	{field} +@Column("contact_email") contactEmail : String
 	{field} +@Column("desired_support_description") desiredSupportDescription : String

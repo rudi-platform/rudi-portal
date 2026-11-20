@@ -11,6 +11,8 @@ import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
     imports: [MatIcon, MatButton, NgbPopover]
 })
 export class PopoverComponent {
+    readonly popoverCloseDelayMs = 200;
+
     @Input()
     public buttonLogo: string;
     @Input()

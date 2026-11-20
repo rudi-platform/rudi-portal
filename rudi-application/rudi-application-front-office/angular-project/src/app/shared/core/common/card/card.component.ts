@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
@@ -11,7 +11,7 @@ import {ALL_TYPES} from '@shared/models/title-icon-type';
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
-    imports: [MatCard, NgClass, MatIcon, TranslatePipe]
+    imports: [MatCard, NgClass, NgTemplateOutlet, MatIcon, TranslatePipe]
 })
 export class CardComponent {
 
@@ -40,6 +40,12 @@ export class CardComponent {
 
     @Input()
     header = false;
+
+    /**
+     * Heading level of the title (2 to 4); without it the title is not a heading.
+     */
+    @Input()
+    titleLevel?: 2 | 3 | 4;
 
 
     constructor(iconRegistryService: IconRegistryService,

@@ -1,19 +1,24 @@
-<div class="card-container">
+<ul class="card-container list-unstyled mb-0">
   @for (organisation of organizations | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }; track organisation) {
-    <div
+    <li
       class="card-organization">
       <app-organization-card
         [organizationBean]="organisation"
+        [titleLevel]="cardTitleLevel"
         [datasetCountLoading]="datasetCountLoading"
         [projectCountLoading]="projectCountLoading"
       ></app-organization-card>
-    </div>
+    </li>
   }
-</div>
-<pagination-controls
-  (pageChange)="onPageChange($event)"
-  class="d-flex justify-content-center mt-4 pagination-font-size pagination-container"
-  [ngClass]="paginationControlsNgClass"
-  [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
-  [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate">
-</pagination-controls>
+</ul>
+ @if (totalItems > itemsPerPage) {
+    <pagination-controls
+    (pageChange)="onPageChange($event)"
+    class="d-flex justify-content-center mt-4 pagination-font-size pagination-container"
+    [ngClass]="paginationControlsNgClass"
+    [maxSize]="mediaSize.isDeviceMobile ? maxPageMobile : maxPageDesktop"
+    [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
+    [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate"
+    [screenReaderCurrentLabel]="'paginator.CURRENT_PAGE_LABEL' | translate">
+    </pagination-controls>
+ }

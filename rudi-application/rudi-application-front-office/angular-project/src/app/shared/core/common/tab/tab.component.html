@@ -1,4 +1,10 @@
-<button class="button" [ngClass]="{'active': active, 'with-icon': icon, 'invisible': invisible}" [disabled]="disabled" mat-stroked-button>
+<button class="button" [ngClass]="{'active': active, 'with-icon': icon, 'invisible': invisible}" [disabled]="disabled" mat-stroked-button
+  type="button"
+  [attr.role]="tabId ? 'tab' : null"
+  [attr.id]="tabId || null"
+  [attr.aria-selected]="tabId ? active : null"
+  [attr.aria-controls]="tabId ? controls : null"
+  [tabIndex]="tabId && !active ? -1 : 0">
   @if (icon) {
     <mat-icon class="little-icon-size" aria-hidden="true" [svgIcon]="icon"></mat-icon>
   }

@@ -1,4 +1,4 @@
-FROM postgres:15.12-bookworm
+FROM postgres:15.20-bookworm
 
 USER root
 

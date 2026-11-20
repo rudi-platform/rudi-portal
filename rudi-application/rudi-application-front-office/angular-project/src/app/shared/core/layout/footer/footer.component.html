@@ -39,12 +39,13 @@ xmlns="http://www.w3.org/1999/html"></mat-divider>
 
     <div class="d-flex">
       <div class="footer-logo-container navbar-brand me-2">
-        <div (click)="redirectToRudi()" class="footer-logo-link">
+        <a class="footer-logo-link" [href]="footerLogoLink" target="_blank" rel="noopener noreferrer">
           @if (!logoIsLoading) {
             <img [alt]="logoAlt" [src]="logoSrc"
               class="footer-logo"/>
           }
-        </div>
+          <span class="visually-hidden">{{ 'footer.newWindow' | translate }}</span>
+        </a>
       </div>
       <div>
         <div class="footer-primary-text">{{ 'footer.ccByCa'|translate }}</div>
@@ -63,13 +64,21 @@ xmlns="http://www.w3.org/1999/html"></mat-divider>
                         'terms-section-tablet': mediaSize.isMd,
                         'terms-section-desktop':  mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
     class="terms-section">
-    <a class="rudi-label-lien-mobile-mention"
-    href="{{'front.docRudi'|getBackendProperty|async}}">{{ 'footer.documentation' | translate }}</a>
 
-    @for (term of termsValues; track term) {
-      <div [innerHTML]="term"
-      [ngClass]="'rudi-label-lien-mobile-mention'"></div>
+    <nav aria-label="{{'footer.information' | translate}}">
+      <ul class="d-flex flex-wrap gap-3 list-unstyled mb-0">
+        <li>
+        <a class="rudi-label-lien-mobile-mention"
+            [href]="'front.docRudi' | getBackendProperty | async">{{ 'footer.documentation' | translate }}</a>
+        </li>
+         @for (term of termsValues; track term) {
+            <li [innerHTML]="term"
+            [ngClass]="'rudi-label-lien-mobile-mention'"></li>
     }
+      </ul>
+    </nav>
+
+
   </div>
 </div>
 </footer>

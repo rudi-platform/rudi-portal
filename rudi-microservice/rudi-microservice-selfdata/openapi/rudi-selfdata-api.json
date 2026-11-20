@@ -738,25 +738,67 @@
 				}
 			}
 		},
-		"/my-selfdata-information-requests": {
-			"get": {
-				"tags": [
-					"selfdata"
-				],
-				"summary": "Recherche des demandes effectuées par l'utilisateur connecté",
-				"description": "Recherche des demandes effectuées par l'utilisateur connecté",
-				"operationId": "searchMySelfdataInformationRequests",
-				"parameters": [
-					{
-						"name": "criteria",
-						"in": "query",
-						"description": "critères de recherches",
-						"required": true,
-						"schema": {
-							"$ref": "rudi-selfdata-model.json#/components/schemas/SelfdataInformationRequestSearchCriteria"
+	"/my-selfdata-information-requests": {
+		"get": {
+			"tags": [
+				"selfdata"
+			],
+			"summary": "Recherche des demandes effectuées par l'utilisateur connecté",
+			"description": "Recherche des demandes effectuées par l'utilisateur connecté",
+			"operationId": "searchMySelfdataInformationRequests",
+			"parameters": [
+				{
+					"name": "datasetUuid",
+					"in": "query",
+					"description": "UUID du dataset",
+					"required": false,
+					"schema": {
+						"type": "string",
+						"format": "uuid"
+					}
+				},
+				{
+					"name": "status",
+					"in": "query",
+					"description": "Statuts de la demande",
+					"required": false,
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "rudi-selfdata-model.json#/components/schemas/SelfdataInformationRequestStatus"
 						}
 					}
-				],
+				},
+				{
+					"name": "offset",
+					"in": "query",
+					"description": "Index de début (positionne le curseur pour parcourir les résultats de la recherche)",
+					"required": false,
+					"schema": {
+						"type": "integer",
+						"format": "int32"
+					}
+				},
+				{
+					"name": "limit",
+					"in": "query",
+					"description": "Le nombre de résultats à retourner par page",
+					"required": false,
+					"schema": {
+						"type": "integer",
+						"format": "int32"
+					}
+				},
+				{
+					"name": "order",
+					"in": "query",
+					"description": "Le critère de tri des résultats",
+					"required": false,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -1214,6 +1256,52 @@
 				}
 			}
 		},
+		"/notify/user-deactivation": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Notifier la désactivation d'un utilisateur",
+				"description": "Notifier la désactivation d'un utilisateur pour anonymiser ses données associées",
+				"operationId": "handleUserDeactivation",
+				"parameters": [
+					{
+						"name": "login",
+						"in": "query",
+						"description": "Login de l'utilisateur désactivé",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "userUuid",
+						"in": "query",
+						"description": "UUID de l'utilisateur désactivé",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/tasks": {
 			"get": {
 				"tags": [
@@ -1284,6 +1372,15 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "userLogin",
+						"description": "Nom de l'utilisateur assigné ou candidat à la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				],

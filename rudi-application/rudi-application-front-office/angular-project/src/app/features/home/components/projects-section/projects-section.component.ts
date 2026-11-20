@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {RudiSwiperComponent} from '@shared/business/home/rudi-swiper/rudi-swiper.component';
@@ -11,7 +11,7 @@ import {from, Observable} from 'rxjs';
     selector: 'app-projects-section',
     templateUrl: './projects-section.component.html',
     styleUrls: ['./projects-section.component.scss'],
-    imports: [ProjectCardComponent, RudiSwiperComponent, TranslatePipe]
+    imports: [ProjectCardComponent, RouterLink, RudiSwiperComponent, TranslatePipe]
 })
 export class ProjectsSectionComponent implements OnInit {
     @Input() projects: ProjectCatalogItem[];
@@ -21,14 +21,6 @@ export class ProjectsSectionComponent implements OnInit {
         private readonly router: Router,
         private readonly translateService: TranslateService
     ) {
-    }
-
-    redirectToProject(): void {
-        this.router.navigate(['/projets']);
-    }
-
-    submitProject(): Observable<boolean> {
-        return from(this.router.navigate(['/projets/soumettre-un-projet']));
     }
 
     ngOnInit(): void {

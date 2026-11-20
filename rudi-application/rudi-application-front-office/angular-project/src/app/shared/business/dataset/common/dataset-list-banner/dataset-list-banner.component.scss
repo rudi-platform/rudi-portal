@@ -1,15 +1,25 @@
 @use "app/styles/common-style";
 
 .rudi-filters-toolbar {
-    width: auto;
-    margin: 42px -95px 35px -95px;
+    @include common-style.rudi-filters-toolbar-base;
     background-color: #e7e9ed;
-    padding-left: 95px;
+}
 
-    :focus-visible {
-        outline: var(--focus) solid 1px;
-        color: var(--focus);
-    }
+// Pousse le bouton "Publier ses données" à droite du bandeau de filtre (desktop).
+.spacer {
+    flex: 1 1 auto;
+}
+
+.dataset-publish-button-desktop {
+    margin-right: 95px;
+}
+
+// Format mobile : le bouton s'affiche en continuité des filtres.
+.dataset-publish-button-mobile {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 .filter-icon {

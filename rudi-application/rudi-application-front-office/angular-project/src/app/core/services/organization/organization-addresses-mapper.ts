@@ -13,8 +13,10 @@ export abstract class OrganizationAddressesMapper {
 
     private readonly organizationMetierService = inject(OrganizationMetierService);
 
-    mapAbstractAddressesToOrganizationAddresses(addresses: AbstractAddress[]): OrganizationAddresses {
-        const organizationAddresses: OrganizationAddresses = {};
+    mapAbstractAddressesToOrganizationAddresses(addresses: AbstractAddress[], organizationAddress?: string): OrganizationAddresses {
+        const organizationAddresses: OrganizationAddresses = {
+            postalAddress: organizationAddress
+        };
         if (addresses) {
             addresses.forEach((address) => {
                 switch (address.type) {

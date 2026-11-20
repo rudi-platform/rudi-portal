@@ -2,6 +2,9 @@ package org.rudi.microservice.projekt.service.notifications;
 
 import java.util.UUID;
 
+import org.rudi.facet.bpmn.exception.FormDefinitionException;
+import org.rudi.facet.bpmn.exception.InvalidDataException;
+
 public interface NotifyService {
 	/**
 	 * @param organizationUuid
@@ -18,4 +21,6 @@ public interface NotifyService {
 	 * qu'il avait grâce à cette organisation
 	 */
 	void handleRemoveOrganizationMember(UUID organizationUuid, UUID userUUid);
+
+	void handleUserTasks(String login, UUID userUuid) throws FormDefinitionException, InvalidDataException;
 }

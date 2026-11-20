@@ -1,12 +1,11 @@
 import {DatePipe, NgClass} from '@angular/common';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
-import {MatButton} from '@angular/material/button';
+import {MatAnchor} from '@angular/material/button';
 import {MatCard, MatCardTitle} from '@angular/material/card';
-import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatIcon} from '@angular/material/icon';
 import {MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {MatToolbar} from '@angular/material/toolbar';
-import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
     LinkedDatasetMetadatas,
@@ -23,15 +22,14 @@ import {OwnerCardInfoComponent, RelatedOrganizationInfo} from '@shared/business/
 import {DatasetsInfosComponent} from '@shared/business/dataset/common/dataset-infos/dataset-infos.component';
 import {ProjectHeadingComponent} from '@shared/business/projects/project-heading/project-heading.component';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
+import {TabComponent} from '@shared/core/common/tab/tab.component';
 import {injectDependencies} from '@shared/utils/dependencies-utils';
-import {AclService} from 'micro_service_modules/acl/acl-api';
-import {LinkedDatasetStatus, OwnerInfo, ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {LinkedDatasetStatus, OwnerInfo} from 'micro_service_modules/projekt/projekt-api';
 import {OwnerInfoRequest, OwnerType, Project, ProjectStatus, RelationStatus} from 'micro_service_modules/projekt/projekt-model';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {ProjectMainInformationsComponent} from '../../components/project-main-informations/project-main-informations.component';
 
-const ICON_INFO = '../assets/icons/icon_tab_infos.svg';
 const PROJECT_LOGO = '/assets/images/logo_projet_par_defaut.png';
 
 /**
@@ -55,7 +53,8 @@ interface Dependencies {
         NgClass,
         ProjectHeadingComponent,
         MatToolbar,
-        MatButton,
+        TabComponent,
+        MatAnchor,
         MatIcon,
         MatCard,
         ProjectMainInformationsComponent,
@@ -67,6 +66,8 @@ interface Dependencies {
     ]
 })
 export class DetailComponent implements OnInit {
+    readonly infoTabId = 'project-detail-tab-informations';
+    readonly infoPanelId = 'project-detail-tabpanel-informations';
     project: Project;
     mediaSize: MediaSize;
     formatsMenuActive = false;
@@ -78,14 +79,10 @@ export class DetailComponent implements OnInit {
     isKnownUser: boolean;
 
     constructor(
-        private readonly matIconRegistry: MatIconRegistry,
-        private readonly domSanitizer: DomSanitizer,
         private readonly breakpointObserverService: BreakpointObserverService,
         private readonly route: ActivatedRoute,
-        private readonly projektService: ProjektService,
         private readonly projektMetierService: ProjektMetierService,
         private readonly router: Router,
-        private readonly aclService: AclService,
         private readonly translateService: TranslateService,
         private readonly pageTitleService: PageTitleService,
         private readonly projectDependenciesService: ProjectDependenciesService,
@@ -93,10 +90,6 @@ export class DetailComponent implements OnInit {
         private readonly logService: LogService
     ) {
         this.mediaSize = this.breakpointObserverService.getMediaSize();
-        this.matIconRegistry.addSvgIcon(
-            'icon-info',
-            this.domSanitizer.bypassSecurityTrustResourceUrl(ICON_INFO)
-        );
     }
 
     ngOnInit(): void {
@@ -153,9 +146,12 @@ export class DetailComponent implements OnInit {
     private loadProjectDependencies(projectUuid: string): Observable<Dependencies> {
         return this.projectDependenciesService.getProject(projectUuid).pipe(
             injectDependencies({
-                linkedDatasetMetadatas: this.projectDependenciesFetchers.linkedDatasetMetadatas([LinkedDatasetStatus.Validated, LinkedDatasetStatus.Archived]),
-            }),
-            injectDependencies({
+                linkedDatasetMetadatas:
+                    this.projectDependenciesFetchers.linkedDatasetMetadatas([
+                        LinkedDatasetStatus.Validated,
+                        LinkedDatasetStatus.Archived,
+                    ]),
+            }),            injectDependencies({
                 logo: this.projectDependenciesFetchers.logo
             }),
             injectDependencies({
@@ -173,16 +169,19 @@ export class DetailComponent implements OnInit {
     }
 
     private loadRelatedOrganizations(project: Project): void {
-        const validatedRelatedOrganizations = project.related_organizations?.filter(
-            relatedOrganization => relatedOrganization.relation_status === RelationStatus.Accepted
+        // On affiche toutes les organisations partenaires concernées par la réutilisation (acceptées ou en attente
+        // de réponse), à l'exception de celles ayant refusé, afin que le producteur (ou tout visiteur) voit
+        // l'ensemble des réutilisateurs et organisations partenaires dans la liste des contacts.
+        const visibleRelatedOrganizations = project.related_organizations?.filter(
+            relatedOrganization => relatedOrganization.relation_status !== RelationStatus.Refused
         ) ?? [];
 
-        if (!validatedRelatedOrganizations.length) {
+        if (!visibleRelatedOrganizations.length) {
             this.relatedOrganizations = [];
             return;
         }
 
-        const ownerInfoRequests: OwnerInfoRequest[] = validatedRelatedOrganizations.map(relatedOrganization => ({
+        const ownerInfoRequests: OwnerInfoRequest[] = visibleRelatedOrganizations.map(relatedOrganization => ({
             owner_uuid: relatedOrganization.organization_uuid,
             owner_type: OwnerType.Organization
         }));
@@ -199,10 +198,6 @@ export class DetailComponent implements OnInit {
         return this.project?.type?.label || this.translateService.instant('project.detail.defaultType');
     }
 
-
-    onClickAccessUrl(): void {
-        window.open(this.project.access_url, '_blank');
-    }
 
     getHeaderStatus(): string {
         // Cas spécifique, on ne souhaite pas afficher le réutilisation status

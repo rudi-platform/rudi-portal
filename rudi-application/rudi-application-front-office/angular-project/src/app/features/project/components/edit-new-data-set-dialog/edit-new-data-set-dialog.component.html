@@ -2,13 +2,15 @@
 <div id="dialog-container">
   <mat-dialog-content>
     <div class="dialog-cross-button">
-      <button mat-icon-button [mat-dialog-close]="null">
-        <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+      <!-- mat-dialog-close overrides [attr.aria-label] with its own aria-label input -->
+      <button mat-icon-button type="button" [mat-dialog-close]="null"
+        [aria-label]="'popup.close' | translate">
+        <mat-icon svgIcon="icon-close" class="cross-button" aria-hidden="true"></mat-icon>
       </button>
     </div>
 
     <div class="dialog-content">
-      <div class="dialog-title">{{'project.dialogEditNewDatasetRequest.title'|translate}}</div>
+      <div class="dialog-title" mat-dialog-title>{{'project.dialogEditNewDatasetRequest.title'|translate}}</div>
 
       <div
       class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionHint' | translate}}</div>
@@ -21,21 +23,23 @@
         <!-- Title Field-->
         <ng-container>
           <div class="d-flex">
-            <mat-label
+            <mat-label id="new-dataset-request-title-label"
               class="dialog-subtitle">{{'project.dialogEditNewDatasetRequest.titleField'|translate}}
-              <span class="required-symbol">*</span>
+              <span class="required-symbol" aria-hidden="true">*</span>
             </mat-label>
           </div>
-          <mat-hint
+          <mat-hint id="new-dataset-request-title-hint"
             class="dialog-description">{{'project.dialogEditNewDatasetRequest.titleFieldHint'|translate}}
           </mat-hint>
           <mat-form-field appearance="outline" hideRequiredMarker>
-            <input type="text" formControlName="title" matInput
-              autocomplete="off" maxlength="150">
+            <input type="text" formControlName="title" matInput id="new-dataset-request-title"
+              aria-labelledby="new-dataset-request-title-label"
+              aria-describedby="new-dataset-request-title-hint"
+              autocomplete="off" maxlength="150" required>
               @if (newDatasetRequestFormGroup.get('title').errors?.required) {
                 <mat-error class="stepper-mat-error"
                   >
-                  <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                  <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
                 </mat-error>
               }
             </mat-form-field>
@@ -44,23 +48,25 @@
           <!-- Description Field-->
           <ng-container>
             <div class="d-flex">
-              <mat-label class="dialog-subtitle">
+              <mat-label id="new-dataset-request-description-label" class="dialog-subtitle">
                 {{'project.dialogEditNewDatasetRequest.descriptionField'|translate}}
-                <span class="required-symbol">*</span>
+                <span class="required-symbol" aria-hidden="true">*</span>
               </mat-label>
             </div>
 
-            <mat-hint
+            <mat-hint id="new-dataset-request-description-hint"
               class="dialog-description">{{'project.dialogEditNewDatasetRequest.descriptionFieldHint'|translate}}
             </mat-hint>
             <mat-form-field appearance="outline" hideRequiredMarker>
-              <textarea class="text-area-height" type="text" matInput
+              <textarea class="text-area-height" type="text" matInput id="new-dataset-request-description"
+                aria-labelledby="new-dataset-request-description-label"
+                aria-describedby="new-dataset-request-description-hint"
                 formControlName="description" autocomplete="off"
               maxlength="255" required></textarea>
               @if (newDatasetRequestFormGroup.get('description').errors?.required) {
                 <mat-error class="stepper-mat-error"
                   >
-                  <em class="fa fa-info-circle fa-2x me-2"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
+                  <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'project.stepper.submission.step1.errorFieldRequired'|translate}}
                 </mat-error>
               }
             </mat-form-field>

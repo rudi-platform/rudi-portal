@@ -913,7 +913,6 @@ class ConsentServiceUT {
 		setConnectedUser(getKnownUser(), UUID.randomUUID(), new ArrayList<>());
 		List<Consent> myConsents = createConsents(List.of(okTreatmentVersionUuid));
 
-		// TODO avec les DAOS créer directement les ConsentEntity malformés et récupérer des DTO Consent
 		List<Consent> myInvalidConsents = new ArrayList<>();
 
 		PagedConsentList searched = consentsService.searchMyTreatmentsConsents(new ConsentSearchCriteria());

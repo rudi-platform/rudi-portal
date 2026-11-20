@@ -14,8 +14,9 @@ import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 import org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest.SelfdataInformationRequestCustomDao;
-import org.rudi.microservice.selfdata.storage.dao.selfdatainformationrequest.SelfdataInformationRequestCustomSearchCriteria;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataInformationRequestEntity;
 import org.rudi.microservice.selfdata.storage.entity.selfdatainformationrequest.SelfdataInformationRequestStatus;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ import static org.rudi.microservice.selfdata.storage.RepositoryConstants.DATASET
 import static org.rudi.microservice.selfdata.storage.RepositoryConstants.INITATOR_FIELD;
 
 @Repository
-public class SelfdataInformationRequestCustomDaoImpl extends AbstractCustomDaoImpl<SelfdataInformationRequestEntity, SelfdataInformationRequestCustomSearchCriteria> implements SelfdataInformationRequestCustomDao {
+public class SelfdataInformationRequestCustomDaoImpl extends AbstractCustomDaoImpl<SelfdataInformationRequestEntity, SelfdataInformationRequestSearchCriteria> implements SelfdataInformationRequestCustomDao {
 
 	public SelfdataInformationRequestCustomDaoImpl(EntityManager entityManager) {
 		super(entityManager, SelfdataInformationRequestEntity.class);
@@ -39,12 +40,12 @@ public class SelfdataInformationRequestCustomDaoImpl extends AbstractCustomDaoIm
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public Page<SelfdataInformationRequestEntity> searchSelfdataInformationRequests(
-			SelfdataInformationRequestCustomSearchCriteria searchCriteria, Pageable pageable) {
+			SelfdataInformationRequestSearchCriteria searchCriteria, Pageable pageable) {
 		return search(searchCriteria, pageable);
 	}
 
 	@Override
-	protected void addPredicates(SelfdataInformationRequestCustomSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery, Root<SelfdataInformationRequestEntity> root, List<Predicate> predicates) {
+	protected void addPredicates(SelfdataInformationRequestSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery, Root<SelfdataInformationRequestEntity> root, List<Predicate> predicates) {
 		if (StringUtils.isNotBlank(searchCriteria.getLogin())) {
 			Predicate loginEqualsCriteriaLogin = builder.equal(root.get(INITATOR_FIELD), searchCriteria.getLogin());
 			predicates.add(loginEqualsCriteriaLogin);
@@ -61,6 +62,9 @@ public class SelfdataInformationRequestCustomDaoImpl extends AbstractCustomDaoIm
 			).collect(Collectors.toList());
 			predicates.add(root.get(SelfdataInformationRequestEntity.SELFDATA_INFORMATION_REQUEST_STATUS).in(statusList));
 		}
+
+		predicateStringCriteria(searchCriteria.getInitiator(), AbstractAssetDescriptionEntity.FIELD_INITIATOR, false,
+				false, predicates, builder, root);
 	}
 
 	@Override

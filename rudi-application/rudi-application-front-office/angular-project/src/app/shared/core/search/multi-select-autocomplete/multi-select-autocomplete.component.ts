@@ -1,7 +1,8 @@
-import {Component, ElementRef, EventEmitter, HostListener, Inject, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, DOCUMENT} from '@angular/core';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
+import {Component, ElementRef, EventEmitter, HostListener, Inject, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, QueryList, SimpleChanges, ViewChild, ViewChildren, DOCUMENT} from '@angular/core';
 
 import {FormBuilder, FormControl, ReactiveFormsModule} from '@angular/forms';
-import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatOption} from '@angular/material/core';
 import {MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatChip, MatChipRemove} from '@angular/material/chips';
@@ -9,7 +10,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {SearchAutocompleteItem} from '@shared/core/search/search-autocomplete/search-autocomplete-item.interface';
-import {TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
 
@@ -40,6 +41,7 @@ export class MultiSelectAutocompleteComponent<T> implements OnInit, OnChanges, O
 
     @ViewChild(MatAutocompleteTrigger) autocompleteTrigger: MatAutocompleteTrigger;
     @ViewChild('chipInput') chipInputRef: ElementRef<HTMLInputElement>;
+    @ViewChildren(MatChipRemove, {read: ElementRef}) removeButtons: QueryList<ElementRef<HTMLButtonElement>>;
 
     formControl: FormControl;
 
@@ -84,6 +86,8 @@ export class MultiSelectAutocompleteComponent<T> implements OnInit, OnChanges, O
         private readonly formBuilder: FormBuilder,
         private readonly ngZone: NgZone,
         @Inject(DOCUMENT) private readonly doc: Document,
+        private readonly liveAnnouncer: LiveAnnouncer,
+        private readonly translateService: TranslateService,
     ) {}
 
     /** Empêche mat-autocomplete d'écrire la valeur sélectionnée dans l'input */
@@ -150,9 +154,11 @@ export class MultiSelectAutocompleteComponent<T> implements OnInit, OnChanges, O
         if (index >= 0) {
             // Désélectionner
             this.selectedItems = this.selectedItems.filter((_, i) => i !== index);
+            this.announce('multiSelect.itemRemoved', item);
         } else if (!this.isMaxReached) {
             // Sélectionner
             this.selectedItems = [...this.selectedItems, item];
+            this.announce('multiSelect.itemAdded', item);
         }
 
         this.updateDisplayValue();
@@ -194,10 +200,13 @@ export class MultiSelectAutocompleteComponent<T> implements OnInit, OnChanges, O
         this.detachScrollListener();
     }
 
-    /** Appelé après que mat-autocomplete ait écrit la valeur de l'option dans l'input */
-    onOptionSelected(): void {
+    /** Appelé à la sélection d'une option, à la souris comme au clavier (Entrée) */
+    onOptionSelected(event: MatAutocompleteSelectedEvent): void {
+        // Material only knows single selection: the real state is selectedItems, exposed by the option text
+        event.option.deselect(false);
+        this.toggleItem(event.option.value, undefined);
         // Remet l'input à vide : emitEvent:true pour que le Subject reçoive ''
-        // et que distinctUntilChanged annule la recherche sur le label
+        // et que distinctUntilChanged annule la recherche en cours
         this.formControl.setValue('');
         if (this.chipInputRef) {
             this.chipInputRef.nativeElement.value = '';
@@ -211,9 +220,22 @@ export class MultiSelectAutocompleteComponent<T> implements OnInit, OnChanges, O
 
     /** Supprime un item sélectionné */
     removeItem(item: SearchAutocompleteItem<T>): void {
+        const index = this.selectedItems.findIndex(selected => selected.value === item.value);
         this.selectedItems = this.selectedItems.filter(selected => selected.value !== item.value);
         this.updateDisplayValue();
         this.selectionChanged.emit(this.selectedItems.map(s => s.value));
+        this.announce('multiSelect.itemRemoved', item);
+
+        // The removed chip took the focus with it: move it to the next remove button, else back to the input
+        this.doc.defaultView.setTimeout(() => {
+            const buttons = this.removeButtons?.toArray() ?? [];
+            const next = buttons[Math.min(index, buttons.length - 1)] ?? this.chipInputRef;
+            next?.nativeElement.focus();
+        });
+    }
+
+    private announce(key: string, item: SearchAutocompleteItem<T>): void {
+        this.liveAnnouncer.announce(this.translateService.instant(key, {label: item.label}));
     }
 
     private updateDisplayValue(): void {

@@ -4,13 +4,18 @@
 .news-section-container {
     width: 80%;
     height: 100%;
-    margin: auto;
+    margin: 0 auto 20px auto;
 
     .title {
         text-align: center;
         color: var(--primary-color);
         font-weight: 700;
         font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .button-redirect {
+        margin: 20px 0 0 0;
     }
 }
 

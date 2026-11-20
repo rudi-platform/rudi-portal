@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.rudi.microservice.strukture.core.bean.LinkedProducerStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,5 +41,7 @@ public class ProviderSearchCriteria {
 	private LocalDateTime dateFin;
 
 	private List<UUID> organisationUuid;
+
+	private List<LinkedProducerStatus> linkedProducerStatus;
 
 }

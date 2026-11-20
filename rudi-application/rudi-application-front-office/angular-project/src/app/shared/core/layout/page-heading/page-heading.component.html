@@ -10,6 +10,7 @@
                                                     'metadata-theme-lg' : mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl}"
         class="organization-logo"
         [organizationId]="organizationId"
+        [decorative]="!!resourceTitle"
         organizationType="producer">
       </app-organization-logo>
     </div>
@@ -22,6 +23,9 @@
         <h1 class="blue-theme resource-title my-auto">
           @if (icon != null && icon !== '') {
             <mat-icon class="d-inline-flex dataset-icon picto" [svgIcon]="icon"
+              [attr.aria-hidden]="iconAlt ? 'false' : 'true'"
+              [attr.aria-label]="iconAlt || null"
+              [attr.title]="iconAlt || null"
             ></mat-icon>
           }
           {{resourceTitle}}

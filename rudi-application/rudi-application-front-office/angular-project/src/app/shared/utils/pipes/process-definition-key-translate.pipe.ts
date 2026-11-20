@@ -27,6 +27,8 @@ export class ProcessDefinitionKeyTranslatePipe implements PipeTransform {
             result = this.translateService.instant('personalSpace.myNotifications.organization');
         } else if (value === ProcessDefinitionEnum.LINKED_PRODUCER_PROCESS) {
             result = this.translateService.instant('personalSpace.myNotifications.linkedProducer');
+        } else if (value === ProcessDefinitionEnum.EXTERNAL_ACCOUNT_REQUEST_PROCESS) {
+            result = this.translateService.instant('personalSpace.myNotifications.externalAccountRequest');
         } else {
             result = '-';
         }

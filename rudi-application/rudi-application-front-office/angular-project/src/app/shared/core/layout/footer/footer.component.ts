@@ -44,7 +44,7 @@ export class FooterComponent implements OnInit {
     logoAlt: string;
 
     displayComponent: boolean;
-    termsValues: Array<SafeHtml>;
+    termsValues: SafeHtml[];
 
 
     constructor(
@@ -154,9 +154,5 @@ export class FooterComponent implements OnInit {
                 this.logoIsLoading = false;
             }
         });
-    }
-
-    public redirectToRudi(): void {
-        window.open(this.footerLogoLink).focus();
     }
 }

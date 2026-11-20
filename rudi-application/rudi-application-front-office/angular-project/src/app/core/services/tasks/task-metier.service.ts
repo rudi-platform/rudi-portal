@@ -14,7 +14,7 @@ export abstract class TaskMetierService<T extends AssetDescription> {
     /**
      * Réalisation d'une action sur une tâche RUDI pour un user
      * Réalise en séquence le verrouillage le perform et le délock de la tâche
-     * Si une step échoue on unclaim la task pour ne pas la laisser vérrouillée en cas d'erreur technique
+     * Si une step échoue on unclaim la task pour ne pas la laisser verrouillée en cas d'erreur technique
      * @param action l'action de workflow à réaliser
      * @param task la tâche RUDI
      */

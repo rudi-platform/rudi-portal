@@ -1,13 +1,13 @@
-<div class="rudi-sidenav-container">
+<div class="rudi-sidenav-container" role="dialog" aria-modal="true" [attr.aria-labelledby]="titleId">
     <p class="rudi-sidenav-container-filter-title d-flex align-items-center">
         <!-- Bouton retour -->
         <span>
-          <button mat-mini-fab (click)="closeSidenav.emit()" class="rudi-icon-back me-2">
-            <mat-icon class="toolbar-icon pointer" aria-hidden="false" aria-label="back icon"
-            >keyboard_arrow_left</mat-icon>
+          <button mat-mini-fab (click)="closeSidenav.emit()" class="rudi-icon-back me-2"
+            [attr.aria-label]="'filterBox.retour' | translate">
+            <mat-icon class="toolbar-icon pointer" aria-hidden="true" fontIcon="keyboard_arrow_left"></mat-icon>
           </button>
         </span>
-        {{titleKey | translate}}
+        <span [id]="titleId">{{titleKey | translate}}</span>
     </p>
     <ng-content></ng-content>
 </div>

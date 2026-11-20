@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.security.RoleCodes;
 import org.rudi.common.facade.util.UtilPageable;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.bean.UserType;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.microservice.strukture.core.bean.LinkedProducerStatus;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.criteria.ProviderSearchCriteria;
 import org.rudi.microservice.strukture.service.mapper.NodeProviderMapper;
@@ -25,7 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProviderHelper {
@@ -92,23 +96,28 @@ public class ProviderHelper {
 		return addressEntity.getEmail();
 	}
 
-	private Page<ProviderEntity> searchOrganizationsProviders(UUID organizationUuid, Pageable pageable, boolean full) {
-		ProviderSearchCriteria criteria = ProviderSearchCriteria.builder().organisationUuid(List.of(organizationUuid)).full(full).build();
-
-		return providerCustomDao.searchProviders(criteria, pageable);
-	}
-
 	public List<ProviderEntity> searchAllOrganizationsProviders(UUID organizationUuid, boolean full) {
-		return searchOrganizationsProviders(organizationUuid, Pageable.unpaged(), full).getContent();
+		return searchAllOrganizationsProviders(organizationUuid, null, full);
 	}
 
-	public List<NodeProvider> getOrganizationsNodeProviders(UUID organizationUuid){
+	private List<ProviderEntity> searchAllOrganizationsProviders(UUID organizationUuid,
+			List<LinkedProducerStatus> linkedProducerStatus, boolean full) {
+		ProviderSearchCriteria criteria = ProviderSearchCriteria.builder()
+				.organisationUuid(List.of(organizationUuid))
+				.linkedProducerStatus(linkedProducerStatus)
+				.full(full)
+				.build();
+
+		return providerCustomDao.searchProviders(criteria, Pageable.unpaged()).getContent();
+	}
+
+	public List<NodeProvider> getOrganizationsNodeProviders(UUID organizationUuid) {
 		List<ProviderEntity> providers = searchAllOrganizationsProviders(organizationUuid, true);
 		List<NodeProviderEntity> nodeProviders = new ArrayList<>();
 
 		for (ProviderEntity providerEntity : providers) {
 			for (NodeProviderEntity nodeProviderEntity : providerEntity.getNodeProviders()) {
-				if(!nodeProviders.contains(nodeProviderEntity)){
+				if (!nodeProviders.contains(nodeProviderEntity)) {
 					nodeProviders.add(nodeProviderEntity);
 				}
 			}
@@ -117,5 +126,19 @@ public class ProviderHelper {
 		return nodeProviderMapper.entitiesToDto(nodeProviders);
 	}
 
+	public List<String> getOrganizationLinkedProvidersContactEmails(UUID organizationUuid) {
+		List<String> emails = new ArrayList<>();
+		for (ProviderEntity provider : searchAllOrganizationsProviders(organizationUuid, List.of(LinkedProducerStatus.VALIDATED), true)) {
+			try {
+				String email = getContactEmail(provider);
+				if (StringUtils.isNotBlank(email) && !emails.contains(email)) {
+					emails.add(email);
+				}
+			} catch (RuntimeException e) {
+				log.warn("Failed to get contact email for provider {}", provider.getUuid(), e);
+			}
+		}
+		return emails;
+	}
 
 }

@@ -184,6 +184,7 @@ public class DcatJsonLdMapper extends AbstractJsonLdMapper<MetadataList> {
 
 	}
 
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	private void extractLicense(Metadata metadata, DcatJsonLdContext context) {
 		Licence licence = metadata.getAccessCondition().getLicence();
 		JsonObject license = new JsonObject();

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
+import org.rudi.common.service.exception.AppServiceForbiddenException;
+import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.microservice.strukture.core.bean.LinkedProducer;
 import org.rudi.microservice.strukture.core.bean.NodeProvider;
 import org.rudi.microservice.strukture.core.bean.criteria.LinkedProducerSearchCriteria;
@@ -33,6 +35,7 @@ public class LinkedProducerHelper {
 	private final LinkedProducerMapper linkedProducerMapper;
 	private final LinkedProducerCustomDao linkedProducerCustomDao;
 	private final LinkedProducerDao linkedProducerDao;
+	private final ProviderHelper providerHelper;
 
 	/**
 	 * Crée un linkedDataset en base de donnée
@@ -108,5 +111,25 @@ public class LinkedProducerHelper {
 		LinkedProducerSearchCriteria criteria = LinkedProducerSearchCriteria.builder()
 				.organizationUuid(organizationUuid).build();
 		return linkedProducerCustomDao.searchLinkedProducers(criteria, Pageable.unpaged()).getContent();
+	}
+
+	public void checkAuthenticatedProviderIsLinkedToOrganization(UUID organizationUuid)
+			throws AppServiceUnauthorizedException, AppServiceForbiddenException, AppServiceBadRequestException {
+		if (organizationUuid == null) {
+			throw new AppServiceBadRequestException("L'UUID de l'organisation est obligatoire.");
+		}
+		ProviderEntity provider = providerHelper.getMyProvider();
+		if (provider == null || !isProviderLinkedToOrganization(provider.getUuid(), organizationUuid)) {
+			throw new AppServiceForbiddenException("L'organisation n'est pas liée au Noeud Producteur authentifié");
+		}
+	}
+
+	public boolean isProviderLinkedToOrganization(UUID providerUuid, UUID organizationUuid) {
+		LinkedProducerSearchCriteria criteria = LinkedProducerSearchCriteria.builder()
+				.providerUuid(providerUuid)
+				.organizationUuid(organizationUuid)
+				.build();
+		return linkedProducerCustomDao.searchLinkedProducers(criteria, Pageable.unpaged()).stream()
+				.anyMatch(linkedProducer -> LinkedProducerStatus.VALIDATED.equals(linkedProducer.getLinkedProducerStatus()));
 	}
 }

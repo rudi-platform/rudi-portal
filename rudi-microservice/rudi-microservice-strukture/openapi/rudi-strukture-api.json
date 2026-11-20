@@ -1558,6 +1558,14 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom ou la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "uuids",
 						"required": false,
 						"schema": {
@@ -2053,6 +2061,52 @@
 				}
 			}
 		},
+		"/notify/user-deactivation": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Notifier la désactivation d'un utilisateur",
+				"description": "Notifier la désactivation d'un utilisateur pour anonymiser ses données associées",
+				"operationId": "handleUserDeactivation",
+				"parameters": [
+					{
+						"name": "login",
+						"in": "query",
+						"description": "Login de l'utilisateur désactivé",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "userUuid",
+						"in": "query",
+						"description": "UUID de l'utilisateur désactivé",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/organization-beans": {
 			"get": {
 				"tags": [
@@ -2062,6 +2116,14 @@
 				"description": "Retourne une liste d'organisations",
 				"operationId": "searchOrganizationsBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"description": "user lié aux organizations",
@@ -2195,6 +2257,15 @@
 						"schema": {
 							"type": "string",
 							"format": "uuid"
+						}
+					},
+					{
+						"in": "query",
+						"name": "userLogin",
+						"description": "Nom de l'utilisateur assigné ou candidat à la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				],
@@ -3871,6 +3942,14 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "uuids",
 						"required": false,
 						"schema": {
@@ -3929,6 +4008,14 @@
 				"description": "Retourne une liste d'organisation-beans liées à l'utilisateur connecté",
 				"operationId": "searchMyOrganizationBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "uuids",
@@ -3997,6 +4084,14 @@
 				"description": "Retourne une liste d'organisations-beans dans des états permettant leur visibilité pour le grand publique.",
 				"operationId": "searchPublicOrganizationsBeans",
 				"parameters": [
+					{
+						"in": "query",
+						"name": "nameOrDescription",
+						"description": "Texte libre présent dans le nom, la description de l'organisation",
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "name",

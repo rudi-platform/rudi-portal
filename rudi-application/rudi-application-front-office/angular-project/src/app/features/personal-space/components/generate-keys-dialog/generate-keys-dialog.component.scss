@@ -10,11 +10,6 @@ mat-form-field {
     border-radius: 4px;
 }
 
-*:focus-visible {
-    // on ne veut pas les rectangles bleu sur focus du champ input
-    outline: none;
-}
-
 
 .consumer-field-wrapper {
     margin-bottom: 2em;
@@ -23,6 +18,19 @@ mat-form-field {
 .title-keys {
     margin-bottom: 2em;
     font-weight: 600;
+}
+
+.new-tab-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-bottom;
+    margin-left: 4px;
+}
+
+// Material default error red (#f44336) is below 4.5:1 on white
+.stepper-mat-error {
+    color: var(--error-color);
 }
 
 ::ng-deep {

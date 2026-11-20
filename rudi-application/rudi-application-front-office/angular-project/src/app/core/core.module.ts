@@ -2,6 +2,7 @@ import {CommonModule} from '@angular/common';
 import {InjectionToken, NgModule} from '@angular/core';
 import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
+import {WorkerExternalAccountService} from '@core/services/tasks-aggregator/acl/worker-external-account.service';
 import {WorkerLinkedProducerService} from '@core/services/tasks-aggregator/strukture/linked-producer/worker-linked-producer.service';
 import {WorkerOrganizationService} from '@core/services/tasks-aggregator/strukture/organization/worker-organization.service';
 import {GetBackendPropertyPipe} from '@shared/utils/pipes/get-backend-property.pipe';
@@ -30,6 +31,7 @@ export const WORKERS_AGGREGATOR_TASKS = new InjectionToken<Worker>('tasksWorker'
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerProjectService, multi: true},
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerOrganizationService, multi: true},
         {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerLinkedProducerService, multi: true},
+        {provide: WORKERS_AGGREGATOR_TASKS, useClass: WorkerExternalAccountService, multi: true},
         {provide: 'DEFAULT_LANGUAGE', useValue: 'fr'},
         {
             provide: MatSnackBarRef,

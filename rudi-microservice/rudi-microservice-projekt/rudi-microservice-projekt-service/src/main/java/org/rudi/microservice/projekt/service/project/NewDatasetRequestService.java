@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.rudi.bpmn.core.bean.Form;
 import org.rudi.common.service.exception.AppServiceException;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
-import org.rudi.microservice.projekt.core.bean.NewDatasetRequestSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.PagedNewDatasetRequestList;
 import org.rudi.microservice.projekt.core.bean.Project;
+import org.rudi.microservice.projekt.core.bean.criteria.NewDatasetRequestSearchCriteria;
 import org.springframework.data.domain.Pageable;
 
 public interface NewDatasetRequestService {

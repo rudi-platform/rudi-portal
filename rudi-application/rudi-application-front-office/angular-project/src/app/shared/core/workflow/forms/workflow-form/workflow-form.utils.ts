@@ -78,7 +78,7 @@ export class WorkflowFormUtils {
             case ValidatorType.Required:
                 return Validators.required;
             case ValidatorType.Maxlength:
-                return Validators.maxLength(parseInt(attribute ?? '0'));
+                return Validators.maxLength(Number.parseInt(attribute ?? '0'));
             case ValidatorType.Positive:
                 return Validators.min(0);
             case ValidatorType.Negative:

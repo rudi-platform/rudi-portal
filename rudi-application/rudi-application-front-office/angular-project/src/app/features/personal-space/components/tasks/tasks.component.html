@@ -3,39 +3,41 @@
 </app-loader>
 
 <app-search-count
+    [headingLevel]="2"
     [searchIsRunning]="loading"
     [count]="requestsToStudy?.length"
     [noResultMessage]="'personalSpace.myNotifications.noResult' | translate">
 </app-search-count>
 
 <!-- On utilise hidden à la place de *ngIf pour éviter des bugs avec mat-table : https://stackoverflow.com/a/56127490/1655155 -->
-<div [hidden]="!(requestsToStudy?.length)">
-    <span id="table-description"
-          class="invisible">{{ 'personalSpace.myNotifications.title' | translate }}</span>
+<div class="tasks-table-container" [hidden]="!(requestsToStudy?.length)">
     <table
         mat-table
         matSort
+        appSortAnnouncer
         matSortActive="receivedDate"
         matSortDirection="desc"
         class="cursor"
-        aria-describedby="table-description"
         [dataSource]="dataSource"
     >
+        <caption class="visually-hidden">{{ 'personalSpace.myNotifications.title' | translate }}</caption>
 
         <ng-container matColumnDef="receivedDate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myNotifications.receivedDate' | translate)}"
                 scope="col">{{ 'personalSpace.myNotifications.receivedDate'|translate }}
             </th>
             <td mat-cell *matCellDef="let requestToStudy"> {{requestToStudy.receivedDate | date: 'dd/MM/yyyy'}} </td>
         </ng-container>
 
         <ng-container matColumnDef="processDefinitionKey">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col" class="table-header">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col" class="table-header"
+                [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myNotifications.processDefinitionKey' | translate)}">
                 {{ 'personalSpace.myNotifications.processDefinitionKey'|translate }}
             </th>
             <td mat-cell *matCellDef="let requestToStudy">
                 <div class="icon-container">
-                    <mat-icon class="icon-style" [svgIcon]="getIcon(requestToStudy)"></mat-icon>
+                    <mat-icon class="icon-style" [svgIcon]="getIcon(requestToStudy)" aria-hidden="true"></mat-icon>
                     <span> {{requestToStudy.processDefinitionKey | processDefinitionKeyTranslate }}</span>
                 </div>
             </td>
@@ -43,17 +45,19 @@
 
         <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myNotifications.description' | translate)}"
                 scope="col">{{ 'personalSpace.myNotifications.description'|translate }}
             </th>
             <td mat-cell *matCellDef="let requestToStudy" class="dataset-title">
                 <div class="description-container">
-                    {{requestToStudy.description}}
+                    <a class="row-link" [routerLink]="getRouterLinkUrl(requestToStudy)">{{requestToStudy.description}}</a>
                 </div>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header status-header"
+                [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myNotifications.status' | translate)}"
                 scope="col">
                 <div>
                     <span>{{ 'personalSpace.myNotifications.status'|translate }}</span>
@@ -65,8 +69,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="requestsToStudyDisplayedColumns"></tr>
-        <tr mat-row *matRowDef="let request; columns: requestsToStudyDisplayedColumns;"
-            [routerLink]="getRouterLinkUrl(request)"></tr>
+        <tr mat-row *matRowDef="let request; columns: requestsToStudyDisplayedColumns;"></tr>
 
 
     </table>

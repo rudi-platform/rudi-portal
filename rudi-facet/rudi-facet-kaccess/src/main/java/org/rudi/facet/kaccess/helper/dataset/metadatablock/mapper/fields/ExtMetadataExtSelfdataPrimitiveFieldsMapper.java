@@ -41,6 +41,7 @@ public class ExtMetadataExtSelfdataPrimitiveFieldsMapper extends PrimitiveFields
 	}
 
 	@Override
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	public void metadataToFields(MetadataExtMetadataExtSelfdata metadataElement, Map<String, Object> fields)
 			throws DataverseMappingException {
 		final SelfdataContent extSelfdataContent = metadataElement.getExtSelfdataContent();

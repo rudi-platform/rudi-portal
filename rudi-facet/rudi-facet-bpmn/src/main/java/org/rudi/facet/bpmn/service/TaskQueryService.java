@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.rudi.bpmn.core.bean.ProcessHistoricInformation;
 import org.rudi.bpmn.core.bean.Task;
+import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.bpmn.bean.workflow.HistoricSearchCriteria;
 import org.rudi.facet.bpmn.bean.workflow.TaskSearchCriteria;
 import org.rudi.facet.bpmn.exception.FormDefinitionException;
@@ -31,7 +32,7 @@ public interface TaskQueryService<S extends TaskSearchCriteria, H extends Histor
 	 * @throws FormDefinitionException
 	 */
 	Page<Task> searchTasks(S taskSearchCriteria, Pageable pageable)
-			throws InvalidDataException, FormDefinitionException;
+			throws InvalidDataException, FormDefinitionException, AppServiceUnauthorizedException;
 
 	/**
 	 * Retourne une tâche par son id
@@ -44,12 +45,10 @@ public interface TaskQueryService<S extends TaskSearchCriteria, H extends Histor
 	/**
 	 * Retourne les informations d'historique des tâches
 	 * 
-	 * @param taskSearchCriteria
-	 * @param pageable
+	 * @param historicSearchCriteria
 	 * @return
 	 */
 	List<ProcessHistoricInformation> searchHistoricInformations(H historicSearchCriteria);
 
 	List<ProcessHistoricInformation> getMyHistoricInformations();
-
 }

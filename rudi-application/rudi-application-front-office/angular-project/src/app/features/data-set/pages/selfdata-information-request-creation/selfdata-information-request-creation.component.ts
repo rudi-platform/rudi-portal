@@ -26,8 +26,6 @@ import {Form} from 'micro_service_modules/api-bpmn';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {switchMap, tap} from 'rxjs/operators';
 
-const ERROR_DURATION = 10000;
-
 @Component({
     selector: 'app-selfdata-information-request-creation',
     templateUrl: './selfdata-information-request-creation.component.html',
@@ -127,7 +125,7 @@ export class SelfdataInformationRequestCreationComponent implements OnInit {
                         this.errorCaptchaInput = true;
                     } else {
                         // Erreur de lancement de tous les process, informer l'utilisateur
-                        this.snackbar.showError('metaData.selfdataInformationRequest.creation.errorToUser', ERROR_DURATION);
+                        this.snackbar.showError('metaData.selfdataInformationRequest.creation.errorToUser');
                     }
                 }
             });

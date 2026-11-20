@@ -12,8 +12,10 @@ import {
 } from 'micro_service_modules/strukture/api-strukture';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+import {StringUtils} from '@shared/utils/string-utils';
 
 export interface SearchOrganisationsRequest {
+    nameOrDescription?: string;
     isPersonalSpace?: boolean;
     orgnizationStatus?: OrganizationStatus;
     uuids?: string[],
@@ -65,6 +67,7 @@ export class SearchOrganizationsService {
     initSubscriptions(isPersonalSpace: boolean = false, itemPerPage?: number) {
         this.currentRequest.isPersonalSpace = isPersonalSpace;
         this.currentRequest.itemPerPage = searchDefaultPageSize;
+        this.currentRequest.nameOrDescription = undefined;
 
         if (itemPerPage) {
             this.currentRequest.itemPerPage = itemPerPage;
@@ -76,6 +79,11 @@ export class SearchOrganizationsService {
 
     complete(): void {
         this.subscription.unsubscribe();
+    }
+
+    onFreeTextChange(freeText: string): void {
+        this.currentRequest.nameOrDescription = StringUtils.toWildcardSearch(freeText);
+        this.currentPage$.next(1);
     }
 
     private initCurrentSortOrderSubscription(): Subscription {
@@ -107,6 +115,7 @@ export class SearchOrganizationsService {
         this.isLoadingCatalogue$.next(true);
         if (searchRequest.isPersonalSpace) {
             this.organizationService.searchMyOrganizationBeans(
+                searchRequest.nameOrDescription,
                 searchRequest.uuids,
                 searchRequest.name,
                 searchRequest.full ?? true,
@@ -115,11 +124,9 @@ export class SearchOrganizationsService {
                 searchRequest.itemPerPage,
                 searchRequest.sortOrder
             ).subscribe((data: PagedOrganizationBeanList) => {
-                this.totalOrganizations$.next(data.total);
-                this.organizations$.next(data.elements);
+                this.totalOrganizations$.next(data.total ?? 0);
+                this.organizations$.next(data.elements ?? []);
                 this.isLoadingCatalogue$.next(false);
-                // this.updateOrganizationsProjectCount();
-                // this.updateOrganizationDatasetCount();
             });
         } else {
             /*
@@ -134,6 +141,7 @@ export class SearchOrganizationsService {
              */
 
             this.organizationService.searchPublicOrganizationsBeans(
+                searchRequest.nameOrDescription,
                 searchRequest.name,
                 searchRequest.uuids,
                 searchRequest.excludedOrganizationUuids,
@@ -143,11 +151,9 @@ export class SearchOrganizationsService {
                 searchRequest.itemPerPage,
                 searchRequest.sortOrder
             ).subscribe((data: PagedOrganizationBeanList) => {
-                this.totalOrganizations$.next(data.total);
-                this.organizations$.next(data.elements);
+                this.totalOrganizations$.next(data.total ?? 0);
+                this.organizations$.next(data.elements ?? []);
                 this.isLoadingCatalogue$.next(false);
-                // this.updateOrganizationsProjectCount();
-                // this.updateOrganizationDatasetCount();
             });
         }
     }

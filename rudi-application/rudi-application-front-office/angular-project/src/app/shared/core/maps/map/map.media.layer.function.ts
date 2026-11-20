@@ -54,7 +54,7 @@ export function getVersion(media: Media): string {
 function getConnectorParameter(media: Media, key: string): string {
     if(media.connector.connector_parameters){
         const parameter = media.connector?.connector_parameters
-            .filter((entry) => entry.key === key)[0];
+            .find((entry) => entry.key === key);
 
         if (parameter == null) {
             return null;

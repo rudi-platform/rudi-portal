@@ -1,5 +1,8 @@
 @if (formGroup) {
   <form [formGroup]="formGroup" class="filter-child">
+    <a class="rudi-filter-skip-link" [attr.href]="'#' + applyButtonId" (click)="handleSkipToApplyClick($event)">
+      {{ 'filterBox.allerAAppliquer' | translate }}
+    </a>
     <div class="filter-child-form">
       <ul [class]="ulClass" [formArrayName]="formArrayName">
         @for (producerName of items; track producerName; let i = $index) {
@@ -17,6 +20,7 @@
     </div>
     <div class="rudi-select-panel-footer">
       <button
+        [id]="applyButtonId"
         color="primary"
         (click)="submitForm()"
         class="rudi-blue-button"

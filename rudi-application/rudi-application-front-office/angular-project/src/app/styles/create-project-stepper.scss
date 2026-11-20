@@ -101,6 +101,22 @@ h1 {
         margin-bottom: 0;
     }
 
+    // Encart englobant toute la section "Identité du réutilisateur"
+    // (contient l'encart step-form-card et la section organisations partenaires)
+    .step-identity-card {
+        display: flex;
+        flex-direction: column;
+        max-width: 680px;
+        margin: 1px 1px 35px 0;
+        padding: 24px 24px 20px 24px;
+        border-radius: 4px;
+        border: solid 1px var(--keywords-outline);
+
+        .step-form-card {
+            margin: 1px 0 24px 0;
+        }
+    }
+
     .step-form-card {
         display: flex;
         flex-direction: column;
@@ -277,11 +293,6 @@ mat-error {
     justify-content: center;
 }
 
-*:focus-visible {
-    // on ne veut pas les rectangles bleu sur focus du champ input
-    outline: none;
-}
-
 // Customization Angular Material
 ::ng-deep {
     .mat-mdc-select-value-text {
@@ -379,6 +390,13 @@ mat-error {
 
         .mat-step-icon-content {
             line-height: 1px; // pour centrer la police verticalement
+        }
+
+        // SequentialStepperDirective replaces aria-selected with aria-current: keep Material's forced-colors cue
+        @media (forced-colors: active) {
+            .mat-step-header[aria-current="step"] .mat-step-label {
+                text-decoration: underline;
+            }
         }
     }
 

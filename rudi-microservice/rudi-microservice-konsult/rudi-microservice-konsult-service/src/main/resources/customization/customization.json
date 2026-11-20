@@ -1,7 +1,7 @@
 {
 	"overrideCssFile": "/style-override.css",
 	"mainLogo": "/assets/main-logo.svg",
-	"mainLogoAltText": "Logo bleu orange beta du territoire",
+	"mainLogoAltText": "Rudi - Données du territoire",
 	"heroDescription": {
 		"leftImage": "/assets/hero/left-image.svg",
 		"rightImage": "/assets/hero/right-image.svg",
@@ -183,11 +183,16 @@
 		"templateDetailed": "rudi-project-values@one-projectvalue-detailed",
 		"templateSimple": "rudi-project-values@one-projectvalue"
 	},
+	"cmsDatasetsButtonDescription": {
+		"assetType": "PROJECTVALUES",
+		"category": "/rudi/projectvalues/datasets-button",
+		"templateSimple": "rudi-project-values@one-button-projectvalues"
+	},
 	"footerDescription": {
 		"footerLogo": {
 			"logo": "/assets/footer/logo.svg",
 			"url": "https://rudi.fr",
-			"logoAltText": "Logo bleu orange beta du territoire"
+			"logoAltText": "Rudi - Données du territoire"
 		},
 		"socialNetworks": [
 			{

@@ -68,7 +68,7 @@ export class PageTitleService {
 
         /** Toutes les URL possibles en retirant à chaque fois le dernier dossier */
         const url$: Observable<string> = new Observable(subscriber => {
-            let url = fullUrl;
+            let url = fullUrl.split(/[?#]/)[0];
             while (url && !subscriber.closed) {
                 subscriber.next(url);
 

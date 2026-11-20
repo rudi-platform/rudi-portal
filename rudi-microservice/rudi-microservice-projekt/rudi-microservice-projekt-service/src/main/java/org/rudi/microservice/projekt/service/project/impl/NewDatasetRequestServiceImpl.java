@@ -21,15 +21,16 @@ import org.rudi.facet.bpmn.service.TaskService;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationException;
 import org.rudi.facet.organization.helper.exceptions.GetOrganizationMembersException;
 import org.rudi.microservice.projekt.core.bean.NewDatasetRequest;
-import org.rudi.microservice.projekt.core.bean.NewDatasetRequestSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.PagedNewDatasetRequestList;
 import org.rudi.microservice.projekt.core.bean.Project;
+import org.rudi.microservice.projekt.core.bean.criteria.NewDatasetRequestSearchCriteria;
 import org.rudi.microservice.projekt.service.helper.MyInformationsHelper;
 import org.rudi.microservice.projekt.service.helper.ProjektAuthorisationHelper;
 import org.rudi.microservice.projekt.service.mapper.NewDatasetRequestMapper;
 import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.service.project.NewDatasetRequestService;
 import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestCustomDao;
+import org.rudi.microservice.projekt.storage.dao.newdatasetrequest.NewDatasetRequestDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectCustomDao;
 import org.rudi.microservice.projekt.storage.dao.project.ProjectDao;
 import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
@@ -51,6 +52,7 @@ public class NewDatasetRequestServiceImpl implements NewDatasetRequestService {
 	private final ProjectCustomDao projectCustomDao;
 	private final ProjectDao projectDao;
 	private final NewDatasetRequestCustomDao newDatasetRequestCustomDao;
+	private final NewDatasetRequestDao newDatasetRequestDao;
 	private final MyInformationsHelper myInformationsHelper;
 	private final ProjektAuthorisationHelper projektAuthorisationHelper;
 
@@ -76,12 +78,10 @@ public class NewDatasetRequestServiceImpl implements NewDatasetRequestService {
 			return new PagedNewDatasetRequestList().total(0L).elements(List.of());
 		}
 
-		// Création d'un custom criteria contenant cette liste d'UUIDs
-		NewDatasetRequestSearchCriteria customCriteria = new NewDatasetRequestSearchCriteria();
-		customCriteria.status(criteria.getStatus());
-		customCriteria.setProjectOwnerUuids(uuids);
+		// Enrichissement du criteria avec les UUIDs des propriétaires de projets
+		criteria.setProjectOwnerUuids(uuids);
 
-		Page<NewDatasetRequestEntity> pages = newDatasetRequestCustomDao.searchNewDatasetRequest(customCriteria,
+		Page<NewDatasetRequestEntity> pages = newDatasetRequestCustomDao.searchNewDatasetRequest(criteria,
 				pageable);
 		List<NewDatasetRequest> request = newDatasetRequestMapper.entitiesToDto(pages.getContent());
 

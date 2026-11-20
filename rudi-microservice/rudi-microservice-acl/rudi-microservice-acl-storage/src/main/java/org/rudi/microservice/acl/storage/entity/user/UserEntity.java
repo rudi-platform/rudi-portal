@@ -17,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
+import org.rudi.common.core.security.AccountState;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.storage.entity.AbstractLongIdEntity;
 import org.rudi.microservice.acl.core.common.SchemaConstants;
@@ -70,8 +71,9 @@ public class UserEntity extends AbstractLongIdEntity {
 	@Column(name = "last_connexion")
 	private LocalDateTime lastConnexion;
 
-	@Column(name = "account_locked", nullable = false)
-	private boolean accountLocked;
+	@Column(name = "account_state", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private AccountState accountState = AccountState.ACTIVE;
 
 	@ManyToMany
 	@JoinTable(name = "user_role", schema = SchemaConstants.DATA_SCHEMA, joinColumns = @JoinColumn(name = "user_fk"), inverseJoinColumns = @JoinColumn(name = "role_fk"))
@@ -201,13 +203,13 @@ public class UserEntity extends AbstractLongIdEntity {
 	 * Lock the user account
 	 */
 	public void lockAccount() {
-		setAccountLocked(true);
+		setAccountState(AccountState.LOCKED);
 	}
 
 	/**
 	 * Unlock the user account
 	 */
-	public void unlockAccount() {
-		setAccountLocked(false);
+	public void reactivateAccount() {
+		setAccountState(AccountState.ACTIVE);
 	}
 }

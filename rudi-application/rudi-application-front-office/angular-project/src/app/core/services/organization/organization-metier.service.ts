@@ -48,7 +48,7 @@ export abstract class OrganizationMetierService {
 
     getMyOrganizations(): Observable<Organization[]> {
         return PageResultUtils.fetchAllElementsUsing(
-            offset => this.organizationService.searchMyOrganizations(null, null, null, offset, 100, 'name')
+            offset => this.organizationService.searchMyOrganizations('', null, null, null, offset, 100, 'name')
         );
     }
 

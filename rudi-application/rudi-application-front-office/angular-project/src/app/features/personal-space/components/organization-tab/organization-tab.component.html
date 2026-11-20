@@ -13,7 +13,7 @@
 @if (!isLoading) {
   <div>
     <div class="my-organisation-count">
-      <span> {{ 'accountInfo.tab.myOrganizations'| translate }} ({{ totalOrganizations$ | async }})</span>
+      <h2 class="my-organisation-title"> {{ 'accountInfo.tab.myOrganizations'| translate }} ({{ totalOrganizations$ | async }})</h2>
       @if (!draftForm.isError) {
         @if (!draftForm.isLoading) {
           <button class="primary-raised-button" mat-raised-button
@@ -32,7 +32,7 @@
         <mat-card-content>
           <div>
             <span>
-              <img alt="{{'accountInfo.tab.img' | translate}}" src="assets/images/organisation.png">
+              <img alt="" src="assets/images/organisation.png">
             </span>
             <span class="span-style">{{ 'accountInfo.tab.noOrganizations' | translate }}</span>
           </div>
@@ -46,6 +46,7 @@
             [organizations]="organizations$ | async"
             [itemsPerPage]="itemsPerPage"
             [totalItems]="totalOrganizations$ | async"
+            [cardTitleLevel]="3"
             [datasetCountLoading]="datasetCountLoading$ | async"
             [projectCountLoading]="projectCountLoading$ | async"
             (pageChangeEvent)="onPageChange($event)"

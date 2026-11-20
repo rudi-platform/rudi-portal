@@ -133,6 +133,7 @@ class org.rudi.facet.bpmn.entity.form.SectionDefinitionEntity <<Entity>>  <<Tabl
 
 
 abstract class org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity <<MappedSuperclass>>  {
+	{field} {static} +FIELD_INITIATOR : String
 	{field} +@Column("assignee") assignee : String
 	{field} +@Column("creation_date") creationDate : java.time.LocalDateTime
 	{field} +@Column("data") data : String

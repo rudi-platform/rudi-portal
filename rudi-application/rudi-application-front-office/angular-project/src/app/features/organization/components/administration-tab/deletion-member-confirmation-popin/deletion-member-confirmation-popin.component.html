@@ -1,12 +1,13 @@
 <div id="dialog-container">
     <mat-dialog-content>
         <div class="dialog-cross-button">
-            <button mat-icon-button (click)="handleClose()">
-                <mat-icon svgIcon="icon-close" class="icon-close"></mat-icon>
+                <button mat-icon-button type="button" (click)="handleClose()"
+                [attr.aria-label]="'popup.close' | translate">
+                <mat-icon svgIcon="icon-close" class="icon-close" aria-hidden="true"></mat-icon>
             </button>
         </div>
         <div class="dialog-content">
-            <div class="dialog-title">
+            <div class="dialog-title" mat-dialog-title>
                 {{'metaData.administrationTab.membersTable.deletePopin.title' | translate}}
             </div>
             <div

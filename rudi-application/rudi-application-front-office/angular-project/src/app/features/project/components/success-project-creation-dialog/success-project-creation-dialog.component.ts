@@ -5,12 +5,15 @@ import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslatePipe} from '@ngx-translate/core';
 
+export const SUCCESS_PROJECT_CREATION_DIALOG_TITLE_ID = 'success-project-creation-dialog-title';
+
 @Component({
     selector: 'app-success-project-creation-dialog',
     templateUrl: './success-project-creation-dialog.component.html',
     imports: [MatDialogContent, MatIconButton, MatDialogClose, MatIcon, TranslatePipe]
 })
 export class SuccessProjectCreationDialogComponent {
+    readonly titleId = SUCCESS_PROJECT_CREATION_DIALOG_TITLE_ID;
 
     constructor(private readonly matIconRegistry: MatIconRegistry,
                 private readonly domSanitizer: DomSanitizer

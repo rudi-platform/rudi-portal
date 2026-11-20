@@ -68,6 +68,13 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 		item.setOrganizationStatus(OrganizationStatus.VALIDATED);
 	}
 
+	public OrganizationEntity create(String name, String initiator, String description,
+			OrganizationStatus organizationStatus, Status status, LocalDateTime openingDate,
+			LocalDateTime closingDate) {
+		return create(UUID.randomUUID(), PROCESS_DEFINITION_KEY, status, FUNCTIONAL_STATUS_KEY, initiator,
+				LocalDateTime.now(), description, organizationStatus, openingDate, closingDate, null, name);
+	}
+
 	public OrganizationEntity create(UUID uuid, String processDefinitionKey, Status status, String functionnalStatus,
 			String initiator, LocalDateTime creationDate, String description, OrganizationStatus organizationStatus,
 			LocalDateTime openingDate, LocalDateTime closingDate, Geometry position, String name) {
@@ -87,7 +94,6 @@ public class OrganizationDataFactory extends AbstractAssetDescriptionDataFactory
 			item.setPosition(position);
 			item.setName(name);
 
-			assignData(item);
 			return repository.save(item);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Failed to create item for OrganizationEntity", e);

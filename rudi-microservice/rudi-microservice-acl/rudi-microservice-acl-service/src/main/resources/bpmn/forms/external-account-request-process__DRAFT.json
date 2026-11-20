@@ -1,0 +1,12 @@
+{
+	"sections": [
+		{
+			"name": "external-account-request-identity",
+			"readOnly": false
+		},
+		{
+			"name": "external-account-request-message",
+			"readOnly": false
+		}
+	]
+}

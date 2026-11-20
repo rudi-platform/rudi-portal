@@ -22,7 +22,6 @@ import {
     ProducerNamesFilterFormComponent
 } from '@shared/business/dataset/filters/filter-forms/producer-names-filter-form/producer-names-filter-form.component';
 import {ThemesFilterFormComponent} from '@shared/business/dataset/filters/filter-forms/themes-filter-form/themes-filter-form.component';
-import {FilterMenuComponent} from '@shared/business/dataset/filters/filter-menu/filter-menu.component';
 import {
     FilterSidenavContainerComponent
 } from '@shared/business/dataset/filters/filter-sidenav-container/filter-sidenav-container.component';
@@ -56,6 +55,7 @@ import {BannerButtonComponent} from '@shared/core/banner/banner-button/banner-bu
 import {BannerComponent} from '@shared/core/banner/banner/banner.component';
 import {BackPaginationComponent} from '@shared/core/common/back-pagination/back-pagination.component';
 import {BooleanDataBlockComponent} from '@shared/core/common/boolean-data-block/boolean-data-block.component';
+import {ButtonDisclosureComponent} from '@shared/core/common/button-disclosure/button-disclosure.component';
 import {CardComponent} from '@shared/core/common/card/card.component';
 import {ClipboardFieldComponent} from '@shared/core/common/clipboard-field/clipboard-field.component';
 import {CopiedButtonComponent} from '@shared/core/common/copied-button/copied-button.component';
@@ -163,6 +163,7 @@ import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
         LabelSeparatorComponent,
         CopiedButtonComponent,
         ClipboardFieldComponent,
+        ButtonDisclosureComponent,
         // ========== COMMON BANNER ==========
         BannerComponent,
         BannerButtonComponent,
@@ -223,7 +224,6 @@ import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
         ProducerNamesFilterFormComponent,
         AccessStatusFilterFormComponent,
         ThemesFilterFormComponent,
-        FilterMenuComponent,
         FiltersItemsListComponent,
         OrderComponent,
         ListContainerComponent,
@@ -279,6 +279,7 @@ import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
         LabelSeparatorComponent,
         CopiedButtonComponent,
         ClipboardFieldComponent,
+        ButtonDisclosureComponent,
         // ========== COMMON BANNER ==========
         BannerComponent,
         BannerButtonComponent,
@@ -337,7 +338,6 @@ import {FilePickerModule} from '@sleiss/ngx-awesome-uploader';
         ProducerNamesFilterFormComponent,
         AccessStatusFilterFormComponent,
         ThemesFilterFormComponent,
-        FilterMenuComponent,
         FiltersItemsListComponent,
         OrderComponent,
         ListContainerComponent,

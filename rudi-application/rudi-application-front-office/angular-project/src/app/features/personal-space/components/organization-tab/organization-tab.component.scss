@@ -15,6 +15,14 @@
     margin-bottom: 1em;
     display: flex;
     justify-content: space-between;
+
+    .my-organisation-title {
+        // h2: cancel the .mat-typography / Bootstrap heading font and margins
+        font: inherit;
+        letter-spacing: inherit;
+        color: inherit;
+        margin: 0;
+    }
 }
 
 .card-no-result {
@@ -23,7 +31,8 @@
     cursor: pointer;
     overflow: hidden;
     width: 400px;
-    height: 100px;
+    max-width: 100%;
+    min-height: 100px;
     margin-bottom: 1em;
     background-color: var(--banner-solid-color-60);
 }

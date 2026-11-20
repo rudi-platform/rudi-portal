@@ -5,4 +5,5 @@ export enum ProcessDefinitionEnum {
     PROJECT_PROCESS = 'project-process',
     ORGANIZATION_PROCESS = 'organization-process',
     LINKED_PRODUCER_PROCESS = 'linked-producer-process',
+    EXTERNAL_ACCOUNT_REQUEST_PROCESS = 'external-account-request-process',
 }

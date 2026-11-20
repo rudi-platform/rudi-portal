@@ -4,9 +4,9 @@
     <div>
       <div class="d-flex justify-content-between">
         @if (showTitle) {
-          <mat-card-title class="card-title">
+          <h2 mat-card-title class="card-title">
             {{ 'personalSpace.project.reutilisation'|translate }}
-          </mat-card-title>
+          </h2>
         }
         @if (isProjectUpdatable && showTitle) {
           <button mat-raised-button class="primary-raised-button right mb-2"

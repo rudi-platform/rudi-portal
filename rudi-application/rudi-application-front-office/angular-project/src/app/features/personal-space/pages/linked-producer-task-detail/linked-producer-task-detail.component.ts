@@ -112,7 +112,11 @@ export class LinkedProducerTaskDetailComponent
                 next: (dependencies: LinkedProducerDependencies) => {
                     this.dependencies = dependencies;
                     // On définit ici le titre de l'onglet en se basant sur le name de l'organization
-                    this.pageTitleService.setPageTitle(this.dependencies.linkedProducer.title);
+                    this.pageTitleService.setPageTitle(
+                        this.dependencies.linkedProducer.title,
+                        this.dependencies.linkedProducer.organization?.name,
+                        this.headerLibelle
+                    );
                     // On récupère les informations du Owner
                     this.getOwnerInfo(this.dependencies.linkedProducer.uuid);
                     this.isLoading = false;

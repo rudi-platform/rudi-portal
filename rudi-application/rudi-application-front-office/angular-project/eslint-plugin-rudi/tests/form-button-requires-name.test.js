@@ -23,6 +23,12 @@ ruleTester.run('form-button-requires-name', rule, {
         '<input type="image" alt="Rechercher" src="x" />',
         // Interpolation
         '<button>{{ label }}</button>',
+        // Texte porté par une seule branche d'un bloc @if/@else (ex: button-disclosure)
+        '<button>@if (hasKey) { <span>{{ label }}</span> } @else { <span>Texte</span> }</button>',
+        // Texte dans la branche @else uniquement
+        '<button>@if (false) { <mat-icon>delete</mat-icon> } @else { Texte }</button>',
+        // Texte dans un bloc @switch
+        '<button>@switch (type) { @case (1) { Un } @default { Autre } }</button>',
     ],
     invalid: [
         {code: '<button><mat-icon>delete</mat-icon></button>', errors: [{messageId: 'missingButtonName'}]},
@@ -31,5 +37,10 @@ ruleTester.run('form-button-requires-name', rule, {
         {code: '<input type="image" src="x" />', errors: [{messageId: 'missingButtonName'}]},
         // Icône imbriquée dans un <span>, sans texte réel
         {code: '<button><span><mat-icon>close</mat-icon></span></button>', errors: [{messageId: 'missingButtonName'}]},
+        // Aucune branche du @if/@else n'a de texte réel (icônes seules)
+        {
+            code: '<button>@if (x) { <mat-icon>delete</mat-icon> } @else { <mat-icon>close</mat-icon> }</button>',
+            errors: [{messageId: 'missingButtonName'}],
+        },
     ],
 });

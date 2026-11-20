@@ -1,7 +1,8 @@
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {AsyncPipe, DatePipe, NgClass, UpperCasePipe} from '@angular/common';
 import {HttpResponse} from '@angular/common/http';
-import {Component, Input, OnInit} from '@angular/core';
+import {afterNextRender, Component, ElementRef, inject, Injector, Input, OnInit, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
@@ -10,6 +11,7 @@ import {MatIcon} from '@angular/material/icon';
 import {LanguageService} from '@core/i18n/language.service';
 import {MediaSize} from '@core/services/breakpoint-observer.service';
 import {DEFAULT_VIEW_PROJECTION, DisplayMapService} from '@core/services/data-set/display-map.service';
+import {MapTextAlternativeService} from '@core/services/data-set/map-text-alternative.service';
 import {KonsultMetierService} from '@core/services/konsult-metier.service';
 import {KosMetierService} from '@core/services/kos-metier.service';
 import {LogService} from '@core/services/log.service';
@@ -102,6 +104,11 @@ export class DataSetInfosComponent implements OnInit {
 
     isMapLoading = false;
     maxSourceUrlSize = 100;
+    localisationExpanded = false;
+
+    @ViewChild('mapTextAlternative') mapTextAlternative: ElementRef<HTMLElement>;
+    private readonly injector = inject(Injector);
+    private readonly mapTextAlternativeService = inject(MapTextAlternativeService);
 
     constructor(private readonly konsultMetierService: KonsultMetierService,
                 readonly snacbackService: SnackBarService,
@@ -114,6 +121,7 @@ export class DataSetInfosComponent implements OnInit {
                 private readonly clipboard: Clipboard,
                 private readonly displayMapService: DisplayMapService,
                 private readonly logService: LogService,
+                private readonly liveAnnouncer: LiveAnnouncer,
     ) {
     }
 
@@ -142,6 +150,11 @@ export class DataSetInfosComponent implements OnInit {
                 this.logService.error(e);
             }
         });
+
+        if (this.mapTextAlternativeService.consumeFocusRequest() && this.metadata.geography) {
+            this.localisationExpanded = true;
+            afterNextRender(() => this.mapTextAlternative.nativeElement.focus(), {injector: this.injector});
+        }
     }
 
     get metadataSource(): string {
@@ -381,6 +394,15 @@ export class DataSetInfosComponent implements OnInit {
         this.mapMediaUrlCopied.clear();
         this.mapMediaUrlCopied.set(media, true);
         this.clipboard.copy(this.getUrlApiMetadata(media));
+        this.liveAnnouncer.announce(this.translateService.instant('metaData.url-copied'));
+    }
+
+    /**
+     * RGAA 4.8: link next to the map moving focus to its text alternative (bounding box coordinates)
+     */
+    handleMapAlternativeLinkClick(event: Event, target: HTMLElement): void {
+        event.preventDefault();
+        target.focus();
     }
 
     /**

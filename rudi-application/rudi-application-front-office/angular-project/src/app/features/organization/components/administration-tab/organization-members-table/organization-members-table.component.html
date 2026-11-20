@@ -1,6 +1,16 @@
 <div class="title-label">
-  <div>{{'metaData.administrationTab.membersTable.resultText' |translate}} <span>({{total}})</span></div>
+  <h2 id="organization-members-title">{{'metaData.administrationTab.membersTable.resultText' |translate}} <span>({{total}})</span></h2>
 </div>
+<output class="visually-hidden" aria-live="polite">
+  @if (displayedTotal === 0) {
+    {{ (searchedTerm ? 'metaData.administrationTab.membersTable.noResultWithFilter' : 'metaData.administrationTab.membersTable.noResult') | translate }}
+  } @else if (displayedTotal) {
+    {{ displayedTotal }} {{'searchbox.results'|translate}}{{ displayedTotal > 1 ? 's' : '' }}
+    @if (searchedTerm) {
+      {{ 'searchbox.resultsFor' | translate: resultsForParams }}
+    }
+  }
+</output>
 
 <!--   search zone-->
 <div class="">
@@ -9,18 +19,21 @@
       <div class="search-box-container">
         <div class="search-zone d-flex d-flex align-items-center search-size">
           <span class="search-box-icon me-5 mt-1">
-            <mat-icon class="me-2" aria-hidden="false" aria-label="filter icon"
-            svgIcon="search"></mat-icon>
+            <mat-icon class="me-2" aria-hidden="true" svgIcon="search"></mat-icon>
           </span>
-          <input class="form-control text-indent" type="search" name="search" autocomplete="off"
+          <input #searchInput class="form-control text-indent" type="search" name="search" autocomplete="off"
             [value]="searchText"
             (input)="onUserTyped($event)"
-            [placeholder]="'metaData.administrationTab.membersTable.searchbox' | translate">
+            [placeholder]="'metaData.administrationTab.membersTable.searchbox' | translate"
+            [title]="'metaData.administrationTab.membersTable.searchLabel' | translate"
+            [attr.aria-label]="'metaData.administrationTab.membersTable.searchLabel' | translate">
             @if (searchText) {
-              <span class="search-box-clear search-box" [ngClass]="searchText ? 'active' : ''"
-                >
-                <mat-icon class="pointer me-2" aria-hidden="false" aria-label="clear"
-                (click)="onReset()">close</mat-icon>
+              <span class="search-box-clear search-box" [ngClass]="searchText ? 'active' : ''">
+                <button type="button" class="search-box-clear-button pointer me-2"
+                  [attr.aria-label]="'common.clearSearch' | translate"
+                  (click)="onReset(); searchInput.focus()">
+                  <mat-icon aria-hidden="true" fontIcon="close"></mat-icon>
+                </button>
               </span>
             }
           </div>
@@ -51,14 +64,14 @@
       <table mat-table
                [dataSource]='organizationMembersList | paginate:
                { itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: membersTotal}'
-        matSort matSortActive="name" matSortDirection="desc"
+        matSort matSortActive="added_date" matSortDirection="desc" matSortDisableClear
         class="mat-table-members"
+        aria-labelledby="organization-members-title"
         (matSortChange)="onUserSort($event)">
-
-        <caption><!-- le tableau --> </caption>
 
         <ng-container matColumnDef="lastname">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.lastName' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.lastName'|translate}}</th>
           <td mat-cell *matCellDef="let element"
             class="blue-theme"> {{element?.lastname | replaceIfNullPipe}}
@@ -67,6 +80,7 @@
 
         <ng-container matColumnDef="firstname">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.firstName' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.firstName'|translate}}</th>
           <td mat-cell *matCellDef="let element"
             class="blue-theme"> {{element?.firstname | replaceIfNullPipe}}
@@ -75,6 +89,7 @@
 
         <ng-container matColumnDef="login">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.mail' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.mail'|translate}}</th>
           <td mat-cell *matCellDef="let element"
             > {{element?.login}}
@@ -83,6 +98,7 @@
 
         <ng-container matColumnDef="last_connexion">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.lastConnexion' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.lastConnexion'|translate}}</th>
           <td mat-cell *matCellDef="let element"
             > {{element?.last_connexion | date :'dd/MM/yyyy'}}
@@ -91,6 +107,7 @@
 
         <ng-container matColumnDef="added_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.addDate' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.addDate'|translate}}</th>
           <td mat-cell *matCellDef="let element"
             > {{element?.added_date | date :'dd/MM/yyyy'}}
@@ -99,6 +116,7 @@
 
         <ng-container matColumnDef="role">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-role"
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('metaData.administrationTab.membersTable.role' | translate)}"
           scope="col">{{'metaData.administrationTab.membersTable.role'|translate}}</th>
           <td mat-cell *matCellDef="let element" class="text-center"
             ><span class="status-chip">{{computeRoleLabe(element?.role)}}</span>
@@ -107,19 +125,20 @@
 
         <!-- dash -->
         <ng-container matColumnDef="dash">
-          <th mat-header-cell *matHeaderCellDef class="table-header">
-            {{'metaData.administrationTab.robotTable.dash'|translate}}
+          <th mat-header-cell *matHeaderCellDef class="table-header" scope="col">
+            <span class="visually-hidden">{{'metaData.administrationTab.actionsHeader'|translate}}</span>
           </th>
           <td mat-cell *matCellDef="let element" class="text-center dash">
-            <button class="action-fab-btn-icon" mat-mini-fab [matMenuTriggerFor]="menu"
-              >
+            <button type="button" class="action-fab-btn-icon" mat-mini-fab [matMenuTriggerFor]="menu"
+              (menuClosed)="runPendingMenuAction()"
+              [attr.aria-label]="'metaData.administrationTab.actionsFor' | translate: {name: (element?.firstname ?? '') + ' ' + (element?.lastname ?? '')}">
               <mat-icon class="little-icon-size" aria-hidden="true" [svgIcon]="'dashes'"></mat-icon>
             </button>
             <mat-menu #menu="matMenu" role="menu" xPosition="before">
               <button mat-menu-item
-              (click)="handleClickUpdateMember(element)">{{'metaData.administrationTab.membersTable.update'| translate}}</button>
+              (click)="deferMenuAction('update', element)">{{'metaData.administrationTab.membersTable.update'| translate}}</button>
               <button mat-menu-item
-              (click)="handleClickDeleteMember(element)">{{'metaData.administrationTab.membersTable.delete'| translate}}</button>
+              (click)="deferMenuAction('delete', element)">{{'metaData.administrationTab.membersTable.delete'| translate}}</button>
             </mat-menu>
           </td>
         </ng-container>

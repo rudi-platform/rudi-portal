@@ -1,4 +1,5 @@
 import { NgClass } from '@angular/common';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {
@@ -95,7 +96,8 @@ export class ResetPasswordComponent implements OnInit {
         private readonly router: Router,
         private readonly snackbar: MatSnackBar,
         private readonly route: ActivatedRoute,
-        private readonly accountService: AccountService
+        private readonly accountService: AccountService,
+        private readonly liveAnnouncer: LiveAnnouncer
     ) {
         // Construction du formulaire d'inscription
         this.signupForm = this.formBuilder.group({
@@ -183,7 +185,13 @@ export class ResetPasswordComponent implements OnInit {
                         const config = new MatSnackBarConfig();
                         config.panelClass = ['mat-elevation-z3', 'account-error-style'];
                         config.horizontalPosition = 'center';
+                        // The snack bar live region is created with it; the CDK one already exists in the page
+                        config.politeness = 'off';
                         this.snackbar.openFromComponent(ResetPasswordErrorBoxComponent, config);
+                        this.liveAnnouncer.announce(
+                            `${this.translateService.instant('snackbarTemplate.resetPasswordError').trim()} ${this.translateService.instant('common.ici')}`,
+                            'assertive'
+                        );
                     }
                 }
             });

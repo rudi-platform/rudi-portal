@@ -58,18 +58,33 @@
         align-items: center;
         justify-content: flex-end;
 
-        .rudi-icon-encircled {
+        // Native button around the icon: no visual change, keyboard operable (RGAA 7.3)
+        .dataset-action-button {
+            display: flex;
+            padding: 0;
+            margin: 0 14px 0 0;
+            border: none;
+            border-radius: 100%;
+            background: none;
+            color: inherit;
             cursor: pointer;
-            margin-right: 14px;
+
+            &:focus-visible {
+                outline: 2px solid var(--focus);
+                outline-offset: 2px;
+            }
+        }
+
+        .rudi-icon-encircled {
             font-size: 18px;
             border-color: var(--encircled-color);
             color: var(--encircled-color);
+        }
 
-            &:hover {
-                border: none;
-                color: var(--secondary-color);
-                background-color: var(--primary-color);
-            }
+        .dataset-action-button:hover .rudi-icon-encircled {
+            border: none;
+            color: var(--secondary-color);
+            background-color: var(--primary-color);
         }
     }
 

@@ -1,6 +1,5 @@
 @use "responsive";
 
-$themes-section-height: 225px;
 $themes-section-overflow: 135px;
 
 .home-container {
@@ -10,7 +9,6 @@ $themes-section-overflow: 135px;
 .themes-section {
     z-index: 1;
     width: 100%;
-    height: calc($themes-section-height - $themes-section-overflow);
     margin-bottom: 20px;
     position: relative;
 
@@ -20,19 +18,20 @@ $themes-section-overflow: 135px;
     .themes-container {
         z-index: 2;
         width: 100%;
-        height: $themes-section-height;
-        position: absolute;
-        top: calc(-1 * $themes-section-overflow);
+        // Chevauchement visuel sur le hero via une marge négative plutôt qu'un
+        // position: absolute + hauteur figée : l'élément reste dans le flux,
+        // donc la hauteur réelle (variable selon le pattern disclosure) est
+        // correctement réservée et ne recouvre plus la section suivante.
+        margin-top: calc(-1 * $themes-section-overflow);
     }
 }
 
 @mixin themes-section-for-small-screens {
     .themes-section {
         margin-top: 20px;
-        height: $themes-section-height;
 
         .themes-container {
-            top: 0;
+            margin-top: 0;
         }
     }
 }

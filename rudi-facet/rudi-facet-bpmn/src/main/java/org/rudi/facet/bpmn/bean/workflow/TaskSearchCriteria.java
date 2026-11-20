@@ -41,4 +41,6 @@ public class TaskSearchCriteria {
 
 	private String description;
 
+	private String userLogin;
+
 }

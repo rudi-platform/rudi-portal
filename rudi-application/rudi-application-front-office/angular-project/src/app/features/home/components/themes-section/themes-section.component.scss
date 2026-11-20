@@ -11,15 +11,13 @@
         color: var(--primary-color);
         font-weight: 700;
         font-size: 20px;
+        margin-bottom: 20px;
     }
 
-    // Réinitialisation des styles natifs de <fieldset> utilisé comme
-    // conteneur de diapositive (role="group" implicite, accessibilité)
-    .slide-group {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        min-width: 0;
+    // Centre la carte dans la diapo, quelle que soit la largeur d'écran
+    .theme-slide {
+        display: flex;
+        justify-content: center;
     }
 
     .theme-card {
@@ -67,12 +65,12 @@
         box-shadow: var(--shadow-box);
     }
 
-    // État sélectionné (après clic) et focus clavier (WAI-ARIA critère 7.1)
+    // Style sélection + focus clavier
     .theme-card--selected,
     .theme-card:focus-visible {
         background-color: #0270e7;
         border-color: #0270e7;
-        outline: 2px solid #0270e7;
+        outline: 2px solid var(--focus);
         outline-offset: 2px;
 
         .theme-picto {
@@ -86,14 +84,9 @@
         }
     }
 
-    // Compatibilité navigateurs ne supportant pas :focus-visible
-    .theme-card:focus {
-        outline: 2px solid #0270e7;
-        outline-offset: 2px;
-    }
-
     .theme-container {
         display: flex;
+        flex-wrap: wrap;
         width: 100%;
         justify-content: center;
         gap: 15px;
@@ -104,5 +97,31 @@
         .theme-list-item {
             display: flex;
         }
+    }
+
+    // Alternative desktop au carrousel (disclosure)
+    .theme-disclosure {
+        margin-top: 30px;
+    }
+
+    .see-more-themes-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    // Même espacement au-dessus du panneau qu'au-dessus du bouton
+    #themes-disclosure-panel {
+        margin-top: 20px;
+    }
+
+    // Reprend le style .button-redirect commun aux autres boutons "voir plus"
+    .see-more-themes-button {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font: inherit;
     }
 }

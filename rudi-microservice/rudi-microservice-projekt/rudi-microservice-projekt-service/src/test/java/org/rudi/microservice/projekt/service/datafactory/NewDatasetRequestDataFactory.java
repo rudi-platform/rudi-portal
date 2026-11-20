@@ -21,9 +21,14 @@ public class NewDatasetRequestDataFactory
 	}
 
 	public NewDatasetRequestEntity createNotPersisted(String title, NewDatasetRequestStatus status) {
+		return createNotPersisted(title, "Description de " + randomString(15), status);
+	}
+
+	public NewDatasetRequestEntity createNotPersisted(String title, String description, NewDatasetRequestStatus status) {
 		NewDatasetRequestEntity request = new NewDatasetRequestEntity();
 		request.setUuid(UUID.randomUUID());
 		request.setTitle(title != null ? title : "Demande de " + randomString(15));
+		request.setDescription(description != null ? description : "Description de " + randomString(15));
 		request.setNewDatasetRequestStatus(status != null ? status : NewDatasetRequestStatus.DRAFT);
 		request.setStatus(Status.DRAFT);
 		request.setFunctionalStatus("Demande");
@@ -32,6 +37,10 @@ public class NewDatasetRequestDataFactory
 		request.setCreationDate(LocalDateTime.now());
 		request.setUpdatedDate(LocalDateTime.now());
 		return request;
+	}
+
+	public NewDatasetRequestEntity createPersisted(String title, String description, NewDatasetRequestStatus status) {
+		return repository.save(createNotPersisted(title, description, status));
 	}
 }
 

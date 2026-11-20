@@ -1,7 +1,10 @@
 import {Injectable} from '@angular/core';
-import {LinkedDatasetSearchCriteria, ProjektService} from 'micro_service_modules/projekt/projekt-api';
-import {NewDatasetRequestSearchCriteria, PagedLinkedDatasetList} from 'micro_service_modules/projekt/projekt-model';
-import {SelfdataInformationRequestSearchCriteria, SelfdataService} from 'micro_service_modules/selfdata/selfdata-api';
+import {LinkedDatasetSearchCriteria} from '@core/bean/projekt/linked-dataset-search-criteria';
+import {NewDatasetRequestSearchCriteria} from '@core/bean/projekt/new-dataset-request-search-criteria';
+import {SelfdataInformationRequestSearchCriteria} from '@core/bean/selfdata/selfdata-information-request-search-criteria';
+import {ProjektService} from 'micro_service_modules/projekt/projekt-api';
+import {PagedLinkedDatasetList} from 'micro_service_modules/projekt/projekt-model';
+import {SelfdataService} from 'micro_service_modules/selfdata/selfdata-api';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -19,7 +22,13 @@ export class MyRequestsService {
      * @param linkedDatasetSearchCriteria
      */
     public searchMyFinishedLinkedDatasets(linkedDatasetSearchCriteria: LinkedDatasetSearchCriteria): Observable<PagedLinkedDatasetList> {
-        return this.projektService.searchMyLinkedDatasets(linkedDatasetSearchCriteria);
+        return this.projektService.searchMyLinkedDatasets(
+            linkedDatasetSearchCriteria.datasetConfidentiality,
+            linkedDatasetSearchCriteria.linkedDatasetStatuses,
+            linkedDatasetSearchCriteria.offset,
+            linkedDatasetSearchCriteria.limit,
+            linkedDatasetSearchCriteria.order
+        );
     }
 
     /**
@@ -27,14 +36,22 @@ export class MyRequestsService {
      * @param newDatasetRequestSearchCriteria
      */
     public searchMyFinishedNewDatasetRequests(newDatasetRequestSearchCriteria: NewDatasetRequestSearchCriteria): Observable<PagedLinkedDatasetList> {
-        return this.projektService.searchMyNewDatasetRequests(newDatasetRequestSearchCriteria);
+        return this.projektService.searchMyNewDatasetRequests(
+            newDatasetRequestSearchCriteria.status
+        );
     }
 
     /**
      * Recherche des demandes effectuées par l'utilisateur connecté qui ont finalisées leurs workflows
-     * @param selfdataInformationRequestSearchCriteria
+     * @param selfdataInformationRequestFrontendSearchCriteria
      */
-    public searchMyFinishedSelfdataInformationRequests(selfdataInformationRequestSearchCriteria: SelfdataInformationRequestSearchCriteria) {
-        return this.selfdataService.searchMySelfdataInformationRequests(selfdataInformationRequestSearchCriteria);
+    public searchMyFinishedSelfdataInformationRequests(selfdataInformationRequestFrontendSearchCriteria: SelfdataInformationRequestSearchCriteria) {
+        return this.selfdataService.searchMySelfdataInformationRequests(
+            selfdataInformationRequestFrontendSearchCriteria.datasetUuid,
+            selfdataInformationRequestFrontendSearchCriteria.status,
+            selfdataInformationRequestFrontendSearchCriteria.offset,
+            selfdataInformationRequestFrontendSearchCriteria.limit,
+            selfdataInformationRequestFrontendSearchCriteria.order
+        );
     }
 }

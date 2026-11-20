@@ -154,7 +154,7 @@ export class OrganizationTabComponent implements OnInit, OnDestroy {
                 this.snackBarService.openSnackBar({
                     level: Level.SUCCESS,
                     message: this.translateService.instant('personalSpace.organization.success')
-                }, 3000);
+                });
                 this.isSubmitted = true;
                 this.isLoading = false;
             },
@@ -162,7 +162,7 @@ export class OrganizationTabComponent implements OnInit, OnDestroy {
                 this.snackBarService.openSnackBar({
                     level: Level.ERROR,
                     message: this.translateService.instant('personalSpace.organization.error')
-                }, 3000);
+                });
                 this.isLoading = false;
             }
         });

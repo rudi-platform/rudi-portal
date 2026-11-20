@@ -20,7 +20,6 @@ public interface DataManagerMapper extends AbstractMapper<DataManagerEntity, Dat
 	 * On ignore toutes les entités filles (sinon l'id de chaque entité fille est supprimé et elles sont recréées en base)
 	 */
 	@Override
-	// TODO ignorer les vraies entités filles (cf Javadoc ci-dessus)
 	void dtoToEntity(DataManager dto, @MappingTarget DataManagerEntity entity);
 
 	/**

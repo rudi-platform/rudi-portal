@@ -12,6 +12,7 @@
         <div class="hero-content-container">
           <app-page-title [title1]="title1"
             [title2]="title2"
+            [title3]="'news.subtitle'|translate"
             class="d-flex justify-content-center w-100">
           </app-page-title>
 
@@ -63,6 +64,7 @@
                     [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
                     [ngClass]="paginationControlsNgClass"
                     [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate"
+                    [screenReaderCurrentLabel]="'paginator.CURRENT_PAGE_LABEL' | translate"
                     class="d-flex justify-content-center mt-4 pagination-font-size pagination-container">
                   </pagination-controls>
                 }

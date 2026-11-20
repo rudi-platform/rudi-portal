@@ -53,6 +53,7 @@ public class JwtAuthenticationProcessingFilter extends AbstractAuthenticationPro
 	 * @param failureHandler         - Failure Handler
 	 * @param manager
 	 */
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	public JwtAuthenticationProcessingFilter(String authenticateUrl, String loginParameter, String passwordParameter,
 			String checkCredentialUrl, JwtAuthenticationProvider authenticationProvider,
 			final AuthenticationSuccessHandler successHandler, final AuthenticationFailureHandler failureHandler,

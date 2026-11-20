@@ -3,8 +3,7 @@
   [count]="total"
   [noResultMessage]="'personalSpace.myReuses.noResult' | translate"
   [hyperLink]="'common.ici' | translate"
-  [hasLink]="true"
-  [routerLink]="'/projets'"
+  [linkUrl]="'/projets'"
   [resultMessage]="'personalSpace.myReuses.resultTilte' | translate">
 </app-search-count>
 <app-loader [active]="searchIsRunning" [allPage]="true" [isLight]="true" [noText]="true"></app-loader>
@@ -13,38 +12,43 @@
 
   <!-- Wrapper du tableau et du loader -->
   <div class="table-and-loader-container">
-    <span id="table-description" class="invisible">{{ 'personalSpace.myReuses.resultTilte' | translate }}</span>
     <!-- le tableau -->
     <table
       mat-table
       matSort
       matSortActive="updatedDate"
       matSortDirection="desc"
-      aria-describedby="table-description"
       [dataSource]='projectList | paginate: { itemsPerPage: ITEMS_PER_PAGE, currentPage: page, totalItems: total}'
       (matSortChange)="sortTable($event)"
       >
+      <caption class="visually-hidden">{{ total }} {{ 'personalSpace.myReuses.resultTilte' | translate }}</caption>
 
       <ng-container matColumnDef="updatedDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myReuses.updatedDate' | translate)}"
         scope="col">{{'personalSpace.myReuses.updatedDate'|translate}}</th>
         <td mat-cell *matCellDef="let project"> {{project.updatedDate | date: 'dd/MM/yyyy'}} </td>
       </ng-container>
 
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myReuses.title' | translate)}"
         scope="col">{{'personalSpace.myReuses.title'|translate}}</th>
-        <td mat-cell *matCellDef="let project" class="dataset-title"> {{project.projectTitle}} </td>
+        <td mat-cell *matCellDef="let project" class="dataset-title">
+          <a class="row-link" [routerLink]="['..', 'my-project-details', project.uuid]">{{project.projectTitle}}</a>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="confidentiality">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myReuses.confidentiality' | translate)}"
         scope="col">{{'personalSpace.myReuses.confidentiality'|translate}}</th>
         <td mat-cell *matCellDef="let project"> {{project.confidentiality}} </td>
       </ng-container>
 
       <ng-container matColumnDef="functionalStatus">
         <th mat-header-cell *matHeaderCellDef mat-sort-header
+          [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.myReuses.status' | translate)}"
           class="text-center"
         scope="col">{{'personalSpace.myReuses.status'|translate}}</th>
         <td mat-cell *matCellDef="let project"> {{project.status}} </td>
@@ -58,9 +62,7 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let project; columns: displayedColumns;"
-        [routerLink]="['..', 'my-project-details', project.uuid]">
-      </tr>
+      <tr mat-row *matRowDef="let project; columns: displayedColumns;"></tr>
     </table>
     <!-- le loader du tableau -->
     @if (sortIsRunning) {

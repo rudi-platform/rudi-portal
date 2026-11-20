@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatInput} from '@angular/material/input';
@@ -32,9 +32,23 @@ const COMMENT_MAX_LENGTH = 3000;
     selector: 'app-request-details-dialog',
     templateUrl: './request-details-dialog.component.html',
     styleUrls: ['./request-details-dialog.component.scss'],
-    imports: [MatDialogContent, MatIconButton, MatIcon, FormsModule, ReactiveFormsModule, MatLabel, MatHint, MonthYearDatepickerComponent, MatFormField, MatInput, MatDialogActions, MatButton, TranslatePipe]
-})
-export class RequestDetailsDialogComponent implements OnInit {
+    imports: [
+        MatDialogContent,
+        MatDialogTitle,
+        MatIconButton,
+        MatIcon,
+        FormsModule,
+        ReactiveFormsModule,
+        MatLabel,
+        MatHint,
+        MonthYearDatepickerComponent,
+        MatFormField,
+        MatInput,
+        MatDialogActions,
+        MatButton,
+        TranslatePipe,
+    ],
+})export class RequestDetailsDialogComponent implements OnInit {
     /**
      * Formulaire de saisie des infos du détail de la demande d'accès
      */

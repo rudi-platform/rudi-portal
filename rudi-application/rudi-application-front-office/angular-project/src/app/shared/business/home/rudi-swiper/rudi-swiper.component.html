@@ -1,14 +1,14 @@
 <div class="swiper-container">
-    <div class="swiper" [class]="containerName" [attr.aria-label]="ariaLabel || null" [attr.aria-roledescription]="ariaRoledescription || null">
-        <div class="swiper-button-prev" role="button" tabindex="0" aria-label="Diapositive précédente">
+    <section class="swiper {{ containerName }}" [attr.aria-label]="ariaLabel || null" aria-roledescription="carrousel">
+        <button type="button" class="swiper-button-prev" [attr.aria-label]="'common.swiper.previousSlide' | translate">
             <mat-icon aria-hidden="true">chevron_left</mat-icon>
-        </div>
+        </button>
         <div #swiperWrapper class="swiper-wrapper">
             <ng-content></ng-content>
         </div>
-        <div class="swiper-pagination" role="tablist" aria-label="Diapositives du carrousel"></div>
-        <div class="swiper-button-next" role="button" tabindex="0" aria-label="Diapositive suivante">
+        <button type="button" class="swiper-button-next" [attr.aria-label]="'common.swiper.nextSlide' | translate">
             <mat-icon aria-hidden="true">chevron_right</mat-icon>
-        </div>
-    </div>
+        </button>
+        <div #liveRegion class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    </section>
 </div>

@@ -25,7 +25,7 @@
 
     &:focus-visible,
     &:has(.stretched-link:focus-visible) {
-        outline: 3px solid var(--primary-color);
+        outline: 2px solid var(--focus);
         outline-offset: 2px;
     }
 
@@ -34,12 +34,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
         padding: 16px;
+        position: relative;
     }
+
 
     img {
         min-height: 220px;
         max-height: 220px;
-        object-fit: cover;
+        object-fit: contain;
+        object-position: center;
     }
 
     .project-card-producer {
@@ -49,16 +52,21 @@
         margin-bottom: 5px;
     }
 
+    .project-card-heading {
+        // h2 / h3 wrapper: keep the rendering of .project-card-title
+        font: inherit;
+        letter-spacing: inherit;
+        color: inherit;
+        margin: 0;
+    }
+
     .project-card-title {
         font-size: 20px;
         font-weight: 600;
         color: var(--primary-color);
-        display: -webkit-box;
         margin-bottom: 5px;
-        hyphens: auto;
         min-height: 1.2em;
         line-height: 1.3em;
-        @include common-style.truncate-text(3);
     }
 
     .project-card-content {
@@ -70,8 +78,6 @@
 
     .project-card-summary {
         font-size: 15px;
-        @include common-style.truncate-text(3);
-        hyphens: auto;
         padding-bottom: 0;
         color: #323643;
     }

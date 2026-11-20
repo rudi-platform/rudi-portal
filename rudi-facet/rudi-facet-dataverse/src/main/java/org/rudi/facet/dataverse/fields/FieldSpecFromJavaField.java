@@ -12,14 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
+import org.rudi.common.core.util.ReflectionException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -179,7 +179,7 @@ class FieldSpecFromJavaField extends ChildFieldSpec {
 					.filter(propertyDescriptor -> propertyDescriptor.getName().equals(javaField.getName()))
 					.map(PropertyDescriptor::getReadMethod).filter(Objects::nonNull).findFirst().orElse(null);
 		} catch (IntrospectionException e) {
-			throw new RuntimeException("Cannot find getters for class " + javaFieldClass, e);
+			throw new ReflectionException("Cannot find getters for class " + javaFieldClass, e);
 		}
 	}
 }

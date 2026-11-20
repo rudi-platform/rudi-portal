@@ -1,0 +1,340 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"description": "API Public Selfdata Rudi",
+		"version": "0.0.1",
+		"title": "rudi-selfdata-api",
+		"termsOfService": "http://swagger.io/terms/",
+		"contact": {
+			"email": "contact@rudi.fr"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"paths": {
+	},
+	"components": {
+		"schemas": {
+			"TaskSearchCriteria": {
+				"description": "Critère de recherche de tâches BPMN",
+				"type": "object",
+				"properties": {
+					"as_admin": {
+						"description": "Recherche en tant qu'administrateur",
+						"type": "boolean"
+					},
+					"process_definition_keys": {
+						"description": "Clés de définition de processus",
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"status": {
+						"description": "Statuts des tâches",
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Status"
+						}
+					},
+					"functional_status": {
+						"description": "Statuts fonctionnels",
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"min_creation_date": {
+						"description": "Date de création minimale",
+						"type": "string",
+						"format": "date-time"
+					},
+					"max_creation_date": {
+						"description": "Date de création maximale",
+						"type": "string",
+						"format": "date-time"
+					},
+					"description": {
+						"description": "Description de la tâche",
+						"type": "string"
+					},
+					"user_login": {
+						"description": "Login de l'utilisateur assigné",
+						"type": "string"
+					}
+				}
+			},
+			"SelfdataTaskSearchCriteria": {
+				"description": "Critère de recherche de tâches Selfdata",
+				"type": "object",
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/TaskSearchCriteria"
+					},
+					{
+						"properties": {
+							"title": {
+								"description": "Titre de la tâche",
+								"type": "string"
+							}
+						}
+					}
+				]
+			},
+			"AssetDescription": {
+				"type": "object",
+				"properties": {
+					"uuid": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"object_type": {
+						"type": "string"
+					},
+					"process_definition_key": {
+						"type": "string"
+					},
+					"process_definition_version": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"status": {
+						"$ref": "#/components/schemas/Status"
+					},
+					"functional_status": {
+						"type": "string"
+					},
+					"initiator": {
+						"type": "string"
+					},
+					"updator": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"assignee": {
+						"type": "string"
+					},
+					"creation_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"title": {
+						"type": "string"
+					},
+					"form": {
+						"type": "object",
+						"$ref": "#/components/schemas/Form"
+					}
+				}
+			},
+			"FieldType": {
+				"type": "string",
+				"description": "Type des champs",
+				"enum": [
+					"LONG",
+					"DOUBLE",
+					"STRING",
+					"BOOLEAN",
+					"DATE",
+					"LIST",
+					"TEXT",
+					"RICHTEXT",
+					"ADDRESS",
+					"ATTACHMENT",
+					"HIDDEN"
+				]
+			},
+			"ValidatorType": {
+				"type": "string",
+				"enum": [
+					"REQUIRED",
+					"MAXLENGTH",
+					"POSITIVE",
+					"NEGATIVE",
+					"REGEXP",
+					"EMAIL"
+				]
+			},
+			"Validator": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"$ref": "#/components/schemas/ValidatorType"
+					},
+					"attribute": {
+						"type": "string"
+					}
+				}
+			},
+			"FieldDefinition": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"help": {
+						"type": "string"
+					},
+					"type": {
+						"type": "object",
+						"$ref": "#/components/schemas/FieldType"
+					},
+					"readOnly": {
+						"type": "boolean"
+					},
+					"required": {
+						"type": "boolean"
+					},
+					"multiple": {
+						"type": "boolean"
+					},
+					"extendedType": {
+						"type": "string"
+					},
+					"validators": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Validator"
+						}
+					}
+				}
+			},
+			"Field": {
+				"type": "object",
+				"properties": {
+					"values": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"definition": {
+						"type": "object",
+						"$ref": "#/components/schemas/FieldDefinition"
+					}
+				}
+			},
+			"Section": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"help": {
+						"type": "string"
+					},
+					"readOnly": {
+						"type": "boolean"
+					},
+					"fields": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"$ref": "#/components/schemas/Field"
+						}
+					}
+				}
+			},
+			"Form": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"sections": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"$ref": "#/components/schemas/Section"
+						}
+					}
+				}
+			},
+			"Status": {
+				"type": "string",
+				"description": "Etat d'une tâche",
+				"enum": [
+					"DRAFT",
+					"PENDING",
+					"CANCELLED",
+					"COMPLETED",
+					"DELETED"
+				]
+			},
+			"Action": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"form": {
+						"type": "object",
+						"$ref": "#/components/schemas/Form"
+					}
+				}
+			},
+			"Task": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"functionalId": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/Status"
+					},
+					"functionalStatus": {
+						"type": "string"
+					},
+					"initiator": {
+						"type": "string"
+					},
+					"creationDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updator": {
+						"type": "string"
+					},
+					"updatedDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"assignee": {
+						"type": "string"
+					},
+					"actions": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Action"
+						}
+					},
+					"asset": {
+						"type": "object",
+						"$ref": "#/components/schemas/AssetDescription"
+					}
+				}
+			}
+		}
+	}
+}
+

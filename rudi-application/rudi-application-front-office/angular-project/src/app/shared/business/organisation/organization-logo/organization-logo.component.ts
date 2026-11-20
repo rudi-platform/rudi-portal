@@ -15,6 +15,7 @@ export type OrganizationType = 'producer' | 'provider';
     selector: 'app-organization-logo',
     templateUrl: './organization-logo.component.html',
     styleUrls: ['./organization-logo.component.scss'],
+    standalone: true,
     imports: [LoaderComponent, TranslatePipe]
 })
 export class OrganizationLogoComponent implements OnInit {
@@ -23,6 +24,8 @@ export class OrganizationLogoComponent implements OnInit {
 
     @Input() defaultAlt: string;
     @Input() defaultLogo: string;
+    // Set when the organization name is displayed next to the logo
+    @Input() decorative = false;
 
     content: Base64EncodedLogo;
     isLoading = false;

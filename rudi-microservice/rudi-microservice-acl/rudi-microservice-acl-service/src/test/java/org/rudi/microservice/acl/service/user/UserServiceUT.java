@@ -2,6 +2,7 @@ package org.rudi.microservice.acl.service.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rudi.common.core.security.AccountState;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.microservice.acl.core.bean.AbstractAddress;
@@ -448,19 +450,19 @@ class UserServiceUT {
 
 		userService.recordAuthentication(u.getUuid(), true);
 		User u1 = userService.getUser(u.getUuid());
-		assertEquals(false, u1.getAccountLocked());
+		assertNotEquals(AccountState.LOCKED.toString(), u1.getAccountState().toString());
 		assertNotNull(u1.getLastConnexion());
 		assertNull(u1.getLastFailedAttempt());
 
 		userService.recordAuthentication(u.getUuid(), false);
 		User u2 = userService.getUser(u.getUuid());
-		assertEquals(false, u1.getAccountLocked());
+		assertNotEquals(AccountState.LOCKED.toString(), u1.getAccountState().toString());
 		assertNotNull(u2.getLastConnexion());
 		assertNotNull(u2.getLastFailedAttempt());
 
 		userService.recordAuthentication(u.getUuid(), true);
 		User u3 = userService.getUser(u.getUuid());
-		assertEquals(false, u1.getAccountLocked());
+		assertNotEquals(AccountState.LOCKED.toString(), u1.getAccountState().toString());
 		assertNotNull(u3.getLastConnexion());
 		assertNull(u3.getLastFailedAttempt());
 
@@ -476,13 +478,13 @@ class UserServiceUT {
 		for (int i = 0; i < userService.getMaxFailedAttempt(); i++) {
 			userService.recordAuthentication(u.getUuid(), false);
 			User u1 = userService.getUser(u.getUuid());
-			assertEquals(false, u1.getAccountLocked());
+			assertNotEquals(AccountState.LOCKED.toString(), u1.getAccountState().toString());
 			assertNotNull(u1.getLastFailedAttempt());
 		}
 
 		userService.recordAuthentication(u.getUuid(), false);
 		User u2 = userService.getUser(u.getUuid());
-		assertEquals(true, u2.getAccountLocked());
+		assertEquals(AccountState.LOCKED.toString(), u2.getAccountState().toString());
 
 	}
 

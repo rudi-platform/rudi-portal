@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.ExclusiveGateway;
@@ -26,11 +25,11 @@ import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rudi.bpmn.core.bean.Action;
 import org.rudi.common.service.helper.UtilContextHelper;
 import org.rudi.facet.bpmn.entity.workflow.AssetDescriptionEntity;
@@ -57,6 +56,9 @@ public class BpmnHelper {
 
 	@Value("${rudi.bpmn.role.name}")
 	private String adminRoleName;
+
+	@Value("${rudi.bpmn.modules}")
+	private List<String> modules;
 
 	private final ProcessEngine processEngine;
 
@@ -92,7 +94,7 @@ public class BpmnHelper {
 	public org.activiti.engine.task.Task queryTaskById(String taskId, boolean asAdmin) {
 		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
 		TaskQuery taskQuery = taskService.createTaskQuery();
-		applyACLCriteria(taskQuery, asAdmin);
+		applyACLCriteria(taskQuery, asAdmin, null);
 		applyTaskIdCriteria(taskQuery, taskId);
 		applySortCriteria(taskQuery);
 
@@ -126,15 +128,88 @@ public class BpmnHelper {
 		return taskService.saveTask(task);
 	}
 
+	// chercher les tasks de type LD via processEngine
+	private List<Task> getTasks(String processDefinitionId) {
+		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
+		TaskQuery taskQuery = taskService.createTaskQuery();
+		// Type de tasks à chercher (s'il y en a)
+		if(processDefinitionId != null) {
+			taskQuery.processDefinitionKey(processDefinitionId);
+		}
+		return taskQuery.list();
+	}
+
+	public void recomputeAndAddCandidate(String login, String processDefinitionId) {
+		List<Task> tasks = getTasks(processDefinitionId);
+		if (CollectionUtils.isNotEmpty(tasks)) {
+			for (Task task : tasks) {
+				// Calcule et retourne la nouvelle liste des candidats éligibles
+				List<String> potentialsUsers = recomputeCandidateUsers(task, true);
+				// Si notre user en fait partie, alors on l'ajoute vraiment à la task
+				// && S'assurer que la task n'était pas déjà affectée à l'utilisateur
+				if (CollectionUtils.isNotEmpty(potentialsUsers) && potentialsUsers.contains(login)
+						&& !isCandidateUser(task.getId(), login)) {
+					addTaskCandidateUser(task.getId(), login);
+				}
+			}
+		}
+	}
+
+	public void recomputeAndRemoveCandidate(String login, String processDefinitionId) {
+		removeWorkflowTaskCandidate(login, processDefinitionId, false);
+	}
+
+	public void handleUserTasks(String login, String processDefinitionId) {
+		removeWorkflowTaskCandidate(login, processDefinitionId, true);
+	}
+
+	private void removeWorkflowTaskCandidate(String login, String processDefinitionId, boolean removeVoidTasks) {
+		List<Task> tasks = getTasks(processDefinitionId);
+		if (CollectionUtils.isNotEmpty(tasks)) {
+			for (Task task : tasks) {
+				// Vérifier que notre user faisait partie des users auxquels la task était affectée
+				if (isCandidateUser(task.getId(), login)) {
+					// Calcule et retourne la nouvelle liste des candidats éligibles
+					List<String> potentialsUsers = recomputeCandidateUsers(task, true);
+					// Si le user ne fait plus partie de la liste recalculée, alors on le supprime
+					if (CollectionUtils.isNotEmpty(potentialsUsers) && !potentialsUsers.contains(login)) {
+						removeTaskCandidateUser(task.getId(), login);
+					}
+					// Si la task n'a plus de candidats, on peut l'arrêter (si removeVoidTasks = true)
+					if (removeVoidTasks) {
+						stopTaskIfNoCandidates(task, potentialsUsers, login);
+					}
+				}
+			}
+		}
+	}
+
+	private void stopTaskIfNoCandidates(Task task, List<String> potentialsUsers, String login) {
+		// Si la task n'a plus de candidats, on l'arrête
+		if((CollectionUtils.isEmpty(potentialsUsers) || potentialsUsers.contains(login) && potentialsUsers.size() == 1)) {
+			stopTaskByTaskId(task.getId());
+		}
+	}
+
+
+
 	/**
 	 * Applique les critères de filtrage d'assignation
 	 * 
 	 * @param taskQuery
 	 * @param asAdmin
+	 * @param userLogin
 	 */
-	public void applyACLCriteria(TaskQuery taskQuery, boolean asAdmin) {
+	public void applyACLCriteria(TaskQuery taskQuery, boolean asAdmin, String userLogin) {
 		String username = utilContextHelper.getAuthenticatedUser().getLogin();
-		boolean userIsAdmin = utilContextHelper.hasRole(adminRoleName);
+
+		List<String> adminsRoles = new ArrayList<>();
+		adminsRoles.add(adminRoleName);
+		if (CollectionUtils.isNotEmpty(modules)) {
+			adminsRoles.addAll(modules);
+		}
+
+		boolean userIsAdmin = utilContextHelper.hasAnyRoles(adminsRoles);
 		List<String> roleNames = utilContextHelper.getAuthenticatedUser().getRoles();
 
 		// si on a pas de demandé "en tant qu'admin et que l'on effectivement admin on ne filtre pas
@@ -144,6 +219,8 @@ public class BpmnHelper {
 			} else {
 				taskQuery.taskCandidateOrAssigned(username);
 			}
+		} else if (StringUtils.isNotEmpty(userLogin)) {
+			taskQuery.taskCandidateOrAssigned(userLogin);
 		}
 	}
 
@@ -575,8 +652,7 @@ public class BpmnHelper {
 
 	public boolean isCandidateUser(String taskId, String login) {
 		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
-		return taskService.getIdentityLinksForTask(taskId).stream().filter(element -> element.getType().equals("USER"))
-				.map(IdentityLink::getUserId).collect(Collectors.toList()).contains(login);
+		return taskService.getIdentityLinksForTask(taskId).stream().anyMatch(task -> login.equals(task.getUserId()));
 	}
 
 	public void stopTaskByTaskId(String taskId) {

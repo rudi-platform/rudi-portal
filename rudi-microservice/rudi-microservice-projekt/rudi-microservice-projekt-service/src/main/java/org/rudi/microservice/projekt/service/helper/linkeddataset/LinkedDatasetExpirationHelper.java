@@ -4,16 +4,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.rudi.microservice.projekt.core.bean.DatasetConfidentiality;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.core.bean.LinkedDatasetStatus;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetCustomDao;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Component
 @RequiredArgsConstructor
@@ -23,10 +24,10 @@ public class LinkedDatasetExpirationHelper {
 	private final LinkedDatasetSubscriptionHelper linkedDatasetSubscriptionHelper;
 
 	public List<LinkedDatasetEntity> getValidatedLinkedDatasetExpired() {
-		val criteria = new LinkedDatasetSearchCriteria()
+		LinkedDatasetSearchCriteria criteria = LinkedDatasetSearchCriteria.builder()
 				.datasetConfidentiality(DatasetConfidentiality.RESTRICTED.getValue())
-				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsOver(true);
-		val restrictedValidatedLinkedDataset = linkedDatasetCustomDao.searchLinkedDatasets(criteria,
+				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsOver(true).build();
+		Page<LinkedDatasetEntity> restrictedValidatedLinkedDataset = linkedDatasetCustomDao.searchLinkedDatasets(criteria,
 				Pageable.unpaged());
 		return restrictedValidatedLinkedDataset.getContent();
 	}
@@ -68,10 +69,10 @@ public class LinkedDatasetExpirationHelper {
 	}
 
 	public List<LinkedDatasetEntity> getRestrictedValidatedLinkedDatasetWithoutEndDate() {
-		val criteria = new LinkedDatasetSearchCriteria()
+		LinkedDatasetSearchCriteria criteria = LinkedDatasetSearchCriteria.builder()
 				.datasetConfidentiality(DatasetConfidentiality.RESTRICTED.getValue())
-				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsNull(true);
-		val linkedDatasetWithoutEndDate = linkedDatasetCustomDao.searchLinkedDatasets(criteria, Pageable.unpaged());
+				.status(List.of(LinkedDatasetStatus.VALIDATED)).endDateIsNull(true).build();
+		Page<LinkedDatasetEntity> linkedDatasetWithoutEndDate = linkedDatasetCustomDao.searchLinkedDatasets(criteria, Pageable.unpaged());
 		return linkedDatasetWithoutEndDate.getContent();
 	}
 }

@@ -1,3 +1,4 @@
+<span class="visually-hidden" [id]="shortcutsHintId">{{ 'common.richTextEditorShortcuts' | translate }}</span>
 <ckeditor
     [config]="config"
     [editor]="editor"
@@ -5,5 +6,6 @@
     [disabled]="isDisabled"
     (change)="onEditorChange($event)"
     (blur)="onEditorBlur()"
+    (ready)="onEditorReady($event)"
 >
 </ckeditor>

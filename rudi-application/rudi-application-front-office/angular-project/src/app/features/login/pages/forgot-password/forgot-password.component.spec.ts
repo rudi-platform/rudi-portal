@@ -22,4 +22,10 @@ describe('ResetPasswordComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should expose a level 1 heading and a real sign-up link (RGAA 9.1, 7.1)', () => {
+        expect(fixture.nativeElement.querySelectorAll('h1').length).toBe(1);
+        const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a.link-bold-underlined-colored');
+        expect(link.getAttribute('href')).toBe('/login/sign-up');
+    });
 });

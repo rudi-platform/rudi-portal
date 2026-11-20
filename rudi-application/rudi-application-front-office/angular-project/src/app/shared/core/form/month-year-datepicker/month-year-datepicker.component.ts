@@ -5,7 +5,13 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {MatFormField, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
+import {TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER} from '@core/i18n/translated-mat-datepicker-intl';
+import {TranslatePipe} from '@ngx-translate/core';
 import moment, {Moment} from 'moment';
+import 'moment/locale/fr';
+
+// RGAA 8.7: French month names for MomentDateAdapter (MAT_DATE_LOCALE fr-FR); loading a locale also sets it globally, keep the default
+moment.locale('en');
 
 
 /**
@@ -37,9 +43,13 @@ export const MONTH_YEAR_FORMAT = {
             deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
         },
         // C'est ici qu'on donne notre format Custom
-        {provide: MAT_DATE_FORMATS, useValue: MONTH_YEAR_FORMAT}
+        {provide: MAT_DATE_FORMATS, useValue: MONTH_YEAR_FORMAT},
+        TRANSLATED_MAT_DATEPICKER_INTL_PROVIDER
     ],
-    imports: [MatFormField, FormsModule, ReactiveFormsModule, MatInput, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker]
+    imports: [
+        MatFormField, FormsModule, ReactiveFormsModule, MatInput,
+        MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker, TranslatePipe
+    ]
 })
 export class MonthYearDatepickerComponent implements OnInit {
 
@@ -79,7 +89,19 @@ export class MonthYearDatepickerComponent implements OnInit {
      * (grise les dates antérieures) | null par défaut
      */
     @Input()
-    public isDisable: boolean = false;
+    public isDisable = false;
+
+    // Hides the calendar button when the date cannot be changed
+    @Input()
+    public hideToggle = false;
+
+    // Ids of elements describing the field, e.g. the expected format (RGAA 11.10)
+    @Input()
+    public ariaDescribedby: string;
+
+    // Ids of the visible label when no placeholder names the field (RGAA 11.1)
+    @Input()
+    public ariaLabelledby: string;
 
     /**
      * Accesseur au datepicker popup pour sélectionner la date au clic
@@ -89,6 +111,14 @@ export class MonthYearDatepickerComponent implements OnInit {
 
     constructor() {
         this.startDate = null;
+    }
+
+    get errorId(): string {
+        return `datepicker-${this.controlName}-error`;
+    }
+
+    get describedBy(): string {
+        return [this.ariaDescribedby, this.hasErrors() ? this.errorId : null].filter(Boolean).join(' ') || null;
     }
 
 

@@ -69,6 +69,7 @@ public abstract class AbstractIntegrationRequestTreatmentHandler {
 	 * @return un booleen indiquant si le provider dans les metadatas est le même que le provider
 	 * Renvoie true si le provider dans les metadatas est null
 	 */
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	public boolean isSameProviderOrNull(Metadata metadata, Provider provider) {
 		// Si la valeur du provider n'est pas renseigné alors on authorise
 		if (metadata.getMetadataInfo().getMetadataProvider() == null || metadata.getMetadataInfo().getMetadataProvider().getOrganizationId() == null) {

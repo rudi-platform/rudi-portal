@@ -4,6 +4,11 @@
     display: block;
 }
 
+// Tablist wrapper must not change the banner flex layout
+.tab-list {
+    display: contents;
+}
+
 .p-small {
     padding-top: 31px !important;
 }

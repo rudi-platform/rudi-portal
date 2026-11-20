@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-acl</artifactId>
-		<version>3.4.2</version>
+		<version>3.5.1</version>
 	</parent>
 
 	<artifactId>rudi-microservice-acl-core</artifactId>
@@ -24,6 +24,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rudi-common-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rudi-facet-bpmn</artifactId>
 		</dependency>
 
 		<dependency>
@@ -92,6 +97,15 @@
 					<typeMappings>
 						<typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
 					</typeMappings>
+					<schemaMappings>
+						ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,
+						Status=org.rudi.bpmn.core.bean.Status,
+						Form=org.rudi.bpmn.core.bean.Form,
+						AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,
+						Task=org.rudi.bpmn.core.bean.Task,
+						ProcessHistoricInformation=org.rudi.bpmn.core.bean.ProcessHistoricInformation,
+						HistoricInformation=org.rudi.bpmn.core.bean.HistoricInformation
+					</schemaMappings>
 					<configOptions>
 						<dateLibrary>java8</dateLibrary>
 						<useJakartaEe>true</useJakartaEe>

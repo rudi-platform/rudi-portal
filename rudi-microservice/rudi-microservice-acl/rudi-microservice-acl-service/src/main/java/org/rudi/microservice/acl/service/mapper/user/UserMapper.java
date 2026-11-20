@@ -24,6 +24,7 @@ public interface UserMapper extends AbstractMapper<UserEntity, User> {
 	@InheritInverseConfiguration
 	@Mapping(target = "addresses", source = "addresses", ignore = true)
 	@Mapping(target = "roles", source = "roles", ignore = true)
+	@Mapping(target = "accountState", source = "accountState", ignore = true)
 	UserEntity dtoToEntity(User dto);
 
 	/**
@@ -41,6 +42,7 @@ public interface UserMapper extends AbstractMapper<UserEntity, User> {
 	@Mapping(target = "addresses", source = "addresses", ignore = true)
 	@Mapping(target = "roles", source = "roles", ignore = true)
 	@Mapping(target = "password", source = "password", ignore = true)
+	@Mapping(target = "accountState", source = "accountState", ignore = true)
 	void dtoToEntity(User dto, @MappingTarget UserEntity entity);
 
 }

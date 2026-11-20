@@ -1,7 +1,7 @@
 <ng-container [formGroup]="formGroup">
   <label for="input-{{userInputFormControlName}}">
     <span class="title">{{label}}@if (required && !readonly) {
-      <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+      <span class="required-symbol" aria-hidden="true">*</span>
     }</span>
     <br/>
     @if (!readonly) {
@@ -27,7 +27,7 @@
         </mat-autocomplete>
         <mat-error>
           @for (error of userInputFormControl?.errors | keyvalue; track error) {
-            <em class="fa fa-info-circle fa-2x me-2"></em>{{'common.validatorsErrors.' + error.key |translate}}<br/>
+            <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{'common.validatorsErrors.' + error.key |translate}}<br/>
           }
         </mat-error>
         <!-- Stockage interne de l'adresse -->

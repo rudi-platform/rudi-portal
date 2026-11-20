@@ -82,6 +82,7 @@ Cet objet contrôle l'apparence de l'authentificateur dans l'interface utilisate
 ```
 "viewSettings": {
   "isolated": true,
+  "disabled": false,
   "cssClass": "nom-classe-css",
   "iconUrl": "classpath:/authenticators/icone.svg",
   "hoverIconUrl": "classpath:/authenticators/icone-hover.svg",
@@ -98,6 +99,7 @@ Cet objet contrôle l'apparence de l'authentificateur dans l'interface utilisate
 |Attribut	|Type	|Description|
 |:----------|:----------|:----------|
 |`isolated`|Boolean|Si `true`, affiche l'authentificateur séparément des autres|
+|`disabled`|Boolean|Si `true`, n'affiche pas l'authentificateur. Si l'authentificateur nommé RUDI est marqué 'disabled=true` l'authentification native est désactivée|
 |`cssClass`|String|Classe CSS personnalisée pour le style|
 |`iconUrl`|String|Chemin vers l'icône (utiliser `classpath:` pour les ressources internes)|
 |`hoverIconUrl`|String|Icône affichée au survol|

@@ -9,6 +9,9 @@ import {
     LinkedProducerTaskDetailComponent
 } from '@features/personal-space/pages/linked-producer-task-detail/linked-producer-task-detail.component';
 import {OrganizationTaskDetailComponent} from '@features/personal-space/pages/organization-task-detail/organization-task-detail.component';
+import {
+    ExternalAccountRequestTaskDetailComponent
+} from './pages/external-account-request-task-detail/external-account-request-task-detail.component';
 import {ProjectDetailComponent} from './components/project-detail/project-detail.component';
 import {DatasetTaskDetailComponent} from './pages/dataset-task-detail/dataset-task-detail.component';
 import {MyAccountComponent} from './pages/my-account/my-account.component';
@@ -103,6 +106,12 @@ const routes: Routes = [
         // Path to see a producer link task detail
         path: 'linked-producer-task-detail/:taskId',
         component: LinkedProducerTaskDetailComponent,
+        canActivate: mapToCanActivate([AuthGuard, UserGuardService])
+    },
+    {
+        // Path to see an external account request task detail
+        path: 'external-account-request-task-detail/:taskId',
+        component: ExternalAccountRequestTaskDetailComponent,
         canActivate: mapToCanActivate([AuthGuard, UserGuardService])
     },
     {

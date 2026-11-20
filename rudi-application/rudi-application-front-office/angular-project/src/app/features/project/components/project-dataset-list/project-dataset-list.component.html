@@ -6,6 +6,7 @@
           cssClass="with-border"
           organizationType="producer"
           [defaultLogo]="getDefaultLogo(item)"
+          [decorative]="true"
           >
         </app-organization-logo>
       </ng-container>
@@ -20,7 +21,10 @@
           <div
             class="dataset-info-resource_title">
             @if (item.titleIcon) {
-              <mat-icon class="dataset-info-title-icon" [svgIcon]="item.titleIcon"></mat-icon>
+              @let titleIconLabelKey = getTitleIconLabelKey(item);
+              <mat-icon class="dataset-info-title-icon" [svgIcon]="item.titleIcon"
+                [attr.aria-hidden]="titleIconLabelKey ? 'false' : 'true'"
+                [attr.aria-label]="titleIconLabelKey ? (titleIconLabelKey | translate) : null"></mat-icon>
             }
             {{item.title}}
           </div>
@@ -29,9 +33,15 @@
     </div>
     <div class="dataset-actions">
       @if (item.editable) {
-        <mat-icon class="rudi-icon-encircled" (click)="handleEdit(item)">edit</mat-icon>
+        <button type="button" class="dataset-action-button" (click)="handleEdit(item)"
+          [attr.aria-label]="'project.stepper.submission.step3.editItem' | translate: {title: item.title}">
+          <mat-icon class="rudi-icon-encircled" aria-hidden="true">edit</mat-icon>
+        </button>
       }
-      <mat-icon class="rudi-icon-encircled" (click)="handleDelete(item)">delete</mat-icon>
+      <button #deleteButton type="button" class="dataset-action-button" (click)="handleDelete(item)"
+        [attr.aria-label]="'project.stepper.submission.step3.removeItem' | translate: {title: item.title}">
+        <mat-icon class="rudi-icon-encircled" aria-hidden="true">delete</mat-icon>
+      </button>
     </div>
   </div>
 }

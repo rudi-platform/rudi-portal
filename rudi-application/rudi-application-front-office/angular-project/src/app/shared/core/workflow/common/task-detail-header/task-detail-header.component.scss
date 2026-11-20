@@ -5,6 +5,14 @@
     margin-top: 20px;
 }
 
+// RGAA 9.1: page heading, rendered exactly like the former div
+.task-detail-heading {
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+}
+
 .icon-header-title {
     line-height: 68.2px;
     margin-right: 1em;

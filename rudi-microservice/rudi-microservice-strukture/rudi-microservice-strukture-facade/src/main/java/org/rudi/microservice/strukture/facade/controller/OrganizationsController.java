@@ -91,12 +91,13 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 		return ResponseEntity.ok(organizationService.getOrganizationUserFromOrganizationUuid(organizationUuid));
 	}
 
-	//	@Override
+
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + MODULE_KALIM + ", " + MODULE_KONSULT + ", " + MODULE_PROJEKT + ", " + MODULE_KONSENT + ", " + MODULE_KONSULT_ADMINISTRATOR + ", " + MODULE_PROJEKT_ADMINISTRATOR + ")")
-	public ResponseEntity<PagedOrganizationList> searchOrganizations(List<UUID> uuids, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws Exception {
+	public ResponseEntity<PagedOrganizationList> searchOrganizations(String nameOrDescription, List<UUID> uuids, String name, Boolean active, UUID userUuid, List<OrganizationStatus> organizationStatus, Status status, Integer offset, Integer limit, String order) throws Exception {
 		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria
 				.builder()
+				.nameOrDescription(nameOrDescription)
 				.uuids(uuids)
 				.name(name)
 				.active(active)
@@ -263,8 +264,18 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	@Override
 	@PreAuthorize("hasAnyRole(" + ADMINISTRATOR + ", " + PROVIDER + ")")
 	public ResponseEntity<UUID> requestOrganizationUpdate(NodeOrganization nodeOrganization) throws Exception {
-		Organization organization = nodeOrganizationMapper.nodeDtoToDTO(nodeOrganization);
-		organizationService.updateOrganization(organization);
+
+		organizationService.checkOrganizationAndLinkWithProvider(nodeOrganization.getOrganizationId());
+		Organization organization = organizationService.getOrganizationIfStatusValid(nodeOrganization.getOrganizationId());
+
+		Form updateForm = organizationTaskService.lookupDraftForm(OrganizationFormType.DRAFT_UPDATE.name());
+		organizationService.fillNodeOrganizationUpdateForm(updateForm, nodeOrganization);
+
+		Task task = organizationTaskService.createDraft(organization);
+		task.getAsset().setForm(updateForm);
+
+		organizationTaskService.startTask(task);
+
 		return ResponseEntity.noContent().build();
 	}
 
@@ -291,8 +302,10 @@ public class OrganizationsController implements OrganizationsApi, MyOrganization
 	}
 
 	@Override
-	public ResponseEntity<PagedOrganizationList> searchMyOrganizations(List<UUID> uuids, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
-		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria.builder()
+	public ResponseEntity<PagedOrganizationList> searchMyOrganizations(String nameOrDescription, List<UUID> uuids, String name, Boolean active, Integer offset, Integer limit, String order) throws Exception {
+		OrganizationSearchCriteria searchCriteria = OrganizationSearchCriteria
+				.builder()
+				.nameOrDescription(nameOrDescription)
 				.uuids(uuids)
 				.name(name)
 				.active(active)

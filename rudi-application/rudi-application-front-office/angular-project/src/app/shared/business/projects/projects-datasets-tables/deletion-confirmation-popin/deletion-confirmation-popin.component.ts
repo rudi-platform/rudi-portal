@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose, MatDialogTitle} from '@angular/material/dialog';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CloseEvent, DialogClosedData} from '@features/data-set/models/dialog-closed-data';
@@ -11,7 +11,10 @@ import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
     selector: 'app-deletion-confirmation-popin',
     templateUrl: './deletion-confirmation-popin.component.html',
     styleUrls: ['./deletion-confirmation-popin.component.scss'],
-    imports: [CdkScrollable, MatDialogContent, MatIconButton, MatIcon, TranslateDirective, MatDialogActions, MatButton, MatDialogClose, TranslatePipe]
+    imports: [
+        CdkScrollable, MatDialogContent, MatDialogTitle, MatIconButton, MatIcon, TranslateDirective,
+        MatDialogActions, MatButton, MatDialogClose, TranslatePipe
+    ]
 })
 export class DeletionConfirmationPopinComponent {
 

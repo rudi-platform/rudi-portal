@@ -1,0 +1,20 @@
+{
+	"help": "Vous vous apprêtez à refuser la demande d'ajout de l'utilisateur. Après refus, celui-ci ne pourra pas se connecter dans le système d'authentification externe.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToRequester",
+			"label": "Message à l'attention du demandeur",
+			"type": "TEXT",
+			"required": true,
+			"validators": [
+				{
+					"type": "REQUIRED"
+				},
+				{
+					"type": "MAXLENGTH",
+					"attribute": "1000"
+				}
+			]
+		}
+	]
+}

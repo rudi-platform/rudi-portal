@@ -11,8 +11,37 @@
     overflow-x: hidden;
 }
 
-//****** Style mat-menu du banner *******
+//****** Style du panneau de téléchargement (app-button-disclosure) *******
+
+// Bouton déclencheur du panneau de téléchargement : reprend le rendu de l'ancien <app-banner-button>
+// (cf. banner-button.component.scss) perdu lors du remplacement par <app-button-disclosure>.
+// ::ng-deep nécessaire car le <button> est dans le template propre de ButtonDisclosureComponent ;
+// classe dédiée (pas ".button", trop générique) pour ne pas impacter les autres usages du composant partagé.
+::ng-deep .rudi-banner-download-trigger {
+    --mat-button-protected-container-color: var(--primary-color);
+    --mat-button-protected-label-text-color: var(--secondary-color);
+
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 6px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    font-size: 14px;
+    font-stretch: normal;
+    font-style: normal;
+    margin: 0 auto;
+    height: 42px;
+
+    &:hover {
+        background-color: var(--focus);
+        color: var(--secondary-color);
+    }
+}
+
 .menu-libelle {
+    display: block;
+    padding: 0;
+    margin: 0 0 8px;
     font-size: 15px;
     color: var(--primary-text);
     font-weight: 600;
@@ -43,7 +72,7 @@
     background-color: var(--blocks-and-menus-outline);
 }
 
-//****** Fin Style mat-menu du banner *******
+//****** Fin Style du panneau de téléchargement *******
 
 .metadata-container {
     padding-top: 115px;
@@ -533,6 +562,12 @@ img {
 .menu-radioGroup-scrollable {
     max-height: 220px;
     overflow-y: auto;
+    // Reset des styles par défaut du navigateur pour <fieldset> (bordure, marge, padding) :
+    // le <fieldset>/<legend> ne sert ici qu'au regroupement accessible (RGAA 11.6), sans impact visuel voulu.
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
 }
 
 .selfdata-banner-button {

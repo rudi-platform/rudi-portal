@@ -6,6 +6,13 @@
     color: black;
 }
 
+// h2 must keep the mat-card-title typography (.mat-typography / Bootstrap h2)
+mat-card-title > h2 {
+    font: inherit;
+    letter-spacing: inherit;
+    margin: 0;
+}
+
 .mat-card-header-text {
     margin-left: 0;
     font-size: 18px;
@@ -279,6 +286,12 @@ table td {
     align-items: center;
 
     .source-download-libelle {
+        appearance: none;
+        padding: 0;
+        border: 0;
+        background: none;
+        font-family: inherit;
+        line-height: inherit;
         cursor: pointer;
         font-size: 14px;
         font-weight: 600;
@@ -352,11 +365,11 @@ table td {
 
     .clickable-icon {
         cursor: pointer;
+        display: inline-flex;
+        padding: 0;
+        border: 0;
+        background: none;
     }
-}
-
-.no-outline-focus:focus {
-    outline: none;
 }
 
 .margin-data-value {
@@ -366,3 +379,12 @@ table td {
 .map-style {
     max-width: 600px;
 }
+
+.new-tab-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-bottom;
+    margin-left: 4px;
+}
+

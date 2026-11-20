@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-facet</artifactId>
-		<version>3.4.2</version>
+		<version>3.5.1</version>
 	</parent>
 
 	<artifactId>rudi-facet-strukture</artifactId>
@@ -66,16 +66,4 @@
 		<module>rudi-facet-providers</module>
 		<module>rudi-facet-organization</module>
 	</modules>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-Dfile.encoding=UTF-8</argLine>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

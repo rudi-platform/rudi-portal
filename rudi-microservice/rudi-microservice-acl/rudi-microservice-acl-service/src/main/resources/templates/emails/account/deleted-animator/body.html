@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>${projectName} - Suppression d'un compte utilisateur</title>
+    <style type="text/css">
+        body {
+            font-family: Montserrat;
+            font-size: 12px;
+            color: #004680;
+        }
+
+        a {
+            font-weight: bold;
+            color: #004680;
+        }
+
+        a:hover {
+            color: #004680;
+        }
+    </style>
+</head>
+<body style="font-family:Montserrat;font-size:12px;	color:#004680;">
+<p>
+    Bonjour,
+</p>
+<p>
+    Un utilisateur ayant des réutilisations ou des organisations encore actives a été supprimé.
+</p>
+<p>
+    Voici l'identifiant de l'utilisateur afin d'effectuer le nécessaire : ${userUuid}
+</p>
+<p>
+    À très bientôt, <br>
+    L'équipe ${projectName} <br>
+    <a href="${urlServer}">${urlServer}</a>
+</p>
+
+</body>
+</html>

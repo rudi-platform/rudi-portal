@@ -56,7 +56,7 @@ test.describe("RGAA 4.1.2 - Thématique 3: Couleurs", () => {
       const hasVisualIndicator =
         textDecoration.includes("underline") ||
         borderBottom !== "0px none rgb(0, 0, 0)" ||
-        parseInt(fontWeight) >= 700;
+        Number.parseInt(fontWeight) >= 700;
 
       if (hasVisualIndicator) {
         conformeCount++;
@@ -140,7 +140,7 @@ test.describe("RGAA 4.1.2 - Thématique 3: Couleurs", () => {
           parseFloat(window.getComputedStyle(el).fontSize)
         );
         const fontWeight = await element.evaluate((el) =>
-          parseInt(window.getComputedStyle(el).fontWeight)
+          Number.parseInt(window.getComputedStyle(el).fontWeight)
         );
 
         // Déterminer le seuil requis

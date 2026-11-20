@@ -44,6 +44,10 @@
 		{
 			"name": "authenticator",
 			"description": "Services authenticators"
+		},
+		{
+			"name": "task",
+			"description": "Services de gestion de tâches de workflow"
 		}
 	],
 	"paths": {
@@ -593,6 +597,568 @@
 							"application/json": {
 								"schema": {
 									"type": "string"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests": {
+			"post": {
+				"tags": [
+					"acl"
+				],
+				"summary": "Demande de création de compte dans le système d'authentification externe",
+				"description": "Permet à un utilisateur anonyme de soumettre une demande de création de compte dans le système d'authentification externe (LDAP). La demande déclenche un workflow de validation par un animateur.",
+				"operationId": "requestExternalAccountCreation",
+				"requestBody": {
+					"description": "Informations de la demande de création de compte",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-acl-model.json#/components/schemas/ExternalAccountRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Demande de création de compte créée avec succès",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/draft-form": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Chargement du formulaire draft de demande de création de compte externe",
+				"description": "Chargement du formulaire draft de demande de création de compte externe",
+				"operationId": "getExternalAccountRequestDraftForm",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Form"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks": {
+			"post": {
+				"tags": [
+					"task"
+				],
+				"summary": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"description": "Créé la tâche à partir de l'asset et l'asset s'il n'existe pas",
+				"operationId": "createExternalAccountRequestDraft",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "rudi-acl-model.json#/components/schemas/ExternalAccountRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Mets à jour une tâche",
+				"description": "Mets à jour une tâche et l'asset associée",
+				"operationId": "updateExternalAccountRequestTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/start": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Démarre la tâche",
+				"description": "Démarre la tâche",
+				"operationId": "startExternalAccountRequestTask",
+				"parameters": [],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/{task-id}/claim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Claim d'une tâche",
+				"description": "Claim d'une tâche",
+				"operationId": "claimExternalAccountRequestTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/{task-id}/unclaim": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Unclaim d'une tâche",
+				"description": "Unclaim d'une tâche",
+				"operationId": "unclaimExternalAccountRequestTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/{task-id}/do-it/{action-name}": {
+			"put": {
+				"tags": [
+					"task"
+				],
+				"summary": "Fait avancer la tâche",
+				"description": "Fait avancer la tâche à partir d'une action (ex: validated, refused)",
+				"operationId": "doItExternalAccountRequest",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "action-name",
+						"description": "Nom de l'action à réaliser",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/external-account-requests/tasks/{task-id}/historic": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"description": "Récupération de l'historique d'une tâche (asset + tâche)",
+				"operationId": "getExternalAccountRequestTaskHistoryByTaskId",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "asAdmin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Recherche des tâches",
+				"description": "Recherche des tâches",
+				"operationId": "searchTasks",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "description",
+						"description": "Description de la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "process-definition-keys",
+						"description": "Type du processus",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"description": "etat de la tâche",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Status"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "fonctional-status",
+						"description": "Etat fonctionnel",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "asAdmin",
+						"description": "En tant qu'admin",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "userLogin",
+						"description": "Nom de l'utilisateur assigné ou candidat à la tâche",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/{task-id}": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Chargement d'une tâche",
+				"description": "Chargement d'une tâche",
+				"operationId": "getTask",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "task-id",
+						"description": "Id de la tâche",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/Task"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/my-historics": {
+			"get": {
+				"tags": [
+					"task"
+				],
+				"summary": "Récupération de l'historique des tâches de l'utilisateur connecté",
+				"description": "Récupération de l'historique des tâches de l'utilisateur connecté",
+				"operationId": "getMyHistoricInformations",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "./../../../rudi-facet/rudi-facet-bpmn/openapi/rudi-bpmn-model.json#/components/schemas/ProcessHistoricInformation"
+									}
 								}
 							}
 						}

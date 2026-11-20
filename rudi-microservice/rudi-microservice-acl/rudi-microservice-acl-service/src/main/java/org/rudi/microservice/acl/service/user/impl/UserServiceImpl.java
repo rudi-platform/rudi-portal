@@ -14,9 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rudi.common.core.LongId;
+import org.rudi.common.core.security.AccountState;
 import org.rudi.common.core.security.AuthenticatedUser;
 import org.rudi.common.core.security.UserType;
 import org.rudi.common.service.exception.AppServiceException;
@@ -54,7 +56,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -358,14 +359,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public boolean recordAuthentication(UUID userUuid, boolean success) {
+	public void recordAuthentication(UUID userUuid, boolean success) {
 		UserEntity user = userDao.findByUuid(userUuid);
 		if (user == null) {
 			throw new IllegalArgumentException("Unknown user:" + userUuid);
 		}
 
 		if (success) {
-			unlockUser(user);
+			reactivateUser(user);
 			user.setLastConnexion(LocalDateTime.now());
 			resetFailedAttempts(user.getLogin());
 		} else {
@@ -384,21 +385,24 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		userDao.save(user);
-		return user.isAccountLocked();
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	public void unlockUsers() {
 		LocalDateTime d = LocalDateTime.now().minus(Duration.ofMinutes(lockDuration));
-		List<UserEntity> users = userDao.findByAccountLockedAndLastFailedAttemptLessThan(true, d);
+		UserSearchCriteria searchCriteria = UserSearchCriteria.builder()
+				.accountStates(List.of(AccountState.LOCKED))
+				.lastFailedAttemptBefore(d)
+				.build();
+		List<UserEntity> users = userCustomDao.searchUsers(searchCriteria, Pageable.unpaged()).getContent();
 		if (CollectionUtils.isNotEmpty(users)) {
-			users.forEach(this::unlockUser);
+			users.forEach(this::reactivateUser);
 		}
 	}
 
-	protected void unlockUser(UserEntity user) {
-		user.unlockAccount();
+	protected void reactivateUser(UserEntity user) {
+		user.reactivateAccount();
 		user.resetFailedAttempt();
 		user.setLastFailedAttempt(null);
 		userDao.save(user);
@@ -467,5 +471,4 @@ public class UserServiceImpl implements UserService {
 	public void resetFailedAttempts(String login) {
 		LOGIN_ATTEMPTS.remove(login);
 	}
-
 }

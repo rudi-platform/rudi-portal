@@ -69,21 +69,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import static org.rudi.facet.bpmn.helper.form.FormHelper.DRAFT_UPDATE_USER_TASK_ID;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_ARCHIVE_FORM_SECTION_NAME;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.DRAFT_UPDATE_FORM_SECTION_NAME;
-import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.FIELD_NAME_IMAGE_ORGANIZATION;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.ASSET_PICTURE_FIELD_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVAGE_COMMENT_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVAGE_TYPE_DISENGAGED_VALUE;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_ARCHIVE_MODE_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_CREATION_COMMENT_KEY;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_DRAFT_ARCHIVE_FORM_SECTION_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME;
+import static org.rudi.microservice.strukture.service.workflow.StruktureWorkflowConstants.ORGANIZATION_UPDATE_COMMENT_KEY;
 
 @Component(value = "organizationWorkflowContext")
 @Transactional
 @Slf4j
-public class OrganizationWorkflowContext
-		extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
+public class OrganizationWorkflowContext extends AbstractWorkflowContext<OrganizationEntity, OrganizationDao, OrganizationAssignmentHelper> {
 
-	private static final String CREATION_COMMENT_KEY = "messageToOrganizationCreator";
-	private static final String ARCHIVAGE_COMMENT_KEY = "messageToOrganizationArchiver";
-	private static final String ORGANIZATION_ARCHIVE_MODE_KEY = "organizationArchiveMode";
-	private static final String ARCHIVAGE_TYPE_DISENGAGED_VALUE = "DISENGAGED";
-
+	private static final String BASE_COMMENT_UPDATE = "Mise à jour de l'organisation";
 	private static final String BASE_COMMENT_ARCHIVE = "Archivage et détachement de l'organisation";
 
 	private static final String ERROR_NODE_NOT_FOUND = "Node introuvable";
@@ -181,7 +181,7 @@ public class OrganizationWorkflowContext
 					email = providerContactEmail;
 				}
 
-				Report report = buildReport(assetDescription, CREATION_COMMENT_KEY, isValidated,
+				Report report = buildReport(assetDescription, ORGANIZATION_CREATION_COMMENT_KEY, isValidated,
 						assetDescription.getCreationDate(), Method.POST, null);
 
 				Thread thread = new Thread(new ReportSendExecutor(reportHelper, report, nodeProvider, attempts,
@@ -250,8 +250,8 @@ public class OrganizationWorkflowContext
 		}
 
 
-		if (data != null && data.containsKey(FIELD_NAME_IMAGE_ORGANIZATION)) {
-			UUID mediaUuid = UUID.fromString((String) data.get(FIELD_NAME_IMAGE_ORGANIZATION));
+		if (data != null && data.containsKey(ASSET_PICTURE_FIELD_NAME)) {
+			UUID mediaUuid = UUID.fromString((String) data.get(ASSET_PICTURE_FIELD_NAME));
 
 			attachmentsHelper.saveMediaInMediaService(mediaUuid, assetDescriptionEntity.getUuid());
 		}
@@ -298,12 +298,21 @@ public class OrganizationWorkflowContext
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
-	public void sendReportToLinkedProducers(ScriptContext context, ExecutionEntity executionEntity, boolean isValidated){
+	public void sendUpdateOrganizationReportToLinkedProducers(ScriptContext context, ExecutionEntity executionEntity, boolean isValidated) {
+		computeAssetDescriptionAndSendReport(executionEntity, ORGANIZATION_UPDATE_COMMENT_KEY, isValidated, Method.PUT, BASE_COMMENT_UPDATE);
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendReportToLinkedProducers(ScriptContext context, ExecutionEntity executionEntity, boolean isValidated) {
+		computeAssetDescriptionAndSendReport(executionEntity, ORGANIZATION_ARCHIVAGE_COMMENT_KEY, isValidated, Method.DELETE, BASE_COMMENT_ARCHIVE);
+	}
+
+	private void computeAssetDescriptionAndSendReport(ExecutionEntity executionEntity, String commentKey, boolean isValidated, Method method, String baseComment) {
 		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
 
 		// Envoi d'un rapport à l'ensemble des providers liés à l'organisation :
-		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, ARCHIVAGE_COMMENT_KEY,
-				isValidated, assetDescription.getUpdatedDate(), Method.DELETE, BASE_COMMENT_ARCHIVE));
+		sendReportToLinkedProviders(assetDescription, buildReport(assetDescription, commentKey,
+				isValidated, assetDescription.getUpdatedDate(), method, baseComment));
 	}
 
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
@@ -366,7 +375,7 @@ public class OrganizationWorkflowContext
 	public void resetArchiveDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		OrganizationEntity assetDescriptionB = lookupAssetDescriptionEntity(executionEntity);
 		resetFormData(context, executionEntity, FormHelper.DRAFT_ARCHIVE_USER_TASK_ID, null,
-				DRAFT_ARCHIVE_FORM_SECTION_NAME);
+				ORGANIZATION_DRAFT_ARCHIVE_FORM_SECTION_NAME);
 		OrganizationEntity assetDescriptionA = lookupAssetDescriptionEntity(executionEntity);
 		log.debug("WkC - resetArchiveDraftForm - assetDescriptionA: {}", assetDescriptionA);
 	}
@@ -374,7 +383,7 @@ public class OrganizationWorkflowContext
 	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
 	public void resetUpdateDraftForm(ScriptContext context, ExecutionEntity executionEntity) {
 		resetFormData(context, executionEntity, DRAFT_UPDATE_USER_TASK_ID, null,
-				DRAFT_UPDATE_FORM_SECTION_NAME);
+				ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME);
 	}
 
 
@@ -398,19 +407,19 @@ public class OrganizationWorkflowContext
 			// On remplit le formulaire avec les données pour appliquer uniquement la section de mise à jour.
 			getFormHelper().fillForm(draftForm, data);
 			draftForm.getSections().stream()
-					.filter(section -> section.getName().equals(DRAFT_UPDATE_FORM_SECTION_NAME)).findFirst()
+					.filter(section -> section.getName().equals(ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME)).findFirst()
 					.ifPresentOrElse(section -> applyUpdateOrganizationProcessors(section.getFields(), assetDescription),
 							() -> {
 								throw new NoSuchElementException(String.format(
 										"Update organization : No section found draft form: %s",
-										DRAFT_UPDATE_FORM_SECTION_NAME));
+										ORGANIZATION_DRAFT_UPDATE_FORM_SECTION_NAME));
 							});
 
 			assetDescription.setUpdatedDate(LocalDateTime.now());
 			getAssetDescriptionDao().save(assetDescription);
 
 			// On modifie l'image si la donnée est présente.
-			Object mediaUuidValue = data.get(FIELD_NAME_IMAGE_ORGANIZATION);
+			Object mediaUuidValue = data.get(ASSET_PICTURE_FIELD_NAME);
 			if (mediaUuidValue != null && StringUtils.isNotBlank(mediaUuidValue.toString())) {
 				saveOrganizationMedia(mediaUuidValue, assetDescription);
 			}
@@ -444,7 +453,7 @@ public class OrganizationWorkflowContext
 	}
 
 	private ProjektArchiveMode mapOrganizationArchiveModeToProjektArchiveMode(String organizationArchiveMode) {
-		return organizationArchiveMode.equals(ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
+		return organizationArchiveMode.equals(ORGANIZATION_ARCHIVAGE_TYPE_DISENGAGED_VALUE) ? ProjektArchiveMode.DISENGAGED
 				: ProjektArchiveMode.ARCHIVED;
 	}
 
@@ -473,6 +482,50 @@ public class OrganizationWorkflowContext
 						+ executionEntity.getProcessDefinitionKey(), e);
 			}
 		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendEMailToInitiatorUser(ScriptContext context, ExecutionEntity executionEntity, EMailData eMailData) {
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+		User initiator = lookupUser(assetDescription.getInitiator());
+		if (initiator == null || isNodeProviderUser(initiator)) {
+			return;
+		}
+
+		String email = lookupEMailAddress(initiator);
+		if (StringUtils.isBlank(email)) {
+			return;
+		}
+
+		try {
+			sendEMail(executionEntity, assetDescription, eMailData, List.of(email));
+		} catch (Exception e) {
+			log.warn("WkC - Failed to send mail to initiator user for {}", executionEntity.getProcessDefinitionKey(), e);
+		}
+	}
+
+	@SuppressWarnings("unused") // Utilisé par organization-process.bpmn20.xml
+	public void sendEMailToLinkedNodeProviders(ScriptContext context, ExecutionEntity executionEntity,
+			EMailData eMailData) {
+		OrganizationEntity assetDescription = lookupAssetDescriptionEntity(executionEntity);
+		if (assetDescription == null) {
+			return;
+		}
+		try {
+			List<String> emails = providerHelper.getOrganizationLinkedProvidersContactEmails(assetDescription.getUuid());
+			if (CollectionUtils.isEmpty(emails)) {
+				return;
+			}
+			sendEMail(executionEntity, assetDescription, eMailData, emails);
+		} catch (Exception e) {
+			log.warn("WkC - Failed to send mail to linked node providers for {}",
+					executionEntity.getProcessDefinitionKey(), e);
+		}
+	}
+
+	private boolean isNodeProviderUser(User user) {
+		return UserType.ROBOT.equals(user.getType()) && user.getRoles() != null
+				&& user.getRoles().stream().anyMatch(role -> RoleCodes.PROVIDER.equals(role.getCode()));
 	}
 
 	private void sendEmailToOrganizationMembers(ExecutionEntity executionEntity, OrganizationEntity assetDescription,

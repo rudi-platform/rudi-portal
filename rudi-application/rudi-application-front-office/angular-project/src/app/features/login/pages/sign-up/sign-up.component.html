@@ -11,7 +11,7 @@
       >
       <div>
         <div class="d-flex justify-content-center">
-          <span class="signup-header-title">{{ 'signup.sinscrire'|translate }}</span>
+          <h1 class="signup-header-title m-0">{{ 'signup.sinscrire'|translate }}</h1>
         </div>
         <mat-card
           [ngClass]="{'p-60': mediaSize.isDeviceDesktop || mediaSize.isMd, 'p-19': mediaSize.isSm}">
@@ -35,7 +35,7 @@
                     <input autocomplete="family-name" formControlName="nom" matInput
                       placeholder="{{'signup.nom'|translate}}" type="text">
                       <mat-hint class="mt-1 signup-hint">
-                        <em class="fa fa-info-circle fa-2x me-2"></em> {{ 'signup.infoName'|translate }}
+                        <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em> {{ 'signup.infoName'|translate }}
                       </mat-hint>
                     </mat-form-field>
 
@@ -44,21 +44,21 @@
                       <input autocomplete="given-name" formControlName="prenom" matInput
                         placeholder="{{'signup.prenom'|translate}}" type="text">
                         <mat-hint class="mt-1 signup-hint">
-                          <em class="fa fa-info-circle fa-2x me-2"></em> {{ 'signup.infoFirstName'|translate }}
+                          <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em> {{ 'signup.infoFirstName'|translate }}
                         </mat-hint>
                       </mat-form-field>
 
 
                       <mat-form-field hideRequiredMarker>
                         <mat-label>{{ 'signup.adresseMail'|translate }} <span
-                        class="mat-error" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></mat-label>
+                        class="mat-error" aria-hidden="true">{{ 'signup.etoile'|translate }}</span></mat-label>
                         <input autocomplete="email" formControlName="adresseEmail"
                           matInput
                           placeholder="{{'signup.adresseMail'|translate}}" required type="email">
                           @if (formControls.adresseEmail.errors?.email) {
                             <mat-error
                               class="mt-1">
-                              <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.emailError'|translate }}
+                              <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.emailError'|translate }}
                             </mat-error>
                           }
                         </mat-form-field>
@@ -66,8 +66,9 @@
 
                         <mat-form-field hideRequiredMarker>
                           <mat-label>{{ 'signup.password'|translate }} <span
-                          class="mat-error" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></mat-label>
+                          class="mat-error" aria-hidden="true">{{ 'signup.etoile'|translate }}</span></mat-label>
                           <input [type]="hidePassword ? 'password' : 'text'" autocomplete="new-password"
+                            aria-describedby="password-msg password-criteria"
                             formControlName="password"
                             id="password"
                             matInput placeholder="{{'signup.password'|translate}}"
@@ -75,7 +76,7 @@
                             <button (click)="hidePassword = !hidePassword"
                               [attr.aria-label]="(hidePassword ? 'common.showPassword' : 'common.hidePassword')|translate" [attr.aria-pressed]="!hidePassword"
                               mat-icon-button
-                              matSuffix>
+                              matSuffix type="button">
                               <mat-icon
                                 class="hidePassword">{{ hidePassword ? 'visibility_off' : 'visibility' }}
                               </mat-icon>
@@ -83,25 +84,31 @@
                             @if (formControls.password.errors?.minlength) {
                               <mat-error
                                 class="mt-1">
-                                <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordErrorPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordErrorPost'|translate }}
+                                <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.passwordErrorPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordErrorPost'|translate }}
+                              </mat-error>
+                            }
+                            @if (formControls.password.errors?.pattern && !formControls.password.errors?.minlength && !formControls.password.errors?.maxlength) {
+                              <mat-error
+                                class="mt-1">
+                                <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.passwordPatternError'|translate }}
                               </mat-error>
                             }
                             @if (formControls.password.errors?.required) {
                               <mat-error
                                 class="mt-1">
-                                <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordRequired'|translate }}
+                                <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.passwordRequired'|translate }}
                               </mat-error>
                             }
                           </mat-form-field>
-                          <p class="password-msg">{{ 'signup.passwordMsgPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordMsgPost'|translate }}</p>
+                          <p id="password-msg" class="password-msg">{{ 'signup.passwordMsgPre'|translate }} {{ passwordMinLength }} {{ 'signup.passwordMsgPost'|translate }}</p>
                           <p class="pb-3">
-                            <app-password-strength [password]="signupForm.value.password"
+                            <app-password-strength id="password-criteria" [password]="signupForm.value.password"
                             class="text-center"></app-password-strength>
                           </p>
 
                           <mat-form-field hideRequiredMarker>
                             <mat-label>{{ 'signup.ConfirmPassword'|translate }} <span
-                            class="mat-error" [attr.aria-label]="'common.requiredFieldLabel'|translate">{{ 'signup.etoile'|translate }}</span></mat-label>
+                            class="mat-error" aria-hidden="true">{{ 'signup.etoile'|translate }}</span></mat-label>
                             <input [type]="hideConfirmPassword ? 'password' : 'text'" autocomplete="new-password"
                               formControlName="confirmPassword"
                               id="confirm_password"
@@ -110,20 +117,20 @@
                                 [attr.aria-label]="(hideConfirmPassword ? 'common.showPassword' : 'common.hidePassword')|translate"
                                 [attr.aria-pressed]="!hideConfirmPassword"
                                 mat-icon-button
-                                matSuffix>
+                                matSuffix type="button">
                                 <mat-icon
                                   class="hidePassword">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
                                 </mat-icon>
                               </button>
                               @if (formControls.confirmPassword.errors?.required) {
                                 <mat-error class="mt-1">
-                                  <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordConfirmRequired'|translate }}
+                                  <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.passwordConfirmRequired'|translate }}
                                 </mat-error>
                               }
                               @if (formControls.confirmPassword.errors?.confirmedValidator) {
                                 <mat-error
                                   class="mt-1">
-                                  <em class="fa fa-info-circle fa-2x me-2"></em>{{ 'signup.passwordConfirmError'|translate }}
+                                  <em class="fa fa-info-circle fa-2x me-2" aria-hidden="true"></em>{{ 'signup.passwordConfirmError'|translate }}
                                 </mat-error>
                               }
                             </mat-form-field>
@@ -132,18 +139,18 @@
                               <mat-checkbox id="cgu-checkbox" class="signup-checkbox signup-checkbox-align"
                                 formControlName="cgu" required>
                               </mat-checkbox>
-                              <label for="cgu-checkbox" class="d-flex mt-2">
+                              <label for="cgu-checkbox-input" class="d-flex mt-2">
                                 <span class="signup-agree">{{ 'signup.lu'|translate }}</span>
-                                <div [innerHTML]="cguTermsValue"
-                                [ngClass]="'rudi-label-lien-mobile-mention'"></div>
-                                <span class="required-symbol mat-error" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+                                <span [innerHTML]="cguTermsValue"
+                                [ngClass]="'rudi-label-lien-mobile-mention'"></span>
+                                <span class="required-symbol mat-error" aria-hidden="true">*</span>
                               </label>
                             </div>
 
                             <div class="form-group form-check contact-container">
                               <mat-checkbox id="notifications-checkbox" class="signup-checkbox signup-checkbox-align"
                               formControlName="subscribeToNotifications"></mat-checkbox>
-                              <label for="notifications-checkbox">{{ 'signup.subscribeToNotifications'|translate }}</label>
+                              <label for="notifications-checkbox-input">{{ 'signup.subscribeToNotifications'|translate }}</label>
                             </div>
 
                             @if (enableCaptchaOnPage) {
@@ -187,8 +194,8 @@
                   <!--connexion -->
                   <div class="d-flex justify-content-center mb-2">
                     <span class="text-center">{{ 'signup.compteExistant'|translate }}</span>
-                    <span class="text-center ms-1 link-bold-underlined-colored pointer"
-                    routerLink="/login">{{ 'signup.pSeconnecter'|translate }}</span>
+                    <a class="text-center ms-1 link-bold-underlined-colored"
+                    routerLink="/login">{{ 'signup.pSeconnecter'|translate }}</a>
                   </div>
 
                 </div>
@@ -196,7 +203,7 @@
                 <mat-divider class="mt-6"></mat-divider>
 
                 <div id="rgpd">
-                  <h3>{{ 'signup.rgpd.title'|translate }}</h3>
+                  <h2>{{ 'signup.rgpd.title'|translate }}</h2>
 
                   <p>
                     {{ 'signup.rgpd.p1'|translate }}

@@ -3,14 +3,18 @@ package org.rudi.microservice.strukture.service.organization.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
+import org.rudi.bpmn.core.bean.Form;
 import org.rudi.bpmn.core.bean.Status;
 import org.rudi.common.service.exception.AppServiceBadRequestException;
 import org.rudi.common.service.exception.AppServiceException;
@@ -19,6 +23,7 @@ import org.rudi.common.service.exception.AppServiceNotFoundException;
 import org.rudi.common.service.exception.AppServiceUnauthorizedException;
 import org.rudi.facet.acl.bean.User;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.bpmn.helper.form.FormHelper;
 import org.rudi.facet.projekt.helper.ProjektHelper;
 import org.rudi.microservice.strukture.core.bean.NodeOrganization;
 import org.rudi.microservice.strukture.core.bean.Organization;
@@ -30,12 +35,14 @@ import org.rudi.microservice.strukture.core.bean.criteria.OrganizationMembersSea
 import org.rudi.microservice.strukture.core.bean.criteria.OrganizationSearchCriteria;
 import org.rudi.microservice.strukture.service.exception.CannotRemoveLastAdministratorException;
 import org.rudi.microservice.strukture.service.exception.UserIsNotOrganizationAdministratorException;
+import org.rudi.microservice.strukture.service.helper.LinkedProducerHelper;
 import org.rudi.microservice.strukture.service.helper.OwnerInfoHelper;
 import org.rudi.microservice.strukture.service.helper.ProviderHelper;
 import org.rudi.microservice.strukture.service.helper.StruktureAuthorisationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersHelper;
 import org.rudi.microservice.strukture.service.helper.organization.OrganizationMembersPartitionerHelper;
+import org.rudi.microservice.strukture.service.helper.organization.OrganizationWorkflowHelper;
 import org.rudi.microservice.strukture.service.mapper.NodeOrganizationMapper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationFullMapper;
 import org.rudi.microservice.strukture.service.mapper.OrganizationMemberMapper;
@@ -48,6 +55,11 @@ import org.rudi.microservice.strukture.storage.dao.address.AbstractAddressDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationCustomDao;
 import org.rudi.microservice.strukture.storage.dao.organization.OrganizationDao;
 import org.rudi.microservice.strukture.storage.entity.address.AbstractAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.address.AddressRoleEntity;
+import org.rudi.microservice.strukture.storage.entity.address.AddressType;
+import org.rudi.microservice.strukture.storage.entity.address.EmailAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.address.TelephoneAddressEntity;
+import org.rudi.microservice.strukture.storage.entity.address.WebsiteAddressEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationMemberEntity;
 import org.rudi.microservice.strukture.storage.entity.organization.OrganizationRole;
@@ -76,6 +88,13 @@ public class OrganizationServiceImpl implements OrganizationService {
 	// une requête HTTP vers ACL trop longue
 	private static final int MAX_AMOUNT_OF_ORGANIZATION_MEMBERS = 50;
 
+	private static final String FORM_FIELD_DRAFT_TYPE = "draftType";
+	private static final String FORM_FIELD_UPDATE_MESSAGE_TO_MODERATOR = "updateMessageToModerator";
+	private static final String FORM_FIELD_URL = "url";
+	private static final String FORM_FIELD_EMAIL = "email";
+	private static final String FORM_FIELD_PHONE_NUMBER = "phoneNumber";
+	private static final String NODE_UPDATE_DEFAULT_MESSAGE = "Demande de modification de l'organisation depuis le noeud producteur";
+
 	private final OrganizationDao organizationDao;
 	private final OrganizationCustomDao organizationCustomDao;
 	private final AbstractAddressDao abstractAddressDao;
@@ -93,6 +112,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private final OrganizationMembersPartitionerHelper organizationMembersPartitionerHelper;
 	private final OrganizationHelper organizationHelper;
 	private final OwnerInfoHelper ownerInfoHelper;
+	private final FormHelper formHelper;
+	private final LinkedProducerHelper linkedProducerHelper;
 
 	@Value("${default.organization.roles:USER,ORGANIZATION}")
 	private List<String> defaultOrganizationRoles;
@@ -386,7 +407,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 		// Récupération du provider concerné
 		ProviderEntity provider = providerHelper.getMyProvider();
 		if (provider == null) {
-			throw new AppServiceBadRequestException("No provider found");
+			throw new AppServiceBadRequestException("Aucun producteur n'a été trouvé.");
 		}
 
 		NodeOrganizationSearchCriteria criteria = NodeOrganizationSearchCriteria.builder().uuids(List.of(uuid)).providerUUID(provider.getUuid()).build();
@@ -394,6 +415,66 @@ public class OrganizationServiceImpl implements OrganizationService {
 		NodeOrganizationProjectionBean nodeOrganizationProjectionBean = organizationCustomDao.searchNodeOrganizations(criteria, Pageable.unpaged()).stream().findFirst().orElseThrow(() -> new AppServiceBadRequestException("Organization not found"));
 
 		return nodeOrganizationMapper.beanToNodeDto(nodeOrganizationProjectionBean);
+	}
+
+	@Override
+	public void checkOrganizationAndLinkWithProvider(UUID organizationUuid) throws AppServiceException {
+		linkedProducerHelper.checkAuthenticatedProviderIsLinkedToOrganization(organizationUuid);
+	}
+
+	@Override
+	public Organization getOrganizationIfStatusValid(UUID organizationUuid) throws AppServiceException {
+		OrganizationEntity entity = organizationHelper.getOrganizationEntity(organizationUuid);
+		if (!OrganizationStatus.VALIDATED.equals(entity.getOrganizationStatus()) || !Status.COMPLETED.equals(entity.getStatus())) {
+			throw new AppServiceBadRequestException("L'organisation ne peut pas être mise à jour dans son état actuel.");
+		}
+		return organizationFullMapper.entityToDto(entity);
+	}
+
+	@Override
+	public void fillNodeOrganizationUpdateForm(Form updateForm, NodeOrganization nodeOrganization)
+			throws AppServiceException {
+		if (updateForm == null) {
+			throw new AppServiceException("Le formulaire de mise à jour de l'organisation est introuvable.");
+		}
+
+		OrganizationEntity entity = organizationHelper.getOrganizationEntity(nodeOrganization.getOrganizationId());
+
+		Map<String, Object> data = new HashMap<>();
+		data.put(FORM_FIELD_DRAFT_TYPE, OrganizationWorkflowHelper.DRAFT_TYPE_FORM_UPDATE_VALUE);
+		data.put(FORM_FIELD_UPDATE_MESSAGE_TO_MODERATOR, NODE_UPDATE_DEFAULT_MESSAGE);
+		data.put(OrganizationEntity.FIELD_NAME,
+				StringUtils.defaultIfBlank(nodeOrganization.getOrganizationName(), entity.getName()));
+		data.put(OrganizationEntity.FIELD_DESCRIPTION,
+				StringUtils.defaultIfBlank(nodeOrganization.getOrganizationSummary(), entity.getDescription()));
+		data.put(OrganizationEntity.FIELD_ADDRESS,
+				Optional.ofNullable(nodeOrganization.getOrganizationAddress()).orElse(entity.getAddress()));
+		data.put(FORM_FIELD_URL, Optional.ofNullable(nodeOrganization.getOrganizationUrl())
+				.orElseGet(() -> getContactAddressValue(entity, AddressType.WEBSITE, WebsiteAddressEntity.class,
+						WebsiteAddressEntity::getUrl)));
+		data.put(FORM_FIELD_EMAIL,
+				getContactAddressValue(entity, AddressType.EMAIL, EmailAddressEntity.class, EmailAddressEntity::getEmail));
+		data.put(FORM_FIELD_PHONE_NUMBER, getContactAddressValue(entity, AddressType.PHONE,
+				TelephoneAddressEntity.class, TelephoneAddressEntity::getPhoneNumber));
+
+		formHelper.fillForm(updateForm, data);
+	}
+
+	private <A extends AbstractAddressEntity> String getContactAddressValue(OrganizationEntity entity,
+			AddressType addressType, Class<A> addressClass, Function<A, String> valueGetter) {
+		if (entity.getAddresses() == null) {
+			return null;
+		}
+		return entity.getAddresses().stream()
+				.filter(address -> address.getAddressRole() != null
+						&& AddressRoleEntity.CODE_CONTACT.equals(address.getAddressRole().getCode()))
+				.filter(address -> addressType.equals(address.getType()))
+				.filter(addressClass::isInstance)
+				.map(addressClass::cast)
+				.map(valueGetter)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -410,28 +491,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return organizationSimpleMapper.entitiesToDto(organizationCustomDao.searchMyOrganizations(criteria, pageable), pageable);
 	}
 
-	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {
-		val adminMembers = organization.getMembers().stream()
+	private boolean isLastAdministrator(OrganizationEntity organization, UUID userUuid) {		val adminMembers = organization.getMembers().stream()
 				.filter(orgaMember -> OrganizationRole.ADMINISTRATOR.equals(orgaMember.getRole()))
 				.toList();
-		return adminMembers.size() == 1 && adminMembers.get(0).getUserUuid().equals(userUuid);
-	}
-
-	private void deleteOrphanAddresses(Set<AbstractAddressEntity> previousAddresses,
-			Set<AbstractAddressEntity> currentAddresses) {
-		if (previousAddresses == null || previousAddresses.isEmpty()) {
-			return;
-		}
-
-		// L'association est en ManyToMany : on conserve un nettoyage manuel des adresses détachées.
-		final Set<UUID> currentAddressUuids = currentAddresses == null ? Set.of()
-				: currentAddresses.stream().map(AbstractAddressEntity::getUuid).filter(Objects::nonNull)
-				.collect(Collectors.toSet());
-
-		for (final AbstractAddressEntity previousAddress : previousAddresses) {
-			if (previousAddress.getUuid() != null && !currentAddressUuids.contains(previousAddress.getUuid())) {
-				abstractAddressDao.delete(previousAddress);
-			}
-		}
+		return adminMembers.size() == 1 && adminMembers.getFirst().getUserUuid().equals(userUuid);
 	}
 }

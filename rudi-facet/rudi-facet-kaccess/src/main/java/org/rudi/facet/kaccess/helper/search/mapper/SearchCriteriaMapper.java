@@ -241,6 +241,7 @@ public class SearchCriteriaMapper extends DatasetSearchCriteriaMapper {
 		}
 	}
 
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	private void createQueryFilterRestrictedAccess(DatasetSearchCriteria datasetSearchCriteria, FilterQuery fqFilter) {
 		final Boolean restrictedAccess = datasetSearchCriteria.getRestrictedAccess();
 		if (Boolean.TRUE.equals(restrictedAccess)) {
@@ -253,6 +254,7 @@ public class SearchCriteriaMapper extends DatasetSearchCriteriaMapper {
 		}
 	}
 
+	@SuppressWarnings("java:S2589") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	private void createQueryFilterGDPRSensitive(DatasetSearchCriteria datasetSearchCriteria, FilterQuery fqFilter) {
 		final Boolean gdprSensitive = datasetSearchCriteria.getGdprSensitive();
 		if (Boolean.TRUE.equals(gdprSensitive)) {

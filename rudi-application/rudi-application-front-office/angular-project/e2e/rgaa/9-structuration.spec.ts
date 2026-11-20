@@ -33,7 +33,7 @@ test.describe("RGAA 4.1.2 - Thématique 9: Structuration de l'information", () =
     for (let i = 0; i < count; i++) {
       const heading = headings.nth(i);
       const tagName = await heading.evaluate((el) => el.tagName.toLowerCase());
-      const level = parseInt(tagName.replace("h", ""));
+      const level = Number.parseInt(tagName.replace("h", ""));
       headingLevels.push(level);
     }
 

@@ -1,9 +1,10 @@
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {Component, Input} from '@angular/core';
+import {Component, ElementRef, Input, ViewChild} from '@angular/core';
 
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 
 
 @Component({
@@ -38,16 +39,30 @@ export class ContactButtonComponent {
     emailIsVisible = false;
     copiedSuccess = false;
 
+    private focusEmailButtonOnRender = false;
 
-    constructor(private readonly clipboard: Clipboard) {
+    // The contact button is removed from the DOM when clicked: keep the keyboard focus on its replacement.
+    @ViewChild('emailButton', {read: ElementRef})
+    set emailButton(button: ElementRef<HTMLButtonElement> | undefined) {
+        if (button && this.focusEmailButtonOnRender) {
+            this.focusEmailButtonOnRender = false;
+            button.nativeElement.focus();
+        }
+    }
+
+    constructor(private readonly clipboard: Clipboard,
+                private readonly liveAnnouncer: LiveAnnouncer,
+                private readonly translateService: TranslateService) {
     }
 
     clickContactButton(): void {
+        this.focusEmailButtonOnRender = true;
         this.emailIsVisible = true;
     }
 
     clickEmailButton(): void {
         this.copiedSuccess = true;
         this.clipboard.copy(this.email);
+        this.liveAnnouncer.announce(this.translateService.instant('common.copiedButton.copied'));
     }
 }

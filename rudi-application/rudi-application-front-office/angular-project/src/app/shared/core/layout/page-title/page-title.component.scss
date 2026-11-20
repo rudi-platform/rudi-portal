@@ -11,7 +11,8 @@
     line-height: 1.5;
     text-align: center;
     color: var(--primary-text);
-    width: 730px;
+    max-width: 60ch;
+    margin: 12px auto 32px;
 }
 
 .subtitle-4 {
@@ -25,7 +26,8 @@
 
 .search-box-title {
     color: var(--primary-color);
-    height: 56px;
+    // RGAA 10.11: min-height lets a wrapped title grow instead of overlapping the subtitle
+    min-height: 56px;
 
     span {
         color: var(--accent-color);

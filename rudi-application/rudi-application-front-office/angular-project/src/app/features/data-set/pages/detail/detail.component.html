@@ -13,12 +13,13 @@
           [resourceTitle]="metadata?.resource_title"
           [organizationId]="metadata?.producer.organization_id"
           [icon]="getDatasetTitleIcon()"
+          [iconAlt]="getDatasetTitleIconAlt()"
           >
         </app-page-heading>
         <!-- Fin Icon et titre de la ressource -->
         <!-- Bandeau -->
         <app-tabs>
-          <app-tab [label]="'metaData.informations'|translate"
+          <app-tab #informationsTab [label]="'metaData.informations'|translate"
             [icon]="'icon_tab_infos'">
             <ng-template>
               <app-dataset-informations
@@ -43,7 +44,7 @@
             </ng-template>
           </app-tab>
           @if (isSpreadsheetDisplayed) {
-            <app-tab
+            <app-tab #spreadsheetTab
               [label]="'metaData.tabulatedDataTitle'|translate"
               [icon]="'tabulated-data'">
               <ng-template>
@@ -60,6 +61,13 @@
               >
               <ng-template>
                 @if (!mapHasError) {
+                  @if (isSpreadsheetDisplayed) {
+                    <button type="button" class="visually-hidden-focusable btn btn-link"
+                      (click)="showSpreadsheetTab()">{{'metaData.mapDataTab.tableAlternative' | translate}}</button>
+                  } @else if (metadata.geography) {
+                    <button type="button" class="visually-hidden-focusable btn btn-link"
+                      (click)="showMapTextAlternative()">{{'metaData.mapDataTab.coordinatesAlternative' | translate}}</button>
+                  }
                   <app-map-tab
                     [metadata]="metadata"
                     [mediaToDisplay]="mediaToDisplayMap"
@@ -73,53 +81,48 @@
           }
           <!-- Boutton télécharger -->
             @if (!isSelfdata && hasDownloadAccess) {
-            <app-banner-button #clickMenuFormatTrigger="matMenuTrigger" [matMenuTriggerFor]="formatMenu">
-              <div class="d-flex align-items-center">
-                <mat-icon class="icon-syle icon-save me-l">save_alt</mat-icon>
+            <app-button-disclosure #formatDisclosure triggerClass="button rudi-banner-download-trigger" [showStateIcon]="false">
+              <div disclosureTrigger class="d-flex align-items-center">
+                <mat-icon aria-hidden="true" class="icon-syle icon-save me-l" fontIcon="save_alt"></mat-icon>
                 <div
                   [ngClass]="{'banner-icon-libelle': mediaSize.isSm}">{{ 'availableFormats.telecharger'|translate }}
                 </div>
               </div>
-              <mat-menu #formatMenu="matMenu" role="menu" yPosition="below">
-                    <div (click)="$event.stopPropagation()" class="rudi-select-panel d-flex flex-column">
-                      <form [formGroup]="form">
-                        <div class="menu-radioGroup-scrollable">
-                          <h4 class="menu-libelle">{{ 'availableFormats.formatsDisponibles'|translate }}</h4>
-                          <mat-radio-group #radioGroup="matRadioGroup"
-                            (click)="$event.stopPropagation()"
-                            aria-label="Select an option"
-                            formControlName="options" class="d-flex flex-column">
-                            @for (item of usersDownloadableMedias; track item; let i = $index) {
-                              <mat-radio-button
-                                [checked]="i === 0"
-                                [value]="item"
-                                class="mb-2">
-                                {{ getMediaFileExtension(item) }}
-                              </mat-radio-button>
-                            }
-                          </mat-radio-group>
-                        </div>
-                        @if (!isSelfdata) {
-                          <button
-                            (click)="onDownloadFormat()"
-                            [ngClass]="{'btn-download-format':metadata.available_formats.length == null }"
-                            class="button menu-btn-download"
-                            mat-raised-button
-                            type="submit"
-                            >
-                            {{ 'availableFormats.telecharger'|translate }}
-                          </button>
-                        }
-                      </form>
-                    </div>
-                  </mat-menu>
-            </app-banner-button>
+              <form [formGroup]="form">
+                <fieldset class="menu-radioGroup-scrollable">
+                  <legend class="menu-libelle" id="formatsDisponiblesLabel">{{ 'availableFormats.formatsDisponibles'|translate }}</legend>
+                  <mat-radio-group #radioGroup="matRadioGroup"
+                    aria-labelledby="formatsDisponiblesLabel"
+                    formControlName="options" class="d-flex flex-column">
+                    @for (item of usersDownloadableMedias; track item; let i = $index) {
+                      <mat-radio-button
+                        [checked]="i === 0"
+                        [value]="item"
+                        class="mb-2">
+                        {{ getMediaFileExtension(item) }}
+                      </mat-radio-button>
+                    }
+                  </mat-radio-group>
+                </fieldset>
+                @if (!isSelfdata) {
+                  <button
+                    (click)="onDownloadFormat()"
+                    [ngClass]="{'btn-download-format':metadata.available_formats.length == null }"
+                    class="button menu-btn-download"
+                    mat-raised-button
+                    type="submit"
+                    >
+                    {{ 'availableFormats.telecharger'|translate }}
+                  </button>
+                }
+              </form>
+            </app-button-disclosure>
           }
           <!-- Faire une demande d'information sur ses données personnelles detenues -->
           @if (isSelfdata) {
             <app-banner-button (click)="handleClickSelfdataInformationRequest()" >
               <div class="selfdata-banner-button">
-                <mat-icon [svgIcon]="'icone_donnees_personnelles'"></mat-icon>
+                <mat-icon aria-hidden="true" [svgIcon]="'icone_donnees_personnelles'"></mat-icon>
                 <span>{{ 'metaData.selfdataInformationRequest.wholeTitle'|translate }}</span>
               </div>
             </app-banner-button>
@@ -129,7 +132,7 @@
             <app-banner-button
               (click)="handleClickRequestAccess()">
               <div class="d-flex align-items-center">
-                <mat-icon class="key-icon me-2" svgIcon="key_icon_circle"></mat-icon>
+                <mat-icon aria-hidden="true" class="key-icon me-2" svgIcon="key_icon_circle"></mat-icon>
                 <span>{{ 'metaData.restrictedDatasetRequest'|translate }}</span>
               </div>
             </app-banner-button>
@@ -154,6 +157,7 @@
           @if (nbLinkedProjects > 0) {
             <div class="banner-reuses-cards">
               <app-project-list [disableScrollOnPageChange]="true"
+                [cardTitleLevel]="3"
                 [linkedDatasetsGlobalIds]="[metadata.global_id]"
                 [maxResultsPerPage]="(mediaSize.isXs || mediaSize.isSm) ? 1 : 3"
                 [resultsPerRow]="(mediaSize.isXs || mediaSize.isSm) ? 1 : 3"

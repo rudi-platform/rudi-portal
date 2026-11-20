@@ -15,7 +15,6 @@ import {
     PagedSelfdataInformationRequestList,
     SelfdataDataset as BackSelfdataDataset,
     SelfdataInformationRequest,
-    SelfdataInformationRequestSearchCriteria,
     SelfdataService,
     TaskService
 } from 'micro_service_modules/selfdata/selfdata-api';
@@ -115,16 +114,9 @@ export class SelfdataDatasetService {
             return of(null);
         }
 
-        // Recherche d'une demande triée par ordre décroissant de date de MAJ
-        const criteria: SelfdataInformationRequestSearchCriteria = {
-            datasetUuid: metadata.global_id,
-            offset: 0,
-            limit: 1,
-            order: '-updatedDate'
-        };
 
         // Récupération du 1er résultat ou nul si inexistant
-        return this.selfdataService.searchMySelfdataInformationRequests(criteria).pipe(
+        return this.selfdataService.searchMySelfdataInformationRequests(metadata.global_id, undefined, 0, 1, '-updatedDate').pipe(
             map((page: PagedSelfdataInformationRequestList) => {
                 if (page?.elements?.length === 0) {
                     return null;

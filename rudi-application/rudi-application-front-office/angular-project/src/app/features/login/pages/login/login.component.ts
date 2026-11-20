@@ -1,8 +1,9 @@
 import {NgClass} from '@angular/common';
 import {Component, Inject, OnInit, ViewChild, DOCUMENT} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatDialog} from '@angular/material/dialog';
 import {MatError, MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatIcon} from '@angular/material/icon';
 import {MatInput} from '@angular/material/input';
@@ -13,9 +14,14 @@ import {AccountService} from '@core/services/account.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {CAPTCHA_NOT_VALID_CODE, CaptchaCheckerService} from '@core/services/captcha-checker.service';
+import {DefaultMatDialogConfig} from '@core/services/default-mat-dialog-config';
 import {PropertiesMetierService} from '@core/services/properties-metier.service';
 import {RedirectService} from '@core/services/redirect.service';
 import {SnackBarService} from '@core/services/snack-bar.service';
+import {
+    ExternalAccountRequestDialogComponent,
+    ExternalAccountRequestDialogData
+} from '@features/login/components/external-account-request-dialog/external-account-request-dialog.component';
 import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {ErrorBoxComponent} from '@shared/core/common/error-box/error-box.component';
 import {RudiCaptchaComponent, RudiCaptchaComponent as RudiCaptchaComponent_1} from '@shared/core/form/rudi-captcha/rudi-captcha.component';
@@ -33,7 +39,7 @@ import {switchMap} from 'rxjs/operators';
     imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass,
         TranslateDirective, RouterLink, FormsModule, ReactiveFormsModule, MatCard,
         MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError,
-        MatIcon, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent,
+        MatIcon, MatIconButton, MatSuffix, RudiCaptchaComponent_1, ErrorBoxComponent,
         MatCardActions, MatButton, MatProgressSpinner, TranslatePipe, SafeUrlPipe]
 })
 export class LoginComponent implements OnInit {
@@ -105,6 +111,8 @@ export class LoginComponent implements OnInit {
 
     isolatedOauth2Authenticators: OAuth2AuthenticatorDescription[] = [];
 
+    nativeAuthenticators: OAuth2AuthenticatorDescription[] = [];
+
     @ViewChild(RudiCaptchaComponent) rudiCaptcha: RudiCaptchaComponent;
 
     /**
@@ -124,6 +132,13 @@ export class LoginComponent implements OnInit {
 
     get redirectToParam(): string | null {
         return this.route.snapshot.queryParams.redirectTo;
+    }
+
+    /**
+     * Indique si au moins un authenticator OAuth2 affiché supporte la demande de création de compte externe
+     */
+    get canRequestExternalAccount(): boolean {
+        return this.oauth2Authenticators.some(authenticator => authenticator.supportAccountCreation);
     }
 
     /**
@@ -149,6 +164,7 @@ export class LoginComponent implements OnInit {
                 private readonly captchaCheckerService: CaptchaCheckerService,
                 private readonly authenticatorService: AuthenticatorService,
                 private readonly accountService: AccountService,
+                private readonly dialog: MatDialog,
                 @Inject(DOCUMENT) private readonly document: Document) {
     }
 
@@ -172,9 +188,14 @@ export class LoginComponent implements OnInit {
             authenticators.forEach(authenticator => authenticator['hovered'] = false);
             this.oauth2Authenticators = authenticators.filter(
                 authenticator => authenticator.name !== 'rudi' && !authenticator.viewSettings?.isolated
+                    && !authenticator.viewSettings?.disabled
             );
             this.isolatedOauth2Authenticators = authenticators.filter(
                 authenticator => authenticator.name !== 'rudi' && !!authenticator.viewSettings?.isolated
+                    && !authenticator.viewSettings?.disabled
+            );
+            this.nativeAuthenticators = authenticators.filter(
+                authenticator => authenticator.name == 'rudi' && !authenticator.viewSettings?.disabled
             );
         });
 
@@ -184,12 +205,31 @@ export class LoginComponent implements OnInit {
                 message: this.translateService.instant(snackBarParam),
                 level: Level.SUCCESS,
                 keepBeforeSecondRouteChange: true
-            }, 3000);
+            });
         }
     }
 
     handleClickOAuth2Login(authenticator: OAuth2AuthenticatorDescription): void {
         window.location.href = '/acl/v1/oauth2-authenticators/' + authenticator.name + '?action=login';
+    }
+
+    /**
+     * Opens the account creation request form for an external authentication system
+     */
+    handleClickRequestExternalAccount(): void {
+        const dialogConfig = new DefaultMatDialogConfig<ExternalAccountRequestDialogData>();
+        dialogConfig.data = {
+            enableCaptcha: this.enableCaptchaOnPage,
+            authenticators: this.oauth2Authenticators
+        };
+        this.dialog.open(ExternalAccountRequestDialogComponent, dialogConfig).afterClosed().subscribe((sent: boolean) => {
+            if (sent) {
+                this.snackBarService.openSnackBar({
+                    message: this.translateService.instant('externalAccountRequest.success'),
+                    level: Level.SUCCESS
+                });
+            }
+        });
     }
 
     /**
@@ -277,7 +317,8 @@ export class LoginComponent implements OnInit {
 
     needCaptchaAndNextStep(): Observable<unknown> {
         // Si pas de captcha ou que le flag isCpatchaNeeded a déjà été positionné, alors on passe directement à la vérification du captcha
-        return (!this.enableCaptchaOnPage || this.isCaptchaNeeded) ? this.validateCaptchaAndAuthenticate() : this.accountService.mustValidateCaptcha(this.loginForm.value.login).pipe(
+        return (!this.enableCaptchaOnPage || this.isCaptchaNeeded) ? this.validateCaptchaAndAuthenticate() :
+        this.accountService.mustValidateCaptcha(this.loginForm.value.login).pipe(
             switchMap((isCaptchaNeeded: boolean) => {
                 this.isCaptchaNeeded = isCaptchaNeeded;
                 if (!isCaptchaNeeded) {

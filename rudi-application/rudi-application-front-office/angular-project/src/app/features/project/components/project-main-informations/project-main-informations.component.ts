@@ -173,7 +173,8 @@ export class ProjectMainInformationsComponent implements OnInit {
         // On détermine l'action de mise à jour à faire si on update le projet
         if (this.projectImageSaved == null && image) {
             this.updateImageAction = UpdateAction.AJOUT;
-        } // Si l'utillisateur saisit une image et qu'il y'en avait déjà une avant ET si leurs tailles sont différentes
+        }
+            // Si l'utillisateur saisit une image et qu'il y'en avait déjà une avant ET si leurs tailles sont différentes
         // Comparaison de blob nécessite fileReader qui bloque le Thread
         else if (this.projectImageSaved && image && this.projectImageSaved.size !== image.size) {
             this.updateImageAction = UpdateAction.MISE_A_JOUR;

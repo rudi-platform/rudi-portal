@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {HtmlService} from '@core/services/html/html.service';
+import {ExternalAccountRequestTaskMetierService} from '@core/services/tasks/acl/external-account-request-task-metier.service';
 import {ProjectTaskMetierService} from '@core/services/tasks/projekt/project-task-metier.service';
 import {SelfdataInformationRequestTaskMetierService} from '@core/services/tasks/selfdata/selfdata-information-request-task-metier.service';
 import {OrganizationTaskMetierService} from '@core/services/tasks/strukture/organization/organization-task-metier.service';
@@ -28,6 +29,7 @@ export class MyTasksHistoriesTabComponent implements OnInit {
     projectTasksHistories: ProcessHistoricInformation[];
     selfdataTasksHistories: ProcessHistoricInformation[];
     newDatasetRequestTasksHistories: ProcessHistoricInformation[];
+    externalAccountRequestTasksHistories: ProcessHistoricInformation[];
 
     organizationTasksIcon = 'organizationTasksIcon';
     linkedProducerTasksIcon = 'linkedProducerTasksIcon';
@@ -35,10 +37,12 @@ export class MyTasksHistoriesTabComponent implements OnInit {
     projectTasksIcon = 'projectTasksIcon';
     selfdataTasksIcon = 'selfdataTasksIcon';
     newDatasetRequestTasksIcon = 'newDatasetRequestTasksIcon';
+    externalAccountRequestTasksIcon = 'externalAccountRequestTasksIcon';
 
     isStruktureLoading = false;
     isProjektLoading = false;
     isSelfdataLoading = false;
+    isAclLoading = false;
 
     hasData = false;
 
@@ -50,6 +54,7 @@ export class MyTasksHistoriesTabComponent implements OnInit {
         // Un seul suffit pour récupérer toutes les informations de son microservice
         public readonly selfdataTaskMetierService:
         SelfdataInformationRequestTaskMetierService, // Un seul suffit pour récupérer toutes les informations de son microservice
+        public readonly externalAccountRequestTaskMetierService: ExternalAccountRequestTaskMetierService,
         private readonly iconRegistry: MatIconRegistry,
         private readonly sanitizer: DomSanitizer,
         private readonly htmlService: HtmlService,
@@ -59,6 +64,7 @@ export class MyTasksHistoriesTabComponent implements OnInit {
         iconRegistry.addSvgIcon(this.projectTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/project_definition_key.svg'));
         iconRegistry.addSvgIcon(this.selfdataTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/self_data_icon_definition_key.svg'));
         iconRegistry.addSvgIcon(this.newDatasetRequestTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/nouvelles_donnees_definition_key.svg'));
+        iconRegistry.addSvgIcon(this.externalAccountRequestTasksIcon, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/process-definitions-key/external_account_request_icon.svg'));
 
     }
 
@@ -66,6 +72,7 @@ export class MyTasksHistoriesTabComponent implements OnInit {
         this.isStruktureLoading = true;
         this.isProjektLoading = true;
         this.isSelfdataLoading = true;
+        this.isAclLoading = true;
 
         this.struktureTaskMetierService.getMyHistoricInformations().subscribe({
             next: (values: ProcessHistoricInformation[]) => {
@@ -76,6 +83,9 @@ export class MyTasksHistoriesTabComponent implements OnInit {
                 this.organizationTasksHistories = values.filter(value => value.processDefinitionKey === 'organization-process');
             },
             complete: () => {
+                this.isStruktureLoading = false;
+            },
+            error: () => {
                 this.isStruktureLoading = false;
             }
         });
@@ -96,6 +106,9 @@ export class MyTasksHistoriesTabComponent implements OnInit {
             },
             complete: () => {
                 this.isProjektLoading = false;
+            },
+            error: () => {
+                this.isProjektLoading = false;
             }
         });
 
@@ -108,6 +121,25 @@ export class MyTasksHistoriesTabComponent implements OnInit {
             },
             complete: () => {
                 this.isSelfdataLoading = false;
+            },
+            error: () => {
+                this.isSelfdataLoading = false;
+            }
+        });
+
+        this.externalAccountRequestTaskMetierService.getMyHistoricInformations().subscribe({
+            next: (values: ProcessHistoricInformation[]) => {
+                if (values.length > 0) {
+                    this.hasData = true;
+                }
+                this.externalAccountRequestTasksHistories = values.filter(
+                    value => value.processDefinitionKey === 'external-account-request-process');
+            },
+            complete: () => {
+                this.isAclLoading = false;
+            },
+            error: () => {
+                this.isAclLoading = false;
             }
         });
     }

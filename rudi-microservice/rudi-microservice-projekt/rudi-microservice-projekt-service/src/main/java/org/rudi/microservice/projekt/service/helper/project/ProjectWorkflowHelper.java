@@ -20,7 +20,7 @@ import org.rudi.microservice.projekt.service.mapper.ProjectMapper;
 import org.rudi.microservice.projekt.storage.entity.project.ProjectEntity;
 import org.springframework.stereotype.Component;
 
-import static org.rudi.microservice.projekt.service.workflow.ProjektWorkflowConstants.PROJECT_DRAFT_TYPE;
+import static org.rudi.facet.bpmn.helper.workflow.WorkflowConstants.DRAFT_TYPE;
 
 /**
  * @author FNI18300
@@ -67,8 +67,8 @@ public class ProjectWorkflowHelper extends AbstactAssetDescriptionHelper<Project
 	public String getDraftType(AssetDescriptionEntity assetDescriptionEntity) throws InvalidDataException {
 		FormHelper formHelper = getFormHelper();
 		Map<String, Object> hydrate = formHelper.hydrateData(assetDescriptionEntity.getData());
-		if (hydrate.containsKey(PROJECT_DRAFT_TYPE)) {
-			return hydrate.get(PROJECT_DRAFT_TYPE).toString();
+		if (hydrate.containsKey(DRAFT_TYPE)) {
+			return hydrate.get(DRAFT_TYPE).toString();
 		}
 		return null;
 	}

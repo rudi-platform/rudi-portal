@@ -2,12 +2,13 @@
     <mat-dialog-content>
 
         <div class="dialog-cross-button">
-            <button mat-icon-button (click)="handleClose()">
-                <mat-icon svgIcon="icon-close" class="cross-button"></mat-icon>
+            <button mat-icon-button type="button" (click)="handleClose()"
+                [attr.aria-label]="'popup.close' | translate">
+                <mat-icon svgIcon="icon-close" class="cross-button" aria-hidden="true"></mat-icon>
             </button>
         </div>
         <div class="dialog-content">
-            <div class="dialog-title">{{'project.request-details-dialog.title'|translate}}</div>
+            <div class="dialog-title" mat-dialog-title>{{'project.request-details-dialog.title'|translate}}</div>
             <div class="dialog-description">{{'project.request-details-dialog.description' | translate}}</div>
             <div class="step-required-information">
                 <span class="required-symbol">*</span>
@@ -19,12 +20,16 @@
 
                 <!-- date de fin envisagée -->
                 <div class="d-flex mt-4">
-                    <mat-label class="dialog-subtitle">{{'project.request-details-dialog.date'|translate}}</mat-label>
+                    <mat-label class="dialog-subtitle" id="request-details-date-label">{{'project.request-details-dialog.date'|translate}}</mat-label>
                     <span class="required-symbol">{{'signup.etoile'|translate}}</span>
                 </div>
-                <mat-hint class="dialog-description">{{'project.request-details-dialog.dateHint'|translate}}</mat-hint>
+                <mat-hint class="dialog-description" id="request-details-date-hint">
+                    {{'project.request-details-dialog.dateHint'|translate}} {{'project.request-details-dialog.dateFormatHint'|translate}}
+                </mat-hint>
                 <div>
                     <app-month-year-datepicker [formGroup]="formGroup" controlName="date"
+                                               ariaLabelledby="request-details-date-label"
+                                               ariaDescribedby="request-details-date-hint"
                                                [errorMessage]="'project.request-details-dialog.dateError' | translate"
                                                [startDate]="startDate">
                     </app-month-year-datepicker>
@@ -32,13 +37,15 @@
 
                 <!-- comment -->
                 <div class="d-flex">
-                    <mat-label
+                    <mat-label id="request-details-comment-label"
                         class="dialog-subtitle">{{'project.request-details-dialog.comment'|translate}}</mat-label>
                 </div>
-                <mat-hint
+                <mat-hint id="request-details-comment-hint"
                     class="dialog-description">{{'project.request-details-dialog.commentHint'|translate}}</mat-hint>
                 <mat-form-field appearance="outline">
-                    <textarea formControlName="comment" matInput rows="15" [maxLength]="commentMaxLength"></textarea>
+                    <textarea formControlName="comment" matInput rows="15" [maxLength]="commentMaxLength"
+                        aria-labelledby="request-details-comment-label"
+                        aria-describedby="request-details-comment-hint"></textarea>
                 </mat-form-field>
 
             </form>

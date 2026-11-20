@@ -210,7 +210,7 @@ public class AdminServiceImpl implements AdminService {
 			searchDatasetInfoElements = datasetOperationAPI.searchDataset(searchParams);
 		} catch (DataverseAPIException e) {
 			log.error("Failed to fetch page with offset=" + offset);
-			throw new RuntimeException(e);
+			throw new FetchFailException(e);
 		}
 		return searchDatasetInfoElements;
 	}
@@ -218,6 +218,7 @@ public class AdminServiceImpl implements AdminService {
 	/**
 	 * Corriger les champs, si nécessaire, pour permettre la sauvegarde de la ressource précédemment réparée
 	 */
+	@SuppressWarnings("java:S2583") // Bien qu'il y ait des @NotNull auto générés, on ne peut pas garantir qu'ils soient toujours respectés dans ce contexte
 	private DatasetVersion makeResourceUpdatable(DatasetVersion repairedDatasetVersion, String persistentId)
 			throws DataverseMappingException {
 
@@ -291,7 +292,7 @@ public class AdminServiceImpl implements AdminService {
 			return Mono.just(datasetService.searchDatasets(datasetSearchCriteria, facets));
 		} catch (DataverseAPIException e) {
 			log.error("Cannot fetch Datasets at offset {}", offset, e);
-			throw new RuntimeException(e);
+			throw new FetchFailException(e);
 		}
 	}
 

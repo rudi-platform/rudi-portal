@@ -32,11 +32,6 @@ mat-error {
     color: var(--error-color);
 }
 
-*:focus-visible {
-    // on ne veut pas les rectangles bleu sur focus du champ input
-    outline: none;
-}
-
 // Customization Angular Material
 ::ng-deep {
 

@@ -23,7 +23,7 @@ import {CloseEvent} from '@features/data-set/models/dialog-closed-data';
 import {
     OrganizationFormDialogComponent
 } from '@features/personal-space/components/organization-form-dialog/organization-form-dialog.component';
-import {TranslateDirective, TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {LoaderComponent} from '@shared/core/common/loader/loader.component';
 import {Level} from '@shared/core/layout/notification-template/notification-template.component';
 import {WorkflowFormDialogComponent} from '@shared/core/workflow/forms/workflow-form-dialog/workflow-form-dialog.component';
@@ -46,7 +46,7 @@ import {switchMap} from 'rxjs/operators';
     selector: 'app-organization-table',
     templateUrl: './organization-table.component.html',
     styleUrls: ['./organization-table.component.scss'],
-    imports: [TranslateDirective, LoaderComponent, MatTable, MatColumnDef,
+    imports: [LoaderComponent, MatTable, MatColumnDef,
         MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatMiniFabButton,
         MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, TranslatePipe]
 })
@@ -55,6 +55,7 @@ export class OrganizationTableComponent implements OnInit {
     @Input() organization: Organization;
     @Input() enableCaptchaOnPage: boolean;
     private urlToRedirectIfError: string;
+    private pendingMenuAction: (() => void) | null = null;
 
     public form: Form;
     public modificationForm: Form;
@@ -91,6 +92,20 @@ export class OrganizationTableComponent implements OnInit {
             this.getArchiveForm();
             this.getModificationForm();
         }
+    }
+
+    /**
+     * mat-menu gives focus back to its trigger when it closes, which would pull focus out of
+     * a dialog opened from a menu item: the action is run once the menu is closed (RGAA 12.8).
+     */
+    deferMenuAction(action: 'archive' | 'modify'): void {
+        this.pendingMenuAction = action === 'archive' ? () => this.openPopinArchive() : () => this.openPopinModification();
+    }
+
+    runPendingMenuAction(): void {
+        const action = this.pendingMenuAction;
+        this.pendingMenuAction = null;
+        action?.();
     }
 
     getArchiveForm() {

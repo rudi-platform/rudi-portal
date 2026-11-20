@@ -32,7 +32,7 @@ public class TemplateCustomDaoImpl extends AbstractCustomDaoImpl<TemplateEntity,
 
 	@Override
 	protected void addPredicates(TemplateSearchCriteria searchCriteria, CriteriaBuilder builder, CriteriaQuery<?> criteriaQuery, Root<TemplateEntity> root, List<Predicate> predicates) {
-		// TODO ajouter les critères du TemplateSearchCriteria via les méthodes predicate...Criteria(...)
+		// ajouter les critères du TemplateSearchCriteria si nécessaire
 	}
 
 }

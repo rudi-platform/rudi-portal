@@ -12,9 +12,9 @@ import org.rudi.microservice.selfdata.core.bean.GenericDataObject;
 import org.rudi.microservice.selfdata.core.bean.MatchingData;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataDatasetList;
 import org.rudi.microservice.selfdata.core.bean.PagedSelfdataInformationRequestList;
-import org.rudi.microservice.selfdata.core.bean.SelfdataDatasetSearchCriteria;
 import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequest;
-import org.rudi.microservice.selfdata.core.bean.SelfdataInformationRequestSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataDatasetSearchCriteria;
+import org.rudi.microservice.selfdata.core.bean.criteria.SelfdataInformationRequestSearchCriteria;
 import org.springframework.data.domain.Pageable;
 
 /**

@@ -26,7 +26,6 @@ public interface TemplateMapper extends AbstractMapper<TemplateEntity, Template>
 	 */
 	@Override
 	@Mapping(target = "childEntity", ignore = true)
-	// TODO ignorer les vraies entités filles (cf Javadoc ci-dessus)
 	void dtoToEntity(Template dto, @MappingTarget TemplateEntity entity);
 
 	/**

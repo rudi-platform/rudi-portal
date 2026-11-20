@@ -23,6 +23,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 		"org.rudi.facet.bpmn.bean",
 		"org.rudi.facet.bpmn.config",
 		"org.rudi.facet.bpmn.dao",
+		"org.rudi.facet.bpmn.datafactory",
 		"org.rudi.facet.bpmn.entity",
 		"org.rudi.facet.bpmn.exception",
 		"org.rudi.facet.bpmn.helper",

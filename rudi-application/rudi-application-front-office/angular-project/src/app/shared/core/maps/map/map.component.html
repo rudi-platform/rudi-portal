@@ -14,20 +14,24 @@
       </div>
     }
     <div class="vertical-action-buttons">
-      <button mat-button class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickZoomIn()">
-        <mat-icon>add</mat-icon>
+      <button mat-button type="button" class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickZoomIn()"
+        [attr.aria-label]="'metaData.mapDataTab.zoomIn' | translate">
+        <mat-icon aria-hidden="true" fontIcon="add"></mat-icon>
       </button>
-      <button mat-button class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickCentrage()">
-        <mat-icon>home</mat-icon>
+      <button mat-button type="button" class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickCentrage()"
+        [attr.aria-label]="'metaData.mapDataTab.recenter' | translate">
+        <mat-icon aria-hidden="true" fontIcon="home"></mat-icon>
       </button>
-      <button mat-button class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickZoomOut()">
-        <mat-icon>remove</mat-icon>
+      <button mat-button type="button" class="rudi-btn-map mat-stroked-button no-outline-focus" (click)="handleClickZoomOut()"
+        [attr.aria-label]="'metaData.mapDataTab.zoomOut' | translate">
+        <mat-icon aria-hidden="true" fontIcon="remove"></mat-icon>
       </button>
       @if (baseLayers != null && baseLayers.length > 1) {
-        <button mat-button class="rudi-btn-map mat-stroked-button no-outline-focus"
+        <button mat-button type="button" class="rudi-btn-map mat-stroked-button no-outline-focus"
           [matMenuTriggerFor]="layerMenu"
+          [attr.aria-label]="'metaData.mapDataTab.baseLayers' | translate"
           >
-          <mat-icon svgIcon="map"></mat-icon>
+          <mat-icon aria-hidden="true" svgIcon="map"></mat-icon>
         </button>
         <mat-menu #layerMenu>
           @for (baseLayer of baseLayers; track baseLayer) {

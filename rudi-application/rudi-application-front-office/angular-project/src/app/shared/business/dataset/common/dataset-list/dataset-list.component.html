@@ -2,23 +2,25 @@
 [active]="isLoading"></app-loader>
 @if (!isLoading) {
   <ng-container class="dataset-list">
-    <div [ngClass]="{'data-set-container-sm': mediaSize.isXs || mediaSize.isSm || mediaSize.isMd, 'data-set-container-lg':  mediaSize.isLg,
+    <ul class="list-unstyled mb-0" [ngClass]="{'data-set-container-sm': mediaSize.isXs || mediaSize.isSm || mediaSize.isMd, 'data-set-container-lg':  mediaSize.isLg,
         'data-set-container-xl': mediaSize.isXl, 'data-set-container-xxl': mediaSize.isXxl}">
       @for (metadata of metadataListItems | paginate: {
         itemsPerPage: limit,
         currentPage: page,
         totalItems: metadataList.total
         }; track metadata) {
-        <div>
+        <li>
           <app-data-set-card
             [metadata]="metadata"
+            [titleLevel]="cardTitleLevel"
             [isSelectable]="isSelectable"
-            (selectMetadata)="selectMetadata.emit($event)"
+            [isSelected]="isSelectable && metadata.global_id === selectedMetadataId"
+            (selectMetadata)="onSelectMetadata($event)"
             (dbSelectMetadata)="dbSelectMetadata.emit($event)"
           ></app-data-set-card>
-        </div>
+        </li>
       }
-    </div>
+    </ul>
     <!-- Pagination des jdd -->
     @if (metadataList?.total > limit) {
       <pagination-controls
@@ -27,7 +29,8 @@
         class="d-flex justify-content-center mt-4"
         [ngClass]="paginationControlsNgClass"
         [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
-        [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate">
+        [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate"
+        [screenReaderCurrentLabel]="'paginator.CURRENT_PAGE_LABEL' | translate">
       </pagination-controls>
     }
   </ng-container>

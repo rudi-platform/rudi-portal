@@ -2,3 +2,13 @@
     display: flex;
     justify-content: flex-end;
 }
+
+// Native button reset to keep the original icon-only rendering
+.close-button {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}

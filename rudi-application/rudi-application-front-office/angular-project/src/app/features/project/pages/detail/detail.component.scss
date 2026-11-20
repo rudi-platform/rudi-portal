@@ -25,8 +25,15 @@
     padding-top: 115px;
     height: calc(100% - 170px);
 
-    .bandeau-icon-libelle {
-        display: none;
+    // Tablist wrapper must not change the toolbar flex layout
+    .tab-list {
+        display: contents;
+    }
+
+    // Same text metrics as the organization tab, which is not inside a mat-toolbar
+    .bandeau-card app-tab {
+        line-height: 20px;
+        white-space: normal;
     }
 
     .project-card {
@@ -39,6 +46,14 @@
         font-weight: 600;
         font-style: normal;
         font-stretch: normal;
+    }
+
+    .card-project-type-title .card-label {
+        // h2: keep the rendering of the former inline label
+        font-family: inherit;
+        letter-spacing: inherit;
+        line-height: inherit;
+        margin: 0;
     }
 
     .bandeau {
@@ -134,8 +149,4 @@
 
     }
 
-    .button-info {
-        background-color: var(--primary-color);
-        color: var(--banner-solid-color);
-    }
 }

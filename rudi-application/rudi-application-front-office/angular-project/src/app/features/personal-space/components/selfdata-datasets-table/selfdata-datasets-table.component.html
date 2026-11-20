@@ -2,8 +2,7 @@
   [searchIsRunning]="searchIsRunning"
   [count]="total"
   [noResultMessage]="'personalSpace.selfdataDatasets.noResult' | translate"
-  [resultMessage]="'personalSpace.selfdataDatasets.resultText'"
-  [hasLink]="false">
+  [resultMessage]="'personalSpace.selfdataDatasets.resultText'">
 </app-search-count>
 <app-loader [active]="searchIsRunning" [allPage]="true" [isLight]="true" [noText]="true"></app-loader>
 <div [hidden]="!(selfdataDatasetList?.length)">
@@ -14,16 +13,19 @@
     <table mat-table
       [dataSource]='selfdataDatasetList | paginate: { itemsPerPage: itemsperpage, currentPage: page, totalItems: total}'
       matSort matSortActive="updatedDate" matSortDirection="desc" (matSortChange)="sortTable($event)">
-      <caption><!-- le tableau --> </caption>
+      <caption class="visually-hidden">{{ total }} {{ 'personalSpace.selfdataDatasets.resultText' | translate }}</caption>
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+        [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.selfdataDatasets.data' | translate)}"
         scope="col">{{'personalSpace.selfdataDatasets.data'|translate}}</th>
-        <td mat-cell *matCellDef="let selfdataDataset"
-        class="dataset-title"> {{selfdataDataset.title | replaceIfNullPipe}} </td>
+        <td mat-cell *matCellDef="let selfdataDataset" class="dataset-title">
+          <a class="row-link" [routerLink]="['..', 'selfdata-dataset-details', selfdataDataset.dataset_uuid]">{{selfdataDataset.title | replaceIfNullPipe}}</a>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="processDefinitionKey">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+        [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.selfdataDatasets.lastDemand' | translate)}"
         scope="col">{{'personalSpace.selfdataDatasets.lastDemand'|translate}}</th>
 
         <td mat-cell *matCellDef="let selfdataDataset">
@@ -39,6 +41,7 @@
 
       <ng-container matColumnDef="updatedDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+        [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.selfdataDatasets.date' | translate)}"
         scope="col">{{'personalSpace.selfdataDatasets.date'|translate}}</th>
         <td mat-cell
         *matCellDef="let selfdataDataset"> {{selfdataDataset.updated_date | date: 'dd/MM/yyyy' | replaceIfNullPipe}} </td>
@@ -46,6 +49,7 @@
 
       <ng-container matColumnDef="functionalStatus">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+        [sortActionDescription]="'common.sortBy' | translate: {column: ('personalSpace.selfdataDatasets.status' | translate)}"
         scope="col">{{'personalSpace.selfdataDatasets.status'|translate}}</th>
         <td mat-cell *matCellDef="let selfdataDataset"><span
         [ngClass]="{'status-chip': isStatusDefined(selfdataDataset)}">{{selfdataDataset.functional_status | replaceIfNullPipe}}</span>
@@ -53,9 +57,7 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let selfdataDataset; columns: displayedColumns;"
-      [routerLink]="['..', 'selfdata-dataset-details', selfdataDataset.dataset_uuid]">
-    </tr>
+    <tr mat-row *matRowDef="let selfdataDataset; columns: displayedColumns;"></tr>
 
   </table>
   <!-- le loader du tableau -->

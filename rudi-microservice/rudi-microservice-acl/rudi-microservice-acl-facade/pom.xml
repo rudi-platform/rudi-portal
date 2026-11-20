@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.rudi</groupId>
 		<artifactId>rudi-microservice-acl</artifactId>
-		<version>3.4.2</version>
+		<version>3.5.1</version>
 	</parent>
 
 	<artifactId>rudi-microservice-acl-facade</artifactId>
@@ -81,7 +81,7 @@
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
 		</dependency>
-		
+
 
 		<!-- Server Web -->
 		<dependency>
@@ -163,7 +163,7 @@
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-support-springboot</artifactId>
@@ -191,6 +191,15 @@
 				<artifactId>openapi-generator-maven-plugin</artifactId>
 				<configuration>
 					<modelPackage>org.rudi.microservice.acl.core.bean</modelPackage>
+					<schemaMappings>
+						ProcessDefinition=org.rudi.bpmn.core.bean.ProcessDefinition,
+						Status=org.rudi.bpmn.core.bean.Status,
+						Form=org.rudi.bpmn.core.bean.Form,
+						AssetDescription=org.rudi.bpmn.core.bean.AssetDescription,
+						Task=org.rudi.bpmn.core.bean.Task,
+						ProcessHistoricInformation=org.rudi.bpmn.core.bean.ProcessHistoricInformation,
+						HistoricInformation=org.rudi.bpmn.core.bean.HistoricInformation
+					</schemaMappings>
 					<generatorName>spring</generatorName>
 					<library>spring-boot</library>
 					<generateModelTests>false</generateModelTests>

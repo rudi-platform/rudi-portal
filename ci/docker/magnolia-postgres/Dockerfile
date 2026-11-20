@@ -1,4 +1,4 @@
-FROM postgres:10.15
+FROM postgres:15.20-bookworm
 USER root
 
 #COPY magnolia-dump.sql /docker-entrypoint-initdb.d

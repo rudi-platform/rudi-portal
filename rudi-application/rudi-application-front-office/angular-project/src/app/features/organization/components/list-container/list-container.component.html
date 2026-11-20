@@ -1,48 +1,53 @@
 <div class="container-fluid">
+  <!--Composant de recherche libre-->
+  <app-search-box
+    [mediaSize]="mediaSize"
+    [libelle]="'searchbox.rechercherOrganisation'"
+    (searchTermsEmitter)="onChangesSearchTerms($event)"
+    class="d-flex justify-content-center w-100">
+  </app-search-box>
+
   @if (mediaSize.isLg || mediaSize.isXl || mediaSize.isXxl) {
     <mat-toolbar
       class="rudi-filters-toolbar">
     </mat-toolbar>
   }
 
-  @if (organizations$ | async; as organizations) {
-    <div class="d-flex py-3 justify-content-between">
-      <!--Nombre de résultats-->
-      <div class=" w-50 search-count">
-        @if (totalOrganizations$ | async; as totalOrganizations) {
-          <div>
-            @if ((totalOrganizations$ | async) > 0) {
-              <div>
-                {{totalOrganizations}} {{'searchbox.results'|translate}}{{totalOrganizations > 1 ? 's' : ''}}
-              </div>
-            }
-            @if ((totalOrganizations$ | async) == 0) {
-              <div>
-                {{'searchbox.noResult' | translate}}
-              </div>
-            }
-          </div>
-        }
-        @if (isLoadingCatalogue$ | async; as isLoading) {
-          <div>
-            {{'searchbox.searchIsRunning'|translate}}
-          </div>
-        }
-      </div>
-      @if (mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl) {
-        <app-organization-order
-          (orderChangeEvent)="onOrderChange($event)">
-        </app-organization-order>
+  <div class="d-flex py-3 justify-content-between">
+    <!--Nombre de résultats-->
+    <output #resultsCount tabindex="-1" class=" w-50 search-count" aria-live="polite">
+      @if (displayedTotal === 0) {
+        <div>
+          {{'searchbox.noResult' | translate}}
+        </div>
+      } @else if (displayedTotal) {
+        <div>
+          {{ displayedTotal }} {{'searchbox.results'|translate}}{{ displayedTotal > 1 ? 's' : '' }}
+          @if (searchedTerm) {
+            {{ 'searchbox.resultsFor' | translate: resultsForParams }}
+          }
+        </div>
       }
-    </div>
-    <app-list-organization-card
-      [organizations]="organizations"
-      [itemsPerPage]="itemsPerPage"
-      [totalItems]="totalOrganizations$ | async"
-      [currentPage]="currentPage$ | async"
-      [datasetCountLoading]="datasetCountLoading$ | async"
-      [projectCountLoading]="projectCountLoading$ | async"
-      (pageChangeEvent)="onPageChange($event)"
-    ></app-list-organization-card>
+    </output>
+    @if (mediaSize.isXl || mediaSize.isLg || mediaSize.isXxl) {
+      <app-organization-order
+        (orderChangeEvent)="onOrderChange($event)">
+      </app-organization-order>
+    }
+  </div>
+  @if (organizations$ | async; as organizations) {
+    <app-loader [allPage]="false" [isTransparent]="true" [noText]="true"
+      [active]="isLoading"></app-loader>
+    @if (!isLoading) {
+      <app-list-organization-card
+        [organizations]="organizations"
+        [itemsPerPage]="itemsPerPage"
+        [totalItems]="totalOrganizations$ | async"
+        [currentPage]="currentPage$ | async"
+        [datasetCountLoading]="datasetCountLoading$ | async"
+        [projectCountLoading]="projectCountLoading$ | async"
+        (pageChangeEvent)="onPageChange($event)"
+      ></app-list-organization-card>
+    }
   }
 </div>

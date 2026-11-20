@@ -1,21 +1,24 @@
 package org.rudi.microservice.projekt.storage.dao.linkeddataset.impl;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_CONFIDENTIALITY_FIELD;
-import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_ORGANIZATION_UUID_FIELD;
-import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_UUID_FIELD;
-import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.END_DATE_FIELD;
-import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.STATUS_FIELD;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.apache.commons.collections.CollectionUtils;
 import org.rudi.common.storage.dao.AbstractCustomDaoImpl;
 import org.rudi.common.storage.dao.PredicateListBuilder;
-import org.rudi.microservice.projekt.core.bean.LinkedDatasetSearchCriteria;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.projekt.core.bean.criteria.LinkedDatasetSearchCriteria;
 import org.rudi.microservice.projekt.storage.dao.linkeddataset.LinkedDatasetCustomDao;
 import org.rudi.microservice.projekt.storage.entity.DatasetConfidentiality;
 import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
@@ -29,15 +32,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_CONFIDENTIALITY_FIELD;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_ORGANIZATION_UUID_FIELD;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.DATASET_UUID_FIELD;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.END_DATE_FIELD;
+import static org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity.STATUS_FIELD;
 
 @Repository
 public class LinkedDatasetCustomDaoImpl extends AbstractCustomDaoImpl<LinkedDatasetEntity, LinkedDatasetSearchCriteria>
@@ -201,6 +201,9 @@ public class LinkedDatasetCustomDaoImpl extends AbstractCustomDaoImpl<LinkedData
 		if (CollectionUtils.isNotEmpty(searchCriteria.getDatasetOwnerUuids())) {
 			predicates.add(root.get(DATASET_ORGANIZATION_UUID_FIELD).in(searchCriteria.getDatasetOwnerUuids()));
 		}
+
+		predicateStringCriteria(searchCriteria.getInitiator(), AbstractAssetDescriptionEntity.FIELD_INITIATOR, false,
+				false, predicates, builder, root);
 	}
 
 	private Long getTotalLinkedDatasetRelatedToAuthenticatedUser(LinkedDatasetSearchCriteria searchCriteria) {
@@ -216,4 +219,5 @@ public class LinkedDatasetCustomDaoImpl extends AbstractCustomDaoImpl<LinkedData
 		return entityManager.createQuery(countQuery).getSingleResult();
 
 	}
+
 }

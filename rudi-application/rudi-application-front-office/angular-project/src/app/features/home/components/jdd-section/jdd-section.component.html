@@ -19,10 +19,10 @@
         [loop]="true"
         [slidesPerView]="1"
         [spaceBetween]="10"
-        [rowsPerView]="jdds.length > 1 ? 2 : 1"
+        [ariaLabel]="'home.jddSection.title' | translate"
         >
-        @for (item of jdds; track item) {
-          <div>
+        @for (item of jdds; track item; let i = $index) {
+          <div role="group" aria-roledescription="diapositive" [attr.aria-label]="'common.slidePosition' | translate: { label: item?.resource_title ?? '', index: i + 1, total: jdds.length }">
             <ng-container *ngTemplateOutlet="jddItemTemplate; context: {item: item}"></ng-container>
           </div>
         }
@@ -31,9 +31,9 @@
   }
 
   <div class="text-center">
-    <button class="button-redirect" [routerLink]="'/catalogue'">
+    <a class="button-redirect" routerLink="/catalogue">
       <span>{{ 'home.jddSection.seeMore' | translate }}</span>
-    </button>
+    </a>
   </div>
 </div>
 
@@ -42,7 +42,6 @@
     <app-dataset-infos
       class="dataset-card-infos"
       [showLogo]="true"
-      [goToDetails]="true"
       [organizationName]="item?.producer.organization_name"
       [organizationId]="item?.producer.organization_id"
       [isRestricted]="item?.access_condition?.confidentiality?.restricted_access"

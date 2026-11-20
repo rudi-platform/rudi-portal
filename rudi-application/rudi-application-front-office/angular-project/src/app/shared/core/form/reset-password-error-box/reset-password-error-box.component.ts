@@ -1,7 +1,7 @@
 import {NgClass} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {TranslatePipe} from '@ngx-translate/core';
 
@@ -9,7 +9,7 @@ import {TranslatePipe} from '@ngx-translate/core';
     selector: 'app-reset-password-error-box',
     templateUrl: './reset-password-error-box.component.html',
     styleUrls: ['./reset-password-error-box.component.scss'],
-    imports: [NgClass, TranslatePipe]
+    imports: [NgClass, RouterLink, TranslatePipe]
 })
 export class ResetPasswordErrorBoxComponent implements OnInit {
     /**
@@ -18,7 +18,6 @@ export class ResetPasswordErrorBoxComponent implements OnInit {
     mediaSize: MediaSize;
 
     constructor(@Inject(MAT_SNACK_BAR_DATA) public data,
-                private readonly router: Router,
                 private readonly breakpointObserver: BreakpointObserverService,
                 public readonly snackBarRef: MatSnackBarRef<ResetPasswordErrorBoxComponent>) {
     }
@@ -26,13 +25,6 @@ export class ResetPasswordErrorBoxComponent implements OnInit {
     ngOnInit(): void {
         // On récupère les infos sur la restitution
         this.mediaSize = this.breakpointObserver.getMediaSize();
-    }
-
-    /**
-     * Au clic sur le lien vers la page de reitialisation de password, le snackbar se ferme
-     */
-    goToAccountRegistration(): void {
-        this.router.navigate(['login/forgot-password']).then(() => this.snackBarRef.dismiss());
     }
 
 }

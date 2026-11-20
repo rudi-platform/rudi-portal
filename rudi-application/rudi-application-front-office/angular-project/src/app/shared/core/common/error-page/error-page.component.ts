@@ -27,7 +27,7 @@ export class ErrorPageComponent implements OnInit {
                 next: (params: Params) => {
                     const status: number = Number(params.status);
                     this.statusError = 404;
-                    if (!isNaN(status)) {
+                    if (!Number.isNaN(status)) {
                         this.statusError = status;
                         if (this.statusError < 300 || this.statusError > 599) {
                             this.statusError = 404;

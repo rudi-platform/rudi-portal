@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
 import {LogService} from '@core/services/log.service';
 import {TranslateService, TranslatePipe} from '@ngx-translate/core';
@@ -8,14 +8,14 @@ import {CmsAsset, PagedCmsAssets} from 'micro_service_modules/api-cms';
 import {CmsNewsDescription, KonsultService, NewsPageDescription} from 'micro_service_modules/konsult/konsult-api';
 import { NgClass } from '@angular/common';
 
-const DEFAULT_ORDER: string = '-publishdate';
+const DEFAULT_ORDER = '-publishdate';
 const DEFAULT_CATEGORIES: string[] = ['/rudi/news/a-la-une'];
 
-const LIMIT_TEMPLATE_WITH_IMAGE: number = 1;
-const OFFSET_TEMPLATE_WITH_IMAGE: number = 0;
+const LIMIT_TEMPLATE_WITH_IMAGE = 1;
+const OFFSET_TEMPLATE_WITH_IMAGE = 0;
 
-const LIMIT_TEMPLATE_WITHOUT_IMAGE: number = 2;
-const OFFSET_TEMPLATE_WITHOUT_IMAGE: number = 1;
+const LIMIT_TEMPLATE_WITHOUT_IMAGE = 2;
+const OFFSET_TEMPLATE_WITHOUT_IMAGE = 1;
 
 interface News {
     contentNewsWithImage: SafeHtml;
@@ -26,7 +26,7 @@ interface News {
     selector: 'app-cms-news-section',
     templateUrl: './cms-news-section.component.html',
     styleUrls: ['./cms-news-section.component.scss'],
-    imports: [NgClass, TranslatePipe]
+    imports: [NgClass, RouterLink, TranslatePipe]
 })
 export class CmsNewsSectionComponent implements OnInit {
     @Input() cmsNewsDescription: CmsNewsDescription;
@@ -94,7 +94,4 @@ export class CmsNewsSectionComponent implements OnInit {
             });
     }
 
-    redirectToNews(): void {
-        this.router.navigate([this.cmsNewsDescription.news_list_path]);
-    }
 }

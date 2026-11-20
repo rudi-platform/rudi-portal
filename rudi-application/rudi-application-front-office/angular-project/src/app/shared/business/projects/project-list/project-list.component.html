@@ -7,24 +7,24 @@
     @if (projectList && projectList.items.length > 0) {
       <div class="content"
         [ngClass]="{'mb-4': projectList?.total <= maxResultsPerPage}">
-        <div class="project-cards-container d-flex flex-wrap">
+        <ul class="project-cards-container d-flex flex-wrap list-unstyled mb-0">
           @for (project of projectListItems | paginate: {
             itemsPerPage: maxResultsPerPage,
             currentPage: page,
             totalItems: projectList.total
             }; track project) {
-            <div
+            <li
                 [ngClass]="{'project-card-container-xs': mediaSize.isXs,
                             'project-card-container-sm': mediaSize.isSm || mediaSize.isMd,
                             'project-card-container-lg':  mediaSize.isLg,
                             'project-card-container-xl': mediaSize.isXl,
                             'project-card-container-xxl': mediaSize.isXxl}"
               >
-              <app-project-card (click)="clickProject.emit(project)" [projectCatalogItem]="project">
+              <app-project-card (click)="clickProject.emit(project)" [projectCatalogItem]="project" [titleLevel]="cardTitleLevel">
               </app-project-card>
-            </div>
+            </li>
           }
-        </div>
+        </ul>
       </div>
     }
     @if (projectList?.total > maxResultsPerPage) {
@@ -34,6 +34,7 @@
         [nextLabel]="'paginator.NEXT_PAGE_LABEL' | translate"
         [ngClass]="paginationControlsNgClass"
         [previousLabel]="'paginator.PREVIOUS_PAGE_LABEL' | translate"
+        [screenReaderCurrentLabel]="'paginator.CURRENT_PAGE_LABEL' | translate"
         class="d-flex justify-content-center mt-4 pagination-font-size pagination-container">
       </pagination-controls>
     }

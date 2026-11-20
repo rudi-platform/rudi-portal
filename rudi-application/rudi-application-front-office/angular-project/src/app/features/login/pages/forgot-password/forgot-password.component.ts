@@ -7,7 +7,7 @@ import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AccountService} from '@core/services/account.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -24,7 +24,9 @@ import {map, switchMap} from 'rxjs/operators';
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.scss'],
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, TranslateDirective, FormsModule, ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError, MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent, NgClass, TranslateDirective, RouterLink, FormsModule,
+        ReactiveFormsModule, MatCard, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatError,
+        MatCardActions, MatButton, MatProgressSpinner, TranslatePipe]
 })
 export class ForgotPasswordComponent implements OnInit {
     /**

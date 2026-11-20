@@ -5,6 +5,7 @@ import {MAT_SNACK_BAR_DATA, MatSnackBarRef} from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Event, Router} from '@angular/router';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, skip, take} from 'rxjs/operators';
 
@@ -47,7 +48,7 @@ function eventUrlComparator(e1: Event, e2: Event): boolean {
     selector: 'app-notification-template',
     templateUrl: './notification-template.component.html',
     styleUrls: ['./notification-template.component.scss'],
-    imports: [MatLabel, NgClass]
+    imports: [MatLabel, NgClass, TranslatePipe]
 })
 export class NotificationTemplateComponent implements OnInit {
     /**

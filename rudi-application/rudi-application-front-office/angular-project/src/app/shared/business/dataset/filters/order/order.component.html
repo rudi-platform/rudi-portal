@@ -17,19 +17,15 @@
     @if (!selectedItems || !selectedItems.length) {
       {{'sortBox.sort'|translate|uppercase}}
     }
-    <mat-icon aria-hidden="true" iconPositionEnd class="rudi-select-arrow">
-      @if (!menuIsOpened) {
-        keyboard_arrow_down
-      }
-      @if (menuIsOpened) {
-        keyboard_arrow_up
-      }
-    </mat-icon>
+    <mat-icon aria-hidden="true" iconPositionEnd class="rudi-select-arrow"
+      [fontIcon]="menuIsOpened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"></mat-icon>
     <mat-menu #sortMenu="matMenu" class="rudi-sort-menu" xPosition="after">
       <div class="rudi-select-panel d-flex flex-column">
         @for (orderItem of items; track orderItem) {
           <button (click)="order = orderItem.value"
             [ngClass]="{selected: isSelected(orderItem)}"
+            role="menuitemradio"
+            [attr.aria-checked]="isSelected(orderItem)"
             mat-menu-item>
             {{orderItem.name}}
           </button>

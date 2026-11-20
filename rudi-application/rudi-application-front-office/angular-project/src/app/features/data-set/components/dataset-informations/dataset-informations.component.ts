@@ -1,6 +1,5 @@
 import { AsyncPipe, DatePipe, UpperCasePipe } from '@angular/common';
 import {Component, Input, SecurityContext} from '@angular/core';
-import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatDivider} from '@angular/material/divider';
 import {MatIcon} from '@angular/material/icon';
@@ -28,7 +27,7 @@ import MediaTypeEnum = Media.MediaTypeEnum;
     selector: 'app-dataset-informations',
     templateUrl: './dataset-informations.component.html',
     styleUrls: ['./dataset-informations.component.scss'],
-    imports: [LoaderComponent, MatCard, MatCardTitle, MatCardContent, MatButton, MatTooltip, MatIcon, DataSetInfosComponent, OrganizationLogoComponent, MatDivider, ContactButtonComponent, DatasetsInfosComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe]
+    imports: [LoaderComponent, MatCard, MatCardTitle, MatCardContent, MatTooltip, MatIcon, DataSetInfosComponent, OrganizationLogoComponent, MatDivider, ContactButtonComponent, DatasetsInfosComponent, AsyncPipe, UpperCasePipe, DatePipe, TranslatePipe]
 })
 export class DatasetInformationsComponent {
     @Input() mediaType = mediaType.Media.MediaTypeEnum;

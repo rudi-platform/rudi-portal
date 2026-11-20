@@ -3,13 +3,18 @@
  */
 package org.rudi.microservice.projekt.service.workflow;
 
+import org.rudi.facet.bpmn.helper.workflow.WorkflowConstants;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * @author FNI18300
  */
-public final class ProjektWorkflowConstants {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProjektWorkflowConstants extends WorkflowConstants {
 
 	public static final String PROJECT_STATUS = "projectStatus";
-	public static final String PROJECT_DRAFT_TYPE = "draftType";
 
 	public static final String TITLE = "title";
 
@@ -17,7 +22,7 @@ public final class ProjektWorkflowConstants {
 
 	public static final String DATASET_PRODUCER_UUID = "datasetProducerUuid";
 
-	public static final String DRAFT_FORM_SECTION_NAME = "project-process-draft/modified-project";
+	public static final String PROJECT_DRAFT_FORM_SECTION_NAME = "project-process-draft/modified-project";
 	public static final String PROJECT_PICTURE_SECTION_NAME = "project-process-draft/modified-project-picture";
 
 	public static final String TITLE_FIELD_NAME = "title";
@@ -32,11 +37,7 @@ public final class ProjektWorkflowConstants {
 	public static final String DESIRED_SUPPORTS_FIELD_NAME = "desiredSupports";
 	public static final String CONFIDENTIALITY_FIELD_NAME = "confidentiality";
 	public static final String ACCESS_URL_FIELD_NAME = "accessUrl";
-	public static final String PROJECT_PICTURE_FIELD_NAME = "projectPicture";
 
-	public static final String DRAFT_TYPE_FORM_ARCHIVE_VALUE = "archive";
 
-	private ProjektWorkflowConstants() {
-	}
 
 }

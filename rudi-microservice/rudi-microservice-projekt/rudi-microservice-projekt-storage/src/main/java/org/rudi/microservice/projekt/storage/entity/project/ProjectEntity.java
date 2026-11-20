@@ -6,20 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.rudi.common.storage.entity.SkosConceptCodeColumn;
-import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
-import org.rudi.microservice.projekt.core.common.SchemaConstants;
-import org.rudi.microservice.projekt.storage.entity.ConfidentialityEntity;
-import org.rudi.microservice.projekt.storage.entity.OwnerType;
-import org.rudi.microservice.projekt.storage.entity.ProjectTypeEntity;
-import org.rudi.microservice.projekt.storage.entity.ReutilisationStatusEntity;
-import org.rudi.microservice.projekt.storage.entity.SupportEntity;
-import org.rudi.microservice.projekt.storage.entity.TargetAudienceEntity;
-import org.rudi.microservice.projekt.storage.entity.TerritorialScaleEntity;
-import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
-import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
-import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -34,6 +20,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import org.rudi.common.storage.entity.SkosConceptCodeColumn;
+import org.rudi.facet.bpmn.entity.workflow.AbstractAssetDescriptionEntity;
+import org.rudi.microservice.projekt.core.common.SchemaConstants;
+import org.rudi.microservice.projekt.storage.entity.ConfidentialityEntity;
+import org.rudi.microservice.projekt.storage.entity.OwnerType;
+import org.rudi.microservice.projekt.storage.entity.ProjectTypeEntity;
+import org.rudi.microservice.projekt.storage.entity.ReutilisationStatusEntity;
+import org.rudi.microservice.projekt.storage.entity.SupportEntity;
+import org.rudi.microservice.projekt.storage.entity.TargetAudienceEntity;
+import org.rudi.microservice.projekt.storage.entity.TerritorialScaleEntity;
+import org.rudi.microservice.projekt.storage.entity.linkeddataset.LinkedDatasetEntity;
+import org.rudi.microservice.projekt.storage.entity.newdatasetrequest.NewDatasetRequestEntity;
+import org.rudi.microservice.projekt.storage.entity.relatedorganization.RelatedOrganizationEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -50,6 +50,8 @@ public class ProjectEntity extends AbstractAssetDescriptionEntity {
 
 	private static final long serialVersionUID = -6508639499690690560L;
 	public static final String FIELD_OWNER_UUID = "ownerUuid";
+	public static final String FIELD_TITLE = "title";
+	public static final String FIELD_DESCRIPTION = "description";
 	public static final String FIELD_DATASET_REQUESTS = "datasetRequests";
 	public static final String FIELD_LINKED_DATASET = "linkedDatasets";
 	public static final String FIELD_RELATED_ORGANIZATION = "relatedOrganizations";

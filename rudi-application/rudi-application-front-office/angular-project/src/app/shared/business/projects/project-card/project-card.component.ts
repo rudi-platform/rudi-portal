@@ -1,4 +1,4 @@
-import {NgClass} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatCard, MatCardContent, MatCardImage} from '@angular/material/card';
 import {RouterLink} from '@angular/router';
@@ -8,16 +8,23 @@ import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {HtmlService} from '@core/services/html/html.service';
 import {Base64EncodedLogo} from '@core/services/image-logo.service';
 import {ProjectCatalogItem} from '@features/project/model/project-catalog-item';
+import {TruncatedTextComponent} from '@shared/core/common/truncated-text/truncated-text.component';
+import {StretchedLinkClickDirective} from '@shared/utils/directives/stretched-link-click-directive/stretched-link-click.directive';
 
 @Component({
     selector: 'app-project-card',
     templateUrl: './project-card.component.html',
     styleUrls: ['./project-card.component.scss'],
-    imports: [MatCard, NgClass, MatCardImage, MatCardContent, RouterLink]
+    standalone: true,
+    imports: [
+        MatCard, NgClass, NgTemplateOutlet, MatCardImage, MatCardContent, RouterLink, TruncatedTextComponent, StretchedLinkClickDirective
+    ]
 })
 export class ProjectCardComponent implements OnInit {
     @Input() projectCatalogItem: ProjectCatalogItem;
     @Input() mediaSize: MediaSize;
+    /** Heading level of the card title, depending on the page outline */
+    @Input() titleLevel: 2 | 3 = 2;
     defaultLogo: Base64EncodedLogo;
 
     constructor(

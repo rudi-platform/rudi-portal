@@ -3,11 +3,10 @@ package org.rudi.microservice.projekt.service.notifications.impl;
 import java.util.List;
 import java.util.UUID;
 
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskQuery;
-import org.apache.commons.collections4.CollectionUtils;
 import org.rudi.facet.acl.helper.ACLHelper;
+import org.rudi.facet.bpmn.exception.FormDefinitionException;
+import org.rudi.facet.bpmn.exception.InvalidDataException;
+import org.rudi.facet.bpmn.helper.AssetDescriptionAnonymizeUserProcessor;
 import org.rudi.facet.bpmn.helper.workflow.BpmnHelper;
 import org.rudi.microservice.projekt.service.notifications.NotifyService;
 import org.rudi.microservice.projekt.service.workflow.LinkedDatasetTaskServiceImpl;
@@ -21,53 +20,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotifyServiceImpl implements NotifyService {
 
-	private final ProcessEngine processEngine;
 	private final BpmnHelper bpmnHelper;
 	private final ACLHelper aclHelper;
-
-	// chercher les tasks de type LD via processEngine
-	private List<Task> getTasks() {
-		org.activiti.engine.TaskService taskService = processEngine.getTaskService();
-		TaskQuery taskQuery = taskService.createTaskQuery();
-		// Type de tasks à chercher
-		taskQuery.processDefinitionKey(LinkedDatasetTaskServiceImpl.PROCESS_DEFINITION_ID);
-		return taskQuery.list();
-	}
+	private final List<AssetDescriptionAnonymizeUserProcessor> assetDescriptionAnonymizeUserProcessors;
 
 	@Override
 	public void handleAddOrganizationMember(UUID organizationUuid, UUID userUUid) {
 		String login = aclHelper.getUserByUUID(userUUid).getLogin();
-		List<Task> tasks = getTasks();
-		if (CollectionUtils.isNotEmpty(tasks)) {
-			for (Task task : tasks) {
-				// Calcule et retourne la nouvelle liste des candidats éligibles
-				List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task, true);
-				// Si notre user en fait partie, alors on l'ajoute vraiment à la task
-				// && S'assurer que la task n'était pas déjà affectée à l'utilisateur
-				if (CollectionUtils.isNotEmpty(potentialsUsers) && potentialsUsers.contains(login)
-						&& !bpmnHelper.isCandidateUser(task.getId(), login)) {
-					bpmnHelper.addTaskCandidateUser(task.getId(), login);
-				}
-			}
-		}
+		bpmnHelper.recomputeAndAddCandidate(login, LinkedDatasetTaskServiceImpl.PROCESS_DEFINITION_ID);
 	}
 
 	@Override
 	public void handleRemoveOrganizationMember(UUID organizationUuid, UUID userUUid) {
 		String login = aclHelper.getUserByUUID(userUUid).getLogin();
-		List<Task> tasks = getTasks();
-		if (CollectionUtils.isNotEmpty(tasks)) {
-			for (Task task : tasks) {
-				// Vérifier que notre user faisait partie des users auxquels la task était affectée
-				if (bpmnHelper.isCandidateUser(task.getId(), login)) {
-					// Calcule et retourne la nouvelle liste des candidats éligibles
-					List<String> potentialsUsers = bpmnHelper.recomputeCandidateUsers(task, true);
-					// Si le user ne fait plus partie de la liste recalculée, alors on le supp oui
-					if (CollectionUtils.isNotEmpty(potentialsUsers) && !potentialsUsers.contains(login)) {
-						bpmnHelper.removeTaskCandidateUser(task.getId(), login);
-					}
-				}
-			}
+		bpmnHelper.recomputeAndRemoveCandidate(login, LinkedDatasetTaskServiceImpl.PROCESS_DEFINITION_ID);
+	}
+
+	@Override
+	@Transactional
+	public void handleUserTasks(String login, UUID userUuid) throws FormDefinitionException, InvalidDataException {
+		for(AssetDescriptionAnonymizeUserProcessor processor : assetDescriptionAnonymizeUserProcessors) {
+			processor.process(login, userUuid);
 		}
 	}
 }

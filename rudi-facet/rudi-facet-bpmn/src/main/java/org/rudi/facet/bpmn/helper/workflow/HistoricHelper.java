@@ -63,6 +63,8 @@ public class HistoricHelper {
 
 	public static final String ACTION_VARIABLE_NAME = "action";
 
+	public static final String UNKNOWN_USER_LABEL = "Utilisateur Inconnu";
+
 	public static final List<String> ACTIVITI_TYPES = List.of(USER_TASK_TYPE, START_EVENT_TYPE, END_EVENT_TYPE);
 
 	private final ProcessEngine processEngine;
@@ -485,19 +487,24 @@ public class HistoricHelper {
 
 	public String convertAssignee(Map<String, String> userNames, String assignee) {
 		if (!userNames.containsKey(assignee)) {
-			try {
-				User user = aclHelper.getUserByLogin(assignee);
-				if (user != null && (StringUtils.isNotEmpty(user.getFirstname())
-						|| StringUtils.isNotEmpty(user.getLastname()))) {
-					userNames.put(assignee, convertAssignee(user));
-				} else {
-					userNames.put(assignee, assignee);
-				}
-			} catch (Exception e) {
-				userNames.put(assignee, assignee);
-			}
+			userNames.put(assignee, resolveAssigneeLabel(assignee));
 		}
 		return userNames.get(assignee);
+	}
+
+	private String resolveAssigneeLabel(String assignee) {
+		try {
+			User user = aclHelper.getUserByLogin(assignee);
+			if (user == null) {
+				return UNKNOWN_USER_LABEL;
+			}
+			if (StringUtils.isEmpty(user.getFirstname()) && StringUtils.isEmpty(user.getLastname())) {
+				return assignee;
+			}
+			return convertAssignee(user);
+		} catch (Exception e) {
+			return assignee;
+		}
 	}
 
 	protected String convertAssignee(Map<String, String> userNames, HistoricInformation historicInformation) {
@@ -587,7 +594,7 @@ public class HistoricHelper {
 				}
 				processHistoricInformation.setStartUserName(name.toString());
 			} else {
-				processHistoricInformation.setStartUserLogin(login);
+				processHistoricInformation.setStartUserName(UNKNOWN_USER_LABEL);
 			}
 		} catch (Exception e) {
 			processHistoricInformation.setStartUserLogin(login);

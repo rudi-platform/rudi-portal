@@ -18,9 +18,9 @@
       }
     </div>
     <div class="text-center">
-      <button class="button-redirect" (click)="redirectToNews()">
+      <a class="button-redirect" [routerLink]="'/' + cmsNewsDescription.news_list_path">
         <span>{{ 'home.newsSection.seeMoreNews' | translate }}</span>
-      </button>
+      </a>
     </div>
   </div>
 }

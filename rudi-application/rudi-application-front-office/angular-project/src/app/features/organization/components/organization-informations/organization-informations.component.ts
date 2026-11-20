@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {DEFAULT_PROJECT_ORDER} from '@core/services/asset/project/projekt-metier.service';
 import {AuthenticationService} from '@core/services/authentication.service';
 import {BreakpointObserverService, MediaSize} from '@core/services/breakpoint-observer.service';
@@ -35,6 +35,9 @@ export class OrganizationInformationsComponent implements OnInit {
     isMemberLoading = false;
     organizationAddresses?: OrganizationAddresses;
 
+    @ViewChild('datasetsHeading') datasetsHeading?: ElementRef<HTMLElement>;
+    @ViewChild('reusesHeading') reusesHeading?: ElementRef<HTMLElement>;
+
 
     constructor(private readonly filtersService: FiltersService,
                 private readonly breakpointObserver: BreakpointObserverService,
@@ -51,7 +54,9 @@ export class OrganizationInformationsComponent implements OnInit {
         };
 
         // Récupération des addresses à afficher dans les cards de contactàà
-        this.organizationAddresses = this.organizationAddressesMapper.mapAbstractAddressesToOrganizationAddresses(this.organization.addresses);
+        this.organizationAddresses = this.organizationAddressesMapper.mapAbstractAddressesToOrganizationAddresses(
+            this.organization.addresses, this.organization.address
+        );
 
         const isAuth = this.authenticationService.isAuthenticatedAsUser();
         if (isAuth) {
@@ -76,5 +81,16 @@ export class OrganizationInformationsComponent implements OnInit {
 
     setReuseListTotal($event: number): void {
         this.reuseListTotal = $event;
+    }
+
+    /**
+     * RGAA 12.8 : the pagination is removed from the DOM while loading, focus goes back to the section heading
+     */
+    onDatasetsPageLoaded(): void {
+        this.datasetsHeading?.nativeElement.focus();
+    }
+
+    onReusesPageLoaded(): void {
+        this.reusesHeading?.nativeElement.focus();
     }
 }

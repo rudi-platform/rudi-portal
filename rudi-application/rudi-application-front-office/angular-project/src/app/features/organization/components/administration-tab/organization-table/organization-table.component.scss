@@ -1,11 +1,5 @@
 @use "common-style";
 
-button {
-    &:focus {
-        outline: none;
-    }
-}
-
 .table-robot {
     margin: 2em 0 5em 0;
 }
@@ -14,8 +8,14 @@ button {
     margin-bottom: 20px;
 
     .table-title-style {
+        display: inline;
+        margin: 0;
+        font-family: inherit;
         font-size: 18px;
         font-weight: bold;
+        line-height: inherit;
+        letter-spacing: inherit;
+        color: inherit;
         text-align: left;
     }
 }

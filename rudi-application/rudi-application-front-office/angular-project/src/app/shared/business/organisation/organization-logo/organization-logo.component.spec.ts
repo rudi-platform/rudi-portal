@@ -22,4 +22,18 @@ describe('LogoComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should render an empty alt when the logo is decorative (RGAA 1.2)', () => {
+        component.decorative = true;
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('img')?.getAttribute('alt')).toBe('');
+    });
+
+    it('should keep a text alternative by default', () => {
+        component.defaultAlt = 'Logo';
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('img')?.getAttribute('alt')).toBe('Logo');
+    });
 });

@@ -81,7 +81,7 @@ export class AccesDetailsTable1Component implements AfterViewInit {
         }
 
         // Si 0 autre JDD
-        if (this._otherIndicators && this._otherIndicators.x === 0) {
+        if (this._otherIndicators?.x === 0) {
             return false;
         }
 

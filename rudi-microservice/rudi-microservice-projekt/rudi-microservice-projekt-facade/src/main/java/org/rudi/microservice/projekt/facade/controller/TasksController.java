@@ -34,12 +34,12 @@ public class TasksController implements TasksApi {
 	@Override
 	public ResponseEntity<List<Task>> searchTasks(String title, String description, List<String> processDefinitionKeys,
 			List<Status> status, List<String> fonctionalStatus, ProjectStatus projectStatus, Boolean asAdmin,
-			UUID datasetProducerUuid, UUID projectUuid) throws Exception {
+			UUID datasetProducerUuid, UUID projectUuid, String userLogin) throws Exception {
 		ProjektTaskSearchCriteria searchCriteria = ProjektTaskSearchCriteria.builder().title(title)
 				.description(description).processDefinitionKeys(processDefinitionKeys)
 				.functionalStatus(fonctionalStatus).projectStatus(projectStatus).status(status)
 				.asAdmin(Boolean.TRUE.equals(asAdmin)).datasetProducerUuid(datasetProducerUuid).projectUuid(projectUuid)
-				.build();
+				.userLogin(userLogin).build();
 		Page<Task> tasks = taskQueryService.searchTasks(searchCriteria, Pageable.unpaged());
 		return ResponseEntity.ok(tasks.getContent());
 	}

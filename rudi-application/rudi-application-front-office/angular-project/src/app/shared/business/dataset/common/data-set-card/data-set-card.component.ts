@@ -1,6 +1,5 @@
-import {NgClass, SlicePipe} from '@angular/common';
+import {NgClass, NgTemplateOutlet, SlicePipe} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatButton} from '@angular/material/button';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -10,9 +9,11 @@ import {LanguageService} from '@core/i18n/language.service';
 import {BreakpointObserverService, MediaSize, NgClassObject} from '@core/services/breakpoint-observer.service';
 import {URIComponentCodec} from '@core/services/codecs/uri-component-codec';
 import {ThemeCacheService} from '@core/services/theme-cache.service';
+import {TranslatePipe} from '@ngx-translate/core';
 import {MetadataUtils} from '@shared/utils/metadata-utils';
+import {TruncatedTextComponent} from '@shared/core/common/truncated-text/truncated-text.component';
 import {SplitPipe} from '@shared/utils/pipes/split.pipe';
-import {TruncateTextPipe} from '@shared/utils/pipes/truncate-text.pipe';
+import {StretchedLinkClickDirective} from '@shared/utils/directives/stretched-link-click-directive/stretched-link-click.directive';
 import {Metadata} from 'micro_service_modules/api-kaccess';
 import {OrganizationLogoComponent} from '../../../organisation/organization-logo/organization-logo.component';
 
@@ -20,13 +21,17 @@ import {OrganizationLogoComponent} from '../../../organisation/organization-logo
     selector: 'app-data-set-card',
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
-    imports: [MatCard, NgClass, MatCardContent, OrganizationLogoComponent, MatIcon, MatButton, MatTooltip, SlicePipe, SplitPipe, TruncateTextPipe, RouterLink]
+    // eslint-disable-next-line max-len
+    imports: [MatCard, NgClass, NgTemplateOutlet, MatCardContent, OrganizationLogoComponent, MatIcon, MatTooltip, SlicePipe, SplitPipe, TruncatedTextComponent, RouterLink, StretchedLinkClickDirective, TranslatePipe]
 })
 export class DataSetCardComponent implements OnInit {
     @Input() metadata: Metadata;
+    /** Heading level of the title: 3 when the list is under a section h2 */
+    @Input() titleLevel: 2 | 3 = 2;
     mediaSize: MediaSize;
     @Input() isSelectable = false;
-    isSelected = false;
+    // Driven by the list: selecting on focus made the choice invisible once the focus left the card
+    @Input() isSelected = false;
     isSingleClick = true;
     @Output() selectMetadata = new EventEmitter<Metadata>();
     @Output() dbSelectMetadata = new EventEmitter<Metadata>();
@@ -76,13 +81,6 @@ export class DataSetCardComponent implements OnInit {
         };
     }
 
-    get titleMaxLength(): number {
-        return 60;
-    }
-
-    get descriptionMaxLength(): number {
-        return 200;
-    }
 
     get isRestricted(): boolean {
         return MetadataUtils.isRestricted(this.metadata);
@@ -90,6 +88,16 @@ export class DataSetCardComponent implements OnInit {
 
     get isSelfdata(): boolean {
         return MetadataUtils.isSelfdata(this.metadata);
+    }
+
+    get accessStatusLabelKey(): string | null {
+        if (this.isRestricted) {
+            return 'metaData.accesRestreintLibelle';
+        }
+        if (this.isSelfdata) {
+            return 'metaData.donneesPersonnellesLibelle';
+        }
+        return null;
     }
 
     ngOnInit(): void {
@@ -133,6 +141,17 @@ export class DataSetCardComponent implements OnInit {
     }
 
     /**
+     * Clic sur une card sélectionnable : un clic clavier (Entrée/Espace, detail = 0) n'a pas à attendre un éventuel double-clic
+     */
+    onCardClick(event: MouseEvent): void {
+        if (event.detail === 0) {
+            this.select(true);
+        } else {
+            this.singleClickSelect();
+        }
+    }
+
+    /**
      * Function SingleClick
      * @param isSelected
      */
@@ -155,6 +174,4 @@ export class DataSetCardComponent implements OnInit {
         this.isSingleClick = false;
         this.dbSelectMetadata.emit(this.metadata);
     }
-
-
 }

@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {GdataDataInterface} from '@core/services/selfdata-dataset/gdataData.interface';
 
 import {GenericDataComponent} from './generic-data.component';
 
@@ -16,6 +17,8 @@ describe('GenericDataComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GenericDataComponent);
         component = fixture.componentInstance;
+        fixture.componentRef.setInput('isLoading', false);
+        fixture.componentRef.setInput('genericDataObject', {title: 'Titre', genericDataObject: {data: []}} as GdataDataInterface);
         fixture.detectChanges();
     });
 

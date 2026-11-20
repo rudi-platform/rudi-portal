@@ -2,10 +2,10 @@
   <app-loader [active]="isLoading" [allPage]="false" [isTransparent]="true" [noText]="true"></app-loader>
   @if (!isLoading) {
     @if (content) {
-      <img [alt]="name | translate" [class]="cssClass" [src]="content">
+      <img [alt]="decorative ? '' : (name | translate)" [class]="cssClass" [src]="content">
     }
     @if (!content) {
-      <img [class]="cssClass" [alt]="defaultAlt" [src]="defaultLogo">
+      <img [class]="cssClass" [alt]="decorative ? '' : defaultAlt" [src]="defaultLogo">
     }
   }
 </div>

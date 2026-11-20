@@ -1,0 +1,17 @@
+{
+	"help": "Vous vous apprêtez à accepter la demande d'ajout de l'utilisateur. Après approbation, celui-ci pourra se connecter dans le système d'authentification externe.",
+	"fieldDefinitions": [
+		{
+			"name": "messageToRequester",
+			"label": "Message à l'attention du demandeur",
+			"type": "TEXT",
+			"required": false,
+			"validators": [
+				{
+					"type": "MAXLENGTH",
+					"attribute": "1000"
+				}
+			]
+		}
+	]
+}

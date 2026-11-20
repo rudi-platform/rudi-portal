@@ -51,7 +51,7 @@ function collectHeading(node, headings) {
     if (match) {
         headings.push({
             node,
-            level: parseInt(match[1], 10),
+            level: Number.parseInt(match[1], 10),
         });
     }
 }

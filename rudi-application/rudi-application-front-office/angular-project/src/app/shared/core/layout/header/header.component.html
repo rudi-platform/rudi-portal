@@ -6,7 +6,7 @@
                 <a class="skip-link" href="#main-content" (click)="handleSkipLinkClick($event, 'main-content')">{{ 'header.skipLink.mainContent'| translate }}</a>
             </li>
             <li>
-                <a class="skip-link" href="#header-navigation" (click)="handleSkipLinkClick($event, 'header-navigation')">{{ 'header.skipLink.headerNavigation'| translate }}</a>
+                <a class="skip-link" [href]="'#' + navigationSkipLinkTargetId" (click)="handleSkipLinkClick($event, navigationSkipLinkTargetId)">{{ 'header.skipLink.headerNavigation'| translate }}</a>
             </li>
             <li>
                 <a class="skip-link" href="#footer" (click)="handleSkipLinkClick($event, 'footer')">{{ 'header.skipLink.footer'| translate }}</a>
@@ -84,6 +84,7 @@
 
   <ng-template #menuMobile>
     <button class="burger-menu-btn" mat-mini-fab
+      id="header-navigation-toggle"
       [attr.aria-label]="(isCollapsed ? 'header.burger.open' : 'header.burger.close') | translate"
       [attr.aria-expanded]="!isCollapsed"
       aria-controls="mobile-nav-menu"
@@ -154,7 +155,7 @@
   </ng-template>
 
   <!-- MENU 'MON COMPTE' -->
-  <mat-menu #accountMenu="matMenu" role="menu" xPosition="before">
+  <mat-menu #accountMenu="matMenu" xPosition="before">
     <a mat-menu-item [routerLink]="isConnectedAsUser ? ['personal-space/my-account'] : ['/login']"
       [routerLinkActive]="'active'"
       [ariaCurrentWhenActive]="'page'">{{ 'header.accountMenu.myAccount'| translate }}

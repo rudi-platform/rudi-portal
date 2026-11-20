@@ -1,13 +1,16 @@
 <app-shared-banner>
-  @for (tab of tabs; track tab) {
-    <app-tab [icon]="tab.icon" [label]="tab.label" (click)="selectTab(tab)"
-    [active]="tab.active" [invisible]="tab.invisible"></app-tab>
-  }
+  <div class="tab-list" role="tablist">
+    @for (tab of tabs; track tab; let i = $index) {
+      <app-tab [icon]="tab.icon" [label]="tab.label" (click)="selectTab(tab)" (keydown)="handleTabListKeydown($event)"
+      [active]="tab.active" [invisible]="tab.invisible"
+      [tabId]="getTabId(i)" [controls]="tabPanelId"></app-tab>
+    }
+  </div>
   <span class="spacer"></span>
-  <ng-content select="app-banner-button"></ng-content>
+  <ng-content select="app-banner-button, app-button-disclosure"></ng-content>
 </app-shared-banner>
 
-<div id="tab-content-container" [ngClass]="{
+<div [id]="tabPanelId" role="tabpanel" [attr.aria-labelledby]="getSelectedTabId()" [ngClass]="{
                 'p-small': mediaSize.isDeviceMobile,
                 'p-large': mediaSize.isDeviceDesktop
             }">

@@ -1,17 +1,13 @@
 @if (!emailIsVisible && !showEmailDirectly) {
-  <button class="button" (click)="clickContactButton()"
+  <button type="button" class="button" (click)="clickContactButton()"
   mat-raised-button>{{ label ?? ('metaData.contact' | translate) }}</button>
 }
 @if (emailIsVisible || showEmailDirectly) {
-  <button class="button email" (click)="clickEmailButton()"
+  <button #emailButton type="button" class="button email" (click)="clickEmailButton()"
     mat-raised-button>
+    <span class="visually-hidden">{{ 'common.copiedButton.copy' | translate }}</span>
     <span>{{email}}</span>
-    @if (!copiedSuccess) {
-      <mat-icon>content_copy</mat-icon>
-    }
-    @if (copiedSuccess) {
-      <mat-icon>done_all</mat-icon>
-    }
+    <mat-icon aria-hidden="true" [fontIcon]="copiedSuccess ? 'done_all' : 'content_copy'"></mat-icon>
   </button>
 }
 

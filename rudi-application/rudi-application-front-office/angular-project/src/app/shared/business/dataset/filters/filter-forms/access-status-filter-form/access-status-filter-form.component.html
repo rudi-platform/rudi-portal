@@ -1,6 +1,7 @@
 @if (formGroup) {
   <form [formGroup]="formGroup" (ngSubmit)="submitForm()" [class]="formClass">
-    <mat-radio-group [formControlName]="formControlName" class="pl-47 d-flex flex-column rudi-radio-group">
+    <mat-radio-group [formControlName]="formControlName" class="pl-47 d-flex flex-column rudi-radio-group"
+      [attr.aria-label]="'filterBox.restrictedAccess.statut' | translate">
       @for (item of items; track item) {
         <mat-radio-button [value]="item.value"
           class="rudi-radio-button">

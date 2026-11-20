@@ -2,6 +2,12 @@
     background-color: var(--rudi-login-background-color);
 }
 
+@mixin rudi-filters-toolbar-base {
+    width: auto;
+    margin: 42px -95px 35px -95px;
+    padding-left: 95px;
+}
+
 @mixin card-form-container {
     display: flex;
     flex-direction: column;

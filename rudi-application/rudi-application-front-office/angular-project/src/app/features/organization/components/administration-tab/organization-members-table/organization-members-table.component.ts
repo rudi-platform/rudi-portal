@@ -52,6 +52,7 @@ import {OrganizationMemberDialogData} from './organization-member-dialog-data';
 export class OrganizationMembersTableComponent implements OnInit {
 
     @Input() organization: Organization;
+    private pendingMenuAction: (() => void) | null = null;
     _organizationMembersList: OrganizationUserMember[] = [];
     mediaSize: MediaSize;
     isMenuOpen = false;
@@ -68,6 +69,8 @@ export class OrganizationMembersTableComponent implements OnInit {
     currentSortTable: SortTableInterface;
     currentPage: number;
     membersTotal = 0;
+    displayedTotal: number | null = null;
+    searchedTerm = '';
     searchText = '';
     itemsPerPage = this.DEFAULT_ITEMS_PER_PAGE;
 
@@ -182,6 +185,9 @@ export class OrganizationMembersTableComponent implements OnInit {
             this._organizationMembersList = wrapper;
         }
         this.membersTotal = organizationMembers.total;
+        // Captured together so the status region never pairs a new search term with the previous count
+        this.displayedTotal = this.membersTotal;
+        this.searchedTerm = this.searchText?.trim() ?? '';
     }
 
     private handleSearchOrganizationMembersError(error: Error): void {
@@ -191,7 +197,7 @@ export class OrganizationMembersTableComponent implements OnInit {
         this.snackbarService.openSnackBar({
             message: `${this.translateService.instant('metaData.administrationTab.membersTable.errorPagination')}<a href="${this.linkError}">${this.translateService.instant('common.ici')}</a>`,
             level: Level.ERROR,
-        }, 3000);
+        });
     }
 
     computeRoleLabe(role: OrganizationRole): string {
@@ -212,6 +218,10 @@ export class OrganizationMembersTableComponent implements OnInit {
         return this.translateService.instant('metaData.administrationTab.membersTable.noResult');
     }
 
+    get resultsForParams(): { term: string } {
+        return {term: this.searchedTerm};
+    }
+
     get total(): unknown {
         if (!this.searchIsRunning) {
             return this.membersTotal;
@@ -229,12 +239,27 @@ export class OrganizationMembersTableComponent implements OnInit {
         });
     }
 
+    /**
+     * mat-menu gives focus back to its trigger when it closes, which would pull focus out of
+     * a dialog opened from a menu item: the action is run once the menu is closed (RGAA 12.8).
+     */
+    deferMenuAction(action: 'update' | 'delete', member: OrganizationUserMember): void {
+        this.pendingMenuAction = action === 'update'
+            ? () => this.handleClickUpdateMember(member)
+            : () => this.handleClickDeleteMember(member);
+    }
+
+    runPendingMenuAction(): void {
+        const action = this.pendingMenuAction;
+        this.pendingMenuAction = null;
+        action?.();
+    }
+
 
     /**
      * Quand l'utilisateur click sur le bouton d'ajout de membre
      */
     handleClickAddMember(): void {
-        this.searchIsRunning = true;
         const organizationMemberDialogData: OrganizationMemberDialogData = {};
         organizationMemberDialogData.organizationUuid = this.organization.uuid;
         organizationMemberDialogData.title = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.title');
@@ -242,7 +267,8 @@ export class OrganizationMembersTableComponent implements OnInit {
         organizationMemberDialogData.fieldLoginDescription = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.descriptionMail');
         organizationMemberDialogData.fieldRoleDescription = this.translateService.instant('metaData.administrationTab.membersTable.addPopin.descriptionRole');
 
-        const organizationMember$ = this.dialogMemberOrganizationService.openDialogAddMember(organizationMemberDialogData);
+        const organizationMember$ = this.startLoadingOnValidation(
+            this.dialogMemberOrganizationService.openDialogAddMember(organizationMemberDialogData));
         this.addOrganizationMember(organizationMember$, this.organization.uuid).pipe(
             tap(() => this.userTypedEvent.next(this.searchText))
         ).subscribe({
@@ -275,7 +301,6 @@ export class OrganizationMembersTableComponent implements OnInit {
      * Action déclenchée lors du clic sur le bouton "Modifier le profil", ouverture de popin
      */
     public handleClickUpdateMember(organizationUserMember: OrganizationUserMember): void {
-        this.searchIsRunning = true;
         const organizationMemberDialogData: OrganizationMemberDialogData = {};
         organizationMemberDialogData.organizationUserMember = organizationUserMember;
         organizationMemberDialogData.organizationUuid = this.organization.uuid;
@@ -285,7 +310,8 @@ export class OrganizationMembersTableComponent implements OnInit {
         organizationMemberDialogData.fieldLoginDescription = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.descriptionMail');
         organizationMemberDialogData.fieldRoleDescription = this.translateService.instant('metaData.administrationTab.membersTable.updatePopin.descriptionRole');
 
-        const organizationMember$ = this.dialogMemberOrganizationService.openDialogUpdateMember(organizationMemberDialogData);
+        const organizationMember$ = this.startLoadingOnValidation(
+            this.dialogMemberOrganizationService.openDialogUpdateMember(organizationMemberDialogData));
         this.updateOrganizationMember(organizationMember$, this.organization.uuid)
             .pipe(
                 tap(() => this.userTypedEvent.next(this.searchText))
@@ -323,11 +349,11 @@ export class OrganizationMembersTableComponent implements OnInit {
      * @param organizationUserMember
      */
     handleClickDeleteMember(organizationUserMember: OrganizationUserMember): void {
-        this.searchIsRunning = true;
         const organizationMemberDialogData: OrganizationMemberDialogData = {};
         organizationMemberDialogData.organizationUserMember = organizationUserMember;
         organizationMemberDialogData.organizationUuid = this.organization.uuid;
-        const organizationMember$ = this.dialogMemberOrganizationService.openDialogDeletionConfirmation(organizationMemberDialogData);
+        const organizationMember$ = this.startLoadingOnValidation(
+            this.dialogMemberOrganizationService.openDialogDeletionConfirmation(organizationMemberDialogData));
         this.removeOrganizationMember(organizationMember$, this.organization.uuid)
             .pipe(
                 tap(() => this.userTypedEvent.next(this.searchText))
@@ -389,6 +415,14 @@ export class OrganizationMembersTableComponent implements OnInit {
                 return this.organizationMetierService.updateOrganizationMember(organizationUuid,
                     organizationMember.data.user_uuid, organizationMember.data);
             })
+        );
+    }
+
+    // The loader announces "loading" to screen readers: start it only once the request is about to run
+    private startLoadingOnValidation(dialogResult$: Observable<DialogClosedData<OrganizationMember>>)
+        : Observable<DialogClosedData<OrganizationMember>> {
+        return dialogResult$.pipe(
+            tap(result => this.searchIsRunning = result?.closeEvent === CloseEvent.VALIDATION)
         );
     }
 

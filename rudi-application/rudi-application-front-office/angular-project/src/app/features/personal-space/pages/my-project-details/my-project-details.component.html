@@ -37,6 +37,7 @@
         <app-tab [label]="'personalSpace.project.tabs.datasets.title' | translate" [icon]="'jdd_icon'">
           <ng-template>
             <app-project-datasets-tab [project]="project"
+            [isOwnerOrganizationUnavailable]="isOwnerOrganizationUnavailable"
             (projectIsUpdate)="loadProject()"></app-project-datasets-tab>
           </ng-template>
         </app-tab>

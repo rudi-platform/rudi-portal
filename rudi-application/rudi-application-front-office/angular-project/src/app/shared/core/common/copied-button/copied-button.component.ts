@@ -1,10 +1,9 @@
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {Component, Input, OnInit} from '@angular/core';
 import {MatButton} from '@angular/material/button';
-import {MatInput} from '@angular/material/input';
-
 import {MatIcon} from '@angular/material/icon';
-import {MatSuffix} from '@angular/material/form-field';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 
 /**
  * Composant génerique du boutton copy avec/sans icon visibilité
@@ -13,7 +12,7 @@ import {MatSuffix} from '@angular/material/form-field';
     selector: 'app-copied-button',
     templateUrl: './copied-button.component.html',
     styleUrls: ['./copied-button.component.scss'],
-    imports: [MatButton, MatInput, MatIcon, MatSuffix]
+    imports: [MatButton, MatIcon, TranslatePipe]
 })
 export class CopiedButtonComponent implements OnInit {
 
@@ -38,7 +37,11 @@ export class CopiedButtonComponent implements OnInit {
      */
     copiedSuccess = false;
 
-    constructor(private readonly clipboard: Clipboard) {
+    constructor(
+        private readonly clipboard: Clipboard,
+        private readonly liveAnnouncer: LiveAnnouncer,
+        private readonly translateService: TranslateService
+    ) {
     }
 
     ngOnInit(): void {
@@ -52,6 +55,14 @@ export class CopiedButtonComponent implements OnInit {
     clickOnButton(): void {
         this.copiedSuccess = true;
         this.clipboard.copy(this.toCopy);
+        this.liveAnnouncer.announce(this.translateService.instant('common.copiedButton.copied'));
+    }
+
+    /**
+     * Valeur masquée affichée à la place de la valeur à copier
+     */
+    getMaskedValue(): string {
+        return '•'.repeat(this.toCopy?.length ?? 0);
     }
 
     /**

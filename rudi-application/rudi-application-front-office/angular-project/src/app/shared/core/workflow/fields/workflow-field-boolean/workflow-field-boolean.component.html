@@ -4,10 +4,10 @@
       <mat-checkbox [id]="'checkbox-' + formControlName" [formControlName]="formControlName"></mat-checkbox>
     </div>
     <div class="label-area">
-      <label [for]="'checkbox-' + formControlName" class="d-inline">
+      <label [for]="'checkbox-' + formControlName + '-input'" class="d-inline">
         <span [innerHTML]="safeLabel"></span>
         @if (required) {
-          <span class="required-symbol" [attr.aria-label]="'common.requiredFieldLabel'|translate">*</span>
+          <span class="required-symbol" aria-hidden="true">*</span>
         }
       </label>
       <div class="title-hint">{{help}}</div>

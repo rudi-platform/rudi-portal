@@ -30,6 +30,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 public class CryptoUtil {
 
 	private static final String CERTIFICATE_PROVIDER_NAME = "BC";
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	private CryptoUtil() {
 	}
@@ -65,7 +66,7 @@ public class CryptoUtil {
 	 */
 	public static byte[] generateRandomNonce(int length) {
 		final var nonce = new byte[length];
-		new SecureRandom().nextBytes(nonce);
+		SECURE_RANDOM.nextBytes(nonce);
 		return nonce;
 	}
 

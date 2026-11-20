@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Configuration Playwright pour les tests RGAA (accessibilité).
@@ -25,38 +25,51 @@ import { defineConfig, devices } from "@playwright/test";
  * Lancer : npm start (ou la tâche VS Code "front: angular (dev)")
  */
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [["list"], ["html", { open: "never", outputFolder: "test-results/rgaa-report" }]],
+  reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:4200",
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
+    baseURL: process.env.BASE_URL || 'http://localhost:4200',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
   projects: [
     /* Projet setup : authentification */
     {
-      name: "setup",
-      testDir: "./e2e/utils",
+      name: 'setup',
+      testDir: './e2e/utils',
       testMatch: /auth\.setup\.ts/,
     },
     /* Tests avec authentification (pages protégées) */
     {
-      name: "chromium",
-      testDir: "./e2e/rgaa",
+      name: 'chromium',
+      testDir: './e2e/rgaa',
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices['Desktop Chrome'],
       },
-      dependencies: ["setup"],
+      dependencies: ['setup'],
     },
     /* Tests sans authentification (pages publiques : login, inscription) */
     {
-      name: "chromium-noauth",
-      testDir: "./e2e/rgaa",
-      use: { ...devices["Desktop Chrome"] },
+      name: 'chromium-noauth',
+      testDir: './e2e/rgaa',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    /* Audit axe-core WCAG 2.2 A/AA avec baseline anti-régression : pages publiques */
+    {
+      name: 'axe-noauth',
+      testDir: './e2e/axe',
+      use: { ...devices['Desktop Chrome'], contextOptions: { reducedMotion: 'reduce' } },
+    },
+    /* Audit axe-core WCAG 2.2 A/AA avec baseline anti-régression : pages authentifiées */
+    {
+      name: 'axe',
+      testDir: './e2e/axe',
+      use: { ...devices['Desktop Chrome'], contextOptions: { reducedMotion: 'reduce' } },
+      dependencies: ['setup'],
     },
   ],
   /* Ne pas lancer le serveur Angular automatiquement — il tourne déjà via les tâches VS Code */

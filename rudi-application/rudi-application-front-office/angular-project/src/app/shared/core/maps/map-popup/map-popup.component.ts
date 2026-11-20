@@ -1,6 +1,7 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
+import {TranslatePipe} from '@ngx-translate/core';
 import {Feature} from 'ol';
 import {Geometry} from 'ol/geom';
 
@@ -8,7 +9,7 @@ import {Geometry} from 'ol/geom';
     selector: 'app-map-popup',
     templateUrl: './map-popup.component.html',
     styleUrls: ['./map-popup.component.scss'],
-    imports: [MatIcon]
+    imports: [MatIcon, TranslatePipe]
 })
 export class MapPopupComponent {
 

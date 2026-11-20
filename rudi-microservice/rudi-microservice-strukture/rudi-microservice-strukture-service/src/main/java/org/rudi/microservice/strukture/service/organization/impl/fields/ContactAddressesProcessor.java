@@ -105,6 +105,7 @@ public class ContactAddressesProcessor implements CreateOrganizationFieldProcess
 	 * @param valueSetter       bi-consumer to apply the value on the entity
 	 * @param entityClass       class used to cast the matching existing entity
 	 */
+	@SuppressWarnings("java:S107") // trop de paramètres selon Sonar, mais ils sont nécessaires
 	private <E extends AbstractAddressEntity, D extends AbstractAddress> void mergeAddress(
 			OrganizationEntity entity,
 			Organization dto,
